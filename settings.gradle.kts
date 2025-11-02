@@ -29,5 +29,64 @@ dependencyResolutionManagement {
         maven {
             url = uri("https://jitpack.io") 
         }
+        maven {
+            url = uri("https://hub.spigotmc.org/nexus/content/groups/public/")
+        }
+        maven {
+            url = uri("http://nexus.hc.to/content/repositories/pub_releases")
+            isAllowInsecureProtocol = true
+        }
+
+        maven {
+            url = uri("https://jitpack.io")
+        }
+
+        maven {
+            url = uri("https://repo.codemc.org/repository/maven-public")
+        }
+
+        // PlaceholderAPI
+        maven {
+            url = uri("https://repo.extendedclip.com/releases/")
+        }
+
+        maven {
+            url = uri("https://repo.maven.apache.org/maven2/")
+        }
+
+        // EngineHub
+        maven {
+            url = uri("https://maven.enginehub.org/repo/")
+        }
+
+        // EssentialsX
+        maven {
+            url = uri("https://repo.essentialsx.net/releases/")
+        }
+
+        // Paper
+        maven {
+            url = uri("https://papermc.io/repo/repository/maven-public/")
+        }
+
+        maven {
+            url = uri("https://nexus.scarsz.me/content/groups/public/")
+        }
+
+        maven {
+            url = uri("https://oss.sonatype.org/repository/releases/")
+        }
+        maven {
+            url = uri("https://repo.codemc.io/repository/creatorfromhell/")
+        }
+        // Oraxon
+        maven {
+            url = uri("https://repo.oraxen.com/releases")
+        }
+        maven {
+            url = uri("https://maven.devs.beer/")
+        }
     }
 }
+
+//     implementation("com.github.LemonlightMC:MorePlugins:master-SNAPSHOT")

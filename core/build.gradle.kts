@@ -12,65 +12,6 @@ plugins {
     `maven-publish`
 }
 
-repositories {
-    mavenCentral()
-    maven {
-        url = uri("https://hub.spigotmc.org/nexus/content/groups/public/")
-    }
-
-    maven {
-        url = uri("http://nexus.hc.to/content/repositories/pub_releases")
-
-        isAllowInsecureProtocol = true
-    }
-
-    maven {
-        url = uri("https://jitpack.io")
-    }
-
-
-    maven {
-        url = uri("https://repo.codemc.org/repository/maven-public")
-    }
-
-    maven {
-        url = uri("https://repo.extendedclip.com/releases/")
-    }
-
-    maven {
-        url = uri("https://repo.maven.apache.org/maven2/")
-    }
-
-    maven {
-        url = uri("https://maven.enginehub.org/repo/")
-    }
-
-    maven {
-        url = uri("https://repo.essentialsx.net/releases/")
-    }
-
-    maven {
-        url = uri("https://papermc.io/repo/repository/maven-public/")
-    }
-
-    maven {
-        url = uri("https://nexus.scarsz.me/content/groups/public/")
-    }
-
-    maven {
-        url = uri("https://oss.sonatype.org/repository/releases/")
-    }
-
-    maven {
-        url = uri("https://repo.codemc.io/repository/creatorfromhell/")
-    }
-    maven {
-        url = uri("https://repo.oraxen.com/releases")
-    }
-
-
-}
-
 dependencies {
     compileOnly("me.clip:placeholderapi:2.11.5")
     compileOnly("org.spigotmc:spigot-api:1.21.8-R0.1-SNAPSHOT")
@@ -81,9 +22,6 @@ dependencies {
     //compileOnly("dev.jorel:commandapi-bukkit-shade:10.1.2")
     //compileOnly("com.github.MilkBowl:VaultAPI:1.7")
     compileOnly("net.milkbowl.vault:VaultUnlockedAPI:2.15")
-    api(libs.commons.math3) 
-    implementation(libs.guava)
-    implementation("com.github.LemonlightMC:MoreUtils:master-SNAPSHOT")
 }
 
 // Apply a specific Java toolchain to ease working on different environments.
@@ -93,5 +31,20 @@ java {
     }
 }
 
+group = "com.lemonlightmc"
+version = "1.0.0"
+description = "MorePlugins"
 
-version = "0.1.0"
+publishing {
+    publications.create<MavenPublication>("maven") {
+        from(components["java"])
+    }
+}
+
+tasks.withType<JavaCompile>() {
+    options.encoding = "UTF-8"
+}
+
+tasks.withType<Javadoc>() {
+    options.encoding = "UTF-8"
+}
