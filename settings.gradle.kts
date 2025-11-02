@@ -84,5 +84,3 @@ dependencyResolutionManagement {
         }
     }
 }
-
-//     implementation("com.github.LemonlightMC:MorePlugins:master-SNAPSHOT")
