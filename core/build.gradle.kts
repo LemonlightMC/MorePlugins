@@ -83,6 +83,7 @@ dependencies {
     compileOnly("net.milkbowl.vault:VaultUnlockedAPI:2.15")
     api(libs.commons.math3) 
     implementation(libs.guava)
+    implementation("com.github.LemonlightMC:MoreUtils:master-SNAPSHOT")
 }
 
 // Apply a specific Java toolchain to ease working on different environments.
