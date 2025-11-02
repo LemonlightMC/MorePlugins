@@ -1,6 +1,5 @@
-.gradle
-/gradle
-build
-bin/*
-core/bin
-commands/bin/*
+gradle/
+.gradle/
+build/
+bin/
+target/
