@@ -1,0 +1,75 @@
+package com.lemonlightmc.moreplugins.updater.platform;
+
+import com.lemonlightmc.moreplugins.updater.HttpUtil;
+import com.lemonlightmc.moreplugins.updater.PluginData;
+import com.lemonlightmc.moreplugins.updater.VersionChecker;
+import com.lemonlightmc.moreplugins.updater.PlatformData.AbstractPlatformData;
+import com.lemonlightmc.moreplugins.updater.PlatformData.ModrinthData;
+import com.lemonlightmc.moreplugins.version.Version;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
+import java.io.IOException;
+import java.net.http.HttpResponse;
+
+public class ModrinthVersionChecker extends VersionChecker {
+    public static final String ENDPOINT = "https://api.modrinth.com/v2";
+
+    @Override
+    public Version getLatestVersion(PluginData pluginData, AbstractPlatformData platformData)
+            throws IOException, InterruptedException {
+        if (!(platformData instanceof ModrinthData modrinthData)) {
+            return null;
+        }
+
+        JsonObject currVersionJson = getLatestVersion(pluginData, modrinthData);
+        return new Version(currVersionJson.get("version_number").getAsString());
+    }
+
+    @Override
+    public String getDownloadUrl(PluginData pluginData, AbstractPlatformData platformData)
+            throws IOException, InterruptedException {
+        if (!(platformData instanceof ModrinthData modrinthData)) {
+            return null;
+        }
+
+        JsonObject currVersionJson = getLatestVersion(pluginData, modrinthData);
+        return currVersionJson.get("files").getAsJsonArray().get(0).getAsJsonObject().get("url").getAsString();
+    }
+
+    private JsonArray getVersions(PluginData pluginData, ModrinthData modrinthData)
+            throws IOException, InterruptedException {
+        StringBuilder uriBuilder = new StringBuilder(String.format("%s/project/%s/version",
+                ENDPOINT, modrinthData.getModrinthProjectId()))
+                .append("?loaders=[%22bukkit%22,%22spigot%22,%22paper%22,%22purpur%22,%22folia%22]");
+
+        if (modrinthData.specifiesVersionType()) {
+            uriBuilder.append("&version_type=").append(modrinthData.getVersionType());
+        }
+
+        if (modrinthData.includeFeaturedOnly()) {
+            uriBuilder.append("&featured=true");
+        }
+
+        HttpResponse<String> response = HttpUtil.sendRequest(uriBuilder.toString());
+
+        if (response.statusCode() != 200) {
+            throw new IllegalStateException("Received invalid response code (%s) whilst checking '%s' for updates."
+                    .formatted(response.statusCode(), pluginData.getPluginName()));
+        }
+
+        return JsonParser.parseString(response.body()).getAsJsonArray();
+    }
+
+    private JsonObject getLatestVersion(PluginData pluginData, ModrinthData modrinthData)
+            throws IOException, InterruptedException {
+        JsonArray versions = getVersions(pluginData, modrinthData);
+        if (versions.isEmpty()) {
+            throw new IllegalStateException(
+                    "Failed to collect versions for '%s'".formatted(pluginData.getPluginName()));
+        }
+
+        return versions.get(0).getAsJsonObject();
+    }
+}
