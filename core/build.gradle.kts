@@ -7,7 +7,7 @@
  */
 
 plugins {
-    // Apply the java-library plugin for API and implementation separation.
+    `java`
     `java-library`
     `maven-publish`
 }
@@ -24,15 +24,8 @@ dependencies {
     compileOnly("net.milkbowl.vault:VaultUnlockedAPI:2.15")
 }
 
-// Apply a specific Java toolchain to ease working on different environments.
-java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(24)
-    }
-}
-
 group = "com.lemonlightmc"
-version = "1.0.0"
+version = "0.1.0"
 description = "MorePlugins"
 
 publishing {
@@ -47,4 +40,11 @@ tasks.withType<JavaCompile>() {
 
 tasks.withType<Javadoc>() {
     options.encoding = "UTF-8"
+}
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+    withSourcesJar()
+    withJavadocJar()
 }

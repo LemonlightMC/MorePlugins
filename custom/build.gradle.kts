@@ -7,7 +7,7 @@
  */
 
 plugins {
-    // Apply the java-library plugin for API and implementation separation.
+    `java`
     `java-library`
     `maven-publish`
 }
@@ -21,10 +21,28 @@ dependencies {
     implementation(project(":core"))
 }
 
-// Apply a specific Java toolchain to ease working on different environments.
-java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(24)
+
+group = "com.lemonlightmc"
+version = "0.1.0"
+description = "MorePlugins"
+
+publishing {
+    publications.create<MavenPublication>("maven") {
+        from(components["java"])
     }
 }
-version = "0.1.0"
+
+tasks.withType<JavaCompile>() {
+    options.encoding = "UTF-8"
+}
+
+tasks.withType<Javadoc>() {
+    options.encoding = "UTF-8"
+}
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+    withSourcesJar()
+    withJavadocJar()
+}

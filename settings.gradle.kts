@@ -19,7 +19,6 @@ include(":integrations")
 println(rootProject)
 
 dependencyResolutionManagement {
-    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
         mavenCentral()
         maven {
@@ -31,10 +30,6 @@ dependencyResolutionManagement {
         maven {
             url = uri("http://nexus.hc.to/content/repositories/pub_releases")
             isAllowInsecureProtocol = true
-        }
-
-        maven {
-            url = uri("https://jitpack.io")
         }
 
         maven {
