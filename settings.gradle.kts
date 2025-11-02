@@ -17,10 +17,6 @@ include(":commands")
 include(":custom")
 include(":integrations")
 println(rootProject)
-println(project(":core"))
-println(project(":commands"))
-println(project(":custom"))
-println(project(":integrations"))
 
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
