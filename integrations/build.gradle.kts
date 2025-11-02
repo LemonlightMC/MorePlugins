@@ -63,7 +63,6 @@ repositories {
 }
 
 dependencies {
-    compileOnly("me.clip:placeholderapi:2.11.5")
     compileOnly("org.spigotmc:spigot-api:1.21.8-R0.1-SNAPSHOT")
     //compileOnly("com.github.Traqueur-dev:RecipesAPI:2.0.2")
     //compileOnly("dev.jorel:commandapi-bukkit-shade:10.1.2")
@@ -72,6 +71,7 @@ dependencies {
     api(libs.commons.math3) 
     implementation(libs.guava)
     implementation(project(":core"))
+    implementation("com.github.LemonlightMC:MoreUtils:master-SNAPSHOT")
 }
 
 // Apply a specific Java toolchain to ease working on different environments.
