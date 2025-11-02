@@ -28,6 +28,8 @@ jobs:
             ${{ runner.os }}-gradle-
       - name: Build and analyze
         run: ./gradlew clean build
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Needed to get PR information, if any
       - name: Rename JAR with Build Number
         run: |
           original_jar=$(find jar/build/libs -type f -name "MorePlugins-*.jar")
