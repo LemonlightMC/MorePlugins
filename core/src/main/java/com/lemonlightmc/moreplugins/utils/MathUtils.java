@@ -2,6 +2,8 @@ package com.lemonlightmc.moreplugins.utils;
 
 import java.util.Random;
 
+import com.lemonlightmc.moreplugins.exceptions.RangeException;
+
 public class MathUtils {
 
   public static final double DEG_TO_RAD = 3.1415926f / 180.0f;
@@ -176,5 +178,38 @@ public class MathUtils {
     final double dx = x2 - x1;
     final double dz = z2 - z1;
     return Math.atan2(Math.sqrt(dx * dx + dz * dz), y2 - y1);
+  }
+
+  public static int normalizeRangeOrThrow(final int value, final int min, final int max, final String name) {
+    if (value < min || value > max) {
+      throw new RangeException(
+          name + " must be in range [" + min + "; " + max + "] inclusive.");
+    }
+    return Math.min(Math.max(value, min), max);
+  }
+
+  public static long normalizeRangeOrThrow(final long value, final long min, final long max, final String name) {
+    if (value < min || value > max) {
+      throw new RangeException(
+          name + " must be in range [" + min + "; " + max + "] inclusive.");
+    }
+    return Math.min(Math.max(value, min), max);
+  }
+
+  public static double normalizeRangeOrThrow(final double value, final double min, final double max,
+      final String name) {
+    if (value < min || value > max) {
+      throw new RangeException(
+          name + " must be in range [" + min + "; " + max + "] inclusive.");
+    }
+    return Math.min(Math.max(value, min), max);
+  }
+
+  public static float normalizeRangeOrThrow(final float value, final float min, final float max, final String name) {
+    if (value < min || value > max) {
+      throw new RangeException(
+          name + " must be in range [" + min + "; " + max + "] inclusive.");
+    }
+    return Math.min(Math.max(value, min), max);
   }
 }
