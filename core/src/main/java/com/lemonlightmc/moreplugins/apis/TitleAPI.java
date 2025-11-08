@@ -1,14 +1,15 @@
 package com.lemonlightmc.moreplugins.apis;
 
 import java.time.Duration;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import com.lemonlightmc.moreplugins.messages.MessageFormatter;
 import com.lemonlightmc.moreplugins.time.Ticks;
+import com.lemonlightmc.moreplugins.utils.MathUtils;
 import com.lemonlightmc.moreplugins.utils.StringUtils.Replaceable;
 
 public class TitleAPI implements ITitleAPI {
@@ -17,111 +18,39 @@ public class TitleAPI implements ITitleAPI {
   public static final int DEFAULT_STAY = 70;
   public static final int DEFAULT_FADEOUT = 20;
 
-  public static void sendTitle(
-      final Player p,
-      final ITitleBuilder info) {
+  public static void send(
+      final Player players,
+      final ITitleInfo info) {
     if (info == null) {
       return;
     }
-    final String title = MessageFormatter.parsePlaceholder(p, info.getTitle());
-    final String subtitle = MessageFormatter.parsePlaceholder(p, info.getSubtitle());
-    p.sendTitle(title, subtitle, info.getFadeIn(), info.getStay(), info.getFadeOut());
+    info.send(players);
   }
 
-  public static void sendSubTitle(
-      final Player p,
-      final ITitleBuilder info) {
-    if (info == null) {
-      return;
-    }
-    final String subtitle = MessageFormatter.parsePlaceholder(p, info.getSubtitle());
-    p.sendTitle("", subtitle, info.getFadeIn(), info.getStay(), info.getFadeOut());
-  }
-
-  public static void sendTitle(
+  public static void send(
       final Player[] players,
-      final ITitleBuilder info) {
+      final ITitleInfo info) {
     if (info == null) {
       return;
     }
-    for (final Player p : players) {
-      sendSubTitle(p, info);
-    }
+    info.send(players);
   }
 
-  public static void sendSubTitle(
-      final Player[] players,
-      final ITitleBuilder info) {
-    if (info == null) {
-      return;
-    }
-    for (final Player p : players) {
-      sendSubTitle(p, info);
-    }
-  }
-
-  public static void sendTitle(
+  public static void send(
       final List<Player> players,
-      final ITitleBuilder info) {
+      final ITitleInfo info) {
     if (info == null) {
       return;
     }
-    for (final Player p : players) {
-      sendSubTitle(p, info);
-    }
+    info.send(players);
   }
 
-  public static void sendSubTitle(
-      final List<Player> players,
-      final ITitleBuilder info) {
+  public static void broadcast(
+      final ITitleInfo info) {
     if (info == null) {
       return;
     }
-    for (final Player p : players) {
-      sendSubTitle(p, info);
-    }
-  }
-
-  public static void sendTitle(
-      final Set<Player> players,
-      final ITitleBuilder info) {
-    if (info == null) {
-      return;
-    }
-    for (final Player p : players) {
-      sendSubTitle(p, info);
-    }
-  }
-
-  public static void sendSubTitle(
-      final Set<Player> players,
-      final ITitleBuilder info) {
-    if (info == null) {
-      return;
-    }
-    for (final Player p : players) {
-      sendSubTitle(p, info);
-    }
-  }
-
-  public static void broadcastTitle(
-      final ITitleBuilder info) {
-    if (info == null) {
-      return;
-    }
-    for (final Player p : Bukkit.getOnlinePlayers()) {
-      sendSubTitle(p, info);
-    }
-  }
-
-  public static void broadcastSubTitle(
-      final ITitleBuilder info) {
-    if (info == null) {
-      return;
-    }
-    for (final Player p : Bukkit.getOnlinePlayers()) {
-      sendSubTitle(p, info);
-    }
+    info.broadcast();
   }
 
   public static void sendTitle(
@@ -135,47 +64,204 @@ public class TitleAPI implements ITitleAPI {
     msg = MessageFormatter.format(msg, true, true, replaceables);
     if (msg == null || msg.length() == 0)
       return;
-    p.sendTitle(msg, "", fadeIn, stay, fadeOut);
+    TitleInfo.title(msg, fadeIn, stay, fadeOut, replaceables).send(p);
   }
 
   public static void sendSubtitle(
       final Player p,
-      String subMsg,
+      final String msg,
       final int fadeIn,
       final int stay,
       final int fadeOut,
       final Replaceable... replaceables) {
-    subMsg = MessageFormatter.parsePlaceholder(p, subMsg);
-    subMsg = MessageFormatter.format(subMsg, true, true, replaceables);
-    if (subMsg == null || subMsg.length() == 0)
-      return;
-    p.sendTitle("", subMsg, fadeIn, stay, fadeOut);
+    TitleInfo.subtitle(msg, fadeIn, stay, fadeOut, replaceables).send(p);
   }
 
   public static void sendTitle(
       final Player p,
-      String msg,
+      final String msg,
       final Replaceable... replaceables) {
-    msg = MessageFormatter.parsePlaceholder(p, msg);
-    msg = MessageFormatter.format(msg, true, true, replaceables);
-    if (msg == null || msg.length() == 0)
-      return;
-    p.sendTitle(msg, "", DEFAULT_FADEIN, DEFAULT_STAY, DEFAULT_FADEOUT);
+    TitleInfo.title(msg, replaceables).send(p);
   }
 
   public static void sendSubtitle(
       final Player p,
-      String subMsg,
+      final String msg,
       final Replaceable... replaceables) {
-    subMsg = MessageFormatter.parsePlaceholder(p, subMsg);
-    subMsg = MessageFormatter.format(subMsg, true, true, replaceables);
-    if (subMsg == null || subMsg.length() == 0)
-      return;
-    p.sendTitle("", subMsg, DEFAULT_FADEIN, DEFAULT_STAY, DEFAULT_FADEOUT);
+    TitleInfo.subtitle(msg, replaceables).send(p);
   }
 
-  public static ITitleBuilder builder() {
+  public static TitleBuilder builder() {
     return new TitleBuilder();
+  }
+
+  public static class TitleInfo implements ITitleInfo {
+    private int fadeIn;
+    private int stay;
+    private int fadeOut;
+    private String title;
+    private String subtitle;
+
+    public TitleInfo(final ITitleBuilder builder) {
+      this(builder.build());
+    }
+
+    public TitleInfo(final ITitleInfo info) {
+      this(info.getTitle(), null, info.getSubtitle(), null, info.getFadeIn(),
+          info.getStay(), info.getFadeOut());
+    }
+
+    public TitleInfo(final String title, final Replaceable[] titleReplaceables) {
+      this(title, titleReplaceables, null, null, DEFAULT_FADEIN, DEFAULT_STAY, DEFAULT_FADEOUT);
+    }
+
+    public TitleInfo(final String title, final Replaceable[] titleReplaceables, final String subtitle,
+        final Replaceable[] subtitleReplaceables) {
+      this(title, titleReplaceables, subtitle, subtitleReplaceables, DEFAULT_FADEIN, DEFAULT_STAY, DEFAULT_FADEOUT);
+    }
+
+    public TitleInfo(final String title, final Replaceable[] titleReplaceables, final String subtitle,
+        final Replaceable[] subtitleReplaceables, final int fadeIn,
+        final int stay, final int fadeOut) {
+      this.fadeIn = MathUtils.normalizeRangeOrThrow(fadeIn, -1, Integer.MAX_VALUE, "Title FadeIn");
+      this.stay = MathUtils.normalizeRangeOrThrow(stay, -1, Integer.MAX_VALUE, "Title Stay In");
+      this.fadeOut = MathUtils.normalizeRangeOrThrow(fadeOut, -1, Integer.MAX_VALUE, "Title FadeOut");
+      this.title = MessageFormatter.format(title, true, false, titleReplaceables);
+      this.subtitle = MessageFormatter.format(subtitle, true, false, subtitleReplaceables);
+    }
+
+    public static TitleInfo subtitle(final String subtitle, final Replaceable... replaceables) {
+      return new TitleInfo(null, null, subtitle, replaceables);
+    }
+
+    public static TitleInfo subtitle(final String subtitle, final int fadeIn,
+        final int stay, final int fadeOut, final Replaceable... replaceables) {
+      return new TitleInfo(null, null, subtitle, replaceables, fadeIn, stay, fadeOut);
+    }
+
+    public static TitleInfo title(final String title, final Replaceable... replaceables) {
+      return new TitleInfo(title, replaceables, null, null);
+    }
+
+    public static TitleInfo title(final String title, final int fadeIn,
+        final int stay, final int fadeOut, final Replaceable... replaceables) {
+      return new TitleInfo(title, replaceables, null, null, fadeIn, stay, fadeOut);
+    }
+
+    public static TitleInfo from(final String title, final Replaceable[] titleReplaceables, final String subtitle,
+        final Replaceable[] subTitleReplaceables) {
+      return new TitleInfo(title, titleReplaceables, subtitle, subTitleReplaceables);
+    }
+
+    public static TitleInfo from(final String title, final Replaceable[] titleReplaceables, final String subtitle,
+        final Replaceable[] subTitleReplaceables, final int fadeIn,
+        final int stay, final int fadeOut) {
+      return new TitleInfo(title, titleReplaceables, subtitle, subTitleReplaceables, fadeIn, stay, fadeOut);
+    }
+
+    public static TitleInfo from(final TitleBuilder builder) {
+      return new TitleInfo(builder);
+    }
+
+    public int getFadeIn() {
+      return fadeIn;
+    }
+
+    public void setFadeIn(final int fadeIn) {
+      this.fadeIn = MathUtils.normalizeRangeOrThrow(fadeIn, -1, Integer.MAX_VALUE, "Title FadeIn");
+    }
+
+    public int getStay() {
+      return stay;
+    }
+
+    public void setStay(final int stay) {
+      this.stay = MathUtils.normalizeRangeOrThrow(stay, -1, Integer.MAX_VALUE, "Title Stay In");
+    }
+
+    public int getFadeOut() {
+      return fadeOut;
+    }
+
+    public void setFadeOut(final int fadeOut) {
+      this.fadeOut = MathUtils.normalizeRangeOrThrow(fadeOut, -1, Integer.MAX_VALUE, "Title FadeOut");
+    }
+
+    public String getTitle() {
+      return title;
+    }
+
+    public void setTitle(final String title) {
+      this.title = title;
+    }
+
+    public String getSubtitle() {
+      return subtitle;
+    }
+
+    public void setSubtitle(final String subtitle) {
+      this.subtitle = subtitle;
+    }
+
+    public void send(final Player player) {
+      final String tempTitle = MessageFormatter.parsePlaceholder(player, title);
+      final String tempSubtitle = MessageFormatter.parsePlaceholder(player, subtitle);
+      player.sendTitle(tempTitle, tempSubtitle, fadeIn, stay, fadeOut);
+    }
+
+    public void send(final List<Player> players) {
+      for (final Player player : players) {
+        send(player);
+      }
+    }
+
+    public void send(final Player[] players) {
+      for (final Player player : players) {
+        send(player);
+      }
+    }
+
+    public void broadcast() {
+      for (final Player p : Bukkit.getOnlinePlayers()) {
+        send(p);
+      }
+    }
+
+    @Override
+    public int hashCode() {
+      int result = 31 + fadeIn;
+      result = 31 * result + stay;
+      result = 31 * result + fadeOut;
+      result = 31 * result + ((title == null) ? 0 : title.hashCode());
+      result = 31 * result + ((subtitle == null) ? 0 : subtitle.hashCode());
+      return result;
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+      if (this == obj)
+        return true;
+      if (obj == null || getClass() != obj.getClass())
+        return false;
+      final TitleInfo other = (TitleInfo) obj;
+      if (title == null) {
+        if (other.title != null)
+          return false;
+      } else if (!title.equals(other.title))
+        return false;
+      if (subtitle == null) {
+        if (other.subtitle != null)
+          return false;
+      } else if (!subtitle.equals(other.subtitle))
+        return false;
+      return fadeIn == other.fadeIn && stay == other.stay && fadeOut == other.fadeOut;
+    }
+
+    @Override
+    public String toString() {
+      return "TitleInfo [fadeIn=" + fadeIn + ", stay=" + stay + ", fadeOut=" + fadeOut + ", title=" + title
+          + ", subtitle=" + subtitle + "]";
+    }
   }
 
   public static class TitleBuilder implements ITitleBuilder {
@@ -183,7 +269,9 @@ public class TitleAPI implements ITitleAPI {
     private int stay;
     private int fadeOut;
     private String title;
+    private Replaceable[] titleReplaceables;
     private String subtitle;
+    private Replaceable[] subtitleReplaceables;
 
     public TitleBuilder() {
       this.title = "";
@@ -201,198 +289,154 @@ public class TitleAPI implements ITitleAPI {
       this(title, subtitle, DEFAULT_FADEIN, DEFAULT_STAY, DEFAULT_FADEOUT);
     }
 
-    public TitleBuilder(final String title, final String subtitle, final int stay) {
-      this(title, subtitle, DEFAULT_FADEIN, stay, DEFAULT_FADEOUT);
-
-    }
-
-    public TitleBuilder(final String title, final String subtitle, final int fadeIn, final int stay) {
-      this(title, subtitle, fadeIn, stay, 20);
-    }
-
     public TitleBuilder(final String title, final String subtitle, final int fadeIn, final int stay,
         final int fadeOut) {
-      this.title = MessageFormatter.format(title, true, false);
-      this.subtitle = MessageFormatter.format(subtitle, true, false);
+      this.title = title;
+      this.subtitle = subtitle;
       this.fadeIn = fadeIn;
       this.stay = stay;
       this.fadeOut = fadeOut;
     }
 
     @Override
-    public int getFadeIn() {
+    public int fadeIn() {
       return fadeIn;
     }
 
     @Override
-    public int getStay() {
+    public int stay() {
       return stay;
     }
 
     @Override
-    public int getFadeOut() {
+    public int fadeOut() {
       return fadeOut;
     }
 
     @Override
-    public String getTitle() {
+    public String title() {
       return title;
     }
 
     @Override
-    public String getSubtitle() {
+    public String subTitle() {
       return subtitle;
     }
 
     @Override
-    public ITitleBuilder title(final String title) {
-      this.title = MessageFormatter.format(title, true, false);
-      if (title == null || title.length() == 0) {
-        throw new NullPointerException("Title cant be null");
-      }
+    public TitleBuilder title(final String title) {
+      this.title = title;
       return this;
     }
 
     @Override
-    public ITitleBuilder subtitle(final String subtitle) {
-      this.subtitle = MessageFormatter.format(subtitle, true, false);
-      if (title == null || title.length() == 0) {
-        throw new NullPointerException("Subtitle cant be null");
-      }
+    public TitleBuilder subtitle(final String subtitle) {
+      this.subtitle = subtitle;
       return this;
     }
 
     @Override
-    public ITitleBuilder title(final String title, final Replaceable replaceable) {
-      this.title = MessageFormatter.format(title, true, false, replaceable);
-      if (title == null || title.length() == 0) {
-        throw new NullPointerException("Title cant be null");
-      }
+    public TitleBuilder title(final String title, final Replaceable[] replaceables) {
+      this.title = title;
+      this.titleReplaceables = replaceables;
       return this;
     }
 
     @Override
-    public ITitleBuilder subtitle(final String subtitle, final Replaceable replaceable) {
-      this.subtitle = MessageFormatter.format(subtitle, true, false, replaceable);
-      if (title == null || title.length() == 0) {
-        throw new NullPointerException("Subtitle cant be null");
-      }
+    public TitleBuilder subtitle(final String subtitle, final Replaceable[] replaceables) {
+      this.subtitle = subtitle;
+      this.titleReplaceables = replaceables;
       return this;
     }
 
     @Override
-    public ITitleBuilder fadeIn(final int duration) {
-      if (duration < 0 || duration > Integer.MAX_VALUE) {
-        throw new IllegalArgumentException("Duration be negative or to high");
-      }
+    public TitleBuilder fadeIn(final int duration) {
       this.fadeIn = duration;
       return this;
     }
 
     @Override
-    public ITitleBuilder stay(final int duration) {
-      if (duration < 0 || duration > Integer.MAX_VALUE) {
-        throw new IllegalArgumentException("Duration be negative or to high");
-      }
+    public TitleBuilder stay(final int duration) {
       this.stay = duration;
       return this;
     }
 
     @Override
-    public ITitleBuilder fadeOut(final int duration) {
-      if (duration < 0 || duration > Integer.MAX_VALUE) {
-        throw new IllegalArgumentException("Duration be negative or to high");
-      }
+    public TitleBuilder fadeOut(final int duration) {
       this.fadeOut = duration;
       return this;
     }
 
     @Override
-    public ITitleBuilder fadeIn(final Duration duration) {
-      if (duration == null) {
-        throw new NullPointerException("Duration cant be null");
-      }
-      this.fadeIn = Ticks.fromDuration(duration);
+    public TitleBuilder fadeIn(final Duration duration) {
+      this.fadeIn = duration == null ? null : Ticks.fromDuration(duration);
       return this;
     }
 
     @Override
-    public ITitleBuilder stay(final Duration duration) {
-      if (duration == null) {
-        throw new NullPointerException("Duration cant be null");
-      }
-      this.stay = Ticks.fromDuration(duration);
+    public TitleBuilder stay(final Duration duration) {
+      this.stay = duration == null ? null : Ticks.fromDuration(duration);
       return this;
     }
 
     @Override
-    public ITitleBuilder fadeOut(final Duration duration) {
-      if (duration == null) {
-        throw new NullPointerException("Duration cant be null");
-      }
-      this.fadeOut = Ticks.fromDuration(duration);
+    public TitleBuilder fadeOut(final Duration duration) {
+      this.fadeOut = duration == null ? null : Ticks.fromDuration(duration);
       return this;
     }
 
-    @Override
-    public ITitleBuilder send(final Player player) {
-      sendTitle(player, this);
-      return this;
-    }
-
-    @Override
-    public ITitleBuilder send(final Player[] players) {
-      sendTitle(players, this);
-      return this;
-    }
-
-    @Override
-
-    public ITitleBuilder send(final List<Player> players) {
-      sendTitle(players, this);
-      return this;
-    }
-
-    @Override
-    public ITitleBuilder send(final Set<Player> players) {
-      sendTitle(players, this);
-      return this;
-    }
-
-    @Override
-    public ITitleBuilder broadcast() {
-      broadcastTitle(this);
-      return this;
+    public TitleInfo build() {
+      return new TitleInfo(title, titleReplaceables, subtitle, subtitleReplaceables, fadeIn, stay, fadeOut);
     }
 
     @Override
     public int hashCode() {
-      int result = 31 * (31 + fadeIn) + stay;
+      int result = 31 + fadeIn;
+      result = 31 * result + stay;
       result = 31 * result + fadeOut;
       result = 31 * result + ((title == null) ? 0 : title.hashCode());
-      return 31 * result + ((subtitle == null) ? 0 : subtitle.hashCode());
+      result = 31 * result + Arrays.hashCode(titleReplaceables);
+      result = 31 * result + ((subtitle == null) ? 0 : subtitle.hashCode());
+      result = 31 * result + Arrays.hashCode(subtitleReplaceables);
+      return result;
     }
 
     @Override
     public boolean equals(final Object obj) {
-      if (this == obj) {
+      if (this == obj)
         return true;
-      }
-      if (obj == null || getClass() != obj.getClass()) {
+      if (obj == null || getClass() != obj.getClass())
         return false;
-      }
-      final ITitleBuilder other = (ITitleBuilder) obj;
-      if (title == null && other.getTitle() != null || subtitle == null && other.getSubtitle() != null) {
+      final TitleBuilder other = (TitleBuilder) obj;
+      if (fadeIn != other.fadeIn)
         return false;
-      }
-      return title.equals(other.getTitle()) && subtitle.equals(other.getSubtitle()) && fadeIn == other.getFadeIn()
-          && stay == other.getStay() && fadeOut == other.getFadeOut();
+      if (stay != other.stay)
+        return false;
+      if (fadeOut != other.fadeOut)
+        return false;
+      if (title == null) {
+        if (other.title != null)
+          return false;
+      } else if (!title.equals(other.title))
+        return false;
+      if (!Arrays.equals(titleReplaceables, other.titleReplaceables))
+        return false;
+      if (subtitle == null) {
+        if (other.subtitle != null)
+          return false;
+      } else if (!subtitle.equals(other.subtitle))
+        return false;
+      if (!Arrays.equals(subtitleReplaceables, other.subtitleReplaceables))
+        return false;
+      return true;
     }
 
     @Override
     public String toString() {
       return "TitleBuilder [fadeIn=" + fadeIn + ", stay=" + stay + ", fadeOut=" + fadeOut + ", title=" + title
-          + ", subtitle=" + subtitle + "]";
+          + ", titleReplaceables=" + Arrays.toString(titleReplaceables) + ", subtitle=" + subtitle
+          + ", subtitleReplaceables=" + Arrays.toString(subtitleReplaceables) + "]";
     }
+
   }
 }
