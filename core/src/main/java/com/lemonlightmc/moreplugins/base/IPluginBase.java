@@ -28,6 +28,8 @@ public interface IPluginBase extends Plugin {
   public static interface IPluginDescription {
     public String getName();
 
+    public String getKey();
+
     public String getFullName();
 
     public Version getVersion();
@@ -77,6 +79,8 @@ public interface IPluginBase extends Plugin {
   public void onEnable();
 
   public String getName();
+
+  public String getKey();
 
   public String getFullName();
 

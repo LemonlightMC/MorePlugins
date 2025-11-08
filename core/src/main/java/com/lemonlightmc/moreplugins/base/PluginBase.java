@@ -87,6 +87,11 @@ public class PluginBase extends org.bukkit.plugin.PluginBase implements IPluginB
   }
 
   @Override
+  public String getKey() {
+    return info.getKey();
+  }
+
+  @Override
   public final PluginDescriptionFile getDescription() {
     return info.descriptionFile;
   }

@@ -34,6 +34,11 @@ public class PluginInfo implements IPluginBase.IPluginDescription {
   }
 
   @Override
+  public String getKey() {
+    return descriptionFile.getName().toLowerCase();
+  }
+
+  @Override
   public String getFullName() {
     return descriptionFile.getFullName();
   }
