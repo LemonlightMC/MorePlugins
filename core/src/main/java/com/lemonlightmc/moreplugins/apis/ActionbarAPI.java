@@ -18,15 +18,15 @@ import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
 
 public class ActionbarAPI {
-  public static void broadcastActionbar(
+  public static void broadcast(
       final String msg,
       final Replaceable... replaceables) {
     for (final Player player : Bukkit.getOnlinePlayers()) {
-      sendActionbar(player, msg, replaceables);
+      send(player, msg, replaceables);
     }
   }
 
-  public static void sendActionbar(
+  public static void send(
       final Player p,
       final String msg,
       final Replaceable... replaceables) {
@@ -40,7 +40,7 @@ public class ActionbarAPI {
 
   private final static Map<UUID, BukkitTask> PENDING_MESSAGES = new HashMap<>();
 
-  public static void sendActionbar(
+  public static void send(
       final Player p,
       String msg,
       final int duration,

@@ -18,6 +18,57 @@ public class TitleAPI implements ITitleAPI {
   public static final int DEFAULT_STAY = 70;
   public static final int DEFAULT_FADEOUT = 20;
 
+  public static TitleBuilder builder() {
+    return new TitleBuilder();
+  }
+
+  public static TitleBuilder builder(final String title) {
+    return new TitleBuilder(title);
+  }
+
+  public static TitleBuilder builder(final String title, final String subtitle) {
+    return new TitleBuilder(title, subtitle);
+  }
+
+  public static void broadcast(
+      final ITitleInfo info) {
+    if (info == null) {
+      return;
+    }
+    info.broadcast();
+  }
+
+  public static void broadcast(
+      final String msg,
+      final Replaceable... replaceables) {
+    TitleInfo.title(msg, replaceables).broadcast();
+  }
+
+  public static void broadcast(
+      final String msg,
+      final int fadeIn,
+      final int stay,
+      final int fadeOut,
+      final Replaceable... replaceables) {
+    TitleInfo.title(msg, fadeIn, stay, fadeOut, replaceables).broadcast();
+  }
+
+  public static void broadcast(
+      final String msg, final String subMsg,
+      final Replaceable... replaceables) {
+    TitleInfo.from(msg, subMsg, replaceables).broadcast();
+  }
+
+  public static void broadcast(
+      final String msg,
+      final String subMsg,
+      final int fadeIn,
+      final int stay,
+      final int fadeOut,
+      final Replaceable... replaceables) {
+    TitleInfo.from(msg, subMsg, fadeIn, stay, fadeOut, replaceables).broadcast();
+  }
+
   public static void send(
       final Player players,
       final ITitleInfo info) {
@@ -45,26 +96,28 @@ public class TitleAPI implements ITitleAPI {
     info.send(players);
   }
 
-  public static void broadcast(
-      final ITitleInfo info) {
-    if (info == null) {
-      return;
-    }
-    info.broadcast();
+  public static void sendTitle(
+      final Player p,
+      final String msg,
+      final Replaceable... replaceables) {
+    TitleInfo.title(msg, replaceables).send(p);
   }
 
   public static void sendTitle(
       final Player p,
-      String msg,
+      final String msg,
       final int fadeIn,
       final int stay,
       final int fadeOut,
       final Replaceable... replaceables) {
-    msg = MessageFormatter.parsePlaceholder(p, msg);
-    msg = MessageFormatter.format(msg, true, true, replaceables);
-    if (msg == null || msg.length() == 0)
-      return;
     TitleInfo.title(msg, fadeIn, stay, fadeOut, replaceables).send(p);
+  }
+
+  public static void sendSubtitle(
+      final Player p,
+      final String msg,
+      final Replaceable... replaceables) {
+    TitleInfo.subtitle(msg, replaceables).send(p);
   }
 
   public static void sendSubtitle(
@@ -75,24 +128,6 @@ public class TitleAPI implements ITitleAPI {
       final int fadeOut,
       final Replaceable... replaceables) {
     TitleInfo.subtitle(msg, fadeIn, stay, fadeOut, replaceables).send(p);
-  }
-
-  public static void sendTitle(
-      final Player p,
-      final String msg,
-      final Replaceable... replaceables) {
-    TitleInfo.title(msg, replaceables).send(p);
-  }
-
-  public static void sendSubtitle(
-      final Player p,
-      final String msg,
-      final Replaceable... replaceables) {
-    TitleInfo.subtitle(msg, replaceables).send(p);
-  }
-
-  public static TitleBuilder builder() {
-    return new TitleBuilder();
   }
 
   public static class TitleInfo implements ITitleInfo {
@@ -107,56 +142,55 @@ public class TitleAPI implements ITitleAPI {
     }
 
     public TitleInfo(final ITitleInfo info) {
-      this(info.getTitle(), null, info.getSubtitle(), null, info.getFadeIn(),
+      this(info.getTitle(), info.getSubtitle(), null, info.getFadeIn(),
           info.getStay(), info.getFadeOut());
     }
 
-    public TitleInfo(final String title, final Replaceable[] titleReplaceables) {
-      this(title, titleReplaceables, null, null, DEFAULT_FADEIN, DEFAULT_STAY, DEFAULT_FADEOUT);
+    public TitleInfo(final String title, final Replaceable[] replaceables) {
+      this(title, null, replaceables, DEFAULT_FADEIN, DEFAULT_STAY, DEFAULT_FADEOUT);
     }
 
-    public TitleInfo(final String title, final Replaceable[] titleReplaceables, final String subtitle,
-        final Replaceable[] subtitleReplaceables) {
-      this(title, titleReplaceables, subtitle, subtitleReplaceables, DEFAULT_FADEIN, DEFAULT_STAY, DEFAULT_FADEOUT);
+    public TitleInfo(final String title, final String subtitle,
+        final Replaceable[] replaceables) {
+      this(title, subtitle, replaceables, DEFAULT_FADEIN, DEFAULT_STAY, DEFAULT_FADEOUT);
     }
 
-    public TitleInfo(final String title, final Replaceable[] titleReplaceables, final String subtitle,
-        final Replaceable[] subtitleReplaceables, final int fadeIn,
+    public TitleInfo(final String title, final String subtitle,
+        final Replaceable[] replaceables, final int fadeIn,
         final int stay, final int fadeOut) {
       this.fadeIn = MathUtils.normalizeRangeOrThrow(fadeIn, -1, Integer.MAX_VALUE, "Title FadeIn");
       this.stay = MathUtils.normalizeRangeOrThrow(stay, -1, Integer.MAX_VALUE, "Title Stay In");
       this.fadeOut = MathUtils.normalizeRangeOrThrow(fadeOut, -1, Integer.MAX_VALUE, "Title FadeOut");
-      this.title = MessageFormatter.format(title, true, false, titleReplaceables);
-      this.subtitle = MessageFormatter.format(subtitle, true, false, subtitleReplaceables);
+      this.title = MessageFormatter.format(title, true, false, replaceables);
+      this.subtitle = MessageFormatter.format(subtitle, true, false, replaceables);
     }
 
     public static TitleInfo subtitle(final String subtitle, final Replaceable... replaceables) {
-      return new TitleInfo(null, null, subtitle, replaceables);
+      return new TitleInfo(null, subtitle, replaceables);
     }
 
     public static TitleInfo subtitle(final String subtitle, final int fadeIn,
         final int stay, final int fadeOut, final Replaceable... replaceables) {
-      return new TitleInfo(null, null, subtitle, replaceables, fadeIn, stay, fadeOut);
+      return new TitleInfo(null, subtitle, replaceables, fadeIn, stay, fadeOut);
     }
 
     public static TitleInfo title(final String title, final Replaceable... replaceables) {
-      return new TitleInfo(title, replaceables, null, null);
+      return new TitleInfo(title, null, replaceables);
     }
 
     public static TitleInfo title(final String title, final int fadeIn,
         final int stay, final int fadeOut, final Replaceable... replaceables) {
-      return new TitleInfo(title, replaceables, null, null, fadeIn, stay, fadeOut);
+      return new TitleInfo(title, null, replaceables, fadeIn, stay, fadeOut);
     }
 
-    public static TitleInfo from(final String title, final Replaceable[] titleReplaceables, final String subtitle,
-        final Replaceable[] subTitleReplaceables) {
-      return new TitleInfo(title, titleReplaceables, subtitle, subTitleReplaceables);
+    public static TitleInfo from(final String title, final String subtitle,
+        final Replaceable[] replaceables) {
+      return new TitleInfo(title, subtitle, replaceables);
     }
 
-    public static TitleInfo from(final String title, final Replaceable[] titleReplaceables, final String subtitle,
-        final Replaceable[] subTitleReplaceables, final int fadeIn,
-        final int stay, final int fadeOut) {
-      return new TitleInfo(title, titleReplaceables, subtitle, subTitleReplaceables, fadeIn, stay, fadeOut);
+    public static TitleInfo from(final String title, final String subtitle, final int fadeIn,
+        final int stay, final int fadeOut, final Replaceable[] replaceables) {
+      return new TitleInfo(title, subtitle, replaceables, fadeIn, stay, fadeOut);
     }
 
     public static TitleInfo from(final TitleBuilder builder) {
@@ -269,9 +303,8 @@ public class TitleAPI implements ITitleAPI {
     private int stay;
     private int fadeOut;
     private String title;
-    private Replaceable[] titleReplaceables;
     private String subtitle;
-    private Replaceable[] subtitleReplaceables;
+    private Replaceable[] replaceables;
 
     public TitleBuilder() {
       this.title = "";
@@ -338,14 +371,14 @@ public class TitleAPI implements ITitleAPI {
     @Override
     public TitleBuilder title(final String title, final Replaceable[] replaceables) {
       this.title = title;
-      this.titleReplaceables = replaceables;
+      this.replaceables = replaceables;
       return this;
     }
 
     @Override
     public TitleBuilder subtitle(final String subtitle, final Replaceable[] replaceables) {
       this.subtitle = subtitle;
-      this.titleReplaceables = replaceables;
+      this.replaceables = replaceables;
       return this;
     }
 
@@ -386,7 +419,7 @@ public class TitleAPI implements ITitleAPI {
     }
 
     public TitleInfo build() {
-      return new TitleInfo(title, titleReplaceables, subtitle, subtitleReplaceables, fadeIn, stay, fadeOut);
+      return new TitleInfo(title, subtitle, replaceables, fadeIn, stay, fadeOut);
     }
 
     @Override
@@ -395,9 +428,8 @@ public class TitleAPI implements ITitleAPI {
       result = 31 * result + stay;
       result = 31 * result + fadeOut;
       result = 31 * result + ((title == null) ? 0 : title.hashCode());
-      result = 31 * result + Arrays.hashCode(titleReplaceables);
       result = 31 * result + ((subtitle == null) ? 0 : subtitle.hashCode());
-      result = 31 * result + Arrays.hashCode(subtitleReplaceables);
+      result = 31 * result + Arrays.hashCode(replaceables);
       return result;
     }
 
@@ -419,14 +451,12 @@ public class TitleAPI implements ITitleAPI {
           return false;
       } else if (!title.equals(other.title))
         return false;
-      if (!Arrays.equals(titleReplaceables, other.titleReplaceables))
-        return false;
       if (subtitle == null) {
         if (other.subtitle != null)
           return false;
       } else if (!subtitle.equals(other.subtitle))
         return false;
-      if (!Arrays.equals(subtitleReplaceables, other.subtitleReplaceables))
+      if (!Arrays.equals(replaceables, other.replaceables))
         return false;
       return true;
     }
@@ -434,8 +464,8 @@ public class TitleAPI implements ITitleAPI {
     @Override
     public String toString() {
       return "TitleBuilder [fadeIn=" + fadeIn + ", stay=" + stay + ", fadeOut=" + fadeOut + ", title=" + title
-          + ", titleReplaceables=" + Arrays.toString(titleReplaceables) + ", subtitle=" + subtitle
-          + ", subtitleReplaceables=" + Arrays.toString(subtitleReplaceables) + "]";
+          + ", subtitle=" + subtitle
+          + ", replaceables=" + Arrays.toString(replaceables) + "]";
     }
 
   }
