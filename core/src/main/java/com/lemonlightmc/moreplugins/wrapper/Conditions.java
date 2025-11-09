@@ -8,6 +8,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.advancement.Advancement;
 import org.bukkit.advancement.AdvancementProgress;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import com.lemonlightmc.moreplugins.base.MorePlugins;
@@ -15,10 +16,10 @@ import com.lemonlightmc.moreplugins.time.TimeRange;
 
 public class Conditions {
 
-  public static interface Condition {
+  public static interface Condition<T> {
     public boolean isEmpty();
 
-    public boolean test(Player player);
+    public boolean test(T player);
   }
 
   public static enum ConditionValueType {
@@ -55,18 +56,21 @@ public class Conditions {
     }
   }
 
-  public static class ConditionSet implements Condition {
-    private Set<Condition> conditions = new HashSet<>();
+  public static class ConditionSet<T> implements Condition<T> {
+    private Set<Condition<T>> conditions;
     private ConditionTestType type;
 
-    public ConditionSet(final Set<Condition> conditions) {
-      this.conditions = conditions;
-      this.type = ConditionTestType.AND;
+    public ConditionSet() {
+      this(null, ConditionTestType.AND);
     }
 
-    public ConditionSet(final Set<Condition> conditions, final ConditionTestType type) {
-      this.conditions = conditions;
-      this.type = type;
+    public ConditionSet(final Set<Condition<T>> conditions) {
+      this(conditions, ConditionTestType.AND);
+    }
+
+    public ConditionSet(final Set<Condition<T>> conditions, final ConditionTestType type) {
+      this.conditions = conditions == null ? new HashSet<>() : conditions;
+      this.type = type == null ? ConditionTestType.AND : type;
     }
 
     public ConditionTestType getTestType() {
@@ -74,42 +78,58 @@ public class Conditions {
     }
 
     public void setTestType(final ConditionTestType type) {
+      if (type == null) {
+        return;
+      }
       this.type = type;
     }
 
-    public void add(final Condition condition) {
+    public void add(final Condition<T> condition) {
+      if (condition == null || condition.isEmpty()) {
+        return;
+      }
       conditions.add(condition);
     }
 
-    public boolean has(final Condition condition) {
+    public boolean has(final Condition<T> condition) {
+      if (condition == null) {
+        return false;
+      }
       return conditions.contains(condition);
     }
 
-    public void remove(final Condition condition) {
+    public void remove(final Condition<T> condition) {
+      if (condition == null) {
+        return;
+      }
       conditions.remove(condition);
+    }
+
+    public Set<Condition<T>> getConditions() {
+      return conditions;
+    }
+
+    public void setConditions(final Set<Condition<T>> conditions) {
+      this.conditions = conditions;
     }
 
     public void clear() {
       conditions.clear();
     }
 
-    public Set<Condition> getConditions() {
-      return conditions;
-    }
-
     public boolean isEmpty() {
       return conditions == null || conditions.isEmpty();
     }
 
-    public boolean test(final Player player) {
-      if (conditions == null) {
+    public boolean test(final T player) {
+      if (conditions.size() == 0) {
         return true;
       }
       if (player == null) {
         return false;
       }
       boolean value = true;
-      for (final Condition condition : conditions) {
+      for (final Condition<T> condition : conditions) {
         value = type.merge(value, condition.test(player));
       }
       return true;
@@ -117,9 +137,10 @@ public class Conditions {
 
     @Override
     public int hashCode() {
-      return 31 + ((conditions == null) ? 0 : conditions.hashCode());
+      return 31 + conditions.hashCode();
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public boolean equals(final Object obj) {
       if (this == obj) {
@@ -128,10 +149,7 @@ public class Conditions {
       if (obj == null || getClass() != obj.getClass()) {
         return false;
       }
-      final ConditionSet other = (ConditionSet) obj;
-      if (conditions == null && other.conditions != null) {
-        return false;
-      }
+      final ConditionSet<T> other = (ConditionSet<T>) obj;
       return conditions.equals(other.conditions);
     }
 
@@ -140,16 +158,9 @@ public class Conditions {
       return "ConditionSet [conditions=" + conditions + "]";
     }
 
-    public ConditionTestType getType() {
-      return type;
-    }
-
-    public void setConditions(final Set<Condition> conditions) {
-      this.conditions = conditions;
-    }
   }
 
-  public static class WorldConditions implements Condition {
+  public static class WorldConditions implements Condition<Player> {
 
     private final Set<String> worlds;
     private final ConditionValueType type;
@@ -181,7 +192,7 @@ public class Conditions {
     }
   }
 
-  public static class BiomConditions implements Condition {
+  public static class BiomConditions implements Condition<Player> {
 
     private final Set<String> bioms;
     private final ConditionValueType type;
@@ -213,7 +224,7 @@ public class Conditions {
     }
   }
 
-  public static class WeatherConditions implements Condition {
+  public static class WeatherConditions implements Condition<Player> {
 
     private final Set<String> weathers;
     private final ConditionValueType type;
@@ -246,7 +257,7 @@ public class Conditions {
     }
   }
 
-  public static class MoonConditions implements Condition {
+  public static class MoonConditions implements Condition<Player> {
 
     private final Set<Integer> moonPhases;
     private final ConditionValueType type;
@@ -283,7 +294,7 @@ public class Conditions {
     }
   }
 
-  public static class TimeRangeConditions implements Condition {
+  public static class TimeRangeConditions implements Condition<Player> {
 
     private final Set<TimeRange> timeRanges;
     private final ConditionValueType type;
@@ -322,7 +333,7 @@ public class Conditions {
     }
   }
 
-  public static class AdvancementConditions implements Condition {
+  public static class AdvancementConditions implements Condition<Player> {
 
     private final Set<String> advancements;
     private final ConditionValueType type;
@@ -367,7 +378,7 @@ public class Conditions {
     }
   }
 
-  public static class RecipeConditions implements Condition {
+  public static class RecipeConditions implements Condition<Player> {
 
     private final Set<String> recipes;
     private final ConditionValueType type;
@@ -408,7 +419,7 @@ public class Conditions {
     }
   }
 
-  public static class PluginConditions implements Condition {
+  public static class PluginConditions implements Condition<CommandSender> {
 
     private final Set<String> plugins;
     private final ConditionValueType type;
@@ -434,13 +445,51 @@ public class Conditions {
       return plugins == null || plugins.isEmpty();
     }
 
-    public boolean test(final Player player) {
+    public boolean test(final CommandSender sender) {
       boolean value = true;
       for (final String plugin : plugins) {
         if (plugin == null || plugin.isEmpty())
           continue;
         final boolean isEnabled = MorePlugins.getInstance().getPluginManager().isPluginEnabled(plugin);
         value = value && type.apply(isEnabled);
+      }
+      return value;
+    }
+  }
+
+  public static class PermissionConditions implements Condition<CommandSender> {
+
+    private final Set<String> permissions;
+    private final ConditionValueType type;
+
+    public PermissionConditions(final Set<String> permissions, final ConditionValueType type) {
+      this.permissions = permissions;
+      this.type = type;
+    }
+
+    public static PermissionConditions allowed(final Set<String> permissions) {
+      return new PermissionConditions(permissions, ConditionValueType.WHITELIST);
+    }
+
+    public static PermissionConditions denied(final Set<String> permissions) {
+      return new PermissionConditions(permissions, ConditionValueType.BLACKLIST);
+    }
+
+    public static PermissionConditions from(final Set<String> permissions, final ConditionValueType type) {
+      return new PermissionConditions(permissions, type);
+    }
+
+    public boolean isEmpty() {
+      return permissions == null || permissions.isEmpty();
+    }
+
+    public boolean test(final CommandSender sender) {
+      boolean value = true;
+      for (final String permission : permissions) {
+        if (permission == null || permission.isEmpty())
+          continue;
+        final boolean hasPerm = sender.hasPermission(permission);
+        value = value && type.apply(hasPerm);
       }
       return value;
     }
