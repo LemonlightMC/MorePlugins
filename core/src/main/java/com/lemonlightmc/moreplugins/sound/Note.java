@@ -5,23 +5,43 @@ import org.bukkit.Note.Tone;
 import com.google.common.base.Preconditions;
 import com.lemonlightmc.moreplugins.utils.MathUtils;
 
-public class Note {
+public class Note extends Playable {
   public static final int MINIMUM_NOTE = 0;
   public static final int MAXIMUM_NOTE = 87;
 
-  private static final float[] pitchArray = new float[25];
+  private static final double[] pitches = new double[2401];
+  private static final double[] pitchArray = new double[25];
   static {
     for (int i = 0; i <= 24; i++) {
       // See https://minecraft.wiki/w/Note_Block#Notes
-      pitchArray[i] = (float) Math.pow(2, (i - 12) / 12f);
+      pitchArray[i] = Math.pow(2, (i - 12) / 12f);
     }
+    for (int i = 0; i < 2401; i++) {
+      pitches[i] = (double) Math.pow(2, (i - 1200d) / 1200d);
+    }
+  }
+
+  public static double getPitchTransposed(final Note note) {
+    return getPitchTransposed(note.getNote(), note.getPitch());
+  }
+
+  public static double getPitchTransposed(final byte key, double pitch) {
+    // Apply key to pitch
+    pitch += key * 100;
+
+    while (pitch < 3300)
+      pitch += 1200;
+    while (pitch > 5700)
+      pitch -= 1200;
+
+    pitch -= 3300;
+
+    return pitches[(int) pitch];
   }
 
   private final byte note;
   private final Instrument instrument;
-  private int pitch;
-  private int panning;
-  private byte volume;
+  private double pitch;
 
   public Note(final int note, final Instrument instrument) {
     Preconditions.checkArgument(note >= 0 && note <= 24, "The note value has to be between 0 and 24.");
@@ -47,8 +67,8 @@ public class Note {
   public Note(final NoteBuilder builder) {
     instrument = builder.instrument;
     note = builder.note;
-    panning = builder.panning;
-    volume = builder.volume;
+    setPanning(builder.panning);
+    setVolume(builder.volume);
   }
 
   public static Note flat(final int octave, Tone tone) {
@@ -90,11 +110,11 @@ public class Note {
     return panning;
   }
 
-  public float getPitch() {
+  public double getPitch() {
     return pitchArray[this.note];
   }
 
-  public byte getVolume() {
+  public double getVolume() {
     return volume;
   }
 
@@ -130,10 +150,14 @@ public class Note {
   @Override
   public int hashCode() {
     int result = 31 + note;
-    result = 31 * result + instrument.hashCode();
-    result = 31 * result + pitch;
+    result = 31 * result + ((instrument == null) ? 0 : instrument.hashCode());
+    long temp;
+    temp = Double.doubleToLongBits(pitch);
+    result = 31 * result + (int) (temp ^ (temp >>> 32));
     result = 31 * result + panning;
-    return 31 * result + volume;
+    temp = Double.doubleToLongBits(volume);
+    result = 31 * result + (int) (temp ^ (temp >>> 32));
+    return result;
   }
 
   @Override
@@ -143,22 +167,27 @@ public class Note {
     if (obj == null || getClass() != obj.getClass())
       return false;
     final Note other = (Note) obj;
-    return note == other.note && instrument.equals(other.instrument)
-        && pitch == other.pitch && panning == other.panning && volume == other.volume;
+    if (instrument == null && other.instrument != null) {
+      return false;
+    }
+    return note == other.note && instrument.equals(other.instrument) && panning == other.panning
+        && Double.doubleToLongBits(pitch) != Double.doubleToLongBits(other.pitch)
+        && Double.doubleToLongBits(volume) != Double.doubleToLongBits(other.volume);
   }
 
   @Override
   public String toString() {
-    return "Note [note=" + getTone().toString() + (isSharped() ? "#" : "") + ", instrument=" + instrument
-        + ", pitch=" + pitch + ", panning=" + panning + ", volume=" + volume + "]";
+    return "Note [note=" + getTone().toString() + (isSharped() ? "#" : "") + ", instrument=" + instrument + ", pitch="
+        + pitch + ", panning=" + panning
+        + ", volume=" + volume + "]";
   }
 
   final static class NoteBuilder {
     Instrument instrument = Instrument.NoteInstrument.HARP;
     byte note = 45;
-    float pitch = 0;
+    double pitch = 0;
     int panning = 0;
-    byte volume = 100;
+    double volume = 1d;
 
     public NoteBuilder() {
     }
@@ -182,13 +211,13 @@ public class Note {
       return this;
     }
 
-    public NoteBuilder volume(float volume) {
+    public NoteBuilder volume(double volume) {
       volume = MathUtils.normalizeRangeOrThrow(volume, Playable.MINIMUM_VOLUME, Playable.MAXIMUM_VOLUME, "Volume");
-      this.volume = (byte) volume;
+      this.volume = volume;
       return this;
     }
 
-    public NoteBuilder pitch(float pitch) {
+    public NoteBuilder pitch(double pitch) {
       pitch = MathUtils.normalizeRangeOrThrow(panning, Playable.MINIMUM_PITCH, Playable.MAXIMUM_PITCH, "Pitch");
       this.pitch = pitch;
       return this;

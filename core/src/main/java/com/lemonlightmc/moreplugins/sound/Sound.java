@@ -1,7 +1,5 @@
 package com.lemonlightmc.moreplugins.sound;
 
-import java.util.OptionalLong;
-
 import org.bukkit.NamespacedKey;
 import org.bukkit.Registry;
 import org.bukkit.SoundCategory;
@@ -14,29 +12,29 @@ public class Sound extends Playable {
   private final org.bukkit.Sound bukkitSound;
 
   public Sound(final NamespacedKey key) {
-    this(key, DEFAULT_SOURCE, DEFAULT_VOLUME, DEFAULT_PITCH, DEFAULT_PANNING, null);
+    this(key, DEFAULT_SOURCE, DEFAULT_VOLUME, DEFAULT_PITCH, DEFAULT_PANNING, DEFAULT_SEED);
   }
 
   public Sound(final NamespacedKey key, final SoundCategory source) {
-    this(key, source, DEFAULT_VOLUME, DEFAULT_PITCH, DEFAULT_PANNING, null);
+    this(key, source, DEFAULT_VOLUME, DEFAULT_PITCH, DEFAULT_PANNING, DEFAULT_SEED);
   }
 
   public Sound(final NamespacedKey key, final SoundCategory source, final float volume) {
-    this(key, source, volume, DEFAULT_PITCH, DEFAULT_PANNING, null);
+    this(key, source, volume, DEFAULT_PITCH, DEFAULT_PANNING, DEFAULT_SEED);
   }
 
   public Sound(final NamespacedKey key, final SoundCategory source, final float volume, final float pitch) {
-    this(key, source, volume, pitch, DEFAULT_PANNING, null);
+    this(key, source, volume, pitch, DEFAULT_PANNING, DEFAULT_SEED);
   }
 
   public Sound(final NamespacedKey key, final SoundCategory source, final float volume, final float pitch,
       final int panning) {
-    this(key, source, volume, pitch, panning, null);
+    this(key, source, volume, pitch, panning, DEFAULT_SEED);
   }
 
   public Sound(final NamespacedKey key, final SoundCategory source, final float volume, final float pitch,
       final int panning,
-      final OptionalLong seed) {
+      final long seed) {
     super(source, volume, pitch, panning, seed);
     this.key = key;
     this.bukkitSound = Registry.SOUNDS.get(key);
@@ -96,5 +94,4 @@ public class Sound extends Playable {
   public String toString() {
     return "Sound [key=" + key + ", bukkitSound=" + bukkitSound + "]";
   }
-
 }
