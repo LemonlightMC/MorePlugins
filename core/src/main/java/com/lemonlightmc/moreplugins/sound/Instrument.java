@@ -42,6 +42,45 @@ public class Instrument {
     return "Instrument [key=" + key + ", isCustom=" + isCustom + "]";
   }
 
+  public static org.bukkit.Sound getInstrument(final byte instrument) {
+    final org.bukkit.Sound sound = NoteSounds.getSoundByIndex(instrument);
+    if (sound == null)
+      throw new IllegalArgumentException("Instrument with index " + instrument + " is not available.");
+    return sound;
+  }
+
+  public static org.bukkit.Sound getInstrument(final Note note) {
+    final org.bukkit.Sound sound = NoteSounds.getSoundByIndex(note.getInstrument().getKey());
+    if (sound == null)
+      throw new IllegalArgumentException("Instrument with index " + note.getInstrument() + " is not available.");
+    return sound;
+  }
+
+  @SuppressWarnings("deprecation")
+  public static String getInstrumentName(final byte instrument) {
+    final org.bukkit.Sound sound = NoteSounds.getSoundByIndex(instrument, NoteSounds.NOTE_PIANO);
+    if (sound == null)
+      throw new IllegalArgumentException("Instrument is not available in this server's version.");
+
+    return sound.name();
+  }
+
+  public static boolean isCustomInstrument(final Instrument instrument) {
+    return instrument.isCustom();
+  }
+
+  public static CustomInstrument getCustomInstrumentForNote(final Note note) {
+    if (note.isCustomInstrument())
+      return (CustomInstrument) note.getInstrument();
+    else if (note.getInstrument().isCustom()) {
+      final NoteSounds sound = NoteSounds.getByIndex(note.getInstrument().key);
+      if (sound != null)
+        return new CustomInstrument(sound.getInstrumentIndex(), sound.getResourcePackName(),
+            sound.getResourcePackName());
+    }
+    return null;
+  }
+
   /**
    * Enumeration of Minecraft non-custom instruments
    */
