@@ -2,6 +2,8 @@ package com.lemonlightmc.moreplugins.utils;
 
 import java.util.Random;
 
+import org.bukkit.Location;
+
 import com.lemonlightmc.moreplugins.exceptions.RangeException;
 
 public class MathUtils {
@@ -211,5 +213,13 @@ public class MathUtils {
           name + " must be in range [" + min + "; " + max + "] inclusive.");
     }
     return Math.min(Math.max(value, min), max);
+  }
+
+  public static Location stereoPan(Location location, double distance) {
+    int angle = (int) location.getYaw();
+    while (angle < 0)
+      angle += 360;
+    angle = angle % 360;
+    return location.clone().add(Math.cos(angle) * distance, 0, Math.sin(angle) * distance);
   }
 }
