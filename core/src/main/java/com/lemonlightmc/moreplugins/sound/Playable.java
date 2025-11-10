@@ -7,7 +7,7 @@ import org.bukkit.SoundCategory;
 
 import com.lemonlightmc.moreplugins.utils.MathUtils;
 
-public class Playable {
+public class Playable implements Cloneable {
   public static final float DEFAULT_VOLUME = 1f;
   public static final float MINIMUM_VOLUME = 0f;
   public static final float MAXIMUM_VOLUME = 1f;
@@ -19,6 +19,9 @@ public class Playable {
   public static final int DEFAULT_PANNING = 0;
   public static final int MINIMUM_PANNING = 0;
   public static final int MAXIMUM_PANNING = 100;
+
+  // Assumes that most common tempo is close to 10 tps
+  public static final double COMMON_TEMPO = 10d;
   public static final SoundCategory DEFAULT_SOURCE = SoundCategory.MASTER;
 
   protected SoundCategory source;
@@ -26,6 +29,10 @@ public class Playable {
   protected float pitch;
   protected OptionalLong seed;
   protected int panning;
+
+  protected PlayableMetadata meta;
+  protected long length;
+  protected double lengthInSeconds;
 
   public Playable() {
     this(DEFAULT_SOURCE, DEFAULT_VOLUME, DEFAULT_PITCH, DEFAULT_PANNING, null);
@@ -47,6 +54,15 @@ public class Playable {
     this(source, volume, pitch, panning, null);
   }
 
+  public Playable(final Playable playable) {
+    this.meta = playable.meta;
+    this.volume = playable.volume;
+    this.pitch = playable.pitch;
+    this.panning = playable.panning;
+    this.source = playable.source;
+    this.seed = playable.seed;
+  }
+
   public Playable(final SoundCategory source, final float volume, final float pitch, final int panning,
       final OptionalLong seed) {
     this.volume = MathUtils.normalizeRangeOrThrow(volume, 0, 1, "Volume");
@@ -57,6 +73,50 @@ public class Playable {
     }
     this.source = source;
     this.seed = seed;
+
+    this.length = 0;
+    this.lengthInSeconds = length == 0 ? 0 : getTimeInSecondsAtTick(length);
+  }
+
+  public PlayableMetadata getMetadata() {
+    return meta;
+  }
+
+  public void setMetadata(final PlayableMetadata meta) {
+    this.meta = meta;
+  }
+
+  public long getLength() {
+    return length;
+  }
+
+  public double getLengthInSeconds() {
+    return lengthInSeconds;
+  }
+
+  public double getDelay() {
+    return 20 / getTempo(0);
+  }
+
+  public double getTempo() {
+    return COMMON_TEMPO;
+  }
+
+  public double getTempo(long tick) {
+    if (tick < -1) {
+      tick = -1;
+    }
+    return COMMON_TEMPO;
+  }
+
+  public double getTimeInSecondsAtTick(final long tick) {
+    if (tick <= 0 || length == 0)
+      return 0;
+
+    if (tick >= length)
+      return lengthInSeconds;
+
+    return tick * (1 / getTempo(0));
   }
 
   public SoundCategory getSource() {
@@ -132,6 +192,11 @@ public class Playable {
   public String toString() {
     return "Playable [source=" + source + ", volume=" + volume + ", pitch=" + pitch + ", seed=" + seed + ", panning="
         + panning + "]";
+  }
+
+  @Override
+  public Playable clone() {
+    return new Playable(this);
   }
 
   static final class PlayableBuilder {

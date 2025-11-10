@@ -15,6 +15,13 @@ public class Playlist {
     }
   }
 
+  public Playlist(final Playable playable) {
+    if (playable == null) {
+      throw new IllegalArgumentException("Song Playable cant be null");
+    }
+    this.playables = List.of(playable);
+  }
+
   public void add(final List<Playable> playables) {
     if (check(playables)) {
       return;
