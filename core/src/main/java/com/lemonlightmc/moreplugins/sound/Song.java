@@ -7,6 +7,7 @@ public class Song extends Playable {
   protected long length;
   protected double lengthInSeconds;
   protected List<Note> notes;
+  protected boolean isStereo = false;
 
   public Song() {
     super();
@@ -20,11 +21,18 @@ public class Song extends Playable {
     this.lengthInSeconds = length == 0 ? 0 : getTimeInSecondsAtTick(length);
   }
 
+  public Song(final Song other) {
+    super(other);
+    this.length = other.length;
+    this.lengthInSeconds = other.lengthInSeconds;
+    this.notes = other.notes;
+  }
+
   public List<Note> getNotes() {
     return notes;
   }
 
-  public void setNotes(List<Note> notes) {
+  public void setNotes(final List<Note> notes) {
     this.notes = notes;
   }
 
@@ -67,5 +75,13 @@ public class Song extends Playable {
       return lengthInSeconds;
 
     return tick * (1 / getTempo(0));
+  }
+
+  public boolean isStereo() {
+    return isStereo;
+  }
+
+  public Song clone() {
+    return new Song(this);
   }
 }
