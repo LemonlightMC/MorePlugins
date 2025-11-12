@@ -28,6 +28,7 @@ public class Playable implements Cloneable {
   protected double pitch;
   protected long seed;
   protected int panning;
+  protected boolean isStereo = false;
 
   public Playable() {
     this(DEFAULT_SOURCE, DEFAULT_VOLUME, DEFAULT_PITCH, DEFAULT_PANNING, DEFAULT_SEED);
@@ -107,6 +108,14 @@ public class Playable implements Cloneable {
 
   public void setSeed(final long seed) {
     this.seed = seed;
+  }
+
+  public void setStereo(final boolean isStereo) {
+    this.isStereo = isStereo;
+  }
+
+  public boolean isStereo() {
+    return isStereo;
   }
 
   @Override
@@ -218,6 +227,5 @@ public class Playable implements Cloneable {
       return "PlayableBuilder [key=" + key + ", source=" + source + ", volume=" + volume + ", pitch=" + pitch
           + ", panning=" + panning + ", seed=" + seed + "]";
     }
-
   }
 }

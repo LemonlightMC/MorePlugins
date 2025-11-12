@@ -7,10 +7,9 @@ import com.lemonlightmc.moreplugins.sound.Instrument;
 import com.lemonlightmc.moreplugins.sound.Instrument.CustomInstrument;
 import com.lemonlightmc.moreplugins.sound.Note;
 
-public class MonoStereo extends ChannelMode {
+public class MonoStereoMode extends ChannelMode {
   private double distance = 2;
 
-  @Deprecated
   @Override
   public void play(final Player player, final Location location,
       final Note note, final double volume, final double pitch) {

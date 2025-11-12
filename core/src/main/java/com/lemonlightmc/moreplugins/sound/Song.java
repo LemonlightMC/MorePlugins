@@ -7,7 +7,6 @@ public class Song extends Playable {
   protected long length;
   protected double lengthInSeconds;
   protected List<Note> notes;
-  protected boolean isStereo = false;
 
   public Song() {
     super();
@@ -75,10 +74,6 @@ public class Song extends Playable {
       return lengthInSeconds;
 
     return tick * (1 / getTempo(0));
-  }
-
-  public boolean isStereo() {
-    return isStereo;
   }
 
   public Song clone() {
