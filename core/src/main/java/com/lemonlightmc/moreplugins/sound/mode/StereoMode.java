@@ -3,7 +3,6 @@ package com.lemonlightmc.moreplugins.sound.mode;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
-import com.lemonlightmc.moreplugins.sound.Instrument.CustomInstrument;
 import com.lemonlightmc.moreplugins.sound.Instrument;
 import com.lemonlightmc.moreplugins.sound.Note;
 import com.lemonlightmc.moreplugins.sound.Playable;
@@ -27,9 +26,9 @@ public class StereoMode extends ChannelMode {
     } else {
       distance = ((note.getPanning() - 100 + note.getPanning() - 100) / 200f) * maxDistance;
     }
-    final CustomInstrument customInstrument = Instrument.getCustomInstrumentForNote(note);
-    if (customInstrument != null) {
-      ChannelMode.playSound(player, location, customInstrument.getFileName(), note.getSource(), volume, pitch,
+    final String instrumentFileName = Instrument.getCustomInstrumentFileName(note);
+    if (instrumentFileName != null) {
+      ChannelMode.playSound(player, location, instrumentFileName, note.getSource(), volume, pitch,
           distance);
     } else {
       ChannelMode.playSound(player, location,
@@ -53,9 +52,9 @@ public class StereoMode extends ChannelMode {
       distance = ((note.getPanning() + note.getPanning()) / 200f) * maxDistance;
     }
 
-    final CustomInstrument customInstrument = Instrument.getCustomInstrumentForNote(note);
-    if (customInstrument != null) {
-      ChannelMode.playSound(player, location, customInstrument.getFileName(), note.getSource(), volume, pitch,
+    final String instrumentFileName = Instrument.getCustomInstrumentFileName(note);
+    if (instrumentFileName != null) {
+      ChannelMode.playSound(player, location, instrumentFileName, note.getSource(), volume, pitch,
           distance);
     } else {
       ChannelMode.playSound(player, location, Instrument.getInstrument(note),

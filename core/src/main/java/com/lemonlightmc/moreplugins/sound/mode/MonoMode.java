@@ -3,7 +3,6 @@ package com.lemonlightmc.moreplugins.sound.mode;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
-import com.lemonlightmc.moreplugins.sound.Instrument.CustomInstrument;
 import com.lemonlightmc.moreplugins.sound.Instrument;
 import com.lemonlightmc.moreplugins.sound.Note;
 
@@ -13,9 +12,9 @@ public class MonoMode extends ChannelMode {
   public void play(final Player player, final Location location, final Note note, final double volume,
       final double pitch) {
 
-    final CustomInstrument customInstrument = Instrument.getCustomInstrumentForNote(note);
-    if (customInstrument != null) {
-      player.playSound(location, customInstrument.getFileName(), note.getSource(), (float) volume, (float) pitch, 0);
+    final String instrumentFileName = Instrument.getCustomInstrumentFileName(note);
+    if (instrumentFileName != null) {
+      player.playSound(location, instrumentFileName, note.getSource(), (float) volume, (float) pitch, 0);
     } else {
       player.playSound(location,
           Instrument.getInstrument(note), note.getSource(), (float) volume, (float) pitch, 0);
@@ -26,9 +25,9 @@ public class MonoMode extends ChannelMode {
   public void play(final Player player, final Location location, final Note note, final double volume) {
     final double pitch = Note.getPitchTransposed(note);
 
-    final CustomInstrument customInstrument = Instrument.getCustomInstrumentForNote(note);
-    if (customInstrument != null) {
-      player.playSound(location, customInstrument.getFileName(), note.getSource(), (float) volume, (float) pitch,
+    final String instrumentFileName = Instrument.getCustomInstrumentFileName(note);
+    if (instrumentFileName != null) {
+      player.playSound(location, instrumentFileName, note.getSource(), (float) volume, (float) pitch,
           note.getSeed());
     } else {
       player.playSound(location, Instrument.getInstrument(note), note.getSource(), (float) volume, (float) pitch, 0);

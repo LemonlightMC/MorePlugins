@@ -72,13 +72,23 @@ public class Instrument {
   public static CustomInstrument getCustomInstrumentForNote(final Note note) {
     if (note.isCustomInstrument())
       return (CustomInstrument) note.getInstrument();
-    else if (note.getInstrument().isCustom()) {
+    else {
       final NoteSounds sound = NoteSounds.getByIndex(note.getInstrument().key);
       if (sound != null)
         return new CustomInstrument(sound.getInstrumentIndex(), sound.getResourcePackName(),
             sound.getResourcePackName());
     }
     return null;
+  }
+
+  public static String getCustomInstrumentFileName(final Note note) {
+    if (note.isCustomInstrument()) {
+      CustomInstrument instrument = ((CustomInstrument) note.getInstrument());
+      return instrument == null ? null : instrument.getFileName();
+    } else {
+      final NoteSounds sound = NoteSounds.getByIndex(note.getInstrument().key);
+      return sound == null ? null : sound.getResourcePackName();
+    }
   }
 
   /**
