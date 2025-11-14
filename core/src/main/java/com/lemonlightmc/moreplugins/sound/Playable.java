@@ -1,11 +1,10 @@
 package com.lemonlightmc.moreplugins.sound;
 
-import org.bukkit.NamespacedKey;
 import org.bukkit.SoundCategory;
 
 import com.lemonlightmc.moreplugins.utils.MathUtils;
 
-public class Playable implements Cloneable {
+public abstract class Playable implements Cloneable {
   public static final float DEFAULT_VOLUME = 1f;
   public static final float MINIMUM_VOLUME = 0f;
   public static final float MAXIMUM_VOLUME = 1f;
@@ -146,13 +145,7 @@ public class Playable implements Cloneable {
         + panning + "]";
   }
 
-  @Override
-  public Playable clone() {
-    return new Playable(this);
-  }
-
   static final class PlayableBuilder {
-    private final NamespacedKey key = null;
     private SoundCategory source = DEFAULT_SOURCE;
     private double volume = DEFAULT_VOLUME;
     private double pitch = DEFAULT_PITCH;
@@ -175,14 +168,35 @@ public class Playable implements Cloneable {
       return this;
     }
 
-    public PlayableBuilder volume(final float volume) {
+    public SoundCategory source() {
+      return source;
+    }
+
+    public PlayableBuilder volume(final double volume) {
       this.volume = volume;
       return this;
     }
 
-    public PlayableBuilder pitch(final float pitch) {
+    public double volume() {
+      return volume;
+    }
+
+    public PlayableBuilder pitch(final double pitch) {
       this.pitch = pitch;
       return this;
+    }
+
+    public double pitch() {
+      return pitch;
+    }
+
+    public PlayableBuilder panning(final int panning) {
+      this.panning = panning;
+      return this;
+    }
+
+    public int panning() {
+      return panning;
     }
 
     public PlayableBuilder seed(final long seed) {
@@ -190,14 +204,13 @@ public class Playable implements Cloneable {
       return this;
     }
 
-    public Playable build() {
-      return new Playable(source, volume, pitch, panning, seed);
+    public long seed() {
+      return seed;
     }
 
     @Override
     public int hashCode() {
-      int result = 31 + ((key == null) ? 0 : key.hashCode());
-      result = 31 * result + ((source == null) ? 0 : source.hashCode());
+      int result = 31 + ((source == null) ? 0 : source.hashCode());
       result = 31 * result + Long.hashCode(Double.doubleToLongBits(volume));
       result = 31 * result + Long.hashCode(Double.doubleToLongBits(pitch));
       result = 31 * result + panning;
@@ -212,11 +225,6 @@ public class Playable implements Cloneable {
       if (obj == null || getClass() != obj.getClass())
         return false;
       final PlayableBuilder other = (PlayableBuilder) obj;
-      if (key == null) {
-        if (other.key != null)
-          return false;
-      } else if (!key.equals(other.key))
-        return false;
       return source == other.source && panning == other.panning && seed == other.seed
           && Double.doubleToLongBits(volume) != Double.doubleToLongBits(other.volume)
           && Double.doubleToLongBits(pitch) != Double.doubleToLongBits(other.pitch);
@@ -224,7 +232,7 @@ public class Playable implements Cloneable {
 
     @Override
     public String toString() {
-      return "PlayableBuilder [key=" + key + ", source=" + source + ", volume=" + volume + ", pitch=" + pitch
+      return "PlayableBuilder [source=" + source + ", volume=" + volume + ", pitch=" + pitch
           + ", panning=" + panning + ", seed=" + seed + "]";
     }
   }
