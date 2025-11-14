@@ -1,10 +1,11 @@
-package com.lemonlightmc.moreplugins.utils;
+package com.lemonlightmc.moreplugins.wrapper;
 
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Set;
 
 import com.lemonlightmc.moreplugins.time.PolyTimeUnit;
+import com.lemonlightmc.moreplugins.utils.ICooldownHandler;
 
 public class CooldownHandler<K> implements ICooldownHandler<K> {
 

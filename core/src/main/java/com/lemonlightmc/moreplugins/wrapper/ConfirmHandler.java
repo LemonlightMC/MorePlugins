@@ -1,4 +1,4 @@
-package com.lemonlightmc.moreplugins.utils;
+package com.lemonlightmc.moreplugins.wrapper;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
