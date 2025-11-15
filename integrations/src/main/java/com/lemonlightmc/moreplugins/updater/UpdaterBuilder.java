@@ -10,8 +10,9 @@ import com.lemonlightmc.moreplugins.updater.PlatformData.GithubData;
 import com.lemonlightmc.moreplugins.updater.PlatformData.HangarData;
 import com.lemonlightmc.moreplugins.updater.PlatformData.ModrinthData;
 import com.lemonlightmc.moreplugins.updater.PlatformData.SpigotData;
+import com.lemonlightmc.moreplugins.wrapper.Builder;
 
-public class UpdaterBuilder {
+public class UpdaterBuilder implements Builder<Updater> {
   private final Plugin plugin;
   private final PluginData pluginData;
   private long checkFrequency = 600;

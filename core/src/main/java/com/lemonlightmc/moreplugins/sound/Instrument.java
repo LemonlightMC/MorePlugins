@@ -1,6 +1,7 @@
 package com.lemonlightmc.moreplugins.sound;
 
 import com.lemonlightmc.moreplugins.utils.MathUtils;
+import com.lemonlightmc.moreplugins.wrapper.Builder;
 
 public class Instrument {
 
@@ -272,7 +273,7 @@ public class Instrument {
     }
   }
 
-  public static final class CustomInstrumentBuilder {
+  public static class CustomInstrumentBuilder implements Builder<CustomInstrument> {
 
     private String name = "";
     private String fileName = "";

@@ -6,6 +6,7 @@ import java.util.List;
 import org.bukkit.entity.Player;
 
 import com.lemonlightmc.moreplugins.utils.StringUtils.Replaceable;
+import com.lemonlightmc.moreplugins.wrapper.Builder;
 
 public interface ITitleAPI {
 
@@ -48,7 +49,7 @@ public interface ITitleAPI {
     public String toString();
   }
 
-  public static interface ITitleBuilder {
+  public static interface ITitleBuilder extends Builder<ITitleInfo> {
 
     public String title();
 
@@ -79,8 +80,6 @@ public interface ITitleAPI {
     public ITitleBuilder fadeOut(int duration);
 
     public ITitleBuilder fadeOut(Duration duration);
-
-    public ITitleInfo build();
 
     public int hashCode();
 

@@ -4,6 +4,7 @@ import org.bukkit.Note.Tone;
 
 import com.google.common.base.Preconditions;
 import com.lemonlightmc.moreplugins.utils.MathUtils;
+import com.lemonlightmc.moreplugins.wrapper.Builder;
 
 public class Note extends Playable {
   public static final int MINIMUM_NOTE = 0;
@@ -182,7 +183,7 @@ public class Note extends Playable {
         + ", volume=" + volume + "]";
   }
 
-  final static class NoteBuilder {
+  public static class NoteBuilder implements Builder<Note> {
     Instrument instrument = Instrument.NoteInstrument.HARP;
     byte note = 45;
     double pitch = 0;

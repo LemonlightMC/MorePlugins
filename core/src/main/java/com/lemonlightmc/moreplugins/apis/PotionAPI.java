@@ -10,6 +10,7 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.potion.PotionEffectTypeCategory;
 
 import com.lemonlightmc.moreplugins.apis.IPotionAPI.IPotion;
+import com.lemonlightmc.moreplugins.wrapper.Builder;
 
 import java.util.Collection;
 import java.util.List;
@@ -304,7 +305,7 @@ public class PotionAPI {
     }
   }
 
-  public static class PotionBuilder {
+  public static class PotionBuilder implements Builder<Potion> {
     private final Potion potion;
 
     public PotionBuilder() {

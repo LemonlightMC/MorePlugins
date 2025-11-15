@@ -3,6 +3,7 @@ package com.lemonlightmc.moreplugins.sound;
 import org.bukkit.SoundCategory;
 
 import com.lemonlightmc.moreplugins.utils.MathUtils;
+import com.lemonlightmc.moreplugins.wrapper.Builder;
 
 public abstract class Playable implements Cloneable {
   public static final float DEFAULT_VOLUME = 1f;
@@ -145,7 +146,7 @@ public abstract class Playable implements Cloneable {
         + panning + "]";
   }
 
-  static final class PlayableBuilder {
+  public static class PlayableBuilder implements Builder<Playable> {
     private SoundCategory source = DEFAULT_SOURCE;
     private double volume = DEFAULT_VOLUME;
     private double pitch = DEFAULT_PITCH;
@@ -234,6 +235,11 @@ public abstract class Playable implements Cloneable {
     public String toString() {
       return "PlayableBuilder [source=" + source + ", volume=" + volume + ", pitch=" + pitch
           + ", panning=" + panning + ", seed=" + seed + "]";
+    }
+
+    @Override
+    public Playable build() {
+      throw new UnsupportedOperationException("Cant directly build 'Playable'");
     }
   }
 }

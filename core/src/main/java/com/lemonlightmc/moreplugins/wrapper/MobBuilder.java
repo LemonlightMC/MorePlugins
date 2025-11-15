@@ -16,7 +16,7 @@ import org.bukkit.potion.PotionEffectType;
 
 import com.lemonlightmc.moreplugins.messages.MessageFormatter;
 
-public class MobBuilder {
+public class MobBuilder implements Builder<LivingEntity> {
   private EntityType type;
   private Location location;
   private String customName;
@@ -125,5 +125,11 @@ public class MobBuilder {
     if (this.type == null || this.location == null) {
       throw new IllegalStateException("Type and location must be set before spawning the mob.");
     }
+  }
+
+  @Override
+  public LivingEntity build() {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'build'");
   }
 }

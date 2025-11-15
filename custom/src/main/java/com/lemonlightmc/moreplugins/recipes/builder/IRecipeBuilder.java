@@ -11,8 +11,9 @@ import org.bukkit.inventory.recipe.CraftingBookCategory;
 import com.lemonlightmc.moreplugins.recipes.RecipeType;
 import com.lemonlightmc.moreplugins.recipes.Ingredients.Ingredient;
 import com.lemonlightmc.moreplugins.recipes.types.IRecipe;
+import com.lemonlightmc.moreplugins.wrapper.Builder;
 
-public interface IRecipeBuilder {
+public interface IRecipeBuilder extends Builder<IRecipe> {
 
   public static interface ISmeltingRecipeBuilder extends IRecipeBuilder {
     IRecipeBuilder group(String group);

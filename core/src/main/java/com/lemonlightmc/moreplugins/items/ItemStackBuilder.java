@@ -45,7 +45,9 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.profile.PlayerProfile;
 
-public class ItemStackBuilder {
+import com.lemonlightmc.moreplugins.wrapper.Builder;
+
+public class ItemStackBuilder implements Builder<ItemStack> {
   protected ItemStack item;
   protected ItemMeta meta;
 

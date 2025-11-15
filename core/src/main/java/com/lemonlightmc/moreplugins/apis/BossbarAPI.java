@@ -22,6 +22,7 @@ import com.lemonlightmc.moreplugins.apis.IBossBarAPI.IBossBar;
 import com.lemonlightmc.moreplugins.apis.IBossBarAPI.IBossBarListener;
 import com.lemonlightmc.moreplugins.base.MorePlugins;
 import com.lemonlightmc.moreplugins.messages.MessageFormatter;
+import com.lemonlightmc.moreplugins.wrapper.Builder;
 
 public class BossbarAPI {
   private static Map<String, NamespacedKey> keys = new HashMap<>();
@@ -445,14 +446,15 @@ public class BossbarAPI {
     }
   }
 
-  public static class BossBarBuilder {
+  public static class BossBarBuilder implements Builder<BaseBossbar> {
     private String key;
     private String title;
     private BarColor color = DEFAULT_COLOR;
     private BarStyle style = DEFAULT_STYLE;
     private boolean visible = DEFAULT_VISIBILITY;
     private double progress = DEFAULT_PROGRESS;
-    private final ArrayList<BarFlag> flags = new ArrayList<>();
+    private List<BarFlag> flags = new ArrayList<>();
+    private List<Player> players = new ArrayList<>();
 
     public BossBarBuilder() {
     }
@@ -462,9 +464,17 @@ public class BossbarAPI {
       return this;
     }
 
+    public String key() {
+      return key;
+    }
+
     public BossBarBuilder title(final String title) {
       this.title = title;
       return this;
+    }
+
+    public String title() {
+      return title;
     }
 
     public BossBarBuilder color(final BarColor color) {
@@ -472,9 +482,17 @@ public class BossbarAPI {
       return this;
     }
 
+    public BarColor color() {
+      return color;
+    }
+
     public BossBarBuilder style(final BarStyle style) {
       this.style = style;
       return this;
+    }
+
+    public BarStyle style() {
+      return style;
     }
 
     public BossBarBuilder visible(final boolean visible) {
@@ -482,13 +500,25 @@ public class BossbarAPI {
       return this;
     }
 
-    public BossBarBuilder progress(final float progress) {
+    public boolean visible() {
+      return visible;
+    }
+
+    public BossBarBuilder progress(final double progress) {
       this.progress = progress;
       return this;
     }
 
-    public BossBarBuilder flag(final BarFlag flag) {
-      this.flags.add(flag);
+    public double progress() {
+      return progress;
+    }
+
+    public List<BarFlag> flags() {
+      return flags;
+    }
+
+    public BossBarBuilder flags(final BarFlag... flag) {
+      this.flags.addAll(List.of(flag));
       return this;
     }
 
@@ -502,8 +532,8 @@ public class BossbarAPI {
       return this;
     }
 
-    public BossBarBuilder setFlags(final BarFlag... flags) {
-      this.flags.addAll(List.of(flags));
+    public BossBarBuilder setFlags(final List<BarFlag> flags) {
+      this.flags = flags;
       return this;
     }
 
@@ -512,12 +542,40 @@ public class BossbarAPI {
       return this;
     }
 
-    public BossBarBuilder create(final Player player) {
+    public BossBarBuilder players(final Player... players) {
+      this.players.addAll(List.of(players));
+      return this;
+    }
+
+    public BossBarBuilder addPlayer(final Player player) {
+      this.players.add(player);
+      return this;
+    }
+
+    public boolean hasPlayer(final Player player) {
+      return players.contains(player);
+    }
+
+    public BossBarBuilder removePlayer(final Player player) {
+      this.players.remove(player);
+      return this;
+    }
+
+    public BossBarBuilder setPlayers(final List<Player> players) {
+      this.players = players;
+      return this;
+    }
+
+    public List<Player> players() {
+      return players;
+    }
+
+    public BaseBossbar build() {
       final BaseBossbar bossBar = createBar(key, title, this.color, this.style, this.flags.toArray(BarFlag[]::new));
       bossBar.setProgress(this.progress);
       bossBar.setVisible(visible);
-      bossBar.addPlayer(player);
-      return this;
+      bossBar.addPlayers(players);
+      return bossBar;
     }
 
     public BossBarBuilder update(final Player player) {

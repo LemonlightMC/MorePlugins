@@ -38,7 +38,7 @@ public class ConfirmHandler {
     requests.remove(player);
   }
 
-  public static class ConfirmableBuilder {
+  public static class ConfirmableBuilder implements Builder<ConfirmRequest> {
     ConfirmRequest request;
 
     public ConfirmableBuilder(CommandSender sender, String confirmableString) {
@@ -65,9 +65,10 @@ public class ConfirmHandler {
       return this;
     }
 
-    public void register() {
+    public ConfirmRequest build() {
       requests.put(request.sender, request);
       request.startTimer();
+      return request;
     }
   }
 
