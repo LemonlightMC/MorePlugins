@@ -18,56 +18,57 @@ public abstract class Playable implements Cloneable {
   public static final int MINIMUM_PANNING = 0;
   public static final int MAXIMUM_PANNING = 100;
 
+  public static final long DEFAULT_SEED = 0;
+  public static final long MINIMUM_SEED = Long.MIN_VALUE;
+  public static final long MAXIMUM_SEED = Long.MAX_VALUE;
   // Assumes that most common tempo is close to 10 tps
   public static final double COMMON_TEMPO = 10d;
   public static final SoundCategory DEFAULT_SOURCE = SoundCategory.MASTER;
-  public static final long DEFAULT_SEED = 0;
 
-  protected SoundCategory source;
-  protected double volume;
-  protected double pitch;
-  protected long seed;
-  protected int panning;
+  protected SoundCategory source = DEFAULT_SOURCE;
+  protected double volume = DEFAULT_VOLUME;
+  protected double pitch = DEFAULT_PITCH;
+  protected long seed = DEFAULT_SEED;
+  protected int panning = DEFAULT_PANNING;
   protected boolean isStereo = false;
 
   public Playable() {
-    this(DEFAULT_SOURCE, DEFAULT_VOLUME, DEFAULT_PITCH, DEFAULT_PANNING, DEFAULT_SEED);
   }
 
   public Playable(final SoundCategory source) {
-    this(source, DEFAULT_VOLUME, DEFAULT_PITCH, DEFAULT_PANNING, DEFAULT_SEED);
+    setSource(source);
   }
 
   public Playable(final SoundCategory source, final double volume) {
-    this(source, volume, DEFAULT_PITCH, DEFAULT_PANNING, DEFAULT_SEED);
+    setSource(source);
+    setVolume(volume);
+
   }
 
   public Playable(final SoundCategory source, final double volume, final double pitch) {
-    this(source, volume, pitch, DEFAULT_PANNING, DEFAULT_SEED);
+    setSource(source);
+    setVolume(volume);
+    setPitch(pitch);
   }
 
   public Playable(final SoundCategory source, final double volume, final double pitch, final int panning) {
-    this(source, volume, pitch, panning, DEFAULT_SEED);
+    setSource(source);
+    setVolume(volume);
+    setPitch(pitch);
+    setPanning(panning);
   }
 
   public Playable(final Playable playable) {
-    this.volume = playable.volume;
-    this.pitch = playable.pitch;
-    this.panning = playable.panning;
-    this.source = playable.source;
-    this.seed = playable.seed;
+    this(playable.source, playable.volume, playable.pitch, playable.panning, playable.seed);
   }
 
   public Playable(final SoundCategory source, final double volume, final double pitch, final int panning,
       final long seed) {
-    this.volume = MathUtils.normalizeRangeOrThrow(volume, 0, 1, "Volume");
-    this.pitch = MathUtils.normalizeRangeOrThrow(pitch, 0, 1, "Pitch");
-    this.panning = MathUtils.normalizeRangeOrThrow(panning, 0, 100, "Panning");
-    if (source == null) {
-      throw new IllegalArgumentException("Sound Source cant be empty");
-    }
-    this.source = source;
-    this.seed = seed;
+    setSource(source);
+    setVolume(volume);
+    setPitch(pitch);
+    setPanning(panning);
+    setSeed(seed);
   }
 
   public SoundCategory getSource() {
@@ -75,6 +76,9 @@ public abstract class Playable implements Cloneable {
   }
 
   public void setSource(final SoundCategory source) {
+    if (source == null) {
+      throw new IllegalArgumentException("Sound Source cant be empty");
+    }
     this.source = source;
   }
 
@@ -83,7 +87,8 @@ public abstract class Playable implements Cloneable {
   }
 
   public void setVolume(final double volume) {
-    this.volume = volume;
+    this.volume = MathUtils.normalizeRangeOrThrow(volume, Playable.MINIMUM_VOLUME, Playable.MAXIMUM_VOLUME,
+        "Volume");
   }
 
   public double getPitch() {
@@ -91,7 +96,8 @@ public abstract class Playable implements Cloneable {
   }
 
   public void setPitch(final double pitch) {
-    this.pitch = pitch;
+    this.pitch = MathUtils.normalizeRangeOrThrow(pitch, Playable.MINIMUM_PITCH, Playable.MAXIMUM_PITCH,
+        "Pitch");
   }
 
   public int getPanning() {
@@ -99,7 +105,8 @@ public abstract class Playable implements Cloneable {
   }
 
   public void setPanning(final int panning) {
-    this.panning = panning;
+    this.panning = MathUtils.normalizeRangeOrThrow(panning, Playable.MINIMUM_PANNING, Playable.MAXIMUM_PANNING,
+        "Panning");
   }
 
   public long getSeed() {
@@ -107,7 +114,7 @@ public abstract class Playable implements Cloneable {
   }
 
   public void setSeed(final long seed) {
-    this.seed = seed;
+    this.seed = MathUtils.normalizeRangeOrThrow(seed, Playable.MINIMUM_SEED, Playable.MAXIMUM_SEED, "Seed");
   }
 
   public void setStereo(final boolean isStereo) {
@@ -121,11 +128,11 @@ public abstract class Playable implements Cloneable {
   @Override
   public int hashCode() {
     int result = 31 + ((source == null) ? 0 : source.hashCode());
-    result = 31 * result + Long.hashCode(Double.doubleToLongBits(volume));
-    result = 31 * result + Long.hashCode(Double.doubleToLongBits(pitch));
-    result = 31 * result + Long.hashCode(seed);
+    result = 31 * result + Double.hashCode(volume);
+    result = 31 * result + Double.hashCode(pitch);
     result = 31 * result + panning;
-    return result;
+    result = 31 * result + Long.hashCode(seed);
+    return 31 * result + (isStereo ? 1231 : 1237);
   }
 
   @Override
@@ -135,23 +142,24 @@ public abstract class Playable implements Cloneable {
     if (obj == null || getClass() != obj.getClass())
       return false;
     final Playable other = (Playable) obj;
-    return source == other.source && panning == other.panning && seed == other.seed
-        && Double.doubleToLongBits(volume) != Double.doubleToLongBits(other.volume)
-        && Double.doubleToLongBits(pitch) != Double.doubleToLongBits(other.pitch);
+    return source == other.source && panning == other.panning && seed == other.seed && isStereo == other.isStereo
+        && Double.doubleToLongBits(volume) == Double.doubleToLongBits(other.volume)
+        && Double.doubleToLongBits(pitch) == Double.doubleToLongBits(other.pitch);
   }
 
   @Override
   public String toString() {
     return "Playable [source=" + source + ", volume=" + volume + ", pitch=" + pitch + ", seed=" + seed + ", panning="
-        + panning + "]";
+        + panning + ", isStereo=" + isStereo + "]";
   }
 
-  public static class PlayableBuilder implements Builder<Playable> {
-    private SoundCategory source = DEFAULT_SOURCE;
-    private double volume = DEFAULT_VOLUME;
-    private double pitch = DEFAULT_PITCH;
-    private int panning = DEFAULT_PANNING;
-    private long seed = DEFAULT_SEED;
+  public static abstract class PlayableBuilder implements Builder<Playable> {
+    protected SoundCategory source = DEFAULT_SOURCE;
+    protected double volume = DEFAULT_VOLUME;
+    protected double pitch = DEFAULT_PITCH;
+    protected int panning = DEFAULT_PANNING;
+    protected long seed = DEFAULT_SEED;
+    protected boolean isStereo = false;
 
     PlayableBuilder() {
     }
@@ -209,14 +217,23 @@ public abstract class Playable implements Cloneable {
       return seed;
     }
 
+    public PlayableBuilder stereo(final boolean isStereo) {
+      this.isStereo = isStereo;
+      return this;
+    }
+
+    public boolean stereo() {
+      return isStereo;
+    }
+
     @Override
     public int hashCode() {
       int result = 31 + ((source == null) ? 0 : source.hashCode());
-      result = 31 * result + Long.hashCode(Double.doubleToLongBits(volume));
-      result = 31 * result + Long.hashCode(Double.doubleToLongBits(pitch));
+      result = 31 * result + Double.hashCode(volume);
+      result = 31 * result + Double.hashCode(pitch);
       result = 31 * result + panning;
       result = 31 * result + Long.hashCode(seed);
-      return result;
+      return 31 * result + (isStereo ? 1231 : 1237);
     }
 
     @Override
@@ -226,20 +243,18 @@ public abstract class Playable implements Cloneable {
       if (obj == null || getClass() != obj.getClass())
         return false;
       final PlayableBuilder other = (PlayableBuilder) obj;
-      return source == other.source && panning == other.panning && seed == other.seed
+      return source == other.source && panning == other.panning && seed == other.seed && isStereo == other.isStereo
           && Double.doubleToLongBits(volume) != Double.doubleToLongBits(other.volume)
           && Double.doubleToLongBits(pitch) != Double.doubleToLongBits(other.pitch);
     }
 
     @Override
     public String toString() {
-      return "PlayableBuilder [source=" + source + ", volume=" + volume + ", pitch=" + pitch
-          + ", panning=" + panning + ", seed=" + seed + "]";
+      return "PlayableBuilder [source=" + source + ", volume=" + volume + ", pitch=" + pitch + ", panning=" + panning
+          + ", seed=" + seed + ", isStereo=" + isStereo + "]";
     }
 
     @Override
-    public Playable build() {
-      throw new UnsupportedOperationException("Cant directly build 'Playable'");
-    }
+    public abstract Playable build();
   }
 }

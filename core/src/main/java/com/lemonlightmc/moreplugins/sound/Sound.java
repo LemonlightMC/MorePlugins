@@ -8,8 +8,8 @@ import org.bukkit.plugin.Plugin;
 import com.lemonlightmc.moreplugins.base.MorePlugins;
 
 public class Sound extends Playable {
-  private final NamespacedKey key;
-  private final org.bukkit.Sound bukkitSound;
+  protected NamespacedKey key;
+  protected org.bukkit.Sound bukkitSound;
 
   public Sound(final NamespacedKey key) {
     this(key, DEFAULT_SOURCE, DEFAULT_VOLUME, DEFAULT_PITCH, DEFAULT_PANNING, DEFAULT_SEED);
@@ -37,7 +37,9 @@ public class Sound extends Playable {
       final long seed) {
     super(source, volume, pitch, panning, seed);
     this.key = key;
-    this.bukkitSound = Registry.SOUNDS.get(key);
+    if (key != null) {
+      this.bukkitSound = Registry.SOUNDS.get(key);
+    }
   }
 
   public static Sound minecraft(final String name) {
@@ -52,8 +54,23 @@ public class Sound extends Playable {
     return new Sound(NamespacedKey.fromString(name, plugin));
   }
 
+  public void setKey(final NamespacedKey key) {
+    if (key == null) {
+      throw new IllegalArgumentException("Key for Sound cant be null");
+    }
+    this.key = key;
+    this.bukkitSound = Registry.SOUNDS.get(key);
+  }
+
   public NamespacedKey getKey() {
     return key;
+  }
+
+  public void setBukkitSound(final org.bukkit.Sound sound) {
+    if (sound == null) {
+      throw new IllegalArgumentException("Bukkit Sound cant be null");
+    }
+    this.bukkitSound = sound;
   }
 
   public org.bukkit.Sound getBukkitSound() {
@@ -72,9 +89,7 @@ public class Sound extends Playable {
   public boolean equals(final Object obj) {
     if (this == obj)
       return true;
-    if (!super.equals(obj))
-      return false;
-    if (getClass() != obj.getClass())
+    if (!super.equals(obj) || getClass() != obj.getClass())
       return false;
     final Sound other = (Sound) obj;
     if (key == null) {
@@ -93,5 +108,32 @@ public class Sound extends Playable {
   @Override
   public String toString() {
     return "Sound [key=" + key + ", bukkitSound=" + bukkitSound + "]";
+  }
+
+  public static org.bukkit.Sound getFromRegistry(final String name) {
+    return Registry.SOUNDS.get(NamespacedKey.minecraft(name));
+  }
+
+  public static org.bukkit.Sound getFromRegistry(final NamespacedKey key) {
+    return Registry.SOUNDS.get(key);
+  }
+
+  public static org.bukkit.Sound getFromRegistry(final Sound sound) {
+    return Registry.SOUNDS.get(sound.key);
+  }
+
+  public static org.bukkit.Sound getFromRegistry(final String name, final Sound def) {
+    final org.bukkit.Sound bukkitSound = getFromRegistry(NamespacedKey.minecraft(name));
+    return bukkitSound == null ? def.getBukkitSound() : bukkitSound;
+  }
+
+  public static org.bukkit.Sound getFromRegistry(final NamespacedKey key, final Sound def) {
+    final org.bukkit.Sound bukkitSound = getFromRegistry(key);
+    return bukkitSound == null ? def.getBukkitSound() : bukkitSound;
+  }
+
+  public static org.bukkit.Sound getFromRegistry(final Sound sound, final Sound def) {
+    final org.bukkit.Sound bukkitSound = getFromRegistry(sound.key);
+    return bukkitSound == null ? def.getBukkitSound() : bukkitSound;
   }
 }

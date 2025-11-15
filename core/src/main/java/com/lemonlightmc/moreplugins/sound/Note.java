@@ -4,7 +4,6 @@ import org.bukkit.Note.Tone;
 
 import com.google.common.base.Preconditions;
 import com.lemonlightmc.moreplugins.utils.MathUtils;
-import com.lemonlightmc.moreplugins.wrapper.Builder;
 
 public class Note extends Playable {
   public static final int MINIMUM_NOTE = 0;
@@ -68,6 +67,7 @@ public class Note extends Playable {
   public Note(final NoteBuilder builder) {
     instrument = builder.instrument;
     note = builder.note;
+    setPitch(pitchArray[this.note]);
     setPanning(builder.panning);
     setVolume(builder.volume);
   }
@@ -107,18 +107,6 @@ public class Note extends Playable {
     return instrument.isCustom();
   }
 
-  public int getPanning() {
-    return panning;
-  }
-
-  public double getPitch() {
-    return pitchArray[this.note];
-  }
-
-  public double getVolume() {
-    return volume;
-  }
-
   public int getOctave() {
     return note / Tone.TONES_COUNT;
   }
@@ -150,14 +138,10 @@ public class Note extends Playable {
 
   @Override
   public int hashCode() {
-    int result = 31 + note;
+    int result = super.hashCode();
+    result = 31 * result + note;
     result = 31 * result + ((instrument == null) ? 0 : instrument.hashCode());
-    long temp;
-    temp = Double.doubleToLongBits(pitch);
-    result = 31 * result + (int) (temp ^ (temp >>> 32));
-    result = 31 * result + panning;
-    temp = Double.doubleToLongBits(volume);
-    result = 31 * result + (int) (temp ^ (temp >>> 32));
+    result = 31 * result + Double.hashCode(pitch);
     return result;
   }
 
@@ -165,40 +149,28 @@ public class Note extends Playable {
   public boolean equals(final Object obj) {
     if (this == obj)
       return true;
-    if (obj == null || getClass() != obj.getClass())
+    if (!super.equals(obj) || getClass() != obj.getClass())
       return false;
     final Note other = (Note) obj;
-    if (instrument == null && other.instrument != null) {
+    if (instrument == null) {
+      if (other.instrument != null)
+        return false;
+    } else if (!instrument.equals(other.instrument))
       return false;
-    }
-    return note == other.note && instrument.equals(other.instrument) && panning == other.panning
-        && Double.doubleToLongBits(pitch) != Double.doubleToLongBits(other.pitch)
-        && Double.doubleToLongBits(volume) != Double.doubleToLongBits(other.volume);
+    return note == other.note && Double.doubleToLongBits(pitch) == Double.doubleToLongBits(other.pitch);
   }
 
-  @Override
-  public String toString() {
-    return "Note [note=" + getTone().toString() + (isSharped() ? "#" : "") + ", instrument=" + instrument + ", pitch="
-        + pitch + ", panning=" + panning
-        + ", volume=" + volume + "]";
-  }
-
-  public static class NoteBuilder implements Builder<Note> {
-    Instrument instrument = Instrument.NoteInstrument.HARP;
-    byte note = 45;
-    double pitch = 0;
-    int panning = 0;
-    double volume = 1d;
+  public static class NoteBuilder extends PlayableBuilder {
+    private Instrument instrument = Instrument.NoteInstrument.HARP;
+    private byte note = 45;
 
     public NoteBuilder() {
     }
 
     public NoteBuilder(final Note note) {
+      super(note);
       this.instrument = note.getInstrument();
       this.note = note.getNote();
-      this.pitch = note.getPitch();
-      this.panning = note.getPanning();
-      this.volume = note.getVolume();
     }
 
     public NoteBuilder instrument(final Instrument instrument) {
@@ -209,24 +181,6 @@ public class Note extends Playable {
     public NoteBuilder note(byte note) {
       note = (byte) MathUtils.normalizeRangeOrThrow((int) note, MINIMUM_NOTE, MAXIMUM_NOTE, "note");
       this.note = note;
-      return this;
-    }
-
-    public NoteBuilder volume(double volume) {
-      volume = MathUtils.normalizeRangeOrThrow(volume, Playable.MINIMUM_VOLUME, Playable.MAXIMUM_VOLUME, "Volume");
-      this.volume = volume;
-      return this;
-    }
-
-    public NoteBuilder pitch(double pitch) {
-      pitch = MathUtils.normalizeRangeOrThrow(panning, Playable.MINIMUM_PITCH, Playable.MAXIMUM_PITCH, "Pitch");
-      this.pitch = pitch;
-      return this;
-    }
-
-    public NoteBuilder panning(int panning) {
-      panning = MathUtils.normalizeRangeOrThrow(panning, Playable.MINIMUM_PANNING, Playable.MAXIMUM_PANNING, "Panning");
-      this.panning = panning;
       return this;
     }
 
