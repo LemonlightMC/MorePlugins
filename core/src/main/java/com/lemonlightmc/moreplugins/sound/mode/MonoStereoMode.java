@@ -26,23 +26,6 @@ public class MonoStereoMode extends ChannelMode {
     }
   }
 
-  @Override
-  public void play(final Player player, final Location location, final Note note, final double volume) {
-    final double pitch = Note.getPitchTransposed(note);
-    final String instrumentFileName = Instrument.getCustomInstrumentFileName(note);
-
-    if (instrumentFileName != null) {
-      ChannelMode.playSound(player, location, instrumentFileName, note.getSource(), volume, pitch,
-          distance);
-      ChannelMode.playSound(player, location, instrumentFileName, note.getSource(), volume, pitch,
-          -distance);
-    } else {
-      final org.bukkit.Sound sound = Instrument.getInstrument(note);
-      ChannelMode.playSound(player, location, sound, note.getSource(), volume, pitch, distance);
-      ChannelMode.playSound(player, location, sound, note.getSource(), volume, pitch, -distance);
-    }
-  }
-
   public double getDistance() {
     return distance;
   }

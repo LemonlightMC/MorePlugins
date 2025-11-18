@@ -20,17 +20,4 @@ public class MonoMode extends ChannelMode {
           Instrument.getInstrument(note), note.getSource(), (float) volume, (float) pitch, 0);
     }
   }
-
-  @Override
-  public void play(final Player player, final Location location, final Note note, final double volume) {
-    final double pitch = Note.getPitchTransposed(note);
-
-    final String instrumentFileName = Instrument.getCustomInstrumentFileName(note);
-    if (instrumentFileName != null) {
-      player.playSound(location, instrumentFileName, note.getSource(), (float) volume, (float) pitch,
-          note.getSeed());
-    } else {
-      player.playSound(location, Instrument.getInstrument(note), note.getSource(), (float) volume, (float) pitch, 0);
-    }
-  }
 }
