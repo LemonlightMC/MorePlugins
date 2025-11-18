@@ -7,6 +7,8 @@ import java.util.Map;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Registry;
 
+import com.lemonlightmc.moreplugins.apis.SoundAPI;
+
 public class NoteSounds extends Sound {
 
   public static NoteSounds NOTE_PIANO = new NoteSounds(0, "NOTE_PIANO", "minecraft:block.note_block.harp", "NOTE_PIANO",
@@ -104,7 +106,7 @@ public class NoteSounds extends Sound {
     if (sound != null)
       return sound.getBukkitSound();
 
-    return Sound.getFromRegistry(name);
+    return SoundAPI.getFromRegistry(name);
   }
 
   public static org.bukkit.Sound getSoundbyName(final String name, final NoteSounds def) {
@@ -112,7 +114,7 @@ public class NoteSounds extends Sound {
     if (sound != null)
       return sound.getBukkitSound();
 
-    return Sound.getFromRegistry(name, def);
+    return SoundAPI.getFromRegistry(name, def);
   }
 
   public static NoteSounds getByIndex(final int index) {

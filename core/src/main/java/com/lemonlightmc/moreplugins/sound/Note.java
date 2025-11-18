@@ -41,7 +41,6 @@ public class Note extends Playable {
 
   private final byte note;
   private final Instrument instrument;
-  private double pitch;
 
   public Note(final int note, final Instrument instrument) {
     Preconditions.checkArgument(note >= 0 && note <= 24, "The note value has to be between 0 and 24.");

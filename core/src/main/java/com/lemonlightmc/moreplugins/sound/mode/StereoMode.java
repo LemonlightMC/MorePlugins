@@ -6,17 +6,18 @@ import org.bukkit.entity.Player;
 import com.lemonlightmc.moreplugins.sound.Instrument;
 import com.lemonlightmc.moreplugins.sound.Note;
 import com.lemonlightmc.moreplugins.sound.Playable;
+import com.lemonlightmc.moreplugins.sound.Sound;
 
 public class StereoMode extends ChannelMode {
 
   private double maxDistance = 2;
-  private ChannelMode fallbackChannelMode = new MonoStereoMode();
+  private ChannelMode fallbackChannelMode;
 
   @Override
   public void play(final Player player, final Location location, final Note note, final double volume,
       final double pitch) {
-    if (!note.isStereo() && fallbackChannelMode != null) {
-      fallbackChannelMode.play(player, location, note, volume, pitch);
+    if (!note.isStereo()) {
+      getFallbackChannelMode().play(player, location, note, volume, pitch);
       return;
     }
 
@@ -36,6 +37,23 @@ public class StereoMode extends ChannelMode {
     }
   }
 
+  @Override
+  public void play(final Player player, final Location location, final Sound sound, final double volume,
+      final double pitch) {
+    if (!sound.isStereo()) {
+      getFallbackChannelMode().play(player, location, sound, volume, pitch);
+      return;
+    }
+
+    double distance;
+    if (sound.getPanning() == Playable.DEFAULT_PANNING) {
+      distance = (sound.getPanning() / 100f) * maxDistance;
+    } else {
+      distance = ((sound.getPanning() + sound.getPanning()) / 200f) * maxDistance;
+    }
+    ChannelMode.playSound(player, location, sound.getBukkitSound(), sound.getSource(), volume, pitch, distance);
+  }
+
   public double getMaxDistance() {
     return maxDistance;
   }
@@ -45,6 +63,9 @@ public class StereoMode extends ChannelMode {
   }
 
   public ChannelMode getFallbackChannelMode() {
+    if (fallbackChannelMode == null) {
+      fallbackChannelMode = new MonoStereoMode();
+    }
     return fallbackChannelMode;
   }
 
@@ -54,4 +75,5 @@ public class StereoMode extends ChannelMode {
 
     this.fallbackChannelMode = fallbackChannelMode;
   }
+
 }

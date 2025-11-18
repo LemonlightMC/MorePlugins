@@ -46,12 +46,61 @@ public class Sound extends Playable {
     return new Sound(NamespacedKey.minecraft(name));
   }
 
+  public static Sound from(final NamespacedKey key) {
+    return new Sound(key);
+  }
+
+  public static Sound from(final NamespacedKey key, final SoundCategory source) {
+    return new Sound(key, source);
+  }
+
+  public static Sound from(final NamespacedKey key, final SoundCategory source, final float volume) {
+    return new Sound(key, source, volume);
+  }
+
+  public static Sound from(final NamespacedKey key, final SoundCategory source, final float volume,
+      final float pitch) {
+    return new Sound(key, source, volume);
+  }
+
+  public static Sound from(final NamespacedKey key, final SoundCategory source, final float volume, final float pitch,
+      final int panning) {
+    return new Sound(key, source, volume, pitch, panning);
+  }
+
+  public static Sound from(final NamespacedKey key, final SoundCategory source, final float volume, final float pitch,
+      final int panning, final long seed) {
+    return new Sound(key, source, volume, pitch, panning, seed);
+  }
+
   public static Sound from(final String name) {
     return new Sound(NamespacedKey.fromString(name, MorePlugins.getInstance()));
   }
 
   public static Sound from(final String name, final Plugin plugin) {
     return new Sound(NamespacedKey.fromString(name, plugin));
+  }
+
+  public static Sound from(final String name, final SoundCategory source) {
+    return new Sound(NamespacedKey.minecraft(name), source);
+  }
+
+  public static Sound from(final String name, final SoundCategory source, final float volume) {
+    return new Sound(NamespacedKey.minecraft(name), source, volume);
+  }
+
+  public static Sound from(final String name, final SoundCategory source, final float volume, final float pitch) {
+    return new Sound(NamespacedKey.fromString(name), source, volume);
+  }
+
+  public static Sound from(final String name, final SoundCategory source, final float volume, final float pitch,
+      final int panning) {
+    return new Sound(NamespacedKey.minecraft(name), source, volume, pitch, panning);
+  }
+
+  public static Sound from(final String name, final SoundCategory source, final float volume, final float pitch,
+      final int panning, final long seed) {
+    return new Sound(NamespacedKey.minecraft(name), source, volume, pitch, panning, seed);
   }
 
   public void setKey(final NamespacedKey key) {
@@ -110,30 +159,4 @@ public class Sound extends Playable {
     return "Sound [key=" + key + ", bukkitSound=" + bukkitSound + "]";
   }
 
-  public static org.bukkit.Sound getFromRegistry(final String name) {
-    return Registry.SOUNDS.get(NamespacedKey.minecraft(name));
-  }
-
-  public static org.bukkit.Sound getFromRegistry(final NamespacedKey key) {
-    return Registry.SOUNDS.get(key);
-  }
-
-  public static org.bukkit.Sound getFromRegistry(final Sound sound) {
-    return Registry.SOUNDS.get(sound.key);
-  }
-
-  public static org.bukkit.Sound getFromRegistry(final String name, final Sound def) {
-    final org.bukkit.Sound bukkitSound = getFromRegistry(NamespacedKey.minecraft(name));
-    return bukkitSound == null ? def.getBukkitSound() : bukkitSound;
-  }
-
-  public static org.bukkit.Sound getFromRegistry(final NamespacedKey key, final Sound def) {
-    final org.bukkit.Sound bukkitSound = getFromRegistry(key);
-    return bukkitSound == null ? def.getBukkitSound() : bukkitSound;
-  }
-
-  public static org.bukkit.Sound getFromRegistry(final Sound sound, final Sound def) {
-    final org.bukkit.Sound bukkitSound = getFromRegistry(sound.key);
-    return bukkitSound == null ? def.getBukkitSound() : bukkitSound;
-  }
 }

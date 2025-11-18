@@ -5,6 +5,8 @@ import org.bukkit.entity.Player;
 
 import com.lemonlightmc.moreplugins.sound.Instrument;
 import com.lemonlightmc.moreplugins.sound.Note;
+import com.lemonlightmc.moreplugins.sound.Playable;
+import com.lemonlightmc.moreplugins.sound.Sound;
 
 public class MonoMode extends ChannelMode {
 
@@ -14,10 +16,18 @@ public class MonoMode extends ChannelMode {
 
     final String instrumentFileName = Instrument.getCustomInstrumentFileName(note);
     if (instrumentFileName != null) {
-      player.playSound(location, instrumentFileName, note.getSource(), (float) volume, (float) pitch, 0);
+      player.playSound(location, instrumentFileName, note.getSource(), (float) volume, (float) pitch,
+          Playable.DEFAULT_SEED);
     } else {
       player.playSound(location,
-          Instrument.getInstrument(note), note.getSource(), (float) volume, (float) pitch, 0);
+          Instrument.getInstrument(note), note.getSource(), (float) volume, (float) pitch, Playable.DEFAULT_SEED);
     }
+  }
+
+  @Override
+  public void play(final Player player, final Location location, final Sound sound, final double volume,
+      final double pitch) {
+    player.playSound(location, sound.getBukkitSound(), sound.getSource(), (float) volume, (float) pitch,
+        Playable.DEFAULT_SEED);
   }
 }
