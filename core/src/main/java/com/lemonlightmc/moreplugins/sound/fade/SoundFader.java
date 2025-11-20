@@ -1,14 +1,14 @@
 package com.lemonlightmc.moreplugins.sound.fade;
 
-import com.lemonlightmc.moreplugins.sound.Playable;
+import com.lemonlightmc.moreplugins.apis.SoundAPI;
 import com.lemonlightmc.moreplugins.sound.fade.SoundFading.SoundFadingType;
 
 public class SoundFader {
 
   private SoundFading fade;
   private double elapsedTime = 0;
-  private double initialVolume = Playable.MINIMUM_VOLUME;
-  private double targetVolume = Playable.MAXIMUM_VOLUME;
+  private double initialVolume = SoundAPI.MINIMUM_VOLUME;
+  private double targetVolume = SoundAPI.MAXIMUM_VOLUME;
   private double tempo;
 
   public SoundFader(final SoundFadingType type, final int fadeDuration, final double songTempo) {
@@ -17,8 +17,8 @@ public class SoundFader {
   }
 
   public SoundFader(final SoundFadingType type, final int fadeDuration) {
-    this.fade = type.create(fadeDuration / Playable.COMMON_TEMPO);
-    this.tempo = Playable.COMMON_TEMPO;
+    this.fade = type.create(fadeDuration / SoundAPI.COMMON_TEMPO);
+    this.tempo = SoundAPI.COMMON_TEMPO;
   }
 
   public SoundFader(final SoundFadingType type, final double songTempo) {
@@ -28,7 +28,7 @@ public class SoundFader {
 
   public SoundFader(final SoundFadingType type) {
     this.fade = type.create(0);
-    this.tempo = Playable.COMMON_TEMPO;
+    this.tempo = SoundAPI.COMMON_TEMPO;
   }
 
   public SoundFader(final SoundFading fade, final double songTempo) {
@@ -38,7 +38,7 @@ public class SoundFader {
 
   public SoundFader(final SoundFading fade) {
     this.fade = fade;
-    this.tempo = Playable.COMMON_TEMPO;
+    this.tempo = SoundAPI.COMMON_TEMPO;
   }
 
   public SoundFader(final SoundFader fader, final SoundFading fade) {

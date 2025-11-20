@@ -2,6 +2,8 @@ package com.lemonlightmc.moreplugins.sound;
 
 import java.util.List;
 
+import com.lemonlightmc.moreplugins.apis.SoundAPI;
+
 public class Song extends Playable {
   protected PlayableMetadata meta;
   protected long length;
@@ -56,14 +58,14 @@ public class Song extends Playable {
   }
 
   public double getTempo() {
-    return Playable.COMMON_TEMPO;
+    return SoundAPI.COMMON_TEMPO;
   }
 
   public double getTempo(long tick) {
     if (tick < -1) {
       tick = -1;
     }
-    return Playable.COMMON_TEMPO;
+    return SoundAPI.COMMON_TEMPO;
   }
 
   public double getTimeInSecondsAtTick(final long tick) {

@@ -1,7 +1,7 @@
 package com.lemonlightmc.moreplugins.sound.fade;
 
+import com.lemonlightmc.moreplugins.apis.SoundAPI;
 import com.lemonlightmc.moreplugins.messages.Logger;
-import com.lemonlightmc.moreplugins.sound.Playable;
 
 public abstract class SoundFading {
 
@@ -43,10 +43,10 @@ public abstract class SoundFading {
 
   protected double clampVolume(final double value) {
     double v = Math.round(value);
-    if (v < Playable.MINIMUM_VOLUME)
-      v = Playable.MINIMUM_VOLUME;
-    if (v > Playable.MAXIMUM_VOLUME)
-      v = Playable.MAXIMUM_VOLUME;
+    if (v < SoundAPI.MINIMUM_VOLUME)
+      v = SoundAPI.MINIMUM_VOLUME;
+    if (v > SoundAPI.MAXIMUM_VOLUME)
+      v = SoundAPI.MAXIMUM_VOLUME;
     return v;
   }
 

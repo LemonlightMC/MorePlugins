@@ -4,32 +4,15 @@ import org.bukkit.SoundCategory;
 
 import com.lemonlightmc.moreplugins.utils.MathUtils;
 import com.lemonlightmc.moreplugins.wrapper.Builder;
+import com.lemonlightmc.moreplugins.apis.SoundAPI;;
 
 public abstract class Playable implements Cloneable {
-  public static final float DEFAULT_VOLUME = 1f;
-  public static final float MINIMUM_VOLUME = 0f;
-  public static final float MAXIMUM_VOLUME = 1f;
 
-  public static final float DEFAULT_PITCH = 1f;
-  public static final float MINIMUM_PITCH = 0f;
-  public static final float MAXIMUM_PITCH = 1f;
-
-  public static final int DEFAULT_PANNING = 0;
-  public static final int MINIMUM_PANNING = 0;
-  public static final int MAXIMUM_PANNING = 100;
-
-  public static final long DEFAULT_SEED = 0;
-  public static final long MINIMUM_SEED = Long.MIN_VALUE;
-  public static final long MAXIMUM_SEED = Long.MAX_VALUE;
-  // Assumes that most common tempo is close to 10 tps
-  public static final double COMMON_TEMPO = 10d;
-  public static final SoundCategory DEFAULT_SOURCE = SoundCategory.MASTER;
-
-  protected SoundCategory source = DEFAULT_SOURCE;
-  protected double volume = DEFAULT_VOLUME;
-  protected double pitch = DEFAULT_PITCH;
-  protected long seed = DEFAULT_SEED;
-  protected int panning = DEFAULT_PANNING;
+  protected SoundCategory source = SoundAPI.DEFAULT_SOURCE;
+  protected double volume = SoundAPI.DEFAULT_VOLUME;
+  protected double pitch = SoundAPI.DEFAULT_PITCH;
+  protected long seed = SoundAPI.DEFAULT_SEED;
+  protected int panning = SoundAPI.DEFAULT_PANNING;
   protected boolean isStereo = false;
 
   public Playable() {
@@ -87,7 +70,7 @@ public abstract class Playable implements Cloneable {
   }
 
   public void setVolume(final double volume) {
-    this.volume = MathUtils.normalizeRangeOrThrow(volume, Playable.MINIMUM_VOLUME, Playable.MAXIMUM_VOLUME,
+    this.volume = MathUtils.normalizeRangeOrThrow(volume, SoundAPI.MINIMUM_VOLUME, SoundAPI.MAXIMUM_VOLUME,
         "Volume");
   }
 
@@ -96,7 +79,7 @@ public abstract class Playable implements Cloneable {
   }
 
   public void setPitch(final double pitch) {
-    this.pitch = MathUtils.normalizeRangeOrThrow(pitch, Playable.MINIMUM_PITCH, Playable.MAXIMUM_PITCH,
+    this.pitch = MathUtils.normalizeRangeOrThrow(pitch, SoundAPI.MINIMUM_PITCH, SoundAPI.MAXIMUM_PITCH,
         "Pitch");
   }
 
@@ -105,7 +88,7 @@ public abstract class Playable implements Cloneable {
   }
 
   public void setPanning(final int panning) {
-    this.panning = MathUtils.normalizeRangeOrThrow(panning, Playable.MINIMUM_PANNING, Playable.MAXIMUM_PANNING,
+    this.panning = MathUtils.normalizeRangeOrThrow(panning, SoundAPI.MINIMUM_PANNING, SoundAPI.MAXIMUM_PANNING,
         "Panning");
   }
 
@@ -114,7 +97,7 @@ public abstract class Playable implements Cloneable {
   }
 
   public void setSeed(final long seed) {
-    this.seed = MathUtils.normalizeRangeOrThrow(seed, Playable.MINIMUM_SEED, Playable.MAXIMUM_SEED, "Seed");
+    this.seed = MathUtils.normalizeRangeOrThrow(seed, SoundAPI.MINIMUM_SEED, SoundAPI.MAXIMUM_SEED, "Seed");
   }
 
   public void setStereo(final boolean isStereo) {
@@ -154,11 +137,11 @@ public abstract class Playable implements Cloneable {
   }
 
   public static abstract class PlayableBuilder implements Builder<Playable> {
-    protected SoundCategory source = DEFAULT_SOURCE;
-    protected double volume = DEFAULT_VOLUME;
-    protected double pitch = DEFAULT_PITCH;
-    protected int panning = DEFAULT_PANNING;
-    protected long seed = DEFAULT_SEED;
+    protected SoundCategory source = SoundAPI.DEFAULT_SOURCE;
+    protected double volume = SoundAPI.DEFAULT_VOLUME;
+    protected double pitch = SoundAPI.DEFAULT_PITCH;
+    protected int panning = SoundAPI.DEFAULT_PANNING;
+    protected long seed = SoundAPI.DEFAULT_SEED;
     protected boolean isStereo = false;
 
     PlayableBuilder() {

@@ -3,15 +3,33 @@ package com.lemonlightmc.moreplugins.apis;
 import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Registry;
+import org.bukkit.SoundCategory;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
-import com.lemonlightmc.moreplugins.sound.Playable;
 import com.lemonlightmc.moreplugins.sound.Sound;
 import com.lemonlightmc.moreplugins.sound.mode.ChannelMode;
 import com.lemonlightmc.moreplugins.sound.mode.MonoMode;
 
 public class SoundAPI {
+  public static final float DEFAULT_VOLUME = 1f;
+  public static final float MINIMUM_VOLUME = 0f;
+  public static final float MAXIMUM_VOLUME = 1f;
+
+  public static final float DEFAULT_PITCH = 1f;
+  public static final float MINIMUM_PITCH = 0f;
+  public static final float MAXIMUM_PITCH = 1f;
+
+  public static final int DEFAULT_PANNING = 0;
+  public static final int MINIMUM_PANNING = 0;
+  public static final int MAXIMUM_PANNING = 100;
+
+  public static final long DEFAULT_SEED = 0;
+  public static final long MINIMUM_SEED = Long.MIN_VALUE;
+  public static final long MAXIMUM_SEED = Long.MAX_VALUE;
+  // Assumes that most common tempo is close to 10 tps
+  public static final double COMMON_TEMPO = 10d;
+  public static final SoundCategory DEFAULT_SOURCE = SoundCategory.MASTER;
 
   private static ChannelMode channel = new MonoMode();
 
@@ -29,11 +47,11 @@ public class SoundAPI {
   }
 
   public static void play(final Player player, final org.bukkit.Sound sound, final Location loc, final double volume) {
-    player.playSound(loc, sound, (float) volume, (float) Playable.DEFAULT_PITCH);
+    player.playSound(loc, sound, (float) volume, (float) DEFAULT_PITCH);
   }
 
   public static void play(final Player player, final org.bukkit.Sound sound, final Location loc) {
-    player.playSound(loc, sound, (float) Playable.DEFAULT_VOLUME, (float) Playable.DEFAULT_PITCH);
+    player.playSound(loc, sound, (float) DEFAULT_VOLUME, (float) DEFAULT_PITCH);
   }
 
   public static void play(final Player player, final org.bukkit.Sound sound, final Entity entity, final double volume,
@@ -42,11 +60,11 @@ public class SoundAPI {
   }
 
   public static void play(final Player player, final org.bukkit.Sound sound, final Entity entity, final double volume) {
-    player.playSound(entity, sound, (float) volume, (float) Playable.DEFAULT_PITCH);
+    player.playSound(entity, sound, (float) volume, (float) DEFAULT_PITCH);
   }
 
   public static void play(final Player player, final org.bukkit.Sound sound, final Entity entity) {
-    player.playSound(entity, sound, (float) Playable.DEFAULT_VOLUME, (float) Playable.DEFAULT_PITCH);
+    player.playSound(entity, sound, (float) DEFAULT_VOLUME, (float) DEFAULT_PITCH);
   }
 
   public static void play(final Player player, final org.bukkit.Sound sound, final double volume, final double pitch) {
@@ -54,11 +72,11 @@ public class SoundAPI {
   }
 
   public static void play(final Player player, final org.bukkit.Sound sound, final double volume) {
-    player.playSound(player.getLocation(), sound, (float) volume, (float) Playable.DEFAULT_PITCH);
+    player.playSound(player.getLocation(), sound, (float) volume, (float) DEFAULT_PITCH);
   }
 
   public static void play(final Player player, final org.bukkit.Sound sound) {
-    player.playSound(player.getLocation(), sound, (float) Playable.DEFAULT_VOLUME, (float) Playable.DEFAULT_PITCH);
+    player.playSound(player.getLocation(), sound, (float) DEFAULT_VOLUME, (float) DEFAULT_PITCH);
   }
 
   public static void play(final Player player, final String sound, final Location loc, final double volume,
@@ -67,11 +85,11 @@ public class SoundAPI {
   }
 
   public static void play(final Player player, final String sound, final Location loc, final double volume) {
-    player.playSound(loc, sound, (float) volume, (float) Playable.DEFAULT_PITCH);
+    player.playSound(loc, sound, (float) volume, (float) DEFAULT_PITCH);
   }
 
   public static void play(final Player player, final String sound, final Location loc) {
-    player.playSound(loc, sound, (float) Playable.DEFAULT_VOLUME, (float) Playable.DEFAULT_PITCH);
+    player.playSound(loc, sound, (float) DEFAULT_VOLUME, (float) DEFAULT_PITCH);
   }
 
   public static void play(final Player player, final String sound, final Entity entity, final double volume,
@@ -80,11 +98,11 @@ public class SoundAPI {
   }
 
   public static void play(final Player player, final String sound, final Entity entity, final double volume) {
-    player.playSound(entity, sound, (float) volume, (float) Playable.DEFAULT_PITCH);
+    player.playSound(entity, sound, (float) volume, (float) DEFAULT_PITCH);
   }
 
   public static void play(final Player player, final String sound, final Entity entity) {
-    player.playSound(entity, sound, (float) Playable.DEFAULT_VOLUME, (float) Playable.DEFAULT_PITCH);
+    player.playSound(entity, sound, (float) DEFAULT_VOLUME, (float) DEFAULT_PITCH);
   }
 
   public static void play(final Player player, final String sound, final double volume, final double pitch) {
@@ -92,11 +110,11 @@ public class SoundAPI {
   }
 
   public static void play(final Player player, final String sound, final double volume) {
-    player.playSound(player.getLocation(), sound, (float) volume, (float) Playable.DEFAULT_PITCH);
+    player.playSound(player.getLocation(), sound, (float) volume, (float) DEFAULT_PITCH);
   }
 
   public static void play(final Player player, final String sound) {
-    player.playSound(player.getLocation(), sound, (float) Playable.DEFAULT_VOLUME, (float) Playable.DEFAULT_PITCH);
+    player.playSound(player.getLocation(), sound, (float) DEFAULT_VOLUME, (float) DEFAULT_PITCH);
   }
 
   public static void playNote(final Player player, final org.bukkit.Instrument instrument, final org.bukkit.Note note) {

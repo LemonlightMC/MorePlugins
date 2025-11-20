@@ -3,9 +3,9 @@ package com.lemonlightmc.moreplugins.sound.mode;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
+import com.lemonlightmc.moreplugins.apis.SoundAPI;
 import com.lemonlightmc.moreplugins.sound.Instrument;
 import com.lemonlightmc.moreplugins.sound.Note;
-import com.lemonlightmc.moreplugins.sound.Playable;
 import com.lemonlightmc.moreplugins.sound.Sound;
 
 public class StereoMode extends ChannelMode {
@@ -22,7 +22,7 @@ public class StereoMode extends ChannelMode {
     }
 
     double distance;
-    if (note.getPanning() == Playable.DEFAULT_PANNING) {
+    if (note.getPanning() == SoundAPI.DEFAULT_PANNING) {
       distance = (note.getPanning() / 100f) * maxDistance;
     } else {
       distance = ((note.getPanning() + note.getPanning()) / 200f) * maxDistance;
@@ -46,7 +46,7 @@ public class StereoMode extends ChannelMode {
     }
 
     double distance;
-    if (sound.getPanning() == Playable.DEFAULT_PANNING) {
+    if (sound.getPanning() == SoundAPI.DEFAULT_PANNING) {
       distance = (sound.getPanning() / 100f) * maxDistance;
     } else {
       distance = ((sound.getPanning() + sound.getPanning()) / 200f) * maxDistance;

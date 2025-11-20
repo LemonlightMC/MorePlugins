@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.bukkit.NamespacedKey;
-import org.bukkit.Registry;
 
 import com.lemonlightmc.moreplugins.apis.SoundAPI;
 
@@ -66,7 +65,6 @@ public class NoteSounds extends Sound {
   private final String resourcePackName;
   private final String[] versionDependentNames;
   private final String name;
-  private org.bukkit.Sound cached = null;
 
   NoteSounds(final int instrumentIndex, final String name, final String resourcePackName,
       final String... versionDependentNames) {
@@ -82,12 +80,9 @@ public class NoteSounds extends Sound {
     NoteSounds.soundsByIndex[instrumentIndex] = this;
     for (final String vName : versionDependentNames) {
       NoteSounds.soundsByName.put(vName, this);
-      if (cached == null) {
-        final NamespacedKey tempKey = NamespacedKey.minecraft(vName);
-        cached = Registry.SOUNDS.get(key);
-        if (cached != null) {
-          setKey(tempKey);
-        }
+      if (bukkitSound == null) {
+        // also gets the bukkit Sound
+        setKey(NamespacedKey.minecraft(vName));
       }
     }
   }
@@ -143,13 +138,6 @@ public class NoteSounds extends Sound {
     return sound == null ? def.getBukkitSound() : sound.getBukkitSound();
   }
 
-  public org.bukkit.Sound getBukkitSound() {
-    if (cached != null) {
-      return cached;
-    }
-    throw new IllegalArgumentException("Found no valid sound name for " + name);
-  }
-
   public NamespacedKey getKey() {
     return key;
   }
@@ -173,7 +161,6 @@ public class NoteSounds extends Sound {
     result = 31 * result + ((resourcePackName == null) ? 0 : resourcePackName.hashCode());
     result = 31 * result + Arrays.hashCode(versionDependentNames);
     result = 31 * result + ((name == null) ? 0 : name.hashCode());
-    result = 31 * result + ((cached == null) ? 0 : cached.hashCode());
     return result;
   }
 
@@ -194,11 +181,6 @@ public class NoteSounds extends Sound {
         return false;
     } else if (!name.equals(other.name))
       return false;
-    if (cached == null) {
-      if (other.cached != null)
-        return false;
-    } else if (!cached.equals(other.cached))
-      return false;
     return instrumentIndex == other.instrumentIndex
         && Arrays.equals(versionDependentNames, other.versionDependentNames);
   }
@@ -206,9 +188,9 @@ public class NoteSounds extends Sound {
   @Override
   public String toString() {
     return "NoteSounds [key=" + key + ", bukkitSound=" + bukkitSound + ", source=" + source + ", volume=" + volume
-        + ", seed=" + seed + ", panning=" + panning + ", instrumentIndex=" + instrumentIndex + ", resourcePackName="
-        + resourcePackName + ", versionDependentNames=" + Arrays.toString(versionDependentNames) + ", name=" + name
-        + ", cached=" + cached + "]";
+        + ", pitch=" + pitch + ", seed=" + seed + ", panning=" + panning + ", instrumentIndex=" + instrumentIndex
+        + ", resourcePackName=" + resourcePackName + ", versionDependentNames=" + Arrays.toString(versionDependentNames)
+        + ", name=" + name + "]";
   }
 
 }

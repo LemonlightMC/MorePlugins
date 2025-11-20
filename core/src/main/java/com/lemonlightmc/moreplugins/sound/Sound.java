@@ -5,6 +5,7 @@ import org.bukkit.Registry;
 import org.bukkit.SoundCategory;
 import org.bukkit.plugin.Plugin;
 
+import com.lemonlightmc.moreplugins.apis.SoundAPI;
 import com.lemonlightmc.moreplugins.base.MorePlugins;
 
 public class Sound extends Playable {
@@ -12,24 +13,24 @@ public class Sound extends Playable {
   protected org.bukkit.Sound bukkitSound;
 
   public Sound(final NamespacedKey key) {
-    this(key, DEFAULT_SOURCE, DEFAULT_VOLUME, DEFAULT_PITCH, DEFAULT_PANNING, DEFAULT_SEED);
+    this(key, SoundAPI.DEFAULT_SOURCE, SoundAPI.DEFAULT_VOLUME, SoundAPI.DEFAULT_PITCH);
   }
 
   public Sound(final NamespacedKey key, final SoundCategory source) {
-    this(key, source, DEFAULT_VOLUME, DEFAULT_PITCH, DEFAULT_PANNING, DEFAULT_SEED);
+    this(key, source, SoundAPI.DEFAULT_VOLUME, SoundAPI.DEFAULT_PITCH);
   }
 
   public Sound(final NamespacedKey key, final SoundCategory source, final float volume) {
-    this(key, source, volume, DEFAULT_PITCH, DEFAULT_PANNING, DEFAULT_SEED);
+    this(key, source, volume, SoundAPI.DEFAULT_PITCH, SoundAPI.DEFAULT_PANNING, SoundAPI.DEFAULT_SEED);
   }
 
   public Sound(final NamespacedKey key, final SoundCategory source, final float volume, final float pitch) {
-    this(key, source, volume, pitch, DEFAULT_PANNING, DEFAULT_SEED);
+    this(key, source, volume, pitch, SoundAPI.DEFAULT_PANNING, SoundAPI.DEFAULT_SEED);
   }
 
   public Sound(final NamespacedKey key, final SoundCategory source, final float volume, final float pitch,
       final int panning) {
-    this(key, source, volume, pitch, panning, DEFAULT_SEED);
+    this(key, source, volume, pitch, panning, SoundAPI.DEFAULT_SEED);
   }
 
   public Sound(final NamespacedKey key, final SoundCategory source, final float volume, final float pitch,
