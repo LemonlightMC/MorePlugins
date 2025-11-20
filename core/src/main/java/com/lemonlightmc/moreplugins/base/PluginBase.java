@@ -47,6 +47,7 @@ public class PluginBase extends org.bukkit.plugin.PluginBase implements IPluginB
   private boolean naggable = true;
   private Config config = null;
   private MessageProvider messageProvider = null;
+
   private static PluginBase instance = null;
 
   public PluginBase() {
@@ -73,12 +74,37 @@ public class PluginBase extends org.bukkit.plugin.PluginBase implements IPluginB
     return instance != null;
   }
 
-  public static PluginBase getInstance() {
+  @SuppressWarnings("unchecked")
+  public static <I extends PluginBase> I getInstance() {
     if (instance == null) {
       throw new RuntimeException(
           "Plugin is not enabled - Plugin Instance can not be obtained!");
     }
-    return instance;
+    return (I) instance;
+  }
+
+  public static PluginLoader getInstancePluginLoader() {
+    return getInstance().loader;
+  }
+
+  public static PluginManager getInstancePluginManager() {
+    return getInstance().server.getPluginManager();
+  }
+
+  public static Server getInstanceServer() {
+    return getInstance().server;
+  }
+
+  public static ServicesManager getInstanceServicesManager() {
+    return getInstance().server.getServicesManager();
+  }
+
+  public static Scheduler getInstanceScheduler() {
+    return getInstance().scheduler;
+  }
+
+  public static MessageProvider getInstanceMessageProvider() {
+    return getInstance().messageProvider;
   }
 
   @Override
@@ -92,22 +118,22 @@ public class PluginBase extends org.bukkit.plugin.PluginBase implements IPluginB
   }
 
   @Override
-  public final PluginDescriptionFile getDescription() {
+  public PluginDescriptionFile getDescription() {
     return info.descriptionFile;
   }
 
   @Override
-  public final String getPrefix() {
+  public String getPrefix() {
     return info.getPrefix();
   }
 
   @Override
-  public final Version getVersion() {
+  public Version getVersion() {
     return info.getVersion();
   }
 
   @Override
-  public final File getDataFolder() {
+  public File getDataFolder() {
     return dataFolder;
   }
 
@@ -119,36 +145,37 @@ public class PluginBase extends org.bukkit.plugin.PluginBase implements IPluginB
   }
 
   @Override
-  public final PluginLoader getPluginLoader() {
+  public PluginLoader getPluginLoader() {
     return loader;
   }
 
   @Override
-  public final PluginManager getPluginManager() {
+  public PluginManager getPluginManager() {
     return server.getPluginManager();
   }
 
   @Override
-  public final Server getServer() {
+  public Server getServer() {
     return server;
   }
 
-  public final ServicesManager getServicesManager() {
+  @Override
+  public ServicesManager getServicesManager() {
     return server.getServicesManager();
   }
 
   @Override
-  public final Scheduler getScheduler() {
+  public Scheduler getScheduler() {
     return scheduler;
   }
 
   @Override
-  public final MessageProvider getMessageProvider() {
+  public MessageProvider getMessageProvider() {
     return messageProvider;
   }
 
   @Override
-  public final boolean isEnabled() {
+  public boolean isEnabled() {
     return isEnabled;
   }
 
@@ -186,7 +213,7 @@ public class PluginBase extends org.bukkit.plugin.PluginBase implements IPluginB
     config.createDefault();
   }
 
-  protected final Reader getTextResource(final String file) {
+  protected Reader getTextResource(final String file) {
     final InputStream in = getResource(file);
 
     return in == null
@@ -267,11 +294,11 @@ public class PluginBase extends org.bukkit.plugin.PluginBase implements IPluginB
     }
   }
 
-  public final ClassLoader getClassLoader() {
+  public ClassLoader getClassLoader() {
     return classLoader;
   }
 
-  public final void setEnabled(final boolean enabled) {
+  public void setEnabled(final boolean enabled) {
     if (isEnabled != enabled) {
       isEnabled = enabled;
 
@@ -316,12 +343,12 @@ public class PluginBase extends org.bukkit.plugin.PluginBase implements IPluginB
   }
 
   @Override
-  public final boolean isNaggable() {
+  public boolean isNaggable() {
     return naggable;
   }
 
   @Override
-  public final void setNaggable(final boolean canNag) {
+  public void setNaggable(final boolean canNag) {
     this.naggable = canNag;
   }
 

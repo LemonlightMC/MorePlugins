@@ -19,6 +19,7 @@ import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginLoadOrder;
 import org.bukkit.plugin.PluginLoader;
 import org.bukkit.plugin.PluginManager;
+import org.bukkit.plugin.ServicesManager;
 
 import com.lemonlightmc.moreplugins.messages.MessageProvider;
 import com.lemonlightmc.moreplugins.scheduler.Scheduler;
@@ -122,6 +123,8 @@ public interface IPluginBase extends Plugin {
 
   public Scheduler getScheduler();
 
+  public ServicesManager getServicesManager();
+
   public Server getServer();
 
   public java.util.logging.Logger getLogger();
@@ -137,5 +140,4 @@ public interface IPluginBase extends Plugin {
 
   @Deprecated
   public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args);
-
 }
