@@ -12,6 +12,16 @@ import com.lemonlightmc.moreplugins.time.Ticks;
 import com.lemonlightmc.moreplugins.utils.MathUtils;
 import com.lemonlightmc.moreplugins.utils.StringUtils.Replaceable;
 
+/**
+ * API for creating and sending titles and subtitles to players.
+ *
+ * <p>
+ * This class provides builder factories and convenience static methods to
+ * broadcast or send titles to players. It uses {@link
+ * com.lemonlightmc.moreplugins.messages.MessageFormatter} to format title
+ * text and normalizes fade durations using utilities in the plugin.
+ * </p>
+ */
 public class TitleAPI implements ITitleAPI {
 
   public static final int DEFAULT_FADEIN = 10;

@@ -5,8 +5,22 @@ import java.util.List;
 
 import org.bukkit.entity.Player;
 
+/**
+ * Utilities to show client-side "toast" notifications (advancement pop-ups)
+ * using temporary advancement creation.
+ *
+ * <p>
+ * The API exposes a {@link ToastBuilder} fluent builder and convenience
+ * methods to show a toast to a collection of players or broadcast to all
+ * online players. The underlying implementation is version-sensitive and may
+ * use different advancement payload formats depending on the server version.
+ * </p>
+ */
 public class ToastAPI {
 
+  /**
+   * Style for the toast's frame. Matches Minecraft Advancement frame types.
+   */
   public static enum ToastType {
     TASK,
     GOAL,

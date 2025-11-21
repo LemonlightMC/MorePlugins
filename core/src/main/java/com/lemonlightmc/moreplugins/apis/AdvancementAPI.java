@@ -17,7 +17,30 @@ import com.lemonlightmc.moreplugins.version.MCVersion;
 import me.clip.placeholderapi.libs.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import me.clip.placeholderapi.libs.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 
+/**
+ * Utilities for creating and displaying advancement-style toasts (advancement
+ * pop-ups) to players.
+ *
+ * <p>
+ * This class constructs temporary advancement entries and grants/revokes
+ * them to create the client-side toast animation. It selects an appropriate
+ * advancement JSON format depending on the detected Minecraft version
+ * (legacy NBT format, component format, or modern components with arrays).
+ * </p>
+ */
 public class AdvancementAPI {
+  /**
+   * Show a popup (advancement toast) to a collection of players.
+   *
+   * @param players       the players to show the toast to
+   * @param icon          the icon material name (minecraft id) used for the toast
+   * @param message       the message (already formatted as json component text)
+   * @param style         the toast frame style (TASK, GOAL, CHALLENGE)
+   * @param modelData     optional model data used for custom models (type varies)
+   * @param modelDataType optional explicit model data type
+   *                      ("string","float","integer")
+   * @param glowing       whether the icon should appear to glow (enchant visual)
+   */
   @SuppressWarnings("deprecation")
   void showToast(Collection<? extends Player> players, String icon, String message, ToastType style, Object modelData,
       String modelDataType, boolean glowing) {
@@ -33,6 +56,16 @@ public class AdvancementAPI {
     MorePlugins.instance.getScheduler().runLater(() -> Bukkit.getUnsafe().removeAdvancement(advancementKey), 40);
   }
 
+  /**
+   * Show a popup (advancement toast) to all online players.
+   *
+   * @param icon          the icon material name (minecraft id) used for the toast
+   * @param message       the message (already formatted as json component text)
+   * @param style         the toast frame style
+   * @param modelData     optional model data for the icon
+   * @param modelDataType optional model data type string
+   * @param glowing       whether the icon should glow
+   */
   @SuppressWarnings("deprecation")
   void showToastToAll(String icon, String message, ToastType style, Object modelData, String modelDataType,
       boolean glowing) {

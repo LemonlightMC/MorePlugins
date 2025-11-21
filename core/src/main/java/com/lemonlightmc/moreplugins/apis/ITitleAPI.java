@@ -8,8 +8,21 @@ import org.bukkit.entity.Player;
 import com.lemonlightmc.moreplugins.utils.StringUtils.Replaceable;
 import com.lemonlightmc.moreplugins.wrapper.Builder;
 
+/**
+ * Public contracts for title creation and sending.
+ *
+ * <p>
+ * This interface groups the nested builder/info interfaces used by
+ * {@link com.lemonlightmc.moreplugins.apis.TitleAPI} to construct and send
+ * titles/subtitles to players.
+ * </p>
+ */
 public interface ITitleAPI {
 
+  /**
+   * Represents a fully-formed title (fade-in, stay, fade-out, title and
+   * subtitle) that can be sent to players.
+   */
   public static interface ITitleInfo {
     public int getFadeIn();
 
@@ -31,12 +44,30 @@ public interface ITitleAPI {
 
     public void setSubtitle(final String subtitle);
 
+    /**
+     * Send this title to a single player.
+     *
+     * @param player recipient player
+     */
     public void send(final Player player);
 
+    /**
+     * Send this title to a list of players.
+     *
+     * @param players recipients
+     */
     public void send(final List<Player> players);
 
+    /**
+     * Send this title to an array of players.
+     *
+     * @param players recipients
+     */
     public void send(final Player[] players);
 
+    /**
+     * Broadcast this title to all online players.
+     */
     public void broadcast();
 
     @Override

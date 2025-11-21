@@ -24,6 +24,15 @@ import com.lemonlightmc.moreplugins.base.MorePlugins;
 import com.lemonlightmc.moreplugins.messages.MessageFormatter;
 import com.lemonlightmc.moreplugins.wrapper.Builder;
 
+/**
+ * High-level boss bar management utilities and simple builder helpers.
+ *
+ * <p>
+ * This class provides a registry of named boss bars, convenience methods to
+ * create/remove/look up bars by key, and nested builder types that simplify
+ * constructing and updating {@link org.bukkit.boss.BossBar} instances.
+ * </p>
+ */
 public class BossbarAPI {
   private static Map<String, NamespacedKey> keys = new HashMap<>();
   private static final Map<UUID, HashSet<BaseBossbar>> bossBars = new HashMap<>();
@@ -40,6 +49,16 @@ public class BossbarAPI {
   public static final boolean DEFAULT_VISIBILITY = true;
   public static final double DEFAULT_PROGRESS = 1d;
 
+  /**
+   * Create and register a new named boss bar.
+   *
+   * @param name  unique name (registry key) for the bar
+   * @param title visible title text for the bar
+   * @param color the bar color
+   * @param style the bar style (segments)
+   * @param flags optional flags that change bar behavior
+   * @return newly created and registered {@link BaseBossbar}
+   */
   public static BaseBossbar createBar(final String name, final String title, final BarColor color, final BarStyle style,
       final BarFlag... flags) {
     final KeyedBossBar bar = Bukkit.createBossBar(getKey(name), MessageFormatter.format(title, true, false), color,
@@ -50,14 +69,32 @@ public class BossbarAPI {
     return base;
   }
 
+  /**
+   * Lookup a registered boss bar by key.
+   *
+   * @param key registry key/name of the bar
+   * @return {@link BaseBossbar} if found, or {@code null} if not registered
+   */
   public static BaseBossbar getBar(final String key) {
     return registry.get(key);
   }
 
+  /**
+   * Check whether a bar exists in the registry.
+   *
+   * @param key registry key/name
+   * @return {@code true} if a bar with the given key exists
+   */
   public static boolean hasBar(final String key) {
     return registry.containsKey(key);
   }
 
+  /**
+   * Remove and unregister a bar by key and remove the underlying server
+   * bossbar.
+   *
+   * @param key registry key/name to remove
+   */
   public static void removeBar(final String key) {
     registry.remove(key);
     Bukkit.removeBossBar(getKey(key));
@@ -75,11 +112,21 @@ public class BossbarAPI {
   }
 
   public static class BaseBossbar implements IBossBar {
+    /**
+     * Lightweight wrapper around Bukkit's {@link KeyedBossBar} exposing a
+     * mutable API and listener support used by the plugin.
+     */
     private String name;
     private final KeyedBossBar bar;
     private Set<IBossBarListener> listeners = new HashSet<>();
     private Location location;
 
+    /**
+     * Construct a new wrapper for the provided keyed boss bar.
+     *
+     * @param name plugin-visible name for this bar
+     * @param bar  the underlying {@link KeyedBossBar}
+     */
     public BaseBossbar(final String name, final KeyedBossBar bar) {
       this.bar = bar;
     }
@@ -104,6 +151,11 @@ public class BossbarAPI {
     }
 
     @Override
+    /**
+     * Get the underlying {@link NamespacedKey} for this keyed bar.
+     *
+     * @return the {@link NamespacedKey}
+     */
     public NamespacedKey getKey() {
       return bar.getKey();
     }

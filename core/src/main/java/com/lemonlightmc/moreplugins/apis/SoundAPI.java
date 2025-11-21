@@ -11,6 +11,18 @@ import com.lemonlightmc.moreplugins.sound.Sound;
 import com.lemonlightmc.moreplugins.sound.mode.ChannelMode;
 import com.lemonlightmc.moreplugins.sound.mode.MonoMode;
 
+/**
+ * Utility helpers for parsing, resolving and playing sounds.
+ *
+ * <p>
+ * This class centralizes common sound operations such as parsing names into
+ * the internal {@link com.lemonlightmc.moreplugins.sound.Sound} wrapper,
+ * querying the Bukkit {@code Registry.SOUNDS}, and convenience overloads for
+ * playing sounds at locations, entities or players with defaulted volume and
+ * pitch. It also exposes a pluggable {@code ChannelMode} used by higher-level
+ * sound playback code.
+ * </p>
+ */
 public class SoundAPI {
   public static final float DEFAULT_VOLUME = 1f;
   public static final float MINIMUM_VOLUME = 0f;
@@ -36,6 +48,12 @@ public class SoundAPI {
   public static ChannelMode getMode() {
     return channel;
   }
+
+  /**
+   * Get the currently configured sound channel mode used by playback routines.
+   *
+   * @return configured {@link ChannelMode}
+   */
 
   public static void setMode(final ChannelMode mode) {
     SoundAPI.channel = mode;

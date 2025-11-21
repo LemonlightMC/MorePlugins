@@ -17,7 +17,35 @@ import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
 
+/**
+ * Utility for sending action-bar messages to players.
+ *
+ * <p>
+ * Action-bar messages are short messages shown above the player's hotbar. This
+ * class provides convenience static helpers to send one-off action-bar
+ * messages or timed messages to an individual player or to all online
+ * players. Messages passed into the methods of this class are expected to be
+ * processed by {@link com.lemonlightmc.moreplugins.messages.MessageFormatter}
+ * when placeholders or formatting are required.
+ * </p>
+ *
+ * <p>
+ * The implementation uses BungeeCord's chat components to send messages and
+ * manages scheduled tasks for timed messages in {@link #send(Player, String,
+ * int, com.lemonlightmc.moreplugins.utils.StringUtils.Replaceable...)}. If a
+ * timed action-bar is already pending for a player it will be cancelled and
+ * replaced by the new one.
+ * </p>
+ */
 public class ActionbarAPI {
+  /**
+   * Broadcasts an action-bar message to all online players.
+   *
+   * @param msg          the message to send (may contain placeholders and color
+   *                     codes)
+   * @param replaceables optional replacement tokens used by the message
+   *                     formatter
+   */
   public static void broadcast(
       final String msg,
       final Replaceable... replaceables) {
@@ -26,6 +54,16 @@ public class ActionbarAPI {
     }
   }
 
+  /**
+   * Send an immediate (single tick) action-bar message to a player.
+   *
+   * @param p            the recipient player
+   * @param msg          the raw message to send (placeholders should be formatted
+   *                     by
+   *                     caller if needed)
+   * @param replaceables optional replacement tokens (currently forwarded to
+   *                     message formatting utilities)
+   */
   public static void send(
       final Player p,
       final String msg,
@@ -57,6 +95,7 @@ public class ActionbarAPI {
     }
     final BaseComponent component = TextComponent.fromLegacy(msg);
     if (duration == -1) {
+      // Send once and do not schedule repeating updates
       p
           .spigot()
           .sendMessage(

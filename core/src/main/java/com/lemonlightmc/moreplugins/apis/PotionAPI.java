@@ -16,6 +16,16 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * Utilities for building and applying potion-like objects and effects.
+ *
+ * <p>
+ * This class exposes builders for constructing {@link Potion} instances and
+ * helpers to apply/remove potion effects from players. It also contains
+ * convenience methods for working with potion-related {@link ItemStack}s and
+ * materials.
+ * </p>
+ */
 public class PotionAPI {
 
   public static final Set<Material> potionMaterials = Set.of(Material.POTION, Material.SPLASH_POTION,
@@ -32,6 +42,13 @@ public class PotionAPI {
   public static void applyPotion(Player p, Potion potion) {
     p.addPotionEffects(potion.getEffects());
   }
+
+  /**
+   * Apply all effects from the provided {@link Potion} to a player.
+   *
+   * @param p      recipient player
+   * @param potion the potion whose effects will be applied
+   */
 
   public static void applyPotion(Player p, Collection<Potion> potions) {
     for (Potion potion : potions) {

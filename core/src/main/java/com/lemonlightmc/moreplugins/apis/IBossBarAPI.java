@@ -10,7 +10,20 @@ import org.bukkit.boss.BarFlag;
 import org.bukkit.boss.BarStyle;
 import org.bukkit.entity.Player;
 
+/**
+ * Interfaces describing the contract for the plugin's boss-bar wrapper and
+ * listener callbacks.
+ *
+ * <p>
+ * Implementations of {@link IBossBar} represent a named boss bar instance
+ * with methods to control visibility, appearance and players. Listeners can
+ * be registered to react to changes via {@link IBossBarListener}.
+ * </p>
+ */
 public class IBossBarAPI {
+  /**
+   * Represents a named boss bar with control operations.
+   */
   public static interface IBossBar extends IBossBarListener, Comparable<IBossBarListener>, Cloneable {
 
     public NamespacedKey getKey();
@@ -112,7 +125,18 @@ public class IBossBarAPI {
     public int hashCode();
   }
 
+  /**
+   * Listener callbacks invoked when a boss bar's state changes. Implementers
+   * may override the default methods they are interested in.
+   */
   public static interface IBossBarListener {
+    /**
+     * Called when a boss bar's name changes.
+     *
+     * @param bar     the bar that changed
+     * @param oldName previous name
+     * @param newName new name
+     */
     default void bossBarNameChanged(final IBossBar bar, final String oldName, final String newName) {
     }
 
