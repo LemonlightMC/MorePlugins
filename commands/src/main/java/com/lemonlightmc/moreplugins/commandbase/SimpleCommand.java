@@ -70,10 +70,6 @@ public class SimpleCommand extends AbstractCommand {
     return List.of();
   }
 
-  public SimpleCommand getInstance() {
-    return this;
-  }
-
   public String getDescription() {
     return description;
   }
@@ -112,12 +108,11 @@ public class SimpleCommand extends AbstractCommand {
 
   public SimpleCommand withHelp(HelpTopic helpTopic) {
     this.meta.helpTopic = Optional.of(helpTopic);
-    return getInstance();
+    return this;
   }
 
   public void register(String namespace) {
-    CommandManager.setNamespace(namespace);
-    CommandManager.register(this);
+    CommandManager.register(this, namespace);
   }
 
   public void register() {

@@ -14,55 +14,60 @@ import org.bukkit.command.CommandSender;
 
 public class Executor<S extends CommandSender, W extends AbstractCommandSender<? extends CommandSender>> {
 
-  private List<NormalExecutor<S, W>> normalExecutors;
+  private List<NormalExecutor<S, W>> executors;
 
   private static Executor<CommandSender, AbstractCommandSender<? extends CommandSender>> instance;
 
   public static Executor<CommandSender, AbstractCommandSender<? extends CommandSender>> getInstance() {
-    if (instance == null)
+    if (instance == null) {
       instance = new Executor<CommandSender, AbstractCommandSender<? extends CommandSender>>();
+    }
     return instance;
   }
 
   public Executor() {
-    normalExecutors = new ArrayList<>();
+    executors = new ArrayList<>();
   }
 
   @SuppressWarnings("unchecked")
-  public void addNormalExecutor(NormalExecutor<?, ?> executor) {
-    this.normalExecutors.add((NormalExecutor<S, W>) executor);
+  public void addExecutor(final NormalExecutor<?, ?> currentExecutor) {
+    this.executors.add((NormalExecutor<S, W>) currentExecutor);
   }
 
-  public void setNormalExecutors(List<NormalExecutor<S, W>> normalExecutors) {
-    this.normalExecutors = normalExecutors;
+  public void setExecutors(final List<NormalExecutor<S, W>> currentExecutors) {
+    this.executors = currentExecutors;
+  }
+
+  public boolean hasExecutor(final NormalExecutor<S, W> currentExecutor) {
+    return this.executors.contains(currentExecutor);
   }
 
   public void clearExecutors() {
-    normalExecutors.clear();
+    executors.clear();
   }
 
-  public List<NormalExecutor<S, W>> getNormalExecutors() {
-    return normalExecutors;
+  public List<NormalExecutor<S, W>> getExecutors() {
+    return executors;
   }
 
   public boolean hasAnyExecutors() {
-    return !normalExecutors.isEmpty();
+    return !executors.isEmpty();
   }
 
-  Executor<S, W> mergeExecutor(Executor<S, W> executor) {
-    Executor<S, W> result = new Executor<S, W>();
-    result.normalExecutors = new ArrayList<NormalExecutor<S, W>>(normalExecutors);
-    result.normalExecutors.addAll(executor.normalExecutors);
+  Executor<S, W> mergeExecutor(final Executor<S, W> currentExecutor) {
+    final Executor<S, W> result = new Executor<S, W>();
+    result.executors = new ArrayList<NormalExecutor<S, W>>(executors);
+    result.executors.addAll(currentExecutor.executors);
     return result;
   }
 
-  public int execute(ExecutionInfo<S, W> info) throws CommandException {
+  public int execute(final ExecutionInfo<S, W> info) throws CommandException {
     // Run normal executor
     try {
-      return execute(normalExecutors, info);
-    } catch (CommandException e) {
+      return mapExecutor(executors, info);
+    } catch (final CommandException e) {
       throw e;
-    } catch (Throwable ex) {
+    } catch (final Throwable ex) {
       Logger.warn(
           "Unhandled exception executing '" + info.args().fullInput() + "'");
       ex.printStackTrace();
@@ -74,34 +79,34 @@ public class Executor<S extends CommandSender, W extends AbstractCommandSender<?
     }
   }
 
-  private int execute(
-      List<? extends NormalExecutor<S, W>> executors,
-      ExecutionInfo<S, W> info) throws CommandException {
+  private int mapExecutor(
+      final List<? extends NormalExecutor<S, W>> currentExecutors,
+      final ExecutionInfo<S, W> info) throws CommandException {
     if (isForceNative()) {
-      return execute(executors, info, ExecutorType.NATIVE);
+      return execute(currentExecutors, info, ExecutorType.NATIVE);
     } else if (info.sender() instanceof Senders.AbstractPlayer &&
-        matches(executors, ExecutorType.PLAYER)) {
-      return execute(executors, info, ExecutorType.PLAYER);
+        matches(currentExecutors, ExecutorType.PLAYER)) {
+      return execute(currentExecutors, info, ExecutorType.PLAYER);
     } else if (info.sender() instanceof Senders.AbstractEntity &&
-        matches(executors, ExecutorType.ENTITY)) {
-      return execute(executors, info, ExecutorType.ENTITY);
+        matches(currentExecutors, ExecutorType.ENTITY)) {
+      return execute(currentExecutors, info, ExecutorType.ENTITY);
     } else if (info.sender() instanceof Senders.AbstractConsoleCommandSender &&
-        matches(executors, ExecutorType.CONSOLE)) {
-      return execute(executors, info, ExecutorType.CONSOLE);
+        matches(currentExecutors, ExecutorType.CONSOLE)) {
+      return execute(currentExecutors, info, ExecutorType.CONSOLE);
     } else if (info.sender() instanceof Senders.AbstractBlockCommandSender &&
-        matches(executors, ExecutorType.BLOCK)) {
-      return execute(executors, info, ExecutorType.BLOCK);
+        matches(currentExecutors, ExecutorType.BLOCK)) {
+      return execute(currentExecutors, info, ExecutorType.BLOCK);
     } else if (info.sender() instanceof Senders.AbstractProxiedCommandSender &&
-        matches(executors, ExecutorType.PROXY)) {
-      return execute(executors, info, ExecutorType.PROXY);
+        matches(currentExecutors, ExecutorType.PROXY)) {
+      return execute(currentExecutors, info, ExecutorType.PROXY);
     } else if (info.sender() instanceof Senders.AbstractRemoteConsoleCommandSender &&
-        matches(executors, ExecutorType.REMOTE)) {
-      return execute(executors, info, ExecutorType.REMOTE);
+        matches(currentExecutors, ExecutorType.REMOTE)) {
+      return execute(currentExecutors, info, ExecutorType.REMOTE);
     } else if (info.sender() instanceof Senders.AbstractFeedbackForwardingCommandSender &&
-        matches(executors, ExecutorType.FEEDBACK_FORWARDING)) {
-      return execute(executors, info, ExecutorType.FEEDBACK_FORWARDING);
-    } else if (matches(executors, ExecutorType.ALL)) {
-      return execute(executors, info, ExecutorType.ALL);
+        matches(currentExecutors, ExecutorType.FEEDBACK_FORWARDING)) {
+      return execute(currentExecutors, info, ExecutorType.FEEDBACK_FORWARDING);
+    } else if (matches(currentExecutors, ExecutorType.ALL)) {
+      return execute(currentExecutors, info, ExecutorType.ALL);
     } else {
       throw new CommandException(
           "".replace("%s", info.sender().getClass().getSimpleName().toLowerCase())
@@ -110,10 +115,10 @@ public class Executor<S extends CommandSender, W extends AbstractCommandSender<?
   }
 
   private int execute(
-      List<? extends NormalExecutor<S, W>> executors,
-      ExecutionInfo<S, W> info,
-      ExecutorType type) throws CommandException {
-    for (NormalExecutor<S, W> executor : executors) {
+      final List<? extends NormalExecutor<S, W>> currentExecutors,
+      final ExecutionInfo<S, W> info,
+      final ExecutorType type) throws CommandException {
+    for (final NormalExecutor<S, W> executor : currentExecutors) {
       if (executor.getType() == type) {
         return executor.executeWith(info);
       }
@@ -123,13 +128,13 @@ public class Executor<S extends CommandSender, W extends AbstractCommandSender<?
   }
 
   public boolean isForceNative() {
-    return (matches(normalExecutors, ExecutorType.NATIVE));
+    return (matches(executors, ExecutorType.NATIVE));
   }
 
   private boolean matches(
-      List<? extends NormalExecutor<S, W>> executors,
-      ExecutorType type) {
-    for (NormalExecutor<S, W> executor : executors) {
+      final List<? extends NormalExecutor<S, W>> currentExecutors,
+      final ExecutorType type) {
+    for (final NormalExecutor<S, W> executor : currentExecutors) {
       if (executor.getType() == type) {
         return true;
       }

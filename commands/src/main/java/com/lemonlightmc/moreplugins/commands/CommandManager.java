@@ -1,5 +1,6 @@
 package com.lemonlightmc.moreplugins.commands;
 
+import com.lemonlightmc.moreplugins.base.PluginBase;
 import com.lemonlightmc.moreplugins.commandbase.SimpleCommand;
 import com.lemonlightmc.moreplugins.commands.executors.InternalExecutor;
 import java.lang.reflect.Field;
@@ -13,80 +14,104 @@ import org.bukkit.plugin.SimplePluginManager;
 
 public class CommandManager {
 
-  private static String namespace;
+  private static String namespace = PluginBase.getInstance().getKey();
   private static final Field COMMAND_MAP_FIELD;
   private static final Field KNOWN_COMMANDS_FIELD;
+  private static CommandMap commandMap;
+  private static Map<String, Command> knownCommandMap;
 
   static {
     try {
       COMMAND_MAP_FIELD = SimplePluginManager.class.getDeclaredField("commandMap");
       COMMAND_MAP_FIELD.setAccessible(true);
-    } catch (NoSuchFieldException e) {
+    } catch (final NoSuchFieldException e) {
       throw new RuntimeException(e);
     }
 
     try {
       KNOWN_COMMANDS_FIELD = SimpleCommandMap.class.getDeclaredField("knownCommands");
       KNOWN_COMMANDS_FIELD.setAccessible(true);
-    } catch (NoSuchFieldException e) {
+    } catch (final NoSuchFieldException e) {
       throw new RuntimeException(e);
     }
   }
 
-  public static CommandMap getCommandMap() {
-    try {
-      return (CommandMap) COMMAND_MAP_FIELD.get(
-          Bukkit.getServer().getPluginManager());
-    } catch (Exception e) {
-      throw new RuntimeException("Could not get CommandMap", e);
-    }
-  }
-
   @SuppressWarnings("unchecked")
-  public static Map<String, Command> getKnownCommandMap() {
+  public static void init() {
     try {
-      return (Map<String, Command>) KNOWN_COMMANDS_FIELD.get(getCommandMap());
-    } catch (Exception e) {
-      throw new RuntimeException("Could not get known commands map", e);
+      Object obj = COMMAND_MAP_FIELD.get(
+          Bukkit.getServer().getPluginManager());
+      if (obj == null || !(obj instanceof CommandMap)) {
+        throw new NullPointerException("Failed to retrieve Command Map");
+      } else {
+        CommandManager.commandMap = (CommandMap) obj;
+      }
+
+      obj = KNOWN_COMMANDS_FIELD.get(commandMap);
+      if (obj == null || obj.getClass().equals(Map.class)) {
+        throw new NullPointerException("Failed to retrieve Known Commands Map");
+      } else {
+        knownCommandMap = (Map<String, Command>) obj;
+      }
+    } catch (final Exception e) {
+      throw new RuntimeException("Could not init CommandManager", e);
     }
   }
 
-  public static void register(SimpleCommand command) {
+  public static CommandMap getCommandMap() {
+    if (commandMap == null) {
+      init();
+    }
+    return commandMap;
+  }
+
+  public static Map<String, Command> getKnownCommandMap() {
+    if (knownCommandMap == null) {
+      init();
+    }
+    return knownCommandMap;
+  }
+
+  public static void register(final SimpleCommand command) {
+    register(command, namespace);
+  }
+
+  public static void register(final SimpleCommand command, final String namespace) {
     if (command.getAliases().length == 0) {
       throw new IllegalArgumentException("At least one alias must be provided");
     }
-    for (String alias : command.getAliases()) {
+    for (final String alias : command.getAliases()) {
       try {
-        Command cmd = new InternalExecutor(alias);
+        final Command cmd = new InternalExecutor(alias);
         cmd.setLabel(alias.toLowerCase());
 
         getCommandMap().register(namespace, cmd);
         getKnownCommandMap().put(namespace + ":" + alias.toLowerCase(), cmd);
         getKnownCommandMap().put(alias.toLowerCase(), cmd);
-      } catch (Exception e) {
+      } catch (final Exception e) {
         e.printStackTrace();
       }
     }
   }
 
-  public static void unregister(SimpleCommand command) {
-    CommandMap map = getCommandMap();
+  public static void unregister(final SimpleCommand command) {
+    final CommandMap map = getCommandMap();
     try {
-      Iterator<Command> iterator = getKnownCommandMap().values().iterator();
+      final Iterator<Command> iterator = getKnownCommandMap().values().iterator();
       while (iterator.hasNext()) {
-        Command cmd = iterator.next();
+        final Command cmd = iterator.next();
         if (cmd instanceof InternalExecutor &&
             command.getName() == ((InternalExecutor) cmd).getName()) {
           cmd.unregister(map);
           iterator.remove();
         }
       }
-    } catch (Exception e) {
+    } catch (final Exception e) {
       throw new RuntimeException("Could not unregister command", e);
     }
   }
 
-  public static void setNamespace(String namespace) {
+  public static void setNamespace(final String namespace) {
     if (Utils.isInvalidNamespace(namespace)) {
       return;
     }

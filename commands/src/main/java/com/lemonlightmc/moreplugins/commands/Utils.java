@@ -18,30 +18,30 @@ public class Utils {
 
   static final Pattern NAMESPACE_PATTERN = Pattern.compile("[0-9a-z_.-]+");
 
-  public static void registerImpl(String namespace) {
+  public static void registerImpl(final String namespace) {
   }
 
-  public static void unregisterImpl(String namespace) {
+  public static void unregisterImpl(final String namespace) {
   }
 
   public static BukkitCommandSender<? extends CommandSender> wrapCommandSender(
-      CommandSender sender) {
-    if (sender instanceof BlockCommandSender block) {
+      final CommandSender sender) {
+    if (sender instanceof final BlockCommandSender block) {
       return new BukkitBlockCommandSender(block);
     }
-    if (sender instanceof ConsoleCommandSender console) {
+    if (sender instanceof final ConsoleCommandSender console) {
       return new BukkitConsoleCommandSender(console);
     }
-    if (sender instanceof Player player) {
+    if (sender instanceof final Player player) {
       return new BukkitPlayer(player);
     }
-    if (sender instanceof org.bukkit.entity.Entity entity) {
+    if (sender instanceof final org.bukkit.entity.Entity entity) {
       return new BukkitEntity(entity);
     }
-    if (sender instanceof ProxiedCommandSender proxy) {
+    if (sender instanceof final ProxiedCommandSender proxy) {
       return new BukkitProxiedCommandSender(proxy);
     }
-    if (sender instanceof RemoteConsoleCommandSender remote) {
+    if (sender instanceof final RemoteConsoleCommandSender remote) {
       return new BukkitRemoteConsoleCommandSender(remote);
     }
     throw new RuntimeException(
@@ -50,7 +50,7 @@ public class Utils {
             " to a compatible BukkitCommandSender");
   }
 
-  public static boolean isInvalidNamespace(String namespace) {
+  public static boolean isInvalidNamespace(final String namespace) {
     if (namespace == null || namespace.isEmpty()) {
       Logger.warn(
           "Registering commands using the default namespace because an empty namespace was given!");
@@ -79,18 +79,18 @@ public class Utils {
     PRIMITIVE_TO_WRAPPER.put(double.class, Double.class);
   }
 
-  public void registerPermission(String string) {
+  public void registerPermission(final String string) {
     try {
       Bukkit.getPluginManager().addPermission(new Permission(string));
-    } catch (IllegalArgumentException e) {
+    } catch (final IllegalArgumentException e) {
       assert true;
     }
   }
 
-  public <V> V primitive2wrapper(Class<?> source, Class<V> target) {
+  public <V> V primitive2wrapper(final Class<?> source, final Class<V> target) {
     if (PRIMITIVE_TO_WRAPPER.getOrDefault(target, target).isAssignableFrom(source)) {
       @SuppressWarnings("unchecked")
-      V v = (V) target;
+      final V v = (V) target;
       return v;
     } else {
       throw new IllegalArgumentException(

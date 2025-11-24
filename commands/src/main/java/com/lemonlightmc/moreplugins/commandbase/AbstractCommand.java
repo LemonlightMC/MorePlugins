@@ -33,42 +33,38 @@ public class AbstractCommand
     return MorePlugins.instance;
   }
 
-  public AbstractCommand getInstance() {
-    return this;
-  }
-
   public String getName() {
     return meta.commandName;
   }
 
-  public AbstractCommand withAliases(String... aliases) {
+  public AbstractCommand withAliases(final String... aliases) {
     meta.aliases = List.of(aliases);
-    return getInstance();
+    return this;
   }
 
   public String[] getAliases() {
     return meta.aliases.toArray(new String[0]);
   }
 
-  public boolean hasAlias(String alias) {
+  public boolean hasAlias(final String alias) {
     return meta.aliases.contains(alias);
   }
 
-  public void setAliases(String... aliases) {
+  public void setAliases(final String... aliases) {
     meta.aliases = meta.aliases;
   }
 
-  public AbstractCommand setAliases(List<String> aliases) {
+  public AbstractCommand setAliases(final List<String> aliases) {
     meta.aliases = aliases;
     return this;
   }
 
-  public AbstractCommand addAlias(String alias) {
+  public AbstractCommand addAlias(final String alias) {
     meta.aliases.add(alias);
     return this;
   }
 
-  public AbstractCommand removeAlias(String alias) {
+  public AbstractCommand removeAlias(final String alias) {
     meta.aliases.remove(alias);
     return this;
   }
@@ -82,39 +78,39 @@ public class AbstractCommand
     return !meta.aliases.isEmpty();
   }
 
-  public AbstractCommand withArguments(List<Argument<?, ?>> args) {
+  public AbstractCommand withArguments(final List<Argument<?, ?>> args) {
     arguments.addAll(args);
     return this;
   }
 
-  public AbstractCommand withArguments(Argument<?, ?>... args) {
+  public AbstractCommand withArguments(final Argument<?, ?>... args) {
     arguments.addAll(List.of(args));
     return this;
   }
 
-  public AbstractCommand withOptionalArguments(List<Argument<?, ?>> args) {
-    for (Argument<?, ?> argument : args) {
+  public AbstractCommand withOptionalArguments(final List<Argument<?, ?>> args) {
+    for (final Argument<?, ?> argument : args) {
       argument.setOptional(true);
       this.arguments.add(argument);
     }
-    return getInstance();
+    return this;
   }
 
   @SafeVarargs
-  public final AbstractCommand withOptionalArguments(Argument<?, ?>... args) {
-    for (Argument<?, ?> argument : args) {
+  public final AbstractCommand withOptionalArguments(final Argument<?, ?>... args) {
+    for (final Argument<?, ?> argument : args) {
       argument.setOptional(true);
       this.arguments.add(argument);
     }
-    return getInstance();
+    return this;
   }
 
-  public AbstractCommand setArguments(List<Argument<?, ?>> args) {
+  public AbstractCommand setArguments(final List<Argument<?, ?>> args) {
     arguments = args;
     return this;
   }
 
-  public boolean hasArguments(Argument<?, ?>... args) {
+  public boolean hasArguments(final Argument<?, ?>... args) {
     return arguments.containsAll(List.of(args));
   }
 
@@ -122,12 +118,12 @@ public class AbstractCommand
     return arguments;
   }
 
-  public AbstractCommand removeArguments(Argument<?, ?> args) {
+  public AbstractCommand removeArguments(final Argument<?, ?> args) {
     arguments.remove(args);
     return this;
   }
 
-  public AbstractCommand removeArguments(Argument<?, ?>... args) {
+  public AbstractCommand removeArguments(final Argument<?, ?>... args) {
     arguments.removeAll(List.of(args));
     return this;
   }
@@ -137,22 +133,22 @@ public class AbstractCommand
     return this;
   }
 
-  public AbstractCommand withSubCommands(List<AbstractCommand> subs) {
+  public AbstractCommand withSubCommands(final List<AbstractCommand> subs) {
     subcommands.addAll(subs);
     return this;
   }
 
-  public final AbstractCommand withSubCommands(AbstractCommand... subs) {
+  public final AbstractCommand withSubCommands(final AbstractCommand... subs) {
     subcommands.addAll(List.of(subs));
     return this;
   }
 
-  public AbstractCommand setSubCommands(List<AbstractCommand> subs) {
+  public AbstractCommand setSubCommands(final List<AbstractCommand> subs) {
     subcommands = subs;
     return this;
   }
 
-  public boolean hasSubCommands(AbstractCommand... subs) {
+  public boolean hasSubCommands(final AbstractCommand... subs) {
     return subcommands.containsAll(List.of(subs));
   }
 
@@ -160,12 +156,12 @@ public class AbstractCommand
     return subcommands;
   }
 
-  public AbstractCommand removeSubCommands(AbstractCommand subs) {
+  public AbstractCommand removeSubCommands(final AbstractCommand subs) {
     subcommands.remove(subs);
     return this;
   }
 
-  public AbstractCommand removeSubCommands(AbstractCommand... subs) {
+  public AbstractCommand removeSubCommands(final AbstractCommand... subs) {
     subcommands.removeAll(List.of(subs));
     return this;
   }
@@ -180,23 +176,23 @@ public class AbstractCommand
     return meta.shortDescription.orElse(null);
   }
 
-  public AbstractCommand withShortDescription(String description) {
+  public AbstractCommand withShortDescription(final String description) {
     meta.shortDescription = Optional.ofNullable(description);
-    return getInstance();
+    return this;
   }
 
   public String getFullDescription() {
     return meta.fullDescription.orElse(null);
   }
 
-  public AbstractCommand withFullDescription(String description) {
+  public AbstractCommand withFullDescription(final String description) {
     meta.fullDescription = Optional.ofNullable(description);
-    return getInstance();
+    return this;
   }
 
-  public AbstractCommand withUsage(String... usage) {
+  public AbstractCommand withUsage(final String... usage) {
     meta.usageDescription = Optional.ofNullable(usage);
-    return getInstance();
+    return this;
   }
 
   public String[] getUsage() {
@@ -204,48 +200,48 @@ public class AbstractCommand
   }
 
   public AbstractCommand withHelp(
-      String shortDescription,
-      String fullDescription) {
+      final String shortDescription,
+      final String fullDescription) {
     meta.shortDescription = Optional.ofNullable(shortDescription);
     meta.fullDescription = Optional.ofNullable(fullDescription);
-    return getInstance();
+    return this;
   }
 
-  public AbstractCommand setPlayerOnly(boolean value) {
+  public AbstractCommand setPlayerOnly(final boolean value) {
     this.playerOnly = value;
     return this;
   }
 
-  public AbstractCommand withPermission(Permission permission) {
+  public AbstractCommand withPermission(final Permission permission) {
     meta.permission = permission;
-    return getInstance();
+    return this;
   }
 
-  public AbstractCommand withPermission(String permission) {
+  public AbstractCommand withPermission(final String permission) {
     meta.permission = Permission.fromString(permission);
-    return getInstance();
+    return this;
   }
 
-  public AbstractCommand withoutPermission(Permission permission) {
+  public AbstractCommand withoutPermission(final Permission permission) {
     meta.permission = permission.negate();
-    return getInstance();
+    return this;
   }
 
-  public AbstractCommand withoutPermission(String permission) {
+  public AbstractCommand withoutPermission(final String permission) {
     meta.permission = Permission.fromString(permission).negate();
-    return getInstance();
+    return this;
   }
 
-  public AbstractCommand withRequirement(Predicate<CommandSender> requirement) {
+  public AbstractCommand withRequirement(final Predicate<CommandSender> requirement) {
     meta.requirements = meta.requirements.and(requirement);
-    return getInstance();
+    return this;
   }
 
   public Permission getPermission() {
     return meta.permission;
   }
 
-  public void setPermission(Permission permission) {
+  public void setPermission(final Permission permission) {
     meta.permission = permission;
   }
 
@@ -253,7 +249,7 @@ public class AbstractCommand
     return meta.requirements;
   }
 
-  public void setRequirements(Predicate<CommandSender> requirements) {
+  public void setRequirements(final Predicate<CommandSender> requirements) {
     meta.requirements = requirements;
   }
 
@@ -261,7 +257,7 @@ public class AbstractCommand
     return playerOnly;
   }
 
-  public AbstractCommand setPermissionMessage(String permissionMessage) {
+  public AbstractCommand setPermissionMessage(final String permissionMessage) {
     this.permissionMessage = permissionMessage;
     return this;
   }
@@ -270,7 +266,7 @@ public class AbstractCommand
     return permissionMessage;
   }
 
-  public AbstractCommand setPlayerOnlyMessage(String permissionMessage) {
+  public AbstractCommand setPlayerOnlyMessage(final String permissionMessage) {
     this.permissionMessage = permissionMessage;
     return this;
   }
@@ -280,13 +276,13 @@ public class AbstractCommand
   }
 
   // utils
-  public boolean hasPermission(CommandSender sender, String perm) {
+  public boolean hasPermission(final CommandSender sender, final String perm) {
     if (perm == null || perm.length() == 0)
       return false;
     return sender.hasPermission(perm);
   }
 
-  public boolean checkPermission(CommandSender sender, String perm) {
+  public boolean checkPermission(final CommandSender sender, final String perm) {
     if (perm == null || perm.length() == 0 || !sender.hasPermission(perm)) {
       ChatAPI.send(sender, permissionMessage);
       return false;
@@ -294,11 +290,11 @@ public class AbstractCommand
     return true;
   }
 
-  public boolean isPlayer(CommandSender sender) {
+  public boolean isPlayer(final CommandSender sender) {
     return sender != null && sender instanceof Player;
   }
 
-  public boolean checkPlayer(CommandSender sender) {
+  public boolean checkPlayer(final CommandSender sender) {
     if (sender == null || !(sender instanceof Player)) {
       ChatAPI.send(sender, playerOnlyMessage);
       return false;
@@ -306,15 +302,15 @@ public class AbstractCommand
     return true;
   }
 
-  public void sendHelpMessage(CommandSender sender) {
+  public void sendHelpMessage(final CommandSender sender) {
     ChatAPI.send(sender, helpMessage);
   }
 
-  public void sendPermissionMessage(CommandSender sender) {
+  public void sendPermissionMessage(final CommandSender sender) {
     ChatAPI.send(sender, permissionMessage);
   }
 
-  public void sendPlayerOnlyMessage(CommandSender sender) {
+  public void sendPlayerOnlyMessage(final CommandSender sender) {
     ChatAPI.send(sender, playerOnlyMessage);
   }
 
@@ -334,7 +330,7 @@ public class AbstractCommand
       return new ArrayList<String>();
     if (originals == null)
       return collection;
-    for (String string : originals) {
+    for (final String string : originals) {
       if (startsWithIgnoreCase(string, token)) {
         collection.add(string);
       }

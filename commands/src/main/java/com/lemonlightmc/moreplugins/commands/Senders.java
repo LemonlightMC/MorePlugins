@@ -10,60 +10,44 @@ import org.bukkit.entity.Player;
 
 public class Senders {
 
-  public static interface AbstractCommandSender<Source> {
-    /**
-     * Tests if this CommandSender has permission to use the given permission node
-     *
-     * @param permissionNode The node to check for
-     * @return True if this CommandSender holds the permission node, and false
-     *         otherwise
-     */
+  public static interface AbstractCommandSender<S extends CommandSender> {
     boolean hasPermission(String permissionNode);
 
-    /**
-     * Tests if this CommandSender has `operator` status, or the ability to run any
-     * command
-     *
-     * @return True if this CommandSender is an operator, and false otherwise
-     */
     boolean isOp();
 
-    /**
-     * @return The underlying CommandSender object
-     */
-    Source getSource();
+    S getSource();
   }
 
-  public static interface BukkitCommandSender<Source extends CommandSender>
-      extends AbstractCommandSender<Source> {
+  public static interface BukkitCommandSender<S extends CommandSender>
+      extends AbstractCommandSender<S> {
   }
 
-  public static interface AbstractConsoleCommandSender<Source>
-      extends AbstractCommandSender<Source> {
+  public static interface AbstractConsoleCommandSender<S extends CommandSender>
+      extends AbstractCommandSender<S> {
   }
 
-  public static interface AbstractBlockCommandSender<Source>
-      extends AbstractCommandSender<Source> {
+  public static interface AbstractBlockCommandSender<S extends CommandSender>
+      extends AbstractCommandSender<S> {
   }
 
-  public static interface AbstractPlayer<Source>
-      extends AbstractCommandSender<Source> {
+  public static interface AbstractPlayer<S extends CommandSender>
+      extends AbstractCommandSender<S> {
   }
 
-  public static interface AbstractEntity<Source>
-      extends AbstractCommandSender<Source> {
+  public static interface AbstractEntity<S extends CommandSender>
+      extends AbstractCommandSender<S> {
   }
 
-  public static interface AbstractFeedbackForwardingCommandSender<Source>
-      extends AbstractCommandSender<Source> {
+  public static interface AbstractFeedbackForwardingCommandSender<S extends CommandSender>
+      extends AbstractCommandSender<S> {
   }
 
-  public static interface AbstractProxiedCommandSender<Source>
-      extends AbstractCommandSender<Source> {
+  public static interface AbstractProxiedCommandSender<S extends CommandSender>
+      extends AbstractCommandSender<S> {
   }
 
-  public static interface AbstractRemoteConsoleCommandSender<Source>
-      extends AbstractCommandSender<Source> {
+  public static interface AbstractRemoteConsoleCommandSender<S extends CommandSender>
+      extends AbstractCommandSender<S> {
   }
 
   public static class BukkitBlockCommandSender
@@ -73,12 +57,12 @@ public class Senders {
 
     private final BlockCommandSender commandBlock;
 
-    public BukkitBlockCommandSender(BlockCommandSender commandBlock) {
+    public BukkitBlockCommandSender(final BlockCommandSender commandBlock) {
       this.commandBlock = commandBlock;
     }
 
     @Override
-    public boolean hasPermission(String permissionNode) {
+    public boolean hasPermission(final String permissionNode) {
       return this.commandBlock.hasPermission(permissionNode);
     }
 
@@ -100,12 +84,12 @@ public class Senders {
 
     private final ConsoleCommandSender sender;
 
-    public BukkitConsoleCommandSender(ConsoleCommandSender sender) {
+    public BukkitConsoleCommandSender(final ConsoleCommandSender sender) {
       this.sender = sender;
     }
 
     @Override
-    public boolean hasPermission(String permissionNode) {
+    public boolean hasPermission(final String permissionNode) {
       return sender.hasPermission(permissionNode);
     }
 
@@ -125,12 +109,12 @@ public class Senders {
 
     private final Entity entity;
 
-    public BukkitEntity(Entity entity) {
+    public BukkitEntity(final Entity entity) {
       this.entity = entity;
     }
 
     @Override
-    public boolean hasPermission(String permissionNode) {
+    public boolean hasPermission(final String permissionNode) {
       return this.entity.hasPermission(permissionNode);
     }
 
@@ -153,12 +137,12 @@ public class Senders {
     private final FeedbackForwardingSender sender;
 
     public BukkitFeedbackForwardingCommandSender(
-        FeedbackForwardingSender sender) {
+        final FeedbackForwardingSender sender) {
       this.sender = sender;
     }
 
     @Override
-    public boolean hasPermission(String permissionNode) {
+    public boolean hasPermission(final String permissionNode) {
       return this.sender.hasPermission(permissionNode);
     }
 
@@ -178,12 +162,12 @@ public class Senders {
 
     private final Player player;
 
-    public BukkitPlayer(Player player) {
+    public BukkitPlayer(final Player player) {
       this.player = player;
     }
 
     @Override
-    public boolean hasPermission(String permissionNode) {
+    public boolean hasPermission(final String permissionNode) {
       return this.player.hasPermission(permissionNode);
     }
 
@@ -205,12 +189,12 @@ public class Senders {
 
     private final ProxiedCommandSender proxySender;
 
-    public BukkitProxiedCommandSender(ProxiedCommandSender player) {
+    public BukkitProxiedCommandSender(final ProxiedCommandSender player) {
       this.proxySender = player;
     }
 
     @Override
-    public boolean hasPermission(String permissionNode) {
+    public boolean hasPermission(final String permissionNode) {
       return this.proxySender.hasPermission(permissionNode);
     }
 
@@ -232,12 +216,12 @@ public class Senders {
 
     private final RemoteConsoleCommandSender remote;
 
-    public BukkitRemoteConsoleCommandSender(RemoteConsoleCommandSender remote) {
+    public BukkitRemoteConsoleCommandSender(final RemoteConsoleCommandSender remote) {
       this.remote = remote;
     }
 
     @Override
-    public boolean hasPermission(String permissionNode) {
+    public boolean hasPermission(final String permissionNode) {
       return remote.hasPermission(permissionNode);
     }
 

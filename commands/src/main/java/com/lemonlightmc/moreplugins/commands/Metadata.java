@@ -1,6 +1,5 @@
 package com.lemonlightmc.moreplugins.commands;
 
-import com.lemonlightmc.moreplugins.commands.Senders.AbstractCommandSender;
 import com.lemonlightmc.moreplugins.exceptions.InvalidCommandNameException;
 
 import java.util.ArrayList;
@@ -8,59 +7,18 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
 
-/**
- * This class stores metadata about a command
- */
 public final class Metadata<CommandSender> {
 
-  /**
-   * The command's name
-   */
   public final String commandName;
-
-  /**
-   * The command's permission
-   */
-  public Permission permission = Permission.NONE;
-
-  /**
-   * The command's aliases
-   */
   public List<String> aliases = new ArrayList<String>();
-
-  /**
-   * A predicate that a {@link AbstractCommandSender} must pass in order to
-   * execute the command
-   */
+  public Permission permission = Permission.NONE;
   public Predicate<CommandSender> requirements = _ -> true;
 
-  /**
-   * An optional short description for the command
-   */
   public Optional<String> shortDescription = Optional.empty();
-
-  /**
-   * An optional full description for the command
-   */
   public Optional<String> fullDescription = Optional.empty();
-
-  /**
-   * An optional usage description for the command
-   */
   public Optional<String[]> usageDescription = Optional.empty();
-
-  /**
-   * An optional HelpTopic object for the command (for Bukkit)
-   */
   public Optional<Object> helpTopic = Optional.empty();
 
-  /**
-   * Create command metadata
-   * 
-   * @param commandName The command's name
-   *
-   * @throws InvalidCommandNameException if the command name is not valid
-   */
   Metadata(final String commandName) {
     if (commandName == null || commandName.isEmpty() || commandName.contains(" ")) {
       throw new InvalidCommandNameException(commandName);
@@ -69,7 +27,7 @@ public final class Metadata<CommandSender> {
     this.commandName = commandName;
   }
 
-  public Metadata(Metadata<CommandSender> original) {
+  public Metadata(final Metadata<CommandSender> original) {
     this(original.commandName);
     this.permission = original.permission;
     this.aliases = original.aliases;

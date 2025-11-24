@@ -2,10 +2,6 @@ package com.lemonlightmc.moreplugins.commands;
 
 import java.util.Optional;
 
-/**
- * A representation of permission nodes for commands. Represents permission
- * nodes, being op and having all permissions
- */
 public class Permission {
 
   private enum PermissionNode {
@@ -17,28 +13,28 @@ public class Permission {
   public static final Permission OP = new Permission(PermissionNode.OP);
 
   private boolean negated = false;
-  private String permission;
-  private PermissionNode permissionNode;
+  private final String permission;
+  private final PermissionNode permissionNode;
 
-  private Permission(PermissionNode permissionNode) {
+  private Permission(final PermissionNode permissionNode) {
     this.permission = null;
     this.permissionNode = permissionNode;
   }
 
-  private Permission(String permission) {
+  private Permission(final String permission) {
     this.permission = permission;
     this.permissionNode = null;
   }
 
   @Override
-  public boolean equals(Object obj) {
+  public boolean equals(final Object obj) {
     if (this == obj) {
       return true;
     }
     if (!(obj instanceof Permission)) {
       return false;
     }
-    Permission other = (Permission) obj;
+    final Permission other = (Permission) obj;
     return (negated == other.negated &&
         permission.equals(other.permission) &&
         permissionNode == other.permissionNode);
@@ -66,7 +62,7 @@ public class Permission {
     return (negated ? "not " : "") + result;
   }
 
-  public static Permission fromString(String permission) {
+  public static Permission fromString(final String permission) {
     return new Permission(permission);
   }
 
