@@ -2,6 +2,8 @@ package com.lemonlightmc.moreplugins.commands;
 
 import com.lemonlightmc.moreplugins.commands.Senders.*;
 import com.lemonlightmc.moreplugins.messages.Logger;
+
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -99,5 +101,42 @@ public class Utils {
               ", not " +
               target.getSimpleName());
     }
+  }
+
+  public static ArrayList<String> copyPartialMatches(
+      final String token,
+      final Iterable<String> originals) throws UnsupportedOperationException, IllegalArgumentException {
+    return copyPartialMatches(token, originals, new ArrayList<>());
+  }
+
+  public static ArrayList<String> copyPartialMatches(
+      final String token,
+      final Iterable<String> originals,
+      final ArrayList<String> collection) throws UnsupportedOperationException, IllegalArgumentException {
+    if (token == null || token.length() == 0)
+      return collection;
+    if (collection == null)
+      return new ArrayList<String>();
+    if (originals == null)
+      return collection;
+    for (final String string : originals) {
+      if (startsWithIgnoreCase(string, token)) {
+        collection.add(string);
+      }
+    }
+    return collection;
+  }
+
+  public static boolean startsWithIgnoreCase(
+      final String string,
+      final String prefix) {
+    if (string == null || prefix.length() == 0)
+      return false;
+    if (prefix == null || prefix.length() == 0)
+      return true;
+    if (string.length() < prefix.length()) {
+      return false;
+    }
+    return string.regionMatches(true, 0, prefix, 0, prefix.length());
   }
 }

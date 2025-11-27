@@ -1,7 +1,8 @@
 package com.lemonlightmc.moreplugins.commands.executors;
 
 import com.lemonlightmc.moreplugins.base.MorePlugins;
-import com.lemonlightmc.moreplugins.commandbase.AbstractCommand;
+import com.lemonlightmc.moreplugins.commands.Utils;
+
 import java.util.ArrayList;
 import java.util.List;
 import org.bukkit.Bukkit;
@@ -127,7 +128,7 @@ public class InternalExecutor extends Command {
         }
       }
     }
-    completions = AbstractCommand.copyPartialMatches(
+    completions = Utils.copyPartialMatches(
         lastWord,
         completions,
         new ArrayList<>());
