@@ -2,18 +2,22 @@ package com.lemonlightmc.moreplugins.commands;
 
 import com.lemonlightmc.moreplugins.commands.Senders.*;
 import com.lemonlightmc.moreplugins.messages.Logger;
+import com.lemonlightmc.moreplugins.messages.MessageFormatter;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
 import org.bukkit.Bukkit;
+import org.bukkit.GameRule;
 import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.command.ProxiedCommandSender;
 import org.bukkit.command.RemoteConsoleCommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.minecart.CommandMinecart;
+import org.bukkit.permissions.Permissible;
 import org.bukkit.permissions.Permission;
 
 public class Utils {
@@ -132,5 +136,41 @@ public class Utils {
       return false;
     }
     return string.regionMatches(true, 0, prefix, 0, prefix.length());
+  }
+
+  public static void broadcastCommandMessage(CommandSender source, String message) {
+    broadcastCommandMessage(source, message, true);
+  }
+
+  public static void broadcastCommandMessage(CommandSender source, String message,
+      boolean sendToSource) {
+    final String colored = MessageFormatter.format("$7o[" + source.getName() + ": " + message + "$7o]");
+
+    if (source instanceof BlockCommandSender blockSender) {
+      if (!blockSender.getBlock().getWorld().getGameRuleValue(GameRule.COMMAND_BLOCK_OUTPUT)) {
+        Logger.info(colored);
+        return;
+      }
+    } else if (source instanceof CommandMinecart cartSender) {
+      if (!cartSender.getWorld().getGameRuleValue(GameRule.COMMAND_BLOCK_OUTPUT)) {
+        Logger.info(colored);
+        return;
+      }
+    }
+
+    if (sendToSource && !(source instanceof ConsoleCommandSender)) {
+      source.sendMessage(colored);
+    }
+    for (Permissible user : Bukkit.getPluginManager().getPermissionSubscriptions("bukkit.broadcast.admin")) {
+      if (user instanceof CommandSender && user.hasPermission("bukkit.broadcast.admin")) {
+        CommandSender target = (CommandSender) user;
+
+        if (target instanceof ConsoleCommandSender) {
+          target.sendMessage(colored);
+        } else if (target != source) {
+          target.sendMessage(colored);
+        }
+      }
+    }
   }
 }
