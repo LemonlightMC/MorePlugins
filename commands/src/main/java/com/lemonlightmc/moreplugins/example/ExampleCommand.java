@@ -15,11 +15,12 @@ public class ExampleCommand extends SimpleCommand {
 
   public ExampleCommand() {
     super("example");
+    withAliases("example2");
     withShortDescription("An example command");
+    withFullDescription("An example command that does random stuff!");
+    withUsage("&cUsage: /example <random|player>");
     withPermission("moreplugins.example");
-    withUsage("&cUsage: /example");
-    withAliases();
-    withHelp(List.of("&e/example &7- &fAn example command"));
+    // withHelp(List.of("&e/example &7- &fAn example command"));
     withArguments(new DoubleArgument("amount").applySuggestions((final SuggestionInfo<CommandSender> _) -> {
       return List.of("");
     }));

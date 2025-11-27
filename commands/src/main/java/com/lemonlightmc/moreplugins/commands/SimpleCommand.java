@@ -18,7 +18,8 @@ public class SimpleCommand extends AbstractCommand {
   public Optional<String> helpMessage = Optional.empty();
 
   public SimpleCommand(final String label) {
-    this.label = label;
+    this.label = label.toLowerCase();
+    withAliases(label);
   }
 
   public boolean execute(

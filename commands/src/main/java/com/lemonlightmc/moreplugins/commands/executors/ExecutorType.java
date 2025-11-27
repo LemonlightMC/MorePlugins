@@ -1,31 +1,25 @@
 package com.lemonlightmc.moreplugins.commands.executors;
 
 public enum ExecutorType {
+  ALL,
+
   PLAYER,
 
   ENTITY,
+
   CONSOLE,
+
   BLOCK,
 
-  ALL,
-
-  /**
-   * NativeProxyCommandSender
-   */
+  // NativeProxyCommandSender
   PROXY,
 
-  /**
-   * NativeProxyCommandSender (always)
-   */
+  // NativeProxyCommandSender (always)
   NATIVE,
 
-  /**
-   * RemoteConsoleCommandSender
-   */
+  // RemoteConsoleCommandSender
   REMOTE,
 
-  /**
-   * {@code io.papermc.paper.commands.FeedbackForwardingSender}
-   */
+  // Paper's FeedbackForwardingSender
   FEEDBACK_FORWARDING,
 }

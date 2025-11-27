@@ -2,6 +2,8 @@ package com.lemonlightmc.moreplugins.commands;
 
 import com.lemonlightmc.moreplugins.base.PluginBase;
 import com.lemonlightmc.moreplugins.commands.executors.InternalExecutor;
+import com.lemonlightmc.moreplugins.messages.Logger;
+
 import java.lang.reflect.Field;
 import java.util.Iterator;
 import java.util.Map;
@@ -81,18 +83,19 @@ public class CommandManager {
   }
 
   public static void register(final SimpleCommand command, final String namespace) {
-    if (command.getAliases().length == 0) {
+    if (command.aliases.size() == 0) {
       throw new IllegalArgumentException("At least one alias must be provided");
     }
-    for (final String alias : command.getAliases()) {
+    for (final String alias : command.aliases) {
       try {
         final Command cmd = new InternalExecutor(alias);
-        cmd.setLabel(alias.toLowerCase());
+        cmd.setLabel(alias);
 
         getCommandMap().register(namespace, cmd);
-        getKnownCommandMap().put(namespace + ":" + alias.toLowerCase(), cmd);
-        getKnownCommandMap().put(alias.toLowerCase(), cmd);
+        getKnownCommandMap().put(namespace + ":" + alias, cmd);
+        getKnownCommandMap().put(alias, cmd);
       } catch (final Exception e) {
+        Logger.warn("Failed to register a command!");
         e.printStackTrace();
       }
     }
@@ -101,6 +104,17 @@ public class CommandManager {
   public static void unregister(final SimpleCommand command) {
     final CommandMap map = getCommandMap();
     try {
+      /*
+       * for (String alias : command.aliases) {
+       * final Command cmd = getKnownCommandMap().get(alias);
+       * if (cmd instanceof InternalExecutor &&
+       * ((InternalExecutor) cmd).getAliases().contains(alias)) {
+       * cmd.unregister(map);
+       * getKnownCommandMap().remove(alias);
+       * }
+       * }
+       */
+
       final Iterator<Command> iterator = getKnownCommandMap().values().iterator();
       while (iterator.hasNext()) {
         final Command cmd = iterator.next();
@@ -111,7 +125,8 @@ public class CommandManager {
         }
       }
     } catch (final Exception e) {
-      throw new RuntimeException("Could not unregister command", e);
+      Logger.warn("Failed to unregister a command!");
+      e.printStackTrace();
     }
   }
 

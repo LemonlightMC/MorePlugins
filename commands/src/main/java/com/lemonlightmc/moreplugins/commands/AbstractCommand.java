@@ -12,8 +12,10 @@ import com.lemonlightmc.moreplugins.messages.Logger;
 
 import java.util.ArrayList;
 import java.util.EnumMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Predicate;
 
 import org.bukkit.command.CommandException;
@@ -26,10 +28,10 @@ public class AbstractCommand implements PluginIdentifiableCommand {
 
   protected List<Argument<?, ?>> arguments = new ArrayList<>();
   protected List<AbstractCommand> subcommands = new ArrayList<>();
-  protected List<String> aliases = new ArrayList<String>();
+  protected Set<String> aliases = new HashSet<String>();
   protected List<NormalExecutor<?, ?>> executors;
 
-  protected List<String> permissions = new ArrayList<>();
+  protected Set<String> permissions = new HashSet<String>();
   protected Predicate<CommandSender> requirements = _ -> true;
   protected boolean playerOnly = false;
 
@@ -39,29 +41,32 @@ public class AbstractCommand implements PluginIdentifiableCommand {
 
   // Aliases
   public AbstractCommand withAliases(final String... aliases) {
-    this.aliases.addAll(List.of(aliases));
+    for (String alias : aliases) {
+      this.aliases.add(alias.toLowerCase());
+    }
     return this;
   }
 
-  public void setAliases(final String... aliases) {
-    this.aliases = List.of(aliases);
-  }
-
-  public AbstractCommand setAliases(final List<String> aliases) {
-    this.aliases = aliases;
+  public AbstractCommand setAliases(final Set<String> aliases) {
+    this.aliases.clear();
+    for (String alias : aliases) {
+      this.aliases.add(alias.toLowerCase());
+    }
     return this;
   }
 
-  public String[] getAliases() {
-    return this.aliases.toArray(new String[0]);
+  public Set<String> getAliases() {
+    return this.aliases;
   }
 
   public boolean hasAlias(final String alias) {
     return this.aliases.contains(alias);
   }
 
-  public AbstractCommand removeAlias(final String... alias) {
-    this.aliases.removeAll(List.of(alias));
+  public AbstractCommand removeAlias(final String... aliases) {
+    for (String alias : aliases) {
+      this.aliases.remove(alias.toLowerCase());
+    }
     return this;
   }
 
@@ -266,7 +271,7 @@ public class AbstractCommand implements PluginIdentifiableCommand {
     return this;
   }
 
-  public List<String> getPermissions() {
+  public Set<String> getPermissions() {
     return permissions;
   }
 
@@ -299,7 +304,7 @@ public class AbstractCommand implements PluginIdentifiableCommand {
     return sender.hasPermission(perm);
   }
 
-  public boolean checkPermission(final CommandSender sender, final List<String> perms) {
+  public boolean checkPermission(final CommandSender sender, final Set<String> perms) {
     if (perms == null || perms.size() == 0) {
       return true;
     }
