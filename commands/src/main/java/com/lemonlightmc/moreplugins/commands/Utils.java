@@ -20,12 +20,6 @@ public class Utils {
 
   static final Pattern NAMESPACE_PATTERN = Pattern.compile("[0-9a-z_.-]+");
 
-  public static void registerImpl(final String namespace) {
-  }
-
-  public static void unregisterImpl(final String namespace) {
-  }
-
   public static BukkitCommandSender<? extends CommandSender> wrapCommandSender(
       final CommandSender sender) {
     if (sender instanceof final BlockCommandSender block) {

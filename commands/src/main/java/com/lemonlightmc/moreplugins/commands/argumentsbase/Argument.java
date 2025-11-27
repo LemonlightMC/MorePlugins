@@ -1,7 +1,5 @@
 package com.lemonlightmc.moreplugins.commands.argumentsbase;
 
-import com.lemonlightmc.moreplugins.commands.Permission;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -17,7 +15,7 @@ public abstract class Argument<T, Impl> {
   private final Class<T> primitiveType;
   private boolean isOptional = false;
   private boolean isListed = true;
-  private Permission permission = Permission.NONE;
+  private String permission = "";
   private Predicate<CommandSender> requirements = _ -> true;
   private final List<Argument<?, ?>> combinedArguments = new ArrayList<>();
 
@@ -73,17 +71,12 @@ public abstract class Argument<T, Impl> {
     return this.suggestionsModifiers;
   }
 
-  public final Impl withPermission(final Permission permission) {
+  public final Impl withPermission(final String permission) {
     this.permission = permission;
     return getInstance();
   }
 
-  public final Impl withPermission(final String permission) {
-    this.permission = Permission.fromString(permission);
-    return getInstance();
-  }
-
-  public final Permission getArgumentPermission() {
+  public final String getPermission() {
     return permission;
   }
 
@@ -136,7 +129,7 @@ public abstract class Argument<T, Impl> {
   public void copyPermissionsAndRequirements(final Argument<?, ?> argument) {
     this.resetRequirements();
     this.withRequirement(argument.getRequirements());
-    this.withPermission(argument.getArgumentPermission());
+    this.withPermission(argument.getPermission());
   }
 
   public String getHelpString() {
