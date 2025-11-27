@@ -1,9 +1,7 @@
-package com.lemonlightmc.moreplugins.commandbase;
+package com.lemonlightmc.moreplugins.commands;
 
 import com.lemonlightmc.moreplugins.apis.ChatAPI;
 import com.lemonlightmc.moreplugins.base.MorePlugins;
-import com.lemonlightmc.moreplugins.commands.CommandManager;
-import com.lemonlightmc.moreplugins.commands.Senders;
 import com.lemonlightmc.moreplugins.commands.Senders.AbstractCommandSender;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.Argument;
 import com.lemonlightmc.moreplugins.commands.executors.ExecutionInfo;

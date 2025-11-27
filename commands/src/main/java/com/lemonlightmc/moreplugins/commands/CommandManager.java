@@ -1,7 +1,6 @@
 package com.lemonlightmc.moreplugins.commands;
 
 import com.lemonlightmc.moreplugins.base.PluginBase;
-import com.lemonlightmc.moreplugins.commandbase.SimpleCommand;
 import com.lemonlightmc.moreplugins.commands.executors.InternalExecutor;
 import java.lang.reflect.Field;
 import java.util.Iterator;
