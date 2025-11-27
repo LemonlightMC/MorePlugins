@@ -11,13 +11,13 @@ public final class Metadata<CommandSender> {
 
   public final String commandName;
   public List<String> aliases = new ArrayList<String>();
-  public Permission permission = Permission.NONE;
+  public String permission = "";
   public Predicate<CommandSender> requirements = _ -> true;
 
   public Optional<String> shortDescription = Optional.empty();
   public Optional<String> fullDescription = Optional.empty();
   public Optional<String[]> usageDescription = Optional.empty();
-  public Optional<Object> helpTopic = Optional.empty();
+  public Optional<String> helpMessage = Optional.empty();
 
   Metadata(final String commandName) {
     if (commandName == null || commandName.isEmpty() || commandName.contains(" ")) {
@@ -41,8 +41,8 @@ public final class Metadata<CommandSender> {
     this.usageDescription = original.usageDescription.isPresent()
         ? Optional.of(original.usageDescription.get())
         : Optional.empty();
-    this.helpTopic = original.helpTopic.isPresent()
-        ? Optional.of(original.helpTopic.get())
+    this.helpMessage = original.helpMessage.isPresent()
+        ? Optional.of(original.helpMessage.get())
         : Optional.empty();
   }
 }

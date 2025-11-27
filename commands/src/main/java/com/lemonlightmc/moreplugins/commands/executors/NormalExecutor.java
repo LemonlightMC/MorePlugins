@@ -7,9 +7,10 @@ import org.bukkit.command.CommandSender;
 public interface NormalExecutor<S extends CommandSender, W extends AbstractCommandSender<? extends CommandSender>> {
   void run(ExecutionInfo<S, W> info) throws CommandException;
 
-  default int executeWith(ExecutionInfo<S, W> info)
+  @SuppressWarnings("unchecked")
+  default int executeWith(ExecutionInfo<?, ?> info)
       throws CommandException {
-    this.run(info);
+    this.run((ExecutionInfo<S, W>) info);
     return 1;
   }
 

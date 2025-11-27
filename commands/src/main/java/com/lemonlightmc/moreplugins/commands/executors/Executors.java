@@ -1,12 +1,6 @@
 package com.lemonlightmc.moreplugins.commands.executors;
 
-import com.lemonlightmc.moreplugins.commands.Senders.BukkitBlockCommandSender;
-import com.lemonlightmc.moreplugins.commands.Senders.BukkitCommandSender;
-import com.lemonlightmc.moreplugins.commands.Senders.BukkitConsoleCommandSender;
-import com.lemonlightmc.moreplugins.commands.Senders.BukkitEntity;
-import com.lemonlightmc.moreplugins.commands.Senders.BukkitFeedbackForwardingCommandSender;
-import com.lemonlightmc.moreplugins.commands.Senders.BukkitPlayer;
-import com.lemonlightmc.moreplugins.commands.Senders.BukkitRemoteConsoleCommandSender;
+import com.lemonlightmc.moreplugins.commands.Senders.*;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.CommandArguments;
 import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.CommandException;

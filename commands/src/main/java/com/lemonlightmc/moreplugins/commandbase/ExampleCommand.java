@@ -13,25 +13,24 @@ import org.bukkit.entity.Player;
 public class ExampleCommand extends SimpleCommand {
 
   public ExampleCommand() {
-    super();
-    setLabel("example");
-    setDescription("An example command");
+    super("example");
+    withShortDescription("An example command");
     withPermission("moreplugins.example");
-    setUsageMessage("&cUsage: /example");
+    withUsage("&cUsage: /example");
     withAliases();
-    setHelp(List.of("&e/example &7- &fAn example command"));
-    withArguments(new DoubleArgument("amount").applySuggestions((SuggestionInfo<CommandSender> _) -> {
+    withHelp(List.of("&e/example &7- &fAn example command"));
+    withArguments(new DoubleArgument("amount").applySuggestions((final SuggestionInfo<CommandSender> _) -> {
       return List.of("");
     }));
     withExecutor(ExampleCommand::executes);
     withExecutor(ExampleCommand::executesConsole);
   }
 
-  public static void executes(Player sender, CommandArguments args) {
+  public static void executes(final Player sender, final CommandArguments args) {
   }
 
   public static void executesConsole(
-      ConsoleCommandSender sender,
-      CommandArguments args) throws CommandException {
+      final ConsoleCommandSender sender,
+      final CommandArguments args) throws CommandException {
   }
 }
