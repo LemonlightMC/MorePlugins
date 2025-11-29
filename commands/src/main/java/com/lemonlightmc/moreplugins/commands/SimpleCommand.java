@@ -1,13 +1,8 @@
 package com.lemonlightmc.moreplugins.commands;
 
-import com.lemonlightmc.moreplugins.base.PluginBase;
-
 import java.util.List;
 import java.util.Optional;
-import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-
-//import org.bukkit.command.Command;
 
 public class SimpleCommand extends AbstractCommand {
 
@@ -34,27 +29,6 @@ public class SimpleCommand extends AbstractCommand {
       final String alias,
       final String[] args) {
     return List.of();
-  }
-
-  public List<String> onTabComplete(
-      final CommandSender sender,
-      final Command command,
-      final String label,
-      final String[] args) {
-    return tabComplete(sender, label, args);
-  }
-
-  public boolean onCommand(
-      final CommandSender sender,
-      final Command command,
-      final String label,
-      final String[] args) {
-    PluginBase.getInstanceScheduler()
-        .runAsync(
-            () -> {
-              execute(sender, label, args);
-            });
-    return true;
   }
 
   public void register(final String namespace) {

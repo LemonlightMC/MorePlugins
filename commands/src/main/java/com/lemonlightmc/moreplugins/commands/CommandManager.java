@@ -5,7 +5,6 @@ import com.lemonlightmc.moreplugins.commands.executors.InternalExecutor;
 import com.lemonlightmc.moreplugins.messages.Logger;
 
 import java.lang.reflect.Field;
-import java.util.Iterator;
 import java.util.Map;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -86,46 +85,63 @@ public class CommandManager {
     if (command.aliases.size() == 0) {
       throw new IllegalArgumentException("At least one alias must be provided");
     }
+    final InternalExecutor cmd = new InternalExecutor(command);
     for (final String alias : command.aliases) {
       try {
-        final Command cmd = new InternalExecutor(alias);
         cmd.setLabel(alias);
-
         getCommandMap().register(namespace, cmd);
         getKnownCommandMap().put(namespace + ":" + alias, cmd);
         getKnownCommandMap().put(alias, cmd);
       } catch (final Exception e) {
-        Logger.warn("Failed to register a command!");
+        Logger.warn("Failed to register a command: " + command.getName());
         e.printStackTrace();
       }
     }
   }
 
   public static void unregister(final SimpleCommand command) {
-    final CommandMap map = getCommandMap();
     try {
-      /*
-       * for (String alias : command.aliases) {
-       * final Command cmd = getKnownCommandMap().get(alias);
-       * if (cmd instanceof InternalExecutor &&
-       * ((InternalExecutor) cmd).getAliases().contains(alias)) {
-       * cmd.unregister(map);
-       * getKnownCommandMap().remove(alias);
-       * }
-       * }
-       */
-
-      final Iterator<Command> iterator = getKnownCommandMap().values().iterator();
-      while (iterator.hasNext()) {
-        final Command cmd = iterator.next();
-        if (cmd instanceof InternalExecutor &&
-            command.getName() == ((InternalExecutor) cmd).getName()) {
-          cmd.unregister(map);
-          iterator.remove();
-        }
+      final Command cmd = getCommandMap().getCommand(namespace);
+      if (cmd != null) {
+        cmd.unregister(getCommandMap());
+      }
+      for (final String alias : command.aliases) {
+        unregister(alias);
       }
     } catch (final Exception e) {
-      Logger.warn("Failed to unregister a command!");
+      Logger.warn("Failed to unregister a command: " + command.getName());
+      e.printStackTrace();
+    }
+  }
+
+  public static void unregister(final String alias) {
+    try {
+      Command cmd = getKnownCommandMap().get(alias);
+      if (cmd != null && cmd instanceof InternalExecutor &&
+          ((InternalExecutor) cmd).getAliases().contains(alias)) {
+        cmd.unregister(getCommandMap());
+        getKnownCommandMap().remove(alias);
+      }
+      cmd = getKnownCommandMap().get(namespace + ":" + alias);
+      if (cmd != null && cmd instanceof InternalExecutor &&
+          ((InternalExecutor) cmd).getAliases().contains(alias)) {
+        cmd.unregister(getCommandMap());
+        getKnownCommandMap().remove(namespace + ":" + alias);
+      }
+    } catch (final Exception e) {
+      Logger.warn("Failed to unregister a command alias: " + alias);
+      e.printStackTrace();
+    }
+  }
+
+  public static void unregisterAll() {
+    try {
+      getCommandMap().clearCommands();
+      for (final String key : getKnownCommandMap().keySet()) {
+        unregister(key);
+      }
+    } catch (final Exception e) {
+      Logger.warn("Failed to unregister all command");
       e.printStackTrace();
     }
   }
