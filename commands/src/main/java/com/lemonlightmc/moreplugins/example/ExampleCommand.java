@@ -3,7 +3,8 @@ package com.lemonlightmc.moreplugins.example;
 import com.lemonlightmc.moreplugins.commands.SimpleCommand;
 import com.lemonlightmc.moreplugins.commands.arguments.DoubleArgument;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.CommandArguments;
-import com.lemonlightmc.moreplugins.commands.argumentsbase.SuggestionInfo;
+import com.lemonlightmc.moreplugins.commands.suggestions.SuggestionInfo;
+import com.lemonlightmc.moreplugins.commands.suggestions.Suggestions;
 
 import java.util.List;
 
@@ -23,9 +24,10 @@ public class ExampleCommand extends SimpleCommand {
     withPermission("moreplugins.example");
     // withHelp(List.of("&e/example &7- &fAn example command"));
     withArguments(new DoubleArgument("amount").withSuggestions((final SuggestionInfo<CommandSender> _) -> {
-      return List.of("");
+      return List.of("64", "128");
     }));
     withArguments(new DoubleArgument("amount2").withSuggestions("1", "2", "3"));
+    withArguments(new DoubleArgument("amount3").withSuggestions(Suggestions.from("1", "2")));
     executesPlayer(ExampleCommand::executes2);
     executesConsole(ExampleCommand::executesConsole2);
   }

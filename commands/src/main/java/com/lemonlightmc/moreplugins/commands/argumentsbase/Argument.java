@@ -3,10 +3,14 @@ package com.lemonlightmc.moreplugins.commands.argumentsbase;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 import org.bukkit.command.CommandException;
 import org.bukkit.command.CommandSender;
+
+import com.lemonlightmc.moreplugins.commands.suggestions.SuggestionInfo;
+import com.lemonlightmc.moreplugins.commands.suggestions.Suggestions;
 
 public abstract class Argument<Type, ArgType> {
   protected String name;
@@ -109,18 +113,24 @@ public abstract class Argument<Type, ArgType> {
   }
 
   // Suggestions
+
   public ArgType withSuggestions(final Suggestions<CommandSender> func) {
     this.suggestions.add(func);
     return getInstance();
   }
 
+  public ArgType withSuggestions(final Function<SuggestionInfo<CommandSender>, Collection<String>> func) {
+    this.suggestions.add(Suggestions.from(func));
+    return getInstance();
+  }
+
   public ArgType withSuggestions(final String... suggestions) {
-    this.suggestions.add((info) -> List.of(suggestions));
+    this.suggestions.add(Suggestions.from(suggestions));
     return getInstance();
   }
 
   public ArgType withSuggestions(final Collection<String> suggestions) {
-    this.suggestions.add((info) -> new ArrayList<String>(suggestions));
+    this.suggestions.add(Suggestions.from(suggestions));
     return getInstance();
   }
 
