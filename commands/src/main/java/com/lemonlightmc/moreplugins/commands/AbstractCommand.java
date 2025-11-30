@@ -3,11 +3,17 @@ package com.lemonlightmc.moreplugins.commands;
 import com.lemonlightmc.moreplugins.apis.ChatAPI;
 import com.lemonlightmc.moreplugins.base.MorePlugins;
 import com.lemonlightmc.moreplugins.commands.Senders.AbstractCommandSender;
+import com.lemonlightmc.moreplugins.commands.Senders.BukkitCommandSender;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.Argument;
+import com.lemonlightmc.moreplugins.commands.argumentsbase.CommandArguments;
+import com.lemonlightmc.moreplugins.commands.executors.BukkitExecutionInfo;
 import com.lemonlightmc.moreplugins.commands.executors.ExecutionInfo;
 import com.lemonlightmc.moreplugins.commands.executors.ExecutorType;
 import com.lemonlightmc.moreplugins.commands.executors.Executors.*;
+import com.lemonlightmc.moreplugins.exceptions.InvalidCommandSyntaxException;
+import com.lemonlightmc.moreplugins.exceptions.PlatformException;
 import com.lemonlightmc.moreplugins.messages.Logger;
+import com.lemonlightmc.moreplugins.version.ServerEnvironment;
 
 import java.util.ArrayList;
 import java.util.EnumMap;
@@ -31,7 +37,9 @@ public class AbstractCommand implements PluginIdentifiableCommand {
   protected List<NormalExecutor<?, ?>> executors;
 
   protected Set<String> permissions = new HashSet<String>();
-  protected Predicate<CommandSender> requirements = _ -> true;
+  protected Predicate<CommandSender> requirements = (_) -> {
+    return true;
+  };
   protected boolean playerOnly = false;
 
   public Plugin getPlugin() {
@@ -40,7 +48,7 @@ public class AbstractCommand implements PluginIdentifiableCommand {
 
   // Aliases
   public AbstractCommand withAliases(final String... aliases) {
-    for (String alias : aliases) {
+    for (final String alias : aliases) {
       this.aliases.add(alias.toLowerCase());
     }
     return this;
@@ -48,7 +56,7 @@ public class AbstractCommand implements PluginIdentifiableCommand {
 
   public AbstractCommand setAliases(final Set<String> aliases) {
     this.aliases.clear();
-    for (String alias : aliases) {
+    for (final String alias : aliases) {
       this.aliases.add(alias.toLowerCase());
     }
     return this;
@@ -63,7 +71,7 @@ public class AbstractCommand implements PluginIdentifiableCommand {
   }
 
   public AbstractCommand removeAlias(final String... aliases) {
-    for (String alias : aliases) {
+    for (final String alias : aliases) {
       this.aliases.remove(alias.toLowerCase());
     }
     return this;
@@ -170,76 +178,6 @@ public class AbstractCommand implements PluginIdentifiableCommand {
   }
 
   // Executors
-  public AbstractCommand withExecutor(final CommandExecutor ex) {
-    executors.add(ex);
-    return this;
-  }
-
-  public AbstractCommand withExecutor(final CommandExecutionInfo ex) {
-    executors.add(ex);
-    return this;
-  }
-
-  public AbstractCommand withExecutor(final ConsoleCommandExecutor ex) {
-    executors.add(ex);
-    return this;
-  }
-
-  public AbstractCommand withExecutor(final ConsoleExecutionInfo ex) {
-    executors.add(ex);
-    return this;
-  }
-
-  public AbstractCommand withExecutor(final RemoteConsoleCommandExecutor ex) {
-    executors.add(ex);
-    return this;
-  }
-
-  public AbstractCommand withExecutor(final RemoteConsoleExecutionInfo ex) {
-    executors.add(ex);
-    return this;
-  }
-
-  public AbstractCommand withExecutor(final CommandBlockExecutor ex) {
-    executors.add(ex);
-    return this;
-  }
-
-  public AbstractCommand withExecutor(final CommandBlockExecutionInfo ex) {
-    executors.add(ex);
-    return this;
-  }
-
-  public AbstractCommand withExecutor(final EntityCommandExecutor ex) {
-    executors.add(ex);
-    return this;
-  }
-
-  public AbstractCommand withExecutor(final EntityExecutionInfo ex) {
-    executors.add(ex);
-    return this;
-  }
-
-  public AbstractCommand withExecutor(final PlayerCommandExecutor ex) {
-    executors.add(ex);
-    return this;
-  }
-
-  public AbstractCommand withExecutor(final PlayerExecutionInfo ex) {
-    executors.add(ex);
-    return this;
-  }
-
-  public AbstractCommand withExecutor(final FeedbackForwardingCommandExecutor ex) {
-    executors.add(ex);
-    return this;
-  }
-
-  public AbstractCommand withExecutor(final FeedbackForwardingExecutionInfo ex) {
-    executors.add(ex);
-    return this;
-  }
-
   public AbstractCommand setExecutors(final List<NormalExecutor<?, ?>> ex) {
     executors = ex;
     return this;
@@ -263,8 +201,129 @@ public class AbstractCommand implements PluginIdentifiableCommand {
     }
   }
 
-  // lesser setter & getters
+  public AbstractCommand executes(final CommandExecutor executor, final ExecutorType... types) {
+    if (types == null || types.length == 0) {
+      executors.add(executor);
+    } else {
+      for (final ExecutorType type : types) {
+        executors.add(new CommandExecutor() {
+          @Override
+          public void run(final CommandSender sender, final CommandArguments args)
+              throws InvalidCommandSyntaxException {
+            executor
+                .executeWith(new BukkitExecutionInfo<>(sender, Utils.wrapCommandSender(sender), args));
+          }
 
+          @Override
+          public ExecutorType getType() {
+            return type;
+          }
+        });
+      }
+    }
+    return this;
+  }
+
+  public AbstractCommand executes(final CommandExecutionInfo executor, final ExecutorType... types) {
+    if (types == null || types.length == 0) {
+      executors.add(executor);
+    } else {
+      for (final ExecutorType type : types) {
+        executors.add(new CommandExecutionInfo() {
+
+          @Override
+          public void run(final ExecutionInfo<CommandSender, BukkitCommandSender<? extends CommandSender>> info)
+              throws InvalidCommandSyntaxException {
+            executor.executeWith(info);
+          }
+
+          @Override
+          public ExecutorType getType() {
+            return type;
+          }
+        });
+      }
+    }
+    return this;
+  }
+
+  // Player command executor
+  public AbstractCommand executesPlayer(final PlayerCommandExecutor executor) {
+    executors.add(executor);
+    return this;
+  }
+
+  public AbstractCommand executesPlayer(final PlayerExecutionInfo info) {
+    executors.add(info);
+    return this;
+  }
+
+  // Entity command executor
+  public AbstractCommand executesEntity(final EntityCommandExecutor executor) {
+    executors.add(executor);
+    return this;
+  }
+
+  public AbstractCommand executesEntity(final EntityExecutionInfo info) {
+    executors.add(info);
+    return this;
+  }
+
+  // Command block command executor
+  public AbstractCommand executesCommandBlock(final CommandBlockExecutor executor) {
+    executors.add(executor);
+    return this;
+  }
+
+  public AbstractCommand executesCommandBlock(final CommandBlockExecutionInfo info) {
+    executors.add(info);
+    return this;
+  }
+
+  // Console command executor
+  public AbstractCommand executesConsole(final ConsoleCommandExecutor executor) {
+    executors.add(executor);
+    return this;
+  }
+
+  public AbstractCommand executesConsole(final ConsoleExecutionInfo info) {
+    executors.add(info);
+    return this;
+  }
+
+  // RemoteConsole command executor
+  public AbstractCommand executesRemoteConsole(final RemoteConsoleCommandExecutor executor) {
+    executors.add(executor);
+    return this;
+  }
+
+  public AbstractCommand executesRemoteConsole(final RemoteConsoleExecutionInfo info) {
+    executors.add(info);
+    return this;
+  }
+
+  // Feedback-forwarding command executor
+  public AbstractCommand executesFeedbackForwarding(final FeedbackForwardingCommandExecutor executor) {
+    if (!ServerEnvironment.isPaper()) {
+      throw new PlatformException(
+          "Attempted to use a FeedbackForwardingCommandExecutor on a non-paper platform ("
+              + ServerEnvironment.current().name() + ")!");
+    }
+    executors.add(executor);
+    return this;
+  }
+
+  public AbstractCommand executesFeedbackForwarding(final FeedbackForwardingExecutionInfo info) {
+    if (!ServerEnvironment.isPaper()) {
+      throw new PlatformException(
+          "Attempted to use a FeedbackForwardingExecutionInfo on a non-paper platform ("
+              + ServerEnvironment.current().name() + ")!");
+    }
+    executors.add(info);
+    return this;
+  }
+
+  // lesser setter & getters
   public AbstractCommand withPermission(final String permission) {
     permissions.add(permission);
     return this;
@@ -347,6 +406,7 @@ public class AbstractCommand implements PluginIdentifiableCommand {
     ChatAPI.send(sender, CommandManager.getPlayerOnlyMessage());
   }
 
+  // execution
   public void execute(final ExecutionInfo<?, ?> info) throws CommandException {
     if (info == null) {
       return;

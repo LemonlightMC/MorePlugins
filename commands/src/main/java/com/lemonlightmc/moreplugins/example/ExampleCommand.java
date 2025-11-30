@@ -6,6 +6,7 @@ import com.lemonlightmc.moreplugins.commands.argumentsbase.CommandArguments;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.SuggestionInfo;
 
 import java.util.List;
+
 import org.bukkit.command.CommandException;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
@@ -25,14 +26,14 @@ public class ExampleCommand extends SimpleCommand {
       return List.of("");
     }));
     withArguments(new DoubleArgument("amount2").withSuggestions("1", "2", "3"));
-    withExecutor(ExampleCommand::executes);
-    withExecutor(ExampleCommand::executesConsole);
+    executesPlayer(ExampleCommand::executes2);
+    executesConsole(ExampleCommand::executesConsole2);
   }
 
-  public static void executes(final Player sender, final CommandArguments args) {
+  public static void executes2(final Player sender, final CommandArguments args) throws CommandException {
   }
 
-  public static void executesConsole(
+  public static void executesConsole2(
       final ConsoleCommandSender sender,
       final CommandArguments args) throws CommandException {
   }
