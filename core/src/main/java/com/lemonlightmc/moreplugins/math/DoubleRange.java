@@ -22,6 +22,19 @@ public class DoubleRange implements Cloneable<DoubleRange>, Comparable<DoubleRan
     this.low = Double.MAX_VALUE;
   }
 
+  public static DoubleRange at(final int pos) {
+    return new DoubleRange(pos, pos);
+  }
+
+  public static DoubleRange between(final int low, final int high) {
+    return new DoubleRange(low, high);
+  }
+
+  public static DoubleRange encompassing(final DoubleRange a, final DoubleRange b) {
+    return new DoubleRange(Math.min(a.getLowerBound(), b.getLowerBound()),
+        Math.max(a.getUpperBound(), b.getUpperBound()));
+  }
+
   public static DoubleRange rangeGreaterThanOrEq(final double min) {
     return new DoubleRange(min, Double.MAX_VALUE);
   }
@@ -52,6 +65,14 @@ public class DoubleRange implements Cloneable<DoubleRange>, Comparable<DoubleRan
 
   public boolean isOutsideRange(final double i) {
     return i < low && i > high;
+  }
+
+  public boolean isEmpty() {
+    return low == high;
+  }
+
+  public double getLength() {
+    return high - low;
   }
 
   @Override

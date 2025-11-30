@@ -22,6 +22,19 @@ public class FloatRange implements Cloneable<FloatRange>, Comparable<FloatRange>
     this.low = Integer.MAX_VALUE;
   }
 
+  public static FloatRange at(final int pos) {
+    return new FloatRange(pos, pos);
+  }
+
+  public static FloatRange between(final int low, final int high) {
+    return new FloatRange(low, high);
+  }
+
+  public static FloatRange encompassing(final FloatRange a, final FloatRange b) {
+    return new FloatRange(Math.min(a.getLowerBound(), b.getLowerBound()),
+        Math.max(a.getUpperBound(), b.getUpperBound()));
+  }
+
   public static FloatRange rangeGreaterThanOrEq(final float min) {
     return new FloatRange(min, Integer.MAX_VALUE);
   }
@@ -52,6 +65,14 @@ public class FloatRange implements Cloneable<FloatRange>, Comparable<FloatRange>
 
   public boolean isOutsideRange(final float i) {
     return i < low && i > high;
+  }
+
+  public boolean isEmpty() {
+    return low == high;
+  }
+
+  public float getLength() {
+    return high - low;
   }
 
   @Override

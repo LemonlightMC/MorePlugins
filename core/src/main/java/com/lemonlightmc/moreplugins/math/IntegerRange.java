@@ -22,6 +22,19 @@ public class IntegerRange implements Cloneable<IntegerRange>, Comparable<Integer
     this.low = Integer.MAX_VALUE;
   }
 
+  public static IntegerRange at(final int pos) {
+    return new IntegerRange(pos, pos);
+  }
+
+  public static IntegerRange between(final int low, final int high) {
+    return new IntegerRange(low, high);
+  }
+
+  public static IntegerRange encompassing(final IntegerRange a, final IntegerRange b) {
+    return new IntegerRange(Math.min(a.getLowerBound(), b.getLowerBound()),
+        Math.max(a.getUpperBound(), b.getUpperBound()));
+  }
+
   public static IntegerRange rangeGreaterThanOrEq(final int min) {
     return new IntegerRange(min, Integer.MAX_VALUE);
   }
@@ -52,6 +65,14 @@ public class IntegerRange implements Cloneable<IntegerRange>, Comparable<Integer
 
   public boolean isOutsideRange(final int i) {
     return i < low && i > high;
+  }
+
+  public boolean isEmpty() {
+    return low == high;
+  }
+
+  public int getLength() {
+    return high - low;
   }
 
   @Override

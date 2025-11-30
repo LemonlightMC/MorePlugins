@@ -22,6 +22,19 @@ public class LongRange implements Cloneable<LongRange>, Comparable<LongRange> {
     this.low = Integer.MAX_VALUE;
   }
 
+  public static LongRange at(final int pos) {
+    return new LongRange(pos, pos);
+  }
+
+  public static LongRange between(final int low, final int high) {
+    return new LongRange(low, high);
+  }
+
+  public static LongRange encompassing(final LongRange a, final LongRange b) {
+    return new LongRange(Math.min(a.getLowerBound(), b.getLowerBound()),
+        Math.max(a.getUpperBound(), b.getUpperBound()));
+  }
+
   public static LongRange rangeGreaterThanOrEq(final long min) {
     return new LongRange(min, Integer.MAX_VALUE);
   }
@@ -52,6 +65,14 @@ public class LongRange implements Cloneable<LongRange>, Comparable<LongRange> {
 
   public boolean isOutsideRange(final long i) {
     return i < low && i > high;
+  }
+
+  public boolean isEmpty() {
+    return low == high;
+  }
+
+  public long getLength() {
+    return high - low;
   }
 
   @Override
