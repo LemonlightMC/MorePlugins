@@ -1,5 +1,7 @@
 package com.lemonlightmc.moreplugins.version;
 
+import com.lemonlightmc.moreplugins.exceptions.PlatformException;
+
 public enum ServerEnvironment {
   PURPUR("org.purpurmc.purpur.PurpurConfig"),
   FOLIA(
@@ -16,16 +18,25 @@ public enum ServerEnvironment {
 
   private boolean isCurrent;
 
-  ServerEnvironment(String... checkClasses) {
-    for (String checkClass : checkClasses) {
+  ServerEnvironment(final String... checkClasses) {
+    for (final String checkClass : checkClasses) {
       try {
         Class.forName(checkClass);
         this.isCurrent = true;
         break;
-      } catch (ClassNotFoundException e) {
+      } catch (final ClassNotFoundException e) {
         this.isCurrent = false;
       }
     }
+  }
+
+  public static ServerEnvironment current() {
+    for (final ServerEnvironment env : values()) {
+      if (env.isCurrent) {
+        return env;
+      }
+    }
+    throw new PlatformException("Failed to detect Platform!");
   }
 
   public static boolean isPurpur() {
@@ -50,5 +61,13 @@ public enum ServerEnvironment {
 
   public static boolean isBukkit() {
     return ServerEnvironment.BUKKIT.isCurrent;
+  }
+
+  public static boolean isPaperFork() {
+    return isPaper() || isPurpur() || isFolia();
+  }
+
+  public static boolean isMocked() {
+    return isMockBukkit();
   }
 }
