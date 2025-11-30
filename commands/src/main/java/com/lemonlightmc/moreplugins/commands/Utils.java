@@ -87,15 +87,15 @@ public class Utils {
     }
   }
 
-  public <V> V primitive2wrapper(final Class<?> source, final Class<V> target) {
-    if (PRIMITIVE_TO_WRAPPER.getOrDefault(target, target).isAssignableFrom(source)) {
-      @SuppressWarnings("unchecked")
-      final V v = (V) target;
+  @SuppressWarnings("unchecked")
+  public static <V> V primitive2wrapper(final Object source, final Class<V> target) {
+    if (PRIMITIVE_TO_WRAPPER.getOrDefault(target, target).isAssignableFrom(source.getClass())) {
+      final V v = (V) source;
       return v;
     } else {
       throw new IllegalArgumentException(
           "Classs is defined as " +
-              source.getSimpleName() +
+              source.getClass().getSimpleName() +
               ", not " +
               target.getSimpleName());
     }

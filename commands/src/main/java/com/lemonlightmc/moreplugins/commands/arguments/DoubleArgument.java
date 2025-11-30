@@ -1,9 +1,10 @@
 package com.lemonlightmc.moreplugins.commands.arguments;
 
+import org.bukkit.command.CommandException;
+
 import com.lemonlightmc.moreplugins.commands.argumentsbase.Argument;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.ArgumentType;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.CommandArguments;
-import org.bukkit.command.CommandException;
 
 public class DoubleArgument extends Argument<Double, DoubleArgument> {
 

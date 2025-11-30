@@ -1,31 +1,28 @@
 package com.lemonlightmc.moreplugins.commands.argumentsbase;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 import java.util.function.Predicate;
 
 import org.bukkit.command.CommandException;
 import org.bukkit.command.CommandSender;
 
-public abstract class Argument<T, Impl> {
+public abstract class Argument<Type, ArgType> {
+  protected String name;
+  protected ArgumentType rawType;
+  protected Class<Type> primitiveType;
+  protected boolean isOptional = false;
+  protected boolean isListed = true;
+  protected String permission = "";
+  protected Predicate<CommandSender> requirements = _ -> true;
+  protected List<Suggestions<CommandSender>> suggestions = new ArrayList<>(4);
 
-  private final String name;
-  private final ArgumentType rawType;
-  private final Class<T> primitiveType;
-  private boolean isOptional = false;
-  private boolean isListed = true;
-  private String permission = "";
-  private Predicate<CommandSender> requirements = _ -> true;
-  private final List<Argument<?, ?>> combinedArguments = new ArrayList<>();
-
-  private List<CompletableFuture<Suggestions<CommandSender>>> suggestionsModifiers = new ArrayList<>(4);
-
-  protected Argument(final String name, final Class<T> primitiveType, final ArgumentType rawType) {
+  protected Argument(final String name, final Class<Type> primitiveType, final ArgumentType rawType) {
     if (name == null || name.length() == 0) {
       throw new IllegalArgumentException("Invalid Argument Name");
     }
-    if (primitiveType == null || !(primitiveType instanceof Class<T>)) {
+    if (primitiveType == null || !(primitiveType instanceof Class<Type>)) {
       throw new IllegalArgumentException("Invalid Primitive Type");
     }
     if (rawType == null || !(rawType instanceof ArgumentType)) {
@@ -36,7 +33,16 @@ public abstract class Argument<T, Impl> {
     this.primitiveType = primitiveType;
   }
 
-  public abstract Impl getInstance();
+  public abstract ArgType getInstance();
+
+  // Parse
+  public abstract <Source> Double parseArgument(
+      Context<Source> cmdCtx,
+      String key,
+      CommandArguments previousArgs) throws CommandException;
+
+  public interface Context<Source> {
+  }
 
   public String getName() {
     return name;
@@ -46,10 +52,7 @@ public abstract class Argument<T, Impl> {
     return rawType;
   }
 
-  public interface Context<Source> {
-  }
-
-  public Class<T> getPrimitiveType() {
+  public Class<Type> getPrimitiveType() {
     return primitiveType;
   }
 
@@ -57,121 +60,121 @@ public abstract class Argument<T, Impl> {
     return rawType;
   }
 
-  public abstract <Source> Double parseArgument(
-      Context<Source> cmdCtx,
-      String key,
-      CommandArguments previousArgs) throws CommandException;
-
-  public Impl applySuggestions(final Suggestions<CommandSender> func) {
-    this.suggestionsModifiers.add(CompletableFuture.completedFuture(func));
-    return getInstance();
-  }
-
-  public List<CompletableFuture<Suggestions<CommandSender>>> getSuggestionModfiers() {
-    return this.suggestionsModifiers;
-  }
-
-  public final Impl withPermission(final String permission) {
-    this.permission = permission;
-    return getInstance();
-  }
-
-  public final String getPermission() {
-    return permission;
-  }
-
-  public final Predicate<CommandSender> getRequirements() {
-    return this.requirements;
-  }
-
-  public final Impl withRequirement(final Predicate<CommandSender> requirement) {
-    this.requirements = this.requirements.and(requirement);
-    return getInstance();
-  }
-
-  void resetRequirements() {
-    this.requirements = _ -> true;
-  }
-
+  // Listed
   public boolean isListed() {
     return this.isListed;
   }
 
-  public Impl setListed(final boolean listed) {
+  public ArgType setListed(final boolean listed) {
     this.isListed = listed;
     return getInstance();
   }
 
+  // Optional
   public boolean isOptional() {
     return isOptional;
   }
 
-  public Impl setOptional(final boolean optional) {
+  public ArgType setOptional(final boolean optional) {
     this.isOptional = optional;
     return getInstance();
   }
 
-  public List<Argument<?, ?>> getCombinedArguments() {
-    return combinedArguments;
-  }
-
-  public boolean hasCombinedArguments() {
-    return !combinedArguments.isEmpty();
-  }
-
-  public final Impl combineWith(final Argument<?, ?>... combinedArguments) {
-    for (final Argument<?, ?> argument : combinedArguments) {
-      this.combinedArguments.add(argument);
-    }
+  // Permission
+  public ArgType withPermission(final String permission) {
+    this.permission = permission;
     return getInstance();
   }
 
-  public void copyPermissionsAndRequirements(final Argument<?, ?> argument) {
-    this.resetRequirements();
-    this.withRequirement(argument.getRequirements());
-    this.withPermission(argument.getPermission());
+  public String getPermission() {
+    return permission;
   }
 
+  public void clearPermission() {
+    this.permission = "";
+  }
+
+  // Requirements
+  public ArgType withRequirement(final Predicate<CommandSender> requirement) {
+    this.requirements = this.requirements.and(requirement);
+    return getInstance();
+  }
+
+  public Predicate<CommandSender> getRequirements() {
+    return this.requirements;
+  }
+
+  public void clearRequirements() {
+    this.requirements = _ -> true;
+  }
+
+  // Suggestions
+  public ArgType withSuggestions(final Suggestions<CommandSender> func) {
+    this.suggestions.add(func);
+    return getInstance();
+  }
+
+  public ArgType withSuggestions(final String... suggestions) {
+    this.suggestions.add((info) -> List.of(suggestions));
+    return getInstance();
+  }
+
+  public ArgType withSuggestions(final Collection<String> suggestions) {
+    this.suggestions.add((info) -> new ArrayList<String>(suggestions));
+    return getInstance();
+  }
+
+  public List<Suggestions<CommandSender>> getSuggestions() {
+    return this.suggestions;
+  }
+
+  // Help
   public String getHelpString() {
-    return "<" + this.getName() + ">";
+    if (!isListed) {
+      return "";
+    }
+    return isOptional ? "[" + name + "]" : "<" + name + ">";
   }
 
   @Override
   public int hashCode() {
-    int result = 31 + ((name == null) ? 0 : name.hashCode());
-    result = 31 * result + ((rawType == null) ? 0 : rawType.hashCode());
+    int result = 31 + name.hashCode();
+    result = 31 * result + rawType.hashCode();
+    result = 31 * result + primitiveType.hashCode();
     result = 31 * result + (isOptional ? 1231 : 1237);
     result = 31 * result + (isListed ? 1231 : 1237);
     result = 31 * result + ((permission == null) ? 0 : permission.hashCode());
-    return 31 * result + ((requirements == null) ? 0 : requirements.hashCode());
+    result = 31 * result + requirements.hashCode();
+    result = 31 * result + suggestions.hashCode();
+    return result;
   }
 
   @Override
   public boolean equals(final Object obj) {
-    if (this == obj)
+    if (this == obj) {
       return true;
-    if (obj == null)
+    }
+    if (obj == null || getClass() != obj.getClass()) {
       return false;
-    if (getClass() != obj.getClass())
-      return false;
+    }
     final Argument<?, ?> other = (Argument<?, ?>) obj;
-    if (!name.equals(other.name))
+    if (permission == null && other.permission != null) {
       return false;
-    if (rawType.equals(other.rawType))
-      return false;
-    if (isOptional != other.isOptional)
-      return false;
-    if (isListed != other.isListed)
-      return false;
-    if (!permission.equals(other.permission))
-      return false;
-    if (!requirements.equals(other.requirements))
-      return false;
-    return true;
+    }
+    return isListed == other.isListed && isOptional == other.isOptional && isOptional == other.isOptional
+        && rawType == other.rawType
+        && name.equals(other.name) && name.equals(other.name)
+        && primitiveType.equals(other.primitiveType)
+        && permission.equals(other.permission)
+        && requirements.equals(other.requirements)
+        && suggestions.equals(other.suggestions);
   }
 
   @Override
   public String toString() {
-    return this.getName() + "<" + this.getClass().getSimpleName() + ">";
+    return "Argument [name=" + name + ", rawType=" + rawType + ", primitiveType=" + primitiveType + ", isOptional="
+        + isOptional + ", isListed=" + isListed + ", permission=" + permission + ", requirements=" + requirements
+        + ", suggestions=" + suggestions + "]";
   }
+
 }
