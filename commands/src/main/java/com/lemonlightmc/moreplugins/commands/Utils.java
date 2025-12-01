@@ -25,7 +25,7 @@ public class Utils {
 
   static final Pattern NAMESPACE_PATTERN = Pattern.compile("[0-9a-z_.-]+");
 
-  public static BukkitCommandSender<? extends CommandSender> wrapCommandSender(
+  public static AbstractCommandSender<? extends CommandSender> wrapCommandSender(
       final CommandSender sender) {
     if (sender instanceof final BlockCommandSender block) {
       return new BukkitBlockCommandSender(block);

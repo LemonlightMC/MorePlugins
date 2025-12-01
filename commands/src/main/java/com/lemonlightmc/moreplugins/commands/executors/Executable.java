@@ -1,33 +1,13 @@
-package com.lemonlightmc.moreplugins.commands;
+package com.lemonlightmc.moreplugins.commands.executors;
 
 import java.util.List;
 
 import org.bukkit.command.CommandSender;
 
-import com.lemonlightmc.moreplugins.commands.Senders.BukkitCommandSender;
+import com.lemonlightmc.moreplugins.commands.Utils;
+import com.lemonlightmc.moreplugins.commands.Senders.AbstractCommandSender;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.CommandArguments;
-import com.lemonlightmc.moreplugins.commands.executors.BukkitExecutionInfo;
-import com.lemonlightmc.moreplugins.commands.executors.ExecutionInfo;
-import com.lemonlightmc.moreplugins.commands.executors.ExecutorType;
-import com.lemonlightmc.moreplugins.commands.executors.Executors.CommandBlockExecutionInfo;
-import com.lemonlightmc.moreplugins.commands.executors.Executors.CommandBlockExecutor;
-import com.lemonlightmc.moreplugins.commands.executors.Executors.CommandExecutionInfo;
-import com.lemonlightmc.moreplugins.commands.executors.Executors.CommandExecutor;
-import com.lemonlightmc.moreplugins.commands.executors.Executors.ConsoleCommandExecutor;
-import com.lemonlightmc.moreplugins.commands.executors.Executors.ConsoleExecutionInfo;
-import com.lemonlightmc.moreplugins.commands.executors.Executors.EntityCommandExecutor;
-import com.lemonlightmc.moreplugins.commands.executors.Executors.EntityExecutionInfo;
-import com.lemonlightmc.moreplugins.commands.executors.Executors.FeedbackForwardingCommandExecutor;
-import com.lemonlightmc.moreplugins.commands.executors.Executors.FeedbackForwardingExecutionInfo;
-import com.lemonlightmc.moreplugins.commands.executors.Executors.NativeCommandExecutor;
-import com.lemonlightmc.moreplugins.commands.executors.Executors.NativeExecutionInfo;
-import com.lemonlightmc.moreplugins.commands.executors.Executors.NormalExecutor;
-import com.lemonlightmc.moreplugins.commands.executors.Executors.PlayerCommandExecutor;
-import com.lemonlightmc.moreplugins.commands.executors.Executors.PlayerExecutionInfo;
-import com.lemonlightmc.moreplugins.commands.executors.Executors.ProxyCommandExecutor;
-import com.lemonlightmc.moreplugins.commands.executors.Executors.ProxyExecutionInfo;
-import com.lemonlightmc.moreplugins.commands.executors.Executors.RemoteConsoleCommandExecutor;
-import com.lemonlightmc.moreplugins.commands.executors.Executors.RemoteConsoleExecutionInfo;
+import com.lemonlightmc.moreplugins.commands.executors.Executors.*;
 import com.lemonlightmc.moreplugins.exceptions.InvalidCommandSyntaxException;
 import com.lemonlightmc.moreplugins.exceptions.PlatformException;
 import com.lemonlightmc.moreplugins.version.ServerEnvironment;
@@ -91,7 +71,7 @@ public abstract class Executable<T> {
         executors.add(new CommandExecutionInfo() {
 
           @Override
-          public void run(final ExecutionInfo<CommandSender, BukkitCommandSender<? extends CommandSender>> info)
+          public void run(final ExecutionInfo<CommandSender, AbstractCommandSender<? extends CommandSender>> info)
               throws InvalidCommandSyntaxException {
             executor.executeWith(info);
           }

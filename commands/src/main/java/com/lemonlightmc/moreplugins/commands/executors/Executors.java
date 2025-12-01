@@ -31,14 +31,15 @@ public class Executors {
   @FunctionalInterface
   public interface CommandExecutor
       extends
-      NormalExecutor<CommandSender, BukkitCommandSender<? extends CommandSender>> {
+      NormalExecutor<CommandSender, AbstractCommandSender<? extends CommandSender>> {
 
     void run(CommandSender sender, CommandArguments args)
         throws CommandException;
 
     @Override
     default void run(
-        final ExecutionInfo<CommandSender, BukkitCommandSender<? extends CommandSender>> info) throws CommandException {
+        final ExecutionInfo<CommandSender, AbstractCommandSender<? extends CommandSender>> info)
+        throws CommandException {
       this.run(info.sender(), info.args());
     }
 
@@ -51,10 +52,10 @@ public class Executors {
   @FunctionalInterface
   public interface CommandExecutionInfo
       extends
-      NormalExecutor<CommandSender, BukkitCommandSender<? extends CommandSender>> {
+      NormalExecutor<CommandSender, AbstractCommandSender<? extends CommandSender>> {
 
     void run(
-        ExecutionInfo<CommandSender, BukkitCommandSender<? extends CommandSender>> info) throws CommandException;
+        ExecutionInfo<CommandSender, AbstractCommandSender<? extends CommandSender>> info) throws CommandException;
 
     @Override
     default ExecutorType getType() {

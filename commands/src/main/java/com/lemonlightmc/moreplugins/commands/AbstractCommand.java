@@ -3,6 +3,7 @@ package com.lemonlightmc.moreplugins.commands;
 import com.lemonlightmc.moreplugins.apis.ChatAPI;
 import com.lemonlightmc.moreplugins.base.MorePlugins;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.Argument;
+import com.lemonlightmc.moreplugins.commands.executors.Executable;
 import com.lemonlightmc.moreplugins.commands.executors.ExecutionInfo;
 import com.lemonlightmc.moreplugins.commands.executors.ExecutorType;
 import com.lemonlightmc.moreplugins.commands.executors.Executors.*;

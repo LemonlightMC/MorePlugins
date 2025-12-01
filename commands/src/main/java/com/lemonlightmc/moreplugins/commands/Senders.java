@@ -18,10 +18,6 @@ public class Senders {
     S getSource();
   }
 
-  public static interface BukkitCommandSender<S extends CommandSender>
-      extends AbstractCommandSender<S> {
-  }
-
   public static interface AbstractBlockCommandSender<S extends CommandSender>
       extends AbstractCommandSender<S> {
   }
@@ -53,10 +49,7 @@ public class Senders {
   public interface AbstractNativeProxyCommandSender<S extends CommandSender> extends AbstractProxiedCommandSender<S> {
   }
 
-  public static class BukkitBlockCommandSender
-      implements
-      AbstractBlockCommandSender<BlockCommandSender>,
-      BukkitCommandSender<BlockCommandSender> {
+  public static class BukkitBlockCommandSender implements AbstractBlockCommandSender<BlockCommandSender> {
 
     private final BlockCommandSender commandBlock;
 
@@ -80,8 +73,7 @@ public class Senders {
     }
   }
 
-  public static class BukkitEntity
-      implements AbstractEntity<Entity>, BukkitCommandSender<Entity> {
+  public static class BukkitEntity implements AbstractEntity<Entity> {
 
     private final Entity entity;
 
@@ -105,8 +97,7 @@ public class Senders {
     }
   }
 
-  public static class BukkitPlayer
-      implements AbstractPlayer<Player>, BukkitCommandSender<Player> {
+  public static class BukkitPlayer implements AbstractPlayer<Player> {
 
     private final Player player;
 
@@ -130,10 +121,7 @@ public class Senders {
     }
   }
 
-  public static class BukkitConsoleCommandSender
-      implements
-      AbstractConsoleCommandSender<ConsoleCommandSender>,
-      BukkitCommandSender<ConsoleCommandSender> {
+  public static class BukkitConsoleCommandSender implements AbstractConsoleCommandSender<ConsoleCommandSender> {
 
     private final ConsoleCommandSender sender;
 
@@ -158,9 +146,7 @@ public class Senders {
   }
 
   public static class BukkitRemoteConsoleCommandSender
-      implements
-      AbstractRemoteConsoleCommandSender<RemoteConsoleCommandSender>,
-      BukkitCommandSender<RemoteConsoleCommandSender> {
+      implements AbstractRemoteConsoleCommandSender<RemoteConsoleCommandSender> {
 
     private final RemoteConsoleCommandSender remote;
 
@@ -184,10 +170,7 @@ public class Senders {
     }
   }
 
-  public static class BukkitProxiedCommandSender
-      implements
-      AbstractProxiedCommandSender<ProxiedCommandSender>,
-      BukkitCommandSender<ProxiedCommandSender> {
+  public static class BukkitProxiedCommandSender implements AbstractProxiedCommandSender<ProxiedCommandSender> {
 
     private final ProxiedCommandSender proxySender;
 
@@ -212,9 +195,7 @@ public class Senders {
   }
 
   public static class BukkitFeedbackForwardingCommandSender<FeedbackForwardingSender extends CommandSender>
-      implements
-      AbstractFeedbackForwardingCommandSender<FeedbackForwardingSender>,
-      BukkitCommandSender<FeedbackForwardingSender> {
+      implements AbstractFeedbackForwardingCommandSender<FeedbackForwardingSender> {
 
     private final FeedbackForwardingSender sender;
 
@@ -239,9 +220,7 @@ public class Senders {
     }
   }
 
-  public static class BukkitNativeProxyCommandSender
-      implements AbstractNativeProxyCommandSender<ProxiedCommandSender>,
-      BukkitCommandSender<ProxiedCommandSender> {
+  public static class BukkitNativeProxyCommandSender implements AbstractNativeProxyCommandSender<ProxiedCommandSender> {
 
     private final ProxiedCommandSender proxySender;
 
