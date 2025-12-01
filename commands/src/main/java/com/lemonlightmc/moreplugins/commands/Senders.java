@@ -22,11 +22,11 @@ public class Senders {
       extends AbstractCommandSender<S> {
   }
 
-  public static interface AbstractPlayer<S extends CommandSender>
+  public static interface AbstractPlayerCommandSender<S extends CommandSender>
       extends AbstractCommandSender<S> {
   }
 
-  public static interface AbstractEntity<S extends CommandSender>
+  public static interface AbstractEntityCommandSender<S extends CommandSender>
       extends AbstractCommandSender<S> {
   }
 
@@ -73,11 +73,11 @@ public class Senders {
     }
   }
 
-  public static class BukkitEntity implements AbstractEntity<Entity> {
+  public static class BukkitEntityCommandSender implements AbstractEntityCommandSender<Entity> {
 
     private final Entity entity;
 
-    public BukkitEntity(final Entity entity) {
+    public BukkitEntityCommandSender(final Entity entity) {
       this.entity = entity;
     }
 
@@ -97,11 +97,11 @@ public class Senders {
     }
   }
 
-  public static class BukkitPlayer implements AbstractPlayer<Player> {
+  public static class BukkitPlayerCommandSender implements AbstractPlayerCommandSender<Player> {
 
     private final Player player;
 
-    public BukkitPlayer(final Player player) {
+    public BukkitPlayerCommandSender(final Player player) {
       this.player = player;
     }
 

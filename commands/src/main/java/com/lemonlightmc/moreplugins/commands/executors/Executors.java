@@ -65,12 +65,12 @@ public class Executors {
 
   @FunctionalInterface
   public interface PlayerCommandExecutor
-      extends NormalExecutor<Player, BukkitPlayer> {
+      extends NormalExecutor<Player, BukkitPlayerCommandSender> {
 
     void run(Player sender, CommandArguments args) throws CommandException;
 
     @Override
-    default void run(final ExecutionInfo<Player, BukkitPlayer> info)
+    default void run(final ExecutionInfo<Player, BukkitPlayerCommandSender> info)
         throws CommandException {
       this.run(info.sender(), info.args());
     }
@@ -83,9 +83,9 @@ public class Executors {
 
   @FunctionalInterface
   public interface PlayerExecutionInfo
-      extends NormalExecutor<Player, BukkitPlayer> {
+      extends NormalExecutor<Player, BukkitPlayerCommandSender> {
 
-    void run(ExecutionInfo<Player, BukkitPlayer> info) throws CommandException;
+    void run(ExecutionInfo<Player, BukkitPlayerCommandSender> info) throws CommandException;
 
     @Override
     default ExecutorType getType() {
@@ -95,12 +95,12 @@ public class Executors {
 
   @FunctionalInterface
   public interface EntityCommandExecutor
-      extends NormalExecutor<Entity, BukkitEntity> {
+      extends NormalExecutor<Entity, BukkitEntityCommandSender> {
 
     void run(Entity sender, CommandArguments args) throws CommandException;
 
     @Override
-    default void run(final ExecutionInfo<Entity, BukkitEntity> info)
+    default void run(final ExecutionInfo<Entity, BukkitEntityCommandSender> info)
         throws CommandException {
       this.run(info.sender(), info.args());
     }
@@ -113,9 +113,9 @@ public class Executors {
 
   @FunctionalInterface
   public interface EntityExecutionInfo
-      extends NormalExecutor<Entity, BukkitEntity> {
+      extends NormalExecutor<Entity, BukkitEntityCommandSender> {
 
-    void run(ExecutionInfo<Entity, BukkitEntity> info) throws CommandException;
+    void run(ExecutionInfo<Entity, BukkitEntityCommandSender> info) throws CommandException;
 
     @Override
     default ExecutorType getType() {
