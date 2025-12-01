@@ -19,9 +19,13 @@ import com.lemonlightmc.moreplugins.commands.executors.Executors.EntityCommandEx
 import com.lemonlightmc.moreplugins.commands.executors.Executors.EntityExecutionInfo;
 import com.lemonlightmc.moreplugins.commands.executors.Executors.FeedbackForwardingCommandExecutor;
 import com.lemonlightmc.moreplugins.commands.executors.Executors.FeedbackForwardingExecutionInfo;
+import com.lemonlightmc.moreplugins.commands.executors.Executors.NativeCommandExecutor;
+import com.lemonlightmc.moreplugins.commands.executors.Executors.NativeExecutionInfo;
 import com.lemonlightmc.moreplugins.commands.executors.Executors.NormalExecutor;
 import com.lemonlightmc.moreplugins.commands.executors.Executors.PlayerCommandExecutor;
 import com.lemonlightmc.moreplugins.commands.executors.Executors.PlayerExecutionInfo;
+import com.lemonlightmc.moreplugins.commands.executors.Executors.ProxyCommandExecutor;
+import com.lemonlightmc.moreplugins.commands.executors.Executors.ProxyExecutionInfo;
 import com.lemonlightmc.moreplugins.commands.executors.Executors.RemoteConsoleCommandExecutor;
 import com.lemonlightmc.moreplugins.commands.executors.Executors.RemoteConsoleExecutionInfo;
 import com.lemonlightmc.moreplugins.exceptions.InvalidCommandSyntaxException;
@@ -153,6 +157,28 @@ public abstract class Executable<T> {
   }
 
   public T executesRemoteConsole(final RemoteConsoleExecutionInfo info) {
+    executors.add(info);
+    return instance();
+  }
+
+  // Native command executor
+  public T executesNative(final NativeCommandExecutor executor) {
+    executors.add(executor);
+    return instance();
+  }
+
+  public T executesNative(final NativeExecutionInfo info) {
+    executors.add(info);
+    return instance();
+  }
+
+  // Proxy command executor
+  public T executesNative(final ProxyCommandExecutor executor) {
+    executors.add(executor);
+    return instance();
+  }
+
+  public T executesNative(final ProxyExecutionInfo info) {
     executors.add(info);
     return instance();
   }

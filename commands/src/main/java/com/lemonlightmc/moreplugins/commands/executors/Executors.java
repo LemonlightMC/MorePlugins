@@ -7,6 +7,7 @@ import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.CommandException;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
+import org.bukkit.command.ProxiedCommandSender;
 import org.bukkit.command.RemoteConsoleCommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -16,7 +17,7 @@ public class Executors {
     void run(ExecutionInfo<S, W> info) throws CommandException;
 
     @SuppressWarnings("unchecked")
-    default int executeWith(ExecutionInfo<?, ?> info)
+    default int executeWith(final ExecutionInfo<?, ?> info)
         throws CommandException {
       this.run((ExecutionInfo<S, W>) info);
       return 1;
@@ -51,6 +52,7 @@ public class Executors {
   public interface CommandExecutionInfo
       extends
       NormalExecutor<CommandSender, BukkitCommandSender<? extends CommandSender>> {
+
     void run(
         ExecutionInfo<CommandSender, BukkitCommandSender<? extends CommandSender>> info) throws CommandException;
 
@@ -87,6 +89,36 @@ public class Executors {
     @Override
     default ExecutorType getType() {
       return ExecutorType.PLAYER;
+    }
+  }
+
+  @FunctionalInterface
+  public interface EntityCommandExecutor
+      extends NormalExecutor<Entity, BukkitEntity> {
+
+    void run(Entity sender, CommandArguments args) throws CommandException;
+
+    @Override
+    default void run(final ExecutionInfo<Entity, BukkitEntity> info)
+        throws CommandException {
+      this.run(info.sender(), info.args());
+    }
+
+    @Override
+    default ExecutorType getType() {
+      return ExecutorType.ENTITY;
+    }
+  }
+
+  @FunctionalInterface
+  public interface EntityExecutionInfo
+      extends NormalExecutor<Entity, BukkitEntity> {
+
+    void run(ExecutionInfo<Entity, BukkitEntity> info) throws CommandException;
+
+    @Override
+    default ExecutorType getType() {
+      return ExecutorType.ENTITY;
     }
   }
 
@@ -189,49 +221,12 @@ public class Executors {
   }
 
   @FunctionalInterface
-  public interface EntityCommandExecutor
-      extends NormalExecutor<Entity, BukkitEntity> {
-
-    void run(Entity sender, CommandArguments args) throws CommandException;
-
-    @Override
-    default void run(final ExecutionInfo<Entity, BukkitEntity> info)
-        throws CommandException {
-      this.run(info.sender(), info.args());
-    }
-
-    @Override
-    default ExecutorType getType() {
-      return ExecutorType.ENTITY;
-    }
-  }
-
-  @FunctionalInterface
-  public interface EntityExecutionInfo
-      extends NormalExecutor<Entity, BukkitEntity> {
-
-    void run(ExecutionInfo<Entity, BukkitEntity> info) throws CommandException;
-
-    @Override
-    default ExecutorType getType() {
-      return ExecutorType.ENTITY;
-    }
-  }
-
-  @FunctionalInterface
   public interface FeedbackForwardingCommandExecutor
       extends
       NormalExecutor<CommandSender, BukkitFeedbackForwardingCommandSender<CommandSender>> {
 
-    void run(CommandSender sender, CommandArguments args)
+    void run(final ExecutionInfo<CommandSender, BukkitFeedbackForwardingCommandSender<CommandSender>> info)
         throws CommandException;
-
-    @Override
-    default void run(
-        final ExecutionInfo<CommandSender, BukkitFeedbackForwardingCommandSender<CommandSender>> info)
-        throws CommandException {
-      this.run(info.sender(), info.args());
-    }
 
     @Override
     default ExecutorType getType() {
@@ -244,9 +239,13 @@ public class Executors {
       extends
       NormalExecutor<CommandSender, BukkitFeedbackForwardingCommandSender<CommandSender>> {
 
-    void run(
-        ExecutionInfo<CommandSender, BukkitFeedbackForwardingCommandSender<CommandSender>> info)
-        throws CommandException;
+    void run(CommandSender sender, CommandArguments args);
+
+    @Override
+    default void run(final ExecutionInfo<CommandSender, BukkitFeedbackForwardingCommandSender<CommandSender>> info)
+        throws CommandException {
+      this.run(info.sender(), info.args());
+    }
 
     @Override
     default ExecutorType getType() {
@@ -254,4 +253,63 @@ public class Executors {
     }
   }
 
+  @FunctionalInterface
+  public interface ProxyCommandExecutor
+      extends NormalExecutor<ProxiedCommandSender, BukkitProxiedCommandSender> {
+
+    void run(ProxiedCommandSender sender, CommandArguments args) throws CommandException;
+
+    @Override
+    default void run(final ExecutionInfo<ProxiedCommandSender, BukkitProxiedCommandSender> info)
+        throws CommandException {
+      this.run(info.sender(), info.args());
+    }
+
+    @Override
+    default ExecutorType getType() {
+      return ExecutorType.PROXY;
+    }
+  }
+
+  @FunctionalInterface
+  public interface ProxyExecutionInfo extends NormalExecutor<ProxiedCommandSender, BukkitProxiedCommandSender> {
+
+    void run(ExecutionInfo<ProxiedCommandSender, BukkitProxiedCommandSender> info) throws CommandException;
+
+    @Override
+    default ExecutorType getType() {
+      return ExecutorType.PROXY;
+    }
+  }
+
+  @FunctionalInterface
+  public interface NativeCommandExecutor
+      extends NormalExecutor<ProxiedCommandSender, BukkitNativeProxyCommandSender> {
+
+    void run(ProxiedCommandSender sender, CommandArguments args) throws CommandException;
+
+    @Override
+    default void run(final ExecutionInfo<ProxiedCommandSender, BukkitNativeProxyCommandSender> info)
+        throws CommandException {
+      this.run(info.sender(), info.args());
+    }
+
+    @Override
+    default ExecutorType getType() {
+      return ExecutorType.NATIVE;
+    }
+  }
+
+  @FunctionalInterface
+  public interface NativeExecutionInfo
+      extends NormalExecutor<ProxiedCommandSender, BukkitNativeProxyCommandSender> {
+
+    void run(ExecutionInfo<ProxiedCommandSender, BukkitNativeProxyCommandSender> info)
+        throws CommandException;
+
+    @Override
+    default ExecutorType getType() {
+      return ExecutorType.NATIVE;
+    }
+  }
 }

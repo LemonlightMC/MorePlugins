@@ -22,10 +22,6 @@ public class Senders {
       extends AbstractCommandSender<S> {
   }
 
-  public static interface AbstractConsoleCommandSender<S extends CommandSender>
-      extends AbstractCommandSender<S> {
-  }
-
   public static interface AbstractBlockCommandSender<S extends CommandSender>
       extends AbstractCommandSender<S> {
   }
@@ -38,6 +34,14 @@ public class Senders {
       extends AbstractCommandSender<S> {
   }
 
+  public static interface AbstractConsoleCommandSender<S extends CommandSender>
+      extends AbstractCommandSender<S> {
+  }
+
+  public static interface AbstractRemoteConsoleCommandSender<S extends CommandSender>
+      extends AbstractCommandSender<S> {
+  }
+
   public static interface AbstractFeedbackForwardingCommandSender<S extends CommandSender>
       extends AbstractCommandSender<S> {
   }
@@ -46,8 +50,7 @@ public class Senders {
       extends AbstractCommandSender<S> {
   }
 
-  public static interface AbstractRemoteConsoleCommandSender<S extends CommandSender>
-      extends AbstractCommandSender<S> {
+  public interface AbstractNativeProxyCommandSender<S extends CommandSender> extends AbstractProxiedCommandSender<S> {
   }
 
   public static class BukkitBlockCommandSender
@@ -74,6 +77,56 @@ public class Senders {
     @Override
     public BlockCommandSender getSource() {
       return this.commandBlock;
+    }
+  }
+
+  public static class BukkitEntity
+      implements AbstractEntity<Entity>, BukkitCommandSender<Entity> {
+
+    private final Entity entity;
+
+    public BukkitEntity(final Entity entity) {
+      this.entity = entity;
+    }
+
+    @Override
+    public boolean hasPermission(final String permissionNode) {
+      return this.entity.hasPermission(permissionNode);
+    }
+
+    @Override
+    public boolean isOp() {
+      return this.entity.isOp();
+    }
+
+    @Override
+    public Entity getSource() {
+      return this.entity;
+    }
+  }
+
+  public static class BukkitPlayer
+      implements AbstractPlayer<Player>, BukkitCommandSender<Player> {
+
+    private final Player player;
+
+    public BukkitPlayer(final Player player) {
+      this.player = player;
+    }
+
+    @Override
+    public boolean hasPermission(final String permissionNode) {
+      return this.player.hasPermission(permissionNode);
+    }
+
+    @Override
+    public boolean isOp() {
+      return this.player.isOp();
+    }
+
+    @Override
+    public Player getSource() {
+      return this.player;
     }
   }
 
@@ -104,28 +157,57 @@ public class Senders {
     }
   }
 
-  public static class BukkitEntity
-      implements AbstractEntity<Entity>, BukkitCommandSender<Entity> {
+  public static class BukkitRemoteConsoleCommandSender
+      implements
+      AbstractRemoteConsoleCommandSender<RemoteConsoleCommandSender>,
+      BukkitCommandSender<RemoteConsoleCommandSender> {
 
-    private final Entity entity;
+    private final RemoteConsoleCommandSender remote;
 
-    public BukkitEntity(final Entity entity) {
-      this.entity = entity;
+    public BukkitRemoteConsoleCommandSender(final RemoteConsoleCommandSender remote) {
+      this.remote = remote;
     }
 
     @Override
     public boolean hasPermission(final String permissionNode) {
-      return this.entity.hasPermission(permissionNode);
+      return remote.hasPermission(permissionNode);
     }
 
     @Override
     public boolean isOp() {
-      return this.entity.isOp();
+      return remote.isOp();
     }
 
     @Override
-    public Entity getSource() {
-      return this.entity;
+    public RemoteConsoleCommandSender getSource() {
+      return remote;
+    }
+  }
+
+  public static class BukkitProxiedCommandSender
+      implements
+      AbstractProxiedCommandSender<ProxiedCommandSender>,
+      BukkitCommandSender<ProxiedCommandSender> {
+
+    private final ProxiedCommandSender proxySender;
+
+    public BukkitProxiedCommandSender(final ProxiedCommandSender player) {
+      this.proxySender = player;
+    }
+
+    @Override
+    public boolean hasPermission(final String permissionNode) {
+      return this.proxySender.hasPermission(permissionNode);
+    }
+
+    @Override
+    public boolean isOp() {
+      return this.proxySender.isOp();
+    }
+
+    @Override
+    public ProxiedCommandSender getSource() {
+      return this.proxySender;
     }
   }
 
@@ -157,44 +239,18 @@ public class Senders {
     }
   }
 
-  public static class BukkitPlayer
-      implements AbstractPlayer<Player>, BukkitCommandSender<Player> {
-
-    private final Player player;
-
-    public BukkitPlayer(final Player player) {
-      this.player = player;
-    }
-
-    @Override
-    public boolean hasPermission(final String permissionNode) {
-      return this.player.hasPermission(permissionNode);
-    }
-
-    @Override
-    public boolean isOp() {
-      return this.player.isOp();
-    }
-
-    @Override
-    public Player getSource() {
-      return this.player;
-    }
-  }
-
-  public static class BukkitProxiedCommandSender
-      implements
-      AbstractProxiedCommandSender<ProxiedCommandSender>,
+  public static class BukkitNativeProxyCommandSender
+      implements AbstractNativeProxyCommandSender<ProxiedCommandSender>,
       BukkitCommandSender<ProxiedCommandSender> {
 
     private final ProxiedCommandSender proxySender;
 
-    public BukkitProxiedCommandSender(final ProxiedCommandSender player) {
+    public BukkitNativeProxyCommandSender(ProxiedCommandSender player) {
       this.proxySender = player;
     }
 
     @Override
-    public boolean hasPermission(final String permissionNode) {
+    public boolean hasPermission(String permissionNode) {
       return this.proxySender.hasPermission(permissionNode);
     }
 
@@ -207,32 +263,6 @@ public class Senders {
     public ProxiedCommandSender getSource() {
       return this.proxySender;
     }
-  }
 
-  public static class BukkitRemoteConsoleCommandSender
-      implements
-      AbstractRemoteConsoleCommandSender<RemoteConsoleCommandSender>,
-      BukkitCommandSender<RemoteConsoleCommandSender> {
-
-    private final RemoteConsoleCommandSender remote;
-
-    public BukkitRemoteConsoleCommandSender(final RemoteConsoleCommandSender remote) {
-      this.remote = remote;
-    }
-
-    @Override
-    public boolean hasPermission(final String permissionNode) {
-      return remote.hasPermission(permissionNode);
-    }
-
-    @Override
-    public boolean isOp() {
-      return remote.isOp();
-    }
-
-    @Override
-    public RemoteConsoleCommandSender getSource() {
-      return remote;
-    }
   }
 }
