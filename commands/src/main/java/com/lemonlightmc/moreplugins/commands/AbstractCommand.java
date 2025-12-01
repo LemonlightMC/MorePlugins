@@ -2,18 +2,11 @@ package com.lemonlightmc.moreplugins.commands;
 
 import com.lemonlightmc.moreplugins.apis.ChatAPI;
 import com.lemonlightmc.moreplugins.base.MorePlugins;
-import com.lemonlightmc.moreplugins.commands.Senders.AbstractCommandSender;
-import com.lemonlightmc.moreplugins.commands.Senders.BukkitCommandSender;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.Argument;
-import com.lemonlightmc.moreplugins.commands.argumentsbase.CommandArguments;
-import com.lemonlightmc.moreplugins.commands.executors.BukkitExecutionInfo;
 import com.lemonlightmc.moreplugins.commands.executors.ExecutionInfo;
 import com.lemonlightmc.moreplugins.commands.executors.ExecutorType;
 import com.lemonlightmc.moreplugins.commands.executors.Executors.*;
-import com.lemonlightmc.moreplugins.exceptions.InvalidCommandSyntaxException;
-import com.lemonlightmc.moreplugins.exceptions.PlatformException;
 import com.lemonlightmc.moreplugins.messages.Logger;
-import com.lemonlightmc.moreplugins.version.ServerEnvironment;
 
 import java.util.ArrayList;
 import java.util.EnumMap;
@@ -29,21 +22,23 @@ import org.bukkit.command.PluginIdentifiableCommand;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
-public class AbstractCommand implements PluginIdentifiableCommand {
+public class AbstractCommand extends Executable<AbstractCommand> implements PluginIdentifiableCommand {
 
   protected List<Argument<?, ?>> arguments = new ArrayList<>();
   protected List<AbstractCommand> subcommands = new ArrayList<>();
   protected Set<String> aliases = new HashSet<String>();
-  protected List<NormalExecutor<?, ?>> executors;
 
   protected Set<String> permissions = new HashSet<String>();
   protected Predicate<CommandSender> requirements = (_) -> {
     return true;
   };
-  protected boolean playerOnly = false;
 
   public Plugin getPlugin() {
     return MorePlugins.instance;
+  }
+
+  protected AbstractCommand instance() {
+    return this;
   }
 
   // Aliases
@@ -139,187 +134,41 @@ public class AbstractCommand implements PluginIdentifiableCommand {
   }
 
   // Subcommands
-  public AbstractCommand withSubCommands(final List<AbstractCommand> subs) {
+  public AbstractCommand withSubcommands(final List<AbstractCommand> subs) {
     subcommands.addAll(subs);
     return this;
   }
 
-  public final AbstractCommand withSubCommands(final AbstractCommand... subs) {
+  public final AbstractCommand withSubcommands(final AbstractCommand... subs) {
     subcommands.addAll(List.of(subs));
     return this;
   }
 
-  public AbstractCommand setSubCommands(final List<AbstractCommand> subs) {
+  public AbstractCommand setSubcommands(final List<AbstractCommand> subs) {
     subcommands = subs;
     return this;
   }
 
-  public boolean hasSubCommands(final AbstractCommand... subs) {
+  public boolean hasSubcommands(final AbstractCommand... subs) {
     return subcommands.containsAll(List.of(subs));
   }
 
-  public List<AbstractCommand> getSubCommands() {
+  public List<AbstractCommand> getSubcommands() {
     return subcommands;
   }
 
-  public AbstractCommand removeSubCommands(final AbstractCommand subs) {
+  public AbstractCommand removeSubcommands(final AbstractCommand subs) {
     subcommands.remove(subs);
     return this;
   }
 
-  public AbstractCommand removeSubCommands(final AbstractCommand... subs) {
+  public AbstractCommand removeSubcommands(final AbstractCommand... subs) {
     subcommands.removeAll(List.of(subs));
     return this;
   }
 
-  public AbstractCommand clearSubCommands() {
+  public AbstractCommand clearSubcommands() {
     subcommands.clear();
-    return this;
-  }
-
-  // Executors
-  public AbstractCommand setExecutors(final List<NormalExecutor<?, ?>> ex) {
-    executors = ex;
-    return this;
-  }
-
-  public boolean hasExecutor(final NormalExecutor<?, ?> executor) {
-    return executors != null && executors.contains(executor);
-  }
-
-  public boolean hasAnyExecutors() {
-    return executors != null && !executors.isEmpty();
-  }
-
-  public List<NormalExecutor<?, ?>> getExecutors() {
-    return executors;
-  }
-
-  public void clearExecutors() {
-    if (executors != null) {
-      executors.clear();
-    }
-  }
-
-  public AbstractCommand executes(final CommandExecutor executor, final ExecutorType... types) {
-    if (types == null || types.length == 0) {
-      executors.add(executor);
-    } else {
-      for (final ExecutorType type : types) {
-        executors.add(new CommandExecutor() {
-          @Override
-          public void run(final CommandSender sender, final CommandArguments args)
-              throws InvalidCommandSyntaxException {
-            executor
-                .executeWith(new BukkitExecutionInfo<>(sender, Utils.wrapCommandSender(sender), args));
-          }
-
-          @Override
-          public ExecutorType getType() {
-            return type;
-          }
-        });
-      }
-    }
-    return this;
-  }
-
-  public AbstractCommand executes(final CommandExecutionInfo executor, final ExecutorType... types) {
-    if (types == null || types.length == 0) {
-      executors.add(executor);
-    } else {
-      for (final ExecutorType type : types) {
-        executors.add(new CommandExecutionInfo() {
-
-          @Override
-          public void run(final ExecutionInfo<CommandSender, BukkitCommandSender<? extends CommandSender>> info)
-              throws InvalidCommandSyntaxException {
-            executor.executeWith(info);
-          }
-
-          @Override
-          public ExecutorType getType() {
-            return type;
-          }
-        });
-      }
-    }
-    return this;
-  }
-
-  // Player command executor
-  public AbstractCommand executesPlayer(final PlayerCommandExecutor executor) {
-    executors.add(executor);
-    return this;
-  }
-
-  public AbstractCommand executesPlayer(final PlayerExecutionInfo info) {
-    executors.add(info);
-    return this;
-  }
-
-  // Entity command executor
-  public AbstractCommand executesEntity(final EntityCommandExecutor executor) {
-    executors.add(executor);
-    return this;
-  }
-
-  public AbstractCommand executesEntity(final EntityExecutionInfo info) {
-    executors.add(info);
-    return this;
-  }
-
-  // Command block command executor
-  public AbstractCommand executesCommandBlock(final CommandBlockExecutor executor) {
-    executors.add(executor);
-    return this;
-  }
-
-  public AbstractCommand executesCommandBlock(final CommandBlockExecutionInfo info) {
-    executors.add(info);
-    return this;
-  }
-
-  // Console command executor
-  public AbstractCommand executesConsole(final ConsoleCommandExecutor executor) {
-    executors.add(executor);
-    return this;
-  }
-
-  public AbstractCommand executesConsole(final ConsoleExecutionInfo info) {
-    executors.add(info);
-    return this;
-  }
-
-  // RemoteConsole command executor
-  public AbstractCommand executesRemoteConsole(final RemoteConsoleCommandExecutor executor) {
-    executors.add(executor);
-    return this;
-  }
-
-  public AbstractCommand executesRemoteConsole(final RemoteConsoleExecutionInfo info) {
-    executors.add(info);
-    return this;
-  }
-
-  // Feedback-forwarding command executor
-  public AbstractCommand executesFeedbackForwarding(final FeedbackForwardingCommandExecutor executor) {
-    if (!ServerEnvironment.isPaper()) {
-      throw new PlatformException(
-          "Attempted to use a FeedbackForwardingCommandExecutor on a non-paper platform ("
-              + ServerEnvironment.current().name() + ")!");
-    }
-    executors.add(executor);
-    return this;
-  }
-
-  public AbstractCommand executesFeedbackForwarding(final FeedbackForwardingExecutionInfo info) {
-    if (!ServerEnvironment.isPaper()) {
-      throw new PlatformException(
-          "Attempted to use a FeedbackForwardingExecutionInfo on a non-paper platform ("
-              + ServerEnvironment.current().name() + ")!");
-    }
-    executors.add(info);
     return this;
   }
 
@@ -327,6 +176,10 @@ public class AbstractCommand implements PluginIdentifiableCommand {
   public AbstractCommand withPermission(final String permission) {
     permissions.add(permission);
     return this;
+  }
+
+  public void setPermissions(final Set<String> permissions) {
+    this.permissions = permissions;
   }
 
   public Set<String> getPermissions() {
@@ -344,15 +197,6 @@ public class AbstractCommand implements PluginIdentifiableCommand {
 
   public Predicate<CommandSender> getRequirements() {
     return requirements;
-  }
-
-  public AbstractCommand setPlayerOnly(final boolean value) {
-    this.playerOnly = value;
-    return this;
-  }
-
-  public boolean isPlayerOnly() {
-    return playerOnly;
   }
 
   // utils
@@ -390,20 +234,8 @@ public class AbstractCommand implements PluginIdentifiableCommand {
     return sender != null && sender instanceof Player;
   }
 
-  public boolean checkPlayer(final CommandSender sender) {
-    if (sender == null || !(sender instanceof Player)) {
-      ChatAPI.send(sender, CommandManager.getPlayerOnlyMessage());
-      return false;
-    }
-    return true;
-  }
-
   public void sendPermissionMessage(final CommandSender sender) {
     ChatAPI.send(sender, CommandManager.getPermissionMessage());
-  }
-
-  public void sendPlayerOnlyMessage(final CommandSender sender) {
-    ChatAPI.send(sender, CommandManager.getPlayerOnlyMessage());
   }
 
   // execution
@@ -418,7 +250,7 @@ public class AbstractCommand implements PluginIdentifiableCommand {
       if (executors == null || executors.isEmpty()) {
         return;
       }
-      final ExecutorType[] priorities = prioritiesForSender(info.wrapper());
+      final ExecutorType[] priorities = Utils.prioritiesForSender(info.wrapper());
       if (priorities == null || priorities.length == 0) {
         return;
       }
@@ -466,25 +298,58 @@ public class AbstractCommand implements PluginIdentifiableCommand {
     return true;
   }
 
-  private ExecutorType[] prioritiesForSender(final AbstractCommandSender<?> sender) {
-    if (sender == null) {
-      return null;
-    }
-    if (sender instanceof Senders.AbstractPlayer) {
-      return new ExecutorType[] { ExecutorType.PLAYER, ExecutorType.NATIVE, ExecutorType.ALL };
-    } else if (sender instanceof Senders.AbstractEntity) {
-      return new ExecutorType[] { ExecutorType.ENTITY, ExecutorType.NATIVE, ExecutorType.ALL };
-    } else if (sender instanceof Senders.AbstractConsoleCommandSender) {
-      return new ExecutorType[] { ExecutorType.CONSOLE, ExecutorType.NATIVE, ExecutorType.ALL };
-    } else if (sender instanceof Senders.AbstractBlockCommandSender) {
-      return new ExecutorType[] { ExecutorType.BLOCK, ExecutorType.NATIVE, ExecutorType.ALL };
-    } else if (sender instanceof Senders.AbstractProxiedCommandSender) {
-      return new ExecutorType[] { ExecutorType.PROXY, ExecutorType.NATIVE, ExecutorType.ALL };
-    } else if (sender instanceof Senders.AbstractRemoteConsoleCommandSender) {
-      return new ExecutorType[] { ExecutorType.REMOTE, ExecutorType.NATIVE, ExecutorType.ALL };
-    } else if (sender instanceof Senders.AbstractFeedbackForwardingCommandSender) {
-      return new ExecutorType[] { ExecutorType.FEEDBACK_FORWARDING, ExecutorType.NATIVE, ExecutorType.ALL };
-    }
-    return new ExecutorType[] { ExecutorType.NATIVE, ExecutorType.ALL };
+  @Override
+  public int hashCode() {
+    int result = super.hashCode();
+    result = 31 * result + ((arguments == null) ? 0 : arguments.hashCode());
+    result = 31 * result + ((subcommands == null) ? 0 : subcommands.hashCode());
+    result = 31 * result + ((aliases == null) ? 0 : aliases.hashCode());
+    result = 31 * result + ((permissions == null) ? 0 : permissions.hashCode());
+    result = 31 * result + ((requirements == null) ? 0 : requirements.hashCode());
+    return result;
   }
+
+  @Override
+  public boolean equals(final Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (!super.equals(obj) || getClass() != obj.getClass()) {
+      return false;
+    }
+    final AbstractCommand other = (AbstractCommand) obj;
+    if (arguments == null) {
+      if (other.arguments != null)
+        return false;
+    } else if (!arguments.equals(other.arguments))
+      return false;
+    if (subcommands == null) {
+      if (other.subcommands != null)
+        return false;
+    } else if (!subcommands.equals(other.subcommands))
+      return false;
+    if (aliases == null) {
+      if (other.aliases != null)
+        return false;
+    } else if (!aliases.equals(other.aliases))
+      return false;
+    if (permissions == null) {
+      if (other.permissions != null)
+        return false;
+    } else if (!permissions.equals(other.permissions))
+      return false;
+    if (requirements == null) {
+      if (other.requirements != null)
+        return false;
+    } else if (!requirements.equals(other.requirements))
+      return false;
+    return true;
+  }
+
+  @Override
+  public String toString() {
+    return "AbstractCommand [arguments=" + arguments + ", subcommands=" + subcommands + ", aliases=" + aliases
+        + ", executors=" + executors + ", permissions=" + permissions + ", requirements=" + requirements + "]";
+  }
+
 }

@@ -1,6 +1,7 @@
 package com.lemonlightmc.moreplugins.commands;
 
 import com.lemonlightmc.moreplugins.commands.Senders.*;
+import com.lemonlightmc.moreplugins.commands.executors.ExecutorType;
 import com.lemonlightmc.moreplugins.messages.Logger;
 import com.lemonlightmc.moreplugins.messages.MessageFormatter;
 
@@ -48,6 +49,28 @@ public class Utils {
         "Failed to wrap CommandSender " +
             sender +
             " to a compatible BukkitCommandSender");
+  }
+
+  public static ExecutorType[] prioritiesForSender(final AbstractCommandSender<?> sender) {
+    if (sender == null) {
+      return null;
+    }
+    if (sender instanceof Senders.AbstractPlayer) {
+      return new ExecutorType[] { ExecutorType.PLAYER, ExecutorType.NATIVE, ExecutorType.ALL };
+    } else if (sender instanceof Senders.AbstractEntity) {
+      return new ExecutorType[] { ExecutorType.ENTITY, ExecutorType.NATIVE, ExecutorType.ALL };
+    } else if (sender instanceof Senders.AbstractConsoleCommandSender) {
+      return new ExecutorType[] { ExecutorType.CONSOLE, ExecutorType.NATIVE, ExecutorType.ALL };
+    } else if (sender instanceof Senders.AbstractBlockCommandSender) {
+      return new ExecutorType[] { ExecutorType.BLOCK, ExecutorType.NATIVE, ExecutorType.ALL };
+    } else if (sender instanceof Senders.AbstractProxiedCommandSender) {
+      return new ExecutorType[] { ExecutorType.PROXY, ExecutorType.NATIVE, ExecutorType.ALL };
+    } else if (sender instanceof Senders.AbstractRemoteConsoleCommandSender) {
+      return new ExecutorType[] { ExecutorType.REMOTE, ExecutorType.NATIVE, ExecutorType.ALL };
+    } else if (sender instanceof Senders.AbstractFeedbackForwardingCommandSender) {
+      return new ExecutorType[] { ExecutorType.FEEDBACK_FORWARDING, ExecutorType.NATIVE, ExecutorType.ALL };
+    }
+    return new ExecutorType[] { ExecutorType.NATIVE, ExecutorType.ALL };
   }
 
   public static boolean isInvalidNamespace(final String namespace) {

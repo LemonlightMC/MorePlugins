@@ -22,8 +22,6 @@ public class CommandManager {
 
   protected static String permissionMessage = "&cYou dont have permission to use this command!";
   protected static String requirementsMessage = "&cYou dont fulfill all requirements use this command!";
-  protected static String playerOnlyMessage;
-  protected static String notPlayerMessage;
 
   static {
     try {
@@ -171,21 +169,5 @@ public class CommandManager {
 
   public static String getRequirementsMessage() {
     return requirementsMessage;
-  }
-
-  public static void setPlayerOnlyMessage(final String playerOnlyMessage) {
-    CommandManager.playerOnlyMessage = playerOnlyMessage;
-  }
-
-  public static String getPlayerOnlyMessage() {
-    return playerOnlyMessage;
-  }
-
-  public static void setNotPlayerMessage(final String notPlayerMessage) {
-    CommandManager.notPlayerMessage = notPlayerMessage;
-  }
-
-  public static String getNotPlayerMessage() {
-    return notPlayerMessage;
   }
 }
