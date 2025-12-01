@@ -50,7 +50,7 @@ public abstract class Executable<T> {
           public void run(final CommandSender sender, final CommandArguments args)
               throws InvalidCommandSyntaxException {
             executor
-                .executeWith(new BukkitExecutionInfo<>(sender, Utils.wrapCommandSender(sender), args));
+                .executeWith(Utils.toInfo(sender, args));
           }
 
           @Override

@@ -1,6 +1,8 @@
 package com.lemonlightmc.moreplugins.commands;
 
 import com.lemonlightmc.moreplugins.commands.Senders.*;
+import com.lemonlightmc.moreplugins.commands.argumentsbase.CommandArguments;
+import com.lemonlightmc.moreplugins.commands.executors.BukkitExecutionInfo;
 import com.lemonlightmc.moreplugins.commands.executors.ExecutorType;
 import com.lemonlightmc.moreplugins.messages.Logger;
 import com.lemonlightmc.moreplugins.messages.MessageFormatter;
@@ -16,6 +18,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.command.ProxiedCommandSender;
 import org.bukkit.command.RemoteConsoleCommandSender;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.minecart.CommandMinecart;
 import org.bukkit.permissions.Permissible;
@@ -34,10 +37,10 @@ public class Utils {
       return new BukkitConsoleCommandSender(console);
     }
     if (sender instanceof final Player player) {
-      return new BukkitPlayer(player);
+      return new BukkitPlayerCommandSender(player);
     }
     if (sender instanceof final org.bukkit.entity.Entity entity) {
-      return new BukkitEntity(entity);
+      return new BukkitEntityCommandSender(entity);
     }
     if (sender instanceof final ProxiedCommandSender proxy) {
       return new BukkitProxiedCommandSender(proxy);
@@ -51,13 +54,44 @@ public class Utils {
             " to a compatible BukkitCommandSender");
   }
 
+  public static <S extends CommandSender> BukkitExecutionInfo<? extends CommandSender, ? extends AbstractCommandSender<?>> toInfo(
+      final S sender, final CommandArguments args) {
+
+    if (sender instanceof final BlockCommandSender block) {
+      return new BukkitExecutionInfo<BlockCommandSender, BukkitBlockCommandSender>(block,
+          new BukkitBlockCommandSender(block), args);
+    }
+    if (sender instanceof final ConsoleCommandSender console) {
+      return new BukkitExecutionInfo<ConsoleCommandSender, BukkitConsoleCommandSender>(console,
+          new BukkitConsoleCommandSender(console), args);
+    }
+    if (sender instanceof final Player player) {
+      return new BukkitExecutionInfo<Player, BukkitPlayerCommandSender>(player,
+          new BukkitPlayerCommandSender(player), args);
+    }
+    if (sender instanceof final org.bukkit.entity.Entity entity) {
+      return new BukkitExecutionInfo<Entity, BukkitEntityCommandSender>(entity,
+          new BukkitEntityCommandSender(entity), args);
+    }
+    if (sender instanceof final ProxiedCommandSender proxy) {
+      return new BukkitExecutionInfo<ProxiedCommandSender, BukkitProxiedCommandSender>(proxy,
+          new BukkitProxiedCommandSender(proxy), args);
+    }
+    if (sender instanceof final RemoteConsoleCommandSender remote) {
+      return new BukkitExecutionInfo<RemoteConsoleCommandSender, BukkitRemoteConsoleCommandSender>(remote,
+          new BukkitRemoteConsoleCommandSender(remote), args);
+    }
+    throw new RuntimeException(
+        "Failed to wrap CommandSender " + sender + " to a compatible BukkitCommandSender");
+  }
+
   public static ExecutorType[] prioritiesForSender(final AbstractCommandSender<?> sender) {
     if (sender == null) {
       return null;
     }
-    if (sender instanceof Senders.AbstractPlayer) {
+    if (sender instanceof Senders.AbstractPlayerCommandSender) {
       return new ExecutorType[] { ExecutorType.PLAYER, ExecutorType.NATIVE, ExecutorType.ALL };
-    } else if (sender instanceof Senders.AbstractEntity) {
+    } else if (sender instanceof Senders.AbstractEntityCommandSender) {
       return new ExecutorType[] { ExecutorType.ENTITY, ExecutorType.NATIVE, ExecutorType.ALL };
     } else if (sender instanceof Senders.AbstractConsoleCommandSender) {
       return new ExecutorType[] { ExecutorType.CONSOLE, ExecutorType.NATIVE, ExecutorType.ALL };
@@ -161,20 +195,20 @@ public class Utils {
     return string.regionMatches(true, 0, prefix, 0, prefix.length());
   }
 
-  public static void broadcastCommandMessage(CommandSender source, String message) {
+  public static void broadcastCommandMessage(final CommandSender source, final String message) {
     broadcastCommandMessage(source, message, true);
   }
 
-  public static void broadcastCommandMessage(CommandSender source, String message,
-      boolean sendToSource) {
+  public static void broadcastCommandMessage(final CommandSender source, final String message,
+      final boolean sendToSource) {
     final String colored = MessageFormatter.format("$7o[" + source.getName() + ": " + message + "$7o]");
 
-    if (source instanceof BlockCommandSender blockSender) {
+    if (source instanceof final BlockCommandSender blockSender) {
       if (!blockSender.getBlock().getWorld().getGameRuleValue(GameRule.COMMAND_BLOCK_OUTPUT)) {
         Logger.info(colored);
         return;
       }
-    } else if (source instanceof CommandMinecart cartSender) {
+    } else if (source instanceof final CommandMinecart cartSender) {
       if (!cartSender.getWorld().getGameRuleValue(GameRule.COMMAND_BLOCK_OUTPUT)) {
         Logger.info(colored);
         return;
@@ -184,9 +218,9 @@ public class Utils {
     if (sendToSource && !(source instanceof ConsoleCommandSender)) {
       source.sendMessage(colored);
     }
-    for (Permissible user : Bukkit.getPluginManager().getPermissionSubscriptions("bukkit.broadcast.admin")) {
+    for (final Permissible user : Bukkit.getPluginManager().getPermissionSubscriptions("bukkit.broadcast.admin")) {
       if (user instanceof CommandSender && user.hasPermission("bukkit.broadcast.admin")) {
-        CommandSender target = (CommandSender) user;
+        final CommandSender target = (CommandSender) user;
 
         if (target instanceof ConsoleCommandSender) {
           target.sendMessage(colored);

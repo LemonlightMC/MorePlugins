@@ -2,7 +2,6 @@ package com.lemonlightmc.moreplugins.commands;
 
 import java.util.List;
 import java.util.Optional;
-import org.bukkit.command.CommandSender;
 
 public class SimpleCommand extends AbstractCommand {
 
@@ -15,20 +14,6 @@ public class SimpleCommand extends AbstractCommand {
   public SimpleCommand(final String label) {
     this.label = label.toLowerCase();
     withAliases(label);
-  }
-
-  public boolean execute(
-      final CommandSender sender,
-      final String commandLabel,
-      final String[] args) {
-    throw new UnsupportedOperationException("Unimplemented method 'execute'");
-  }
-
-  public List<String> tabComplete(
-      final CommandSender sender,
-      final String alias,
-      final String[] args) {
-    return List.of();
   }
 
   public void register(final String namespace) {

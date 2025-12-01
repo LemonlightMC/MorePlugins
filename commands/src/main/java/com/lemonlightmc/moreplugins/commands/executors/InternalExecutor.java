@@ -4,6 +4,7 @@ import com.lemonlightmc.moreplugins.base.MorePlugins;
 import com.lemonlightmc.moreplugins.base.PluginBase;
 import com.lemonlightmc.moreplugins.commands.SimpleCommand;
 import com.lemonlightmc.moreplugins.commands.Utils;
+import com.lemonlightmc.moreplugins.commands.argumentsbase.CommandArguments;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,10 +38,12 @@ public class InternalExecutor extends Command {
               " - plugin is disabled.");
     }
 
+    final CommandArguments cmdArgs = parse(args);
+    final BukkitExecutionInfo<?, ?> info = Utils.toInfo(sender, cmdArgs);
     try {
       PluginBase.getInstanceScheduler()
           .runAsync(() -> {
-            cmd.execute(sender, label, args);
+            cmd.execute(info);
           });
     } catch (final Throwable ex) {
       throw new CommandException(
@@ -56,23 +59,25 @@ public class InternalExecutor extends Command {
   @Override
   public List<String> tabComplete(
       final CommandSender sender,
-      final String alias0,
+      final String label0,
       final String[] args0,
       final Location location) {
     if (sender == null) {
       return List.of();
     }
-    final String alias = alias0 == null ? this.getLabel() : alias0;
+    final String label = label0 == null ? this.getLabel() : label0;
     final String[] args = args0 == null ? new String[0] : args0;
 
     List<String> completions = null;
+    final CommandArguments cmdArgs = parse(args);
+    final BukkitExecutionInfo<?, ?> info = Utils.toInfo(sender, cmdArgs);
     try {
-      completions = cmd.tabComplete(sender, alias, args);
+      completions = cmd.tabComplete(info);
     } catch (final Throwable ex) {
       final StringBuilder message = new StringBuilder();
       message
           .append("Unhandled exception during tab completion for command '/")
-          .append(alias)
+          .append(label)
           .append(' ');
       for (final String arg : args) {
         message.append(arg).append(' ');
@@ -107,5 +112,9 @@ public class InternalExecutor extends Command {
         .append(MorePlugins.instance.getDescription().getFullName())
         .append(')');
     return stringBuilder.toString();
+  }
+
+  public CommandArguments parse(final String[] args) {
+    return null;
   }
 }

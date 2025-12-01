@@ -270,6 +270,10 @@ public class AbstractCommand extends Executable<AbstractCommand> implements Plug
     }
   }
 
+  public List<String> tabComplete(final ExecutionInfo<?, ?> info) {
+    return null;
+  }
+
   private boolean _execute(final ExecutionInfo<?, ?> info, final ExecutorType... types)
       throws CommandException {
     final Map<ExecutorType, Integer> priorityIndex = new EnumMap<>(ExecutorType.class);
