@@ -1,4 +1,4 @@
-package com.lemonlightmc.moreplugins.exceptions;
+package com.lemonlightmc.moreplugins.commands.exceptions;
 
 public class InvalidCommandNameException extends RuntimeException {
 

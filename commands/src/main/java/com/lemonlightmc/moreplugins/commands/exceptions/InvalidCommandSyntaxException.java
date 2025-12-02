@@ -1,4 +1,4 @@
-package com.lemonlightmc.moreplugins.exceptions;
+package com.lemonlightmc.moreplugins.commands.exceptions;
 
 // TODO: implement
 public class InvalidCommandSyntaxException extends RuntimeException {
