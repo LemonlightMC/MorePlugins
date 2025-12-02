@@ -17,10 +17,7 @@ public class DoubleArgument extends Argument<Double, DoubleArgument> {
   }
 
   @Override
-  public <Source> Double parseArgument(
-      Context<Source> cmdCtx,
-      String key,
-      CommandArguments previousArgs) throws CommandException {
+  public Double parseArgument(String key, CommandArguments previousArgs) throws CommandException {
     return null;
   }
 }

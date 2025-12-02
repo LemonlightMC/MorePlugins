@@ -9,16 +9,45 @@ import java.util.function.Supplier;
 
 import com.lemonlightmc.moreplugins.commands.Utils;
 
-public record CommandArguments(
-    ParsedArgument<?, ?>[] args,
-    Map<String, ParsedArgument<?, ?>> argsMap,
-    String fullInput) {
+public class CommandArguments {
+  public ParsedArgument[] args;
+  public Map<String, ParsedArgument> argsMap;
+  public String fullInput;
+
+  public CommandArguments(
+      ParsedArgument[] args,
+      Map<String, ParsedArgument> argsMap,
+      String fullInput) {
+    this.args = args;
+    this.argsMap = argsMap;
+    this.fullInput = fullInput;
+  }
+
+  public CommandArguments(
+      Collection<ParsedArgument> args,
+      Map<String, ParsedArgument> argsMap,
+      String fullInput) {
+    this.args = args.toArray(ParsedArgument[]::new);
+    this.argsMap = argsMap;
+    this.fullInput = fullInput;
+  }
+
+  public CommandArguments(
+      Map<String, ParsedArgument> argsMap, String fullInput) {
+    this.args = argsMap.values().toArray(ParsedArgument[]::new);
+    this.argsMap = argsMap;
+    this.fullInput = fullInput;
+  }
+
+  public String getFullInput() {
+    return fullInput;
+  }
 
   public int size() {
     return args.length;
   }
 
-  public Map<String, ParsedArgument<?, ?>> map() {
+  public Map<String, ParsedArgument> map() {
     return Collections.unmodifiableMap(argsMap);
   }
 
@@ -26,7 +55,7 @@ public record CommandArguments(
     return Collections.unmodifiableSet(argsMap.keySet());
   }
 
-  public Collection<ParsedArgument<?, ?>> values() {
+  public Collection<ParsedArgument> values() {
     return Collections.unmodifiableCollection(argsMap.values());
   }
 
@@ -52,7 +81,7 @@ public record CommandArguments(
   }
 
   public Object getOrDefault(final String nodeName, final Object defaultValue) {
-    final ParsedArgument<?, ?> v = argsMap.get(nodeName);
+    final ParsedArgument v = argsMap.get(nodeName);
     return v == null ? defaultValue : v.value();
   }
 
@@ -65,7 +94,7 @@ public record CommandArguments(
   }
 
   public Object getOrDefault(final String nodeName, final Supplier<?> defaultValue) {
-    final ParsedArgument<?, ?> v = argsMap.get(nodeName);
+    final ParsedArgument v = argsMap.get(nodeName);
     return v == null ? defaultValue.get() : v.value();
   }
 
@@ -79,7 +108,7 @@ public record CommandArguments(
   }
 
   public String getRaw(final String nodeName) {
-    final ParsedArgument<?, ?> v = argsMap.get(nodeName);
+    final ParsedArgument v = argsMap.get(nodeName);
     return v == null ? null : v.raw();
   }
 
@@ -92,7 +121,7 @@ public record CommandArguments(
   }
 
   public String getOrDefaultRaw(final String nodeName, final String defaultValue) {
-    final ParsedArgument<?, ?> v = argsMap.get(nodeName);
+    final ParsedArgument v = argsMap.get(nodeName);
     return v == null ? defaultValue : v.raw();
   }
 
@@ -107,7 +136,7 @@ public record CommandArguments(
   public String getOrDefaultRaw(
       final String nodeName,
       final Supplier<String> defaultValue) {
-    final ParsedArgument<?, ?> v = argsMap.get(nodeName);
+    final ParsedArgument v = argsMap.get(nodeName);
     return v == null ? defaultValue.get() : v.raw();
   }
 
@@ -261,8 +290,8 @@ public record CommandArguments(
   }
 
   private boolean equalsArgs(
-      final ParsedArgument<?, ?>[] a1,
-      final ParsedArgument<?, ?>[] a2) {
+      final ParsedArgument[] a1,
+      final ParsedArgument[] a2) {
     if (a1 == a2)
       return true;
     if (a1 == null || a2 == null)
@@ -272,8 +301,8 @@ public record CommandArguments(
       return false;
 
     for (int i = 0; i < length; i++) {
-      final ParsedArgument<?, ?> e1 = a1[i];
-      final ParsedArgument<?, ?> e2 = a2[i];
+      final ParsedArgument e1 = a1[i];
+      final ParsedArgument e2 = a2[i];
 
       if (e1 == e2)
         continue;

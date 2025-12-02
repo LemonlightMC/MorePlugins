@@ -262,7 +262,7 @@ public class AbstractCommand extends Executable<AbstractCommand> implements Plug
       throw e;
     } catch (final Throwable ex) {
       Logger.warn(
-          "Unhandled exception executing '" + info.args().fullInput() + "'");
+          "Unhandled exception executing '" + info.args().getFullInput() + "'");
       ex.printStackTrace();
       if (ex instanceof Exception) {
         throw ex;

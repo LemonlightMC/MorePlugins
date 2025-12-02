@@ -40,13 +40,7 @@ public abstract class Argument<Type, ArgType> {
   public abstract ArgType getInstance();
 
   // Parse
-  public abstract <Source> Double parseArgument(
-      Context<Source> cmdCtx,
-      String key,
-      CommandArguments previousArgs) throws CommandException;
-
-  public interface Context<Source> {
-  }
+  public abstract Type parseArgument(String key, CommandArguments previousArgs) throws CommandException;
 
   public String getName() {
     return name;

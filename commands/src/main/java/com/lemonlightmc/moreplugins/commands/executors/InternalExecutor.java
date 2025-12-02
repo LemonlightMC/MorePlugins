@@ -4,10 +4,16 @@ import com.lemonlightmc.moreplugins.base.MorePlugins;
 import com.lemonlightmc.moreplugins.base.PluginBase;
 import com.lemonlightmc.moreplugins.commands.SimpleCommand;
 import com.lemonlightmc.moreplugins.commands.Utils;
+import com.lemonlightmc.moreplugins.commands.argumentsbase.Argument;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.CommandArguments;
+import com.lemonlightmc.moreplugins.commands.argumentsbase.ParsedArgument;
+import com.lemonlightmc.moreplugins.utils.StringUtils;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
 import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandException;
@@ -115,6 +121,39 @@ public class InternalExecutor extends Command {
   }
 
   public CommandArguments parse(final String[] args) {
-    return null;
+    final String fullInput = StringUtils.join(" ", args);
+    final ParserCommandArguments cmd_args = new ParserCommandArguments(null, null, fullInput);
+
+    for (final Argument<?, ?> arg : cmd.getArguments()) {
+      if (!arg.isListed()) {
+        continue;
+      }
+
+      final Object value = arg.parseArgument(arg.getName(), cmd_args);
+      cmd_args.add(arg.getName(), new ParsedArgument(arg.getName(), null, value));
+    }
+
+    return cmd_args.finish();
+  }
+
+  private static class ParserCommandArguments extends CommandArguments {
+
+    public ParserCommandArguments(final String fullInput) {
+      super(new ParsedArgument[] {}, new HashMap<>(), fullInput);
+    }
+
+    public ParserCommandArguments(final ParsedArgument[] args, final Map<String, ParsedArgument> argsMap,
+        final String fullInput) {
+      super(args, argsMap, fullInput);
+    }
+
+    public void add(final String key, final ParsedArgument arg) {
+      argsMap.put(key, arg);
+      args = argsMap.values().toArray(ParsedArgument[]::new);
+    }
+
+    public CommandArguments finish() {
+      return new CommandArguments(args, argsMap, fullInput);
+    }
   }
 }

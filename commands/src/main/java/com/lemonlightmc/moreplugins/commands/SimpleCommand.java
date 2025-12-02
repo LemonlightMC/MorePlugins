@@ -6,10 +6,10 @@ import java.util.Optional;
 public class SimpleCommand extends AbstractCommand {
 
   private final String label;
-  public Optional<String> shortDescription = Optional.empty();
-  public Optional<String> fullDescription = Optional.empty();
-  public Optional<String[]> usageDescription = Optional.empty();
-  public Optional<String> helpMessage = Optional.empty();
+  private Optional<String> shortDescription = Optional.empty();
+  private Optional<String> fullDescription = Optional.empty();
+  private Optional<String[]> usageDescription = Optional.empty();
+  private Optional<String> helpMessage = Optional.empty();
 
   public SimpleCommand(final String label) {
     this.label = label.toLowerCase();
