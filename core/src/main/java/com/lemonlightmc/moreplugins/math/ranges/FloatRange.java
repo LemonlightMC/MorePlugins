@@ -5,9 +5,11 @@ import java.util.Comparator;
 import com.lemonlightmc.moreplugins.exceptions.RangeException;
 
 public class FloatRange implements Range<FloatRange, Float> {
+  public static FloatRange ALL = new FloatRange();
 
   private final Float min;
   private final Float max;
+
   private static final Comparator<FloatRange> comparator = new Comparator<FloatRange>() {
     @Override
     public int compare(final FloatRange o1, final FloatRange o2) {
@@ -19,7 +21,7 @@ public class FloatRange implements Range<FloatRange, Float> {
       }
       return Float.compare(o1.max - o2.min, o2.max - o2.min);
     }
-  };;
+  };
 
   public FloatRange() {
     this(Float.MIN_VALUE, Float.MAX_VALUE);
@@ -50,6 +52,15 @@ public class FloatRange implements Range<FloatRange, Float> {
       throw new IllegalArgumentException("Range cant be null");
     }
     return new FloatRange(range.min, range.max);
+  }
+
+  public static FloatRange of(final String str) {
+    if (str == null || str.length() == 0) {
+      return ALL;
+    }
+    final String[] arr = Range.parse(str);
+    return new FloatRange(arr[0].length() == 0 ? Float.MIN_VALUE : Float.parseFloat(arr[0]),
+        arr[1].length() == 0 ? Float.MAX_VALUE : Float.parseFloat(arr[1]));
   }
 
   public static FloatRange encompassing(final FloatRange a, final FloatRange b) {

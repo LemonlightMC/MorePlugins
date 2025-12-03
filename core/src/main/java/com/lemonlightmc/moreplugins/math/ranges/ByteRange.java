@@ -5,9 +5,11 @@ import java.util.Comparator;
 import com.lemonlightmc.moreplugins.exceptions.RangeException;
 
 public class ByteRange implements Range<ByteRange, Byte> {
+  public static ByteRange ALL = new ByteRange();
 
   private final Byte min;
   private final Byte max;
+
   private static final Comparator<ByteRange> comparator = new Comparator<ByteRange>() {
     @Override
     public int compare(final ByteRange o1, final ByteRange o2) {
@@ -19,7 +21,7 @@ public class ByteRange implements Range<ByteRange, Byte> {
       }
       return Integer.compare(o1.max.intValue() - o2.min.intValue(), o2.max.intValue() - o2.min.intValue());
     }
-  };;
+  };
 
   public ByteRange() {
     this(Byte.MIN_VALUE, Byte.MAX_VALUE);
@@ -50,6 +52,15 @@ public class ByteRange implements Range<ByteRange, Byte> {
       throw new IllegalArgumentException("Range cant be null");
     }
     return new ByteRange(range.min, range.max);
+  }
+
+  public static ByteRange of(final String str) {
+    if (str == null || str.length() == 0) {
+      return ALL;
+    }
+    final String[] arr = Range.parse(str);
+    return new ByteRange(arr[0].length() == 0 ? Byte.MIN_VALUE : Byte.parseByte(arr[0]),
+        arr[1].length() == 0 ? Byte.MAX_VALUE : Byte.parseByte(arr[1]));
   }
 
   public static ByteRange encompassing(final ByteRange a, final ByteRange b) {

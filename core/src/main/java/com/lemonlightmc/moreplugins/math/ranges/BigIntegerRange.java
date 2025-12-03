@@ -6,6 +6,7 @@ import java.util.Comparator;
 import com.lemonlightmc.moreplugins.exceptions.RangeException;
 
 public class BigIntegerRange implements Range<BigIntegerRange, BigInteger> {
+  public static BigIntegerRange ALL = new BigIntegerRange();
 
   private final BigInteger min;
   private final BigInteger max;
@@ -23,7 +24,7 @@ public class BigIntegerRange implements Range<BigIntegerRange, BigInteger> {
       }
       return o1.max.subtract(o2.min).compareTo(o2.max.subtract(o2.min));
     }
-  };;
+  };
 
   public BigIntegerRange() {
     this(MIN_VALUE, MAX_VALUE);
@@ -54,6 +55,15 @@ public class BigIntegerRange implements Range<BigIntegerRange, BigInteger> {
       throw new IllegalArgumentException("Range cant be null");
     }
     return new BigIntegerRange(range.min, range.max);
+  }
+
+  public static BigIntegerRange of(final String str) {
+    if (str == null || str.length() == 0) {
+      return ALL;
+    }
+    final String[] arr = Range.parse(str);
+    return new BigIntegerRange(arr[0].length() == 0 ? MIN_VALUE : new BigInteger(arr[0]),
+        arr[1].length() == 0 ? MAX_VALUE : new BigInteger(arr[1]));
   }
 
   public static BigIntegerRange encompassing(final BigIntegerRange a, final BigIntegerRange b) {

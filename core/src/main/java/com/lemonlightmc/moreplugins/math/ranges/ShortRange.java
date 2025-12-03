@@ -5,9 +5,11 @@ import java.util.Comparator;
 import com.lemonlightmc.moreplugins.exceptions.RangeException;
 
 public class ShortRange implements Range<ShortRange, Short> {
+  public static ShortRange ALL = new ShortRange();
 
   private final Short min;
   private final Short max;
+
   private static final Comparator<ShortRange> comparator = new Comparator<ShortRange>() {
     @Override
     public int compare(final ShortRange o1, final ShortRange o2) {
@@ -19,7 +21,7 @@ public class ShortRange implements Range<ShortRange, Short> {
       }
       return Integer.compare(o1.max - o2.min, o2.max - o2.min);
     }
-  };;
+  };
 
   public ShortRange() {
     this(Short.MIN_VALUE, Short.MAX_VALUE);
@@ -50,6 +52,15 @@ public class ShortRange implements Range<ShortRange, Short> {
       throw new IllegalArgumentException("Range cant be null");
     }
     return new ShortRange(range.min, range.max);
+  }
+
+  public static ShortRange of(final String str) {
+    if (str == null || str.length() == 0) {
+      return ALL;
+    }
+    final String[] arr = Range.parse(str);
+    return new ShortRange(arr[0].length() == 0 ? Short.MIN_VALUE : Short.parseShort(arr[0]),
+        arr[1].length() == 0 ? Short.MAX_VALUE : Short.parseShort(arr[1]));
   }
 
   public static ShortRange encompassing(final ShortRange a, final ShortRange b) {

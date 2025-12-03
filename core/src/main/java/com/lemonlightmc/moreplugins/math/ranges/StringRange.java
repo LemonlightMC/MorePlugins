@@ -5,9 +5,11 @@ import java.util.Comparator;
 import com.lemonlightmc.moreplugins.exceptions.RangeException;
 
 public class StringRange implements Range<StringRange, Integer> {
+  public static final StringRange ALL = new StringRange();
 
   private final Integer min;
   private final Integer max;
+
   private static final Comparator<StringRange> comparator = new Comparator<StringRange>() {
     @Override
     public int compare(final StringRange o1, final StringRange o2) {
@@ -19,7 +21,7 @@ public class StringRange implements Range<StringRange, Integer> {
       }
       return Integer.compare(o1.max - o2.min, o2.max - o2.min);
     }
-  };;
+  };
 
   public StringRange() {
     this(Integer.MIN_VALUE, Integer.MAX_VALUE);
@@ -50,6 +52,15 @@ public class StringRange implements Range<StringRange, Integer> {
       throw new IllegalArgumentException("Range cant be null");
     }
     return new StringRange(range.min, range.max);
+  }
+
+  public static StringRange of(final String str) {
+    if (str == null || str.length() == 0) {
+      return ALL;
+    }
+    final String[] arr = Range.parse(str);
+    return new StringRange(arr[0].length() == 0 ? Integer.MIN_VALUE : Integer.decode(arr[0]),
+        arr[1].length() == 0 ? Integer.MAX_VALUE : Integer.decode(arr[1]));
   }
 
   public static StringRange encompassing(final StringRange a, final StringRange b) {

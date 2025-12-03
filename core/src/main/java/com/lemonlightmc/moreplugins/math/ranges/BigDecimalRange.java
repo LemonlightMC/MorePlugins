@@ -6,6 +6,7 @@ import java.util.Comparator;
 import com.lemonlightmc.moreplugins.exceptions.RangeException;
 
 public class BigDecimalRange implements Range<BigDecimalRange, BigDecimal> {
+  public static BigDecimalRange ALL = new BigDecimalRange();
 
   private final BigDecimal min;
   private final BigDecimal max;
@@ -23,7 +24,7 @@ public class BigDecimalRange implements Range<BigDecimalRange, BigDecimal> {
       }
       return o1.max.subtract(o2.min).compareTo(o2.max.subtract(o2.min));
     }
-  };;
+  };
 
   public BigDecimalRange() {
     this(MIN_VALUE, MAX_VALUE);
@@ -54,6 +55,15 @@ public class BigDecimalRange implements Range<BigDecimalRange, BigDecimal> {
       throw new IllegalArgumentException("Range cant be null");
     }
     return new BigDecimalRange(range.min, range.max);
+  }
+
+  public static BigDecimalRange of(final String str) {
+    if (str == null || str.length() == 0) {
+      return ALL;
+    }
+    final String[] arr = Range.parse(str);
+    return new BigDecimalRange(arr[0].length() == 0 ? MIN_VALUE : new BigDecimal(arr[0]),
+        arr[1].length() == 0 ? MAX_VALUE : new BigDecimal(arr[1]));
   }
 
   public static BigDecimalRange encompassing(final BigDecimalRange a, final BigDecimalRange b) {

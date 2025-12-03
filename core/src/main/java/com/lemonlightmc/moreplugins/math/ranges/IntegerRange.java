@@ -6,8 +6,11 @@ import com.lemonlightmc.moreplugins.exceptions.RangeException;
 
 public class IntegerRange implements Range<IntegerRange, Integer> {
 
+  public static IntegerRange ALL = new IntegerRange();
+
   private final Integer min;
   private final Integer max;
+
   private static final Comparator<IntegerRange> comparator = new Comparator<IntegerRange>() {
     @Override
     public int compare(final IntegerRange o1, final IntegerRange o2) {
@@ -19,7 +22,7 @@ public class IntegerRange implements Range<IntegerRange, Integer> {
       }
       return Integer.compare(o1.max - o2.min, o2.max - o2.min);
     }
-  };;
+  };
 
   public IntegerRange() {
     this(Integer.MIN_VALUE, Integer.MAX_VALUE);
@@ -50,6 +53,15 @@ public class IntegerRange implements Range<IntegerRange, Integer> {
       throw new IllegalArgumentException("Range cant be null");
     }
     return new IntegerRange(range.min, range.max);
+  }
+
+  public static IntegerRange of(final String str) {
+    if (str == null || str.length() == 0) {
+      return ALL;
+    }
+    final String[] arr = Range.parse(str);
+    return new IntegerRange(arr[0].length() == 0 ? Integer.MIN_VALUE : Integer.decode(arr[0]),
+        arr[1].length() == 0 ? Integer.MAX_VALUE : Integer.decode(arr[1]));
   }
 
   public static IntegerRange encompassing(final IntegerRange a, final IntegerRange b) {
