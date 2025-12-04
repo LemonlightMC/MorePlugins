@@ -22,6 +22,10 @@ public enum MathOperation {
     this.func = func;
   }
 
+  public String toString() {
+    return symbol;
+  }
+
   public static MathOperation fromString(final String input) {
     for (final MathOperation mathOp : MathOperation.values()) {
       if (mathOp.symbol.equals(input)) {
