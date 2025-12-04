@@ -1,0 +1,545 @@
+package com.lemonlightmc.moreplugins.commands.arguments;
+
+import java.time.Duration;
+
+import org.bukkit.Bukkit;
+import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
+import org.bukkit.Registry;
+import org.bukkit.Sound;
+import org.bukkit.World;
+import org.bukkit.advancement.Advancement;
+import org.bukkit.block.Biome;
+import org.bukkit.block.BlockState;
+import org.bukkit.block.data.BlockData;
+import org.bukkit.enchantments.Enchantment;
+import org.bukkit.potion.PotionEffectType;
+
+import com.lemonlightmc.moreplugins.commands.StringReader;
+import com.lemonlightmc.moreplugins.commands.Utils;
+import com.lemonlightmc.moreplugins.commands.argumentsbase.Argument;
+import com.lemonlightmc.moreplugins.commands.argumentsbase.ArgumentType;
+import com.lemonlightmc.moreplugins.commands.argumentsbase.CommandArguments;
+import com.lemonlightmc.moreplugins.commands.argumentsbase.ParticleData;
+import com.lemonlightmc.moreplugins.commands.exceptions.CommandExceptions.DynamicCommandException;
+import com.lemonlightmc.moreplugins.commands.exceptions.CommandSyntaxException;
+import com.lemonlightmc.moreplugins.exceptions.DynamicExceptionFunction.Dynamic1ExceptionFunktion;
+import com.lemonlightmc.moreplugins.time.DurationParser;
+
+public class MiscArguments {
+
+  public static class BiomeArgument extends Argument<Biome, BiomeArgument> {
+
+    public static final String[] NAMES = Utils.mapRegistry(Registry.BIOME);
+    private static final DynamicCommandException<Dynamic1ExceptionFunktion> INVALID_BIOME = new DynamicCommandException<Dynamic1ExceptionFunktion>(
+        value -> "Invalid Biome '" + value + "'");
+
+    public BiomeArgument(final String name) {
+      super(name, Biome.class, ArgumentType.BIOME);
+      withSuggestions(NAMES);
+    }
+
+    public BiomeArgument getInstance() {
+      return this;
+    }
+
+    @Override
+    public Biome parseArgument(final String key, final StringReader reader, final CommandArguments previousArgs)
+        throws CommandSyntaxException {
+      final int start = reader.getCursor();
+      String value = null;
+      try {
+        value = reader.readString();
+        return Registry.BIOME.getOrThrow(NamespacedKey.fromString(value));
+      } catch (final Exception e) {
+        reader.setCursor(start);
+        throw INVALID_BIOME.createWithContext(reader, value);
+      }
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+      if (this == obj) {
+        return true;
+      }
+      if (!super.equals(obj) || getClass() != obj.getClass()) {
+        return false;
+      }
+      return true;
+    }
+
+    @Override
+    public String toString() {
+      return "BiomeArgument []";
+    }
+  }
+
+  public static class WorldArgument extends Argument<World, WorldArgument> {
+
+    public static final String[] NAMES = Bukkit.getWorlds().stream().map((final World w) -> {
+      return w == null ? null : w.getName();
+    }).toArray(String[]::new);
+    private static final DynamicCommandException<Dynamic1ExceptionFunktion> INVALID_WORLD = new DynamicCommandException<Dynamic1ExceptionFunktion>(
+        value -> "Invalid World '" + value + "'");
+
+    public WorldArgument(final String name) {
+      super(name, World.class, ArgumentType.WORLD);
+      withSuggestions(NAMES);
+    }
+
+    public WorldArgument getInstance() {
+      return this;
+    }
+
+    @Override
+    public World parseArgument(final String key, final StringReader reader, final CommandArguments previousArgs)
+        throws CommandSyntaxException {
+      final int start = reader.getCursor();
+      String value = null;
+      try {
+        value = reader.readString();
+        final World world = Bukkit.getWorld(value);
+        if (world == null) {
+          throw new Exception();
+        }
+        return world;
+      } catch (final Exception e) {
+        reader.setCursor(start);
+        throw INVALID_WORLD.createWithContext(reader, value);
+      }
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+      if (this == obj) {
+        return true;
+      }
+      if (!super.equals(obj) || getClass() != obj.getClass()) {
+        return false;
+      }
+      return true;
+    }
+
+    @Override
+    public String toString() {
+      return "WorldArgument []";
+    }
+  }
+
+  public static class TimeArgument extends Argument<Duration, TimeArgument> {
+    private static final DynamicCommandException<Dynamic1ExceptionFunktion> INVALID_TIME = new DynamicCommandException<Dynamic1ExceptionFunktion>(
+        value -> "Invalid Time '" + value + "'");
+
+    public TimeArgument(final String name) {
+      super(name, Duration.class, ArgumentType.TIME);
+      withSuggestions("true", "false");
+    }
+
+    public TimeArgument getInstance() {
+      return this;
+    }
+
+    @Override
+    public Duration parseArgument(final String key, final StringReader reader, final CommandArguments previousArgs)
+        throws CommandSyntaxException {
+      final int start = reader.getCursor();
+      String value = null;
+      try {
+        value = reader.readString();
+        return Duration.ofMillis(DurationParser.parse(value));
+      } catch (final Exception e) {
+        reader.setCursor(start);
+        throw INVALID_TIME.createWithContext(reader, value);
+      }
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+      if (this == obj) {
+        return true;
+      }
+      if (!super.equals(obj) || getClass() != obj.getClass()) {
+        return false;
+      }
+      return true;
+    }
+
+    @Override
+    public String toString() {
+      return "TimeArgument []";
+    }
+  }
+
+  public static class SoundArgument extends Argument<Sound, SoundArgument> {
+
+    public static final String[] NAMES = Utils.mapRegistry(Registry.SOUNDS);
+
+    private static final DynamicCommandException<Dynamic1ExceptionFunktion> INVALID_SOUND = new DynamicCommandException<Dynamic1ExceptionFunktion>(
+        value -> "Invalid Sound '" + value + "'");
+
+    public SoundArgument(final String name) {
+      super(name, Sound.class, ArgumentType.SOUND);
+      withSuggestions(NAMES);
+    }
+
+    public SoundArgument getInstance() {
+      return this;
+    }
+
+    @Override
+    public Sound parseArgument(final String key, final StringReader reader, final CommandArguments previousArgs)
+        throws CommandSyntaxException {
+      final int start = reader.getCursor();
+      String value = null;
+      try {
+        value = reader.readString();
+        return Registry.SOUNDS.getOrThrow(NamespacedKey.fromString(value));
+      } catch (final Exception e) {
+        reader.setCursor(start);
+        throw INVALID_SOUND.createWithContext(reader, value);
+      }
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+      if (this == obj) {
+        return true;
+      }
+      if (!super.equals(obj) || getClass() != obj.getClass()) {
+        return false;
+      }
+      return true;
+    }
+
+    @Override
+    public String toString() {
+      return "SoundArgument []";
+    }
+  }
+
+  public static class PotionEffectArgument extends Argument<PotionEffectType, PotionEffectArgument> {
+
+    public static final String[] NAMES = Utils.mapRegistry(Registry.EFFECT);
+
+    private static final DynamicCommandException<Dynamic1ExceptionFunktion> INVALID_POTION = new DynamicCommandException<Dynamic1ExceptionFunktion>(
+        value -> "Invalid Potion Effect '" + value + "'");
+
+    public PotionEffectArgument(final String name) {
+      super(name, PotionEffectType.class, ArgumentType.POTION_EFFECT);
+      withSuggestions(NAMES);
+    }
+
+    public PotionEffectArgument getInstance() {
+      return this;
+    }
+
+    @Override
+    public PotionEffectType parseArgument(final String key, final StringReader reader,
+        final CommandArguments previousArgs)
+        throws CommandSyntaxException {
+      final int start = reader.getCursor();
+      String value = null;
+      try {
+        value = reader.readString();
+        return Registry.EFFECT.getOrThrow(NamespacedKey.fromString(value));
+      } catch (final Exception e) {
+        reader.setCursor(start);
+        throw INVALID_POTION.createWithContext(reader, value);
+      }
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+      if (this == obj) {
+        return true;
+      }
+      if (!super.equals(obj) || getClass() != obj.getClass()) {
+        return false;
+      }
+      return true;
+    }
+
+    @Override
+    public String toString() {
+      return "PotionEffectArgument []";
+    }
+  }
+
+  @SuppressWarnings("rawtypes")
+  public static class ParticleArgument extends Argument<ParticleData, ParticleArgument> {
+
+    public static final String[] NAMES = Utils.mapRegistry(Registry.PARTICLE_TYPE);
+
+    private static final DynamicCommandException<Dynamic1ExceptionFunktion> INVALID_PARTICLE = new DynamicCommandException<Dynamic1ExceptionFunktion>(
+        value -> "Invalid Particle '" + value + "'");
+
+    public ParticleArgument(final String name) {
+      super(name, ParticleData.class, ArgumentType.PARTICLE);
+      withSuggestions(NAMES);
+    }
+
+    public ParticleArgument getInstance() {
+      return this;
+    }
+
+    @Override
+    public ParticleData<?> parseArgument(final String key, final StringReader reader,
+        final CommandArguments previousArgs)
+        throws CommandSyntaxException {
+      final int start = reader.getCursor();
+      String value = null;
+      try {
+        value = reader.readString();
+        return new ParticleData<>(Registry.PARTICLE_TYPE.getOrThrow(NamespacedKey.fromString(value)), null);
+      } catch (final Exception e) {
+        reader.setCursor(start);
+        throw INVALID_PARTICLE.createWithContext(reader, value);
+      }
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+      if (this == obj) {
+        return true;
+      }
+      if (!super.equals(obj) || getClass() != obj.getClass()) {
+        return false;
+      }
+      return true;
+    }
+
+    @Override
+    public String toString() {
+      return "ParticleArgument []";
+    }
+  }
+
+  public static class NamespacedKeyArgument extends Argument<NamespacedKey, NamespacedKeyArgument> {
+    private static final DynamicCommandException<Dynamic1ExceptionFunktion> INVALID_KEY = new DynamicCommandException<Dynamic1ExceptionFunktion>(
+        value -> "Invalid Key '" + value + "'");
+
+    public NamespacedKeyArgument(final String name) {
+      super(name, NamespacedKey.class, ArgumentType.NAMESPACED_KEY);
+    }
+
+    public NamespacedKeyArgument getInstance() {
+      return this;
+    }
+
+    @Override
+    public NamespacedKey parseArgument(final String key, final StringReader reader, final CommandArguments previousArgs)
+        throws CommandSyntaxException {
+      final int start = reader.getCursor();
+      String value = null;
+      try {
+        value = reader.readString();
+        return NamespacedKey.fromString(reader.readString());
+      } catch (final Exception e) {
+        reader.setCursor(start);
+        throw INVALID_KEY.createWithContext(reader, value);
+      }
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+      if (this == obj) {
+        return true;
+      }
+      if (!super.equals(obj) || getClass() != obj.getClass()) {
+        return false;
+      }
+      return true;
+    }
+
+    @Override
+    public String toString() {
+      return "NamespacedKeyArgument []";
+    }
+  }
+
+  public static class BlockDataArgument extends Argument<BlockData, BlockDataArgument> {
+
+    private static final DynamicCommandException<Dynamic1ExceptionFunktion> INVALID_BLOCK = new DynamicCommandException<Dynamic1ExceptionFunktion>(
+        value -> "Invalid BlockData '" + value + "'");
+    public static final String[] NAMES = Utils.mapRegistry(Registry.MATERIAL);
+
+    public BlockDataArgument(final String name) {
+      super(name, BlockData.class, ArgumentType.BLOCKDATA);
+      withSuggestions(NAMES);
+    }
+
+    public BlockDataArgument getInstance() {
+      return this;
+    }
+
+    @Override
+    public BlockData parseArgument(final String key, final StringReader reader, final CommandArguments previousArgs)
+        throws CommandSyntaxException {
+      final int start = reader.getCursor();
+      String value = null;
+      try {
+        value = reader.readString();
+        return Bukkit.createBlockData(Material.getMaterial(value));
+      } catch (final Exception e) {
+        reader.setCursor(start);
+        throw INVALID_BLOCK.createWithContext(reader, value);
+      }
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+      if (this == obj) {
+        return true;
+      }
+      if (!super.equals(obj) || getClass() != obj.getClass()) {
+        return false;
+      }
+      return true;
+    }
+
+    @Override
+    public String toString() {
+      return "BlockDataArgument []";
+    }
+  }
+
+  public static class BlockStateArgument extends Argument<BlockState, BlockStateArgument> {
+    private static final DynamicCommandException<Dynamic1ExceptionFunktion> INVALID_BLOCK = new DynamicCommandException<Dynamic1ExceptionFunktion>(
+        value -> "Invalid Block '" + value + "'");
+
+    public BlockStateArgument(final String name) {
+      super(name, BlockState.class, ArgumentType.BLOCKSTATE);
+    }
+
+    public BlockStateArgument getInstance() {
+      return this;
+    }
+
+    @Override
+    public BlockState parseArgument(final String key, final StringReader reader, final CommandArguments previousArgs)
+        throws CommandSyntaxException {
+      final int start = reader.getCursor();
+      String value = null;
+      try {
+        value = reader.readString();
+        return Bukkit.createBlockData(Material.getMaterial(value)).createBlockState();
+      } catch (final Exception e) {
+        reader.setCursor(start);
+        throw INVALID_BLOCK.createWithContext(reader, value);
+      }
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+      if (this == obj) {
+        return true;
+      }
+      if (!super.equals(obj) || getClass() != obj.getClass()) {
+        return false;
+      }
+      return true;
+    }
+
+    @Override
+    public String toString() {
+      return "BlockStateArgument []";
+    }
+  }
+
+  public static class AdvancementArgument extends Argument<Advancement, AdvancementArgument> {
+
+    @SuppressWarnings("deprecation")
+    public static final String[] NAMES = Utils.mapRegistry(Registry.ADVANCEMENT);
+
+    private static final DynamicCommandException<Dynamic1ExceptionFunktion> INVALID_ADVANCEMENT = new DynamicCommandException<Dynamic1ExceptionFunktion>(
+        value -> "Invalid Advancement '" + value + "'");
+
+    public AdvancementArgument(final String name) {
+      super(name, Advancement.class, ArgumentType.ADVANCEMENT);
+      withSuggestions(NAMES);
+    }
+
+    public AdvancementArgument getInstance() {
+      return this;
+    }
+
+    @Override
+    public Advancement parseArgument(final String key, final StringReader reader,
+        final CommandArguments previousArgs)
+        throws CommandSyntaxException {
+      final int start = reader.getCursor();
+      String value = null;
+      try {
+        value = reader.readString();
+        return Bukkit.getAdvancement(NamespacedKey.fromString(value));
+      } catch (final Exception e) {
+        reader.setCursor(start);
+        throw INVALID_ADVANCEMENT.createWithContext(reader, value);
+      }
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+      if (this == obj) {
+        return true;
+      }
+      if (!super.equals(obj) || getClass() != obj.getClass()) {
+        return false;
+      }
+      return true;
+    }
+
+    @Override
+    public String toString() {
+      return "AdvancementArgument []";
+    }
+  }
+
+  public static class EnchantmentArgument extends Argument<Enchantment, EnchantmentArgument> {
+
+    public static final String[] NAMES = Utils.mapRegistry(Registry.ENCHANTMENT);
+
+    private static final DynamicCommandException<Dynamic1ExceptionFunktion> INVALID_ADVANCEMENT = new DynamicCommandException<Dynamic1ExceptionFunktion>(
+        value -> "Invalid Advancement '" + value + "'");
+
+    public EnchantmentArgument(final String name) {
+      super(name, Enchantment.class, ArgumentType.ENCHANTMENT);
+      withSuggestions(NAMES);
+    }
+
+    public EnchantmentArgument getInstance() {
+      return this;
+    }
+
+    @Override
+    public Enchantment parseArgument(final String key, final StringReader reader,
+        final CommandArguments previousArgs)
+        throws CommandSyntaxException {
+      final int start = reader.getCursor();
+      String value = null;
+      try {
+        value = reader.readString();
+        return Registry.ENCHANTMENT.getOrThrow(NamespacedKey.fromString(value));
+      } catch (final Exception e) {
+        reader.setCursor(start);
+        throw INVALID_ADVANCEMENT.createWithContext(reader, value);
+      }
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+      if (this == obj) {
+        return true;
+      }
+      if (!super.equals(obj) || getClass() != obj.getClass()) {
+        return false;
+      }
+      return true;
+    }
+
+    @Override
+    public String toString() {
+      return "EnchantmentArgument []";
+    }
+  }
+}

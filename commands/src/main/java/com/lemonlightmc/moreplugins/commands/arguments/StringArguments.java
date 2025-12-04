@@ -281,7 +281,7 @@ public class StringArguments {
       this(literal, literal);
     }
 
-    public LiteralArgument(String nodeName, final String literal) {
+    public LiteralArgument(final String nodeName, final String literal) {
       super(nodeName, String.class, ArgumentType.LITERAL);
 
       if (literal == null) {
@@ -298,7 +298,7 @@ public class StringArguments {
       return new LiteralArgument(literal);
     }
 
-    public static LiteralArgument of(String nodeName, final String literal) {
+    public static LiteralArgument of(final String nodeName, final String literal) {
       return new LiteralArgument(nodeName, literal);
     }
 
@@ -306,7 +306,7 @@ public class StringArguments {
       return new LiteralArgument(literal);
     }
 
-    public static LiteralArgument literal(String nodeName, final String literal) {
+    public static LiteralArgument literal(final String nodeName, final String literal) {
       return new LiteralArgument(nodeName, literal);
     }
 
@@ -326,7 +326,7 @@ public class StringArguments {
     }
 
     @Override
-    public String parseArgument(String key, StringReader reader, CommandArguments previousArgs)
+    public String parseArgument(final String key, final StringReader reader, final CommandArguments previousArgs)
         throws CommandSyntaxException {
       return literal;
     }
@@ -337,14 +337,14 @@ public class StringArguments {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(final Object obj) {
       if (this == obj) {
         return true;
       }
       if (!super.equals(obj) || getClass() != obj.getClass()) {
         return false;
       }
-      LiteralArgument other = (LiteralArgument) obj;
+      final LiteralArgument other = (LiteralArgument) obj;
       if (literal == null && other.literal != null) {
         return false;
       }
@@ -361,11 +361,11 @@ public class StringArguments {
 
     private final String[] literals;
 
-    public MultiLiteralArgument(String nodeName, final Set<String> literals) {
+    public MultiLiteralArgument(final String nodeName, final Set<String> literals) {
       this(nodeName, literals.toArray(String[]::new));
     }
 
-    public MultiLiteralArgument(String nodeName, final String... literals) {
+    public MultiLiteralArgument(final String nodeName, final String... literals) {
       super(nodeName, String.class, ArgumentType.MULTI_LITERAL);
 
       if (literals == null) {
@@ -381,7 +381,7 @@ public class StringArguments {
       return new MultiLiteralArgument(literal);
     }
 
-    public static MultiLiteralArgument of(String nodeName, final String literal) {
+    public static MultiLiteralArgument of(final String nodeName, final String literal) {
       return new MultiLiteralArgument(nodeName, literal);
     }
 
@@ -389,7 +389,7 @@ public class StringArguments {
       return new MultiLiteralArgument(literal);
     }
 
-    public static MultiLiteralArgument literal(String nodeName, final String literal) {
+    public static MultiLiteralArgument literal(final String nodeName, final String literal) {
       return new MultiLiteralArgument(nodeName, literal);
     }
 
@@ -404,7 +404,7 @@ public class StringArguments {
     }
 
     @Override
-    public String parseArgument(String key, StringReader reader, CommandArguments previousArgs)
+    public String parseArgument(final String key, final StringReader reader, final CommandArguments previousArgs)
         throws CommandSyntaxException {
       throw new UnsupportedOperationException("Cant parse MultiLiteral");
     }
@@ -415,14 +415,14 @@ public class StringArguments {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(final Object obj) {
       if (this == obj) {
         return true;
       }
       if (!super.equals(obj) || getClass() != obj.getClass()) {
         return false;
       }
-      MultiLiteralArgument other = (MultiLiteralArgument) obj;
+      final MultiLiteralArgument other = (MultiLiteralArgument) obj;
       return Arrays.equals(literals, other.literals);
     }
 

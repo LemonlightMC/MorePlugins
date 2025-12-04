@@ -18,6 +18,7 @@ public enum ArgumentType {
 
   BLOCK_PREDICATE("minecraft:block_predicate"),
   BLOCKSTATE("minecraft:block_state"),
+  BLOCKDATA("minecraft:block_data"),
 
   CHAT("minecraft:message"),
   CHAT_COMPONENT("minecraft:component"), // Not implemented
@@ -97,7 +98,8 @@ public enum ArgumentType {
 
   TIME("minecraft:time"),
 
-  UUID("minecraft:uuid");
+  UUID("minecraft:uuid"),
+  WORLD("minecraft:world");
 
   public static ArgumentType fromInternal(final String internal) {
     for (final ArgumentType type : ArgumentType.values()) {

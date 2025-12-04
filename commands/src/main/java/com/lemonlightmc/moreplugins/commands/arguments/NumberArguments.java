@@ -6,13 +6,17 @@ import org.bukkit.Axis;
 import org.bukkit.Location;
 
 import com.lemonlightmc.moreplugins.commands.StringReader;
+import com.lemonlightmc.moreplugins.commands.Utils;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.Argument;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.ArgumentType;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.CommandArguments;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.LocationType;
 import com.lemonlightmc.moreplugins.commands.exceptions.CommandExceptions;
+import com.lemonlightmc.moreplugins.commands.exceptions.CommandExceptions.DynamicCommandException;
 import com.lemonlightmc.moreplugins.commands.exceptions.CommandSyntaxException;
+import com.lemonlightmc.moreplugins.exceptions.DynamicExceptionFunction.Dynamic1ExceptionFunktion;
 import com.lemonlightmc.moreplugins.math.Location2D;
+import com.lemonlightmc.moreplugins.math.MathOperation;
 import com.lemonlightmc.moreplugins.math.Rotation;
 import com.lemonlightmc.moreplugins.math.ranges.*;
 
@@ -720,6 +724,52 @@ public class NumberArguments {
     @Override
     public String toString() {
       return "RotationArgument []";
+    }
+  }
+
+  public static class MathOperationArgument extends Argument<MathOperation, MathOperationArgument> {
+    public static final String[] NAMES = Utils.mapRegistry(MathOperation.values());
+
+    private static final DynamicCommandException<Dynamic1ExceptionFunktion> INVALID_OPERATION = new DynamicCommandException<Dynamic1ExceptionFunktion>(
+        value -> "Invalid MathOperation '" + value + "'");
+
+    public MathOperationArgument(final String name) {
+      super(name, MathOperation.class, ArgumentType.MATH_OPERATION);
+      withSuggestions("true", "false");
+    }
+
+    public MathOperationArgument getInstance() {
+      return this;
+    }
+
+    @Override
+    public MathOperation parseArgument(final String key, final StringReader reader, final CommandArguments previousArgs)
+        throws CommandSyntaxException {
+      final int start = reader.getCursor();
+      String value = null;
+      try {
+        value = reader.readString();
+        return MathOperation.fromString(value);
+      } catch (final Exception e) {
+        reader.setCursor(start);
+        throw INVALID_OPERATION.createWithContext(reader, value);
+      }
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+      if (this == obj) {
+        return true;
+      }
+      if (!super.equals(obj) || getClass() != obj.getClass()) {
+        return false;
+      }
+      return true;
+    }
+
+    @Override
+    public String toString() {
+      return "MathOperationArgument []";
     }
   }
 }
