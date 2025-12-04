@@ -2,6 +2,7 @@ package com.lemonlightmc.moreplugins.commands;
 
 import com.lemonlightmc.moreplugins.commands.exceptions.CommandExceptions;
 import com.lemonlightmc.moreplugins.commands.exceptions.CommandSyntaxException;
+import com.lemonlightmc.moreplugins.math.ranges.*;
 
 public class StringReader {
   private static final char SYNTAX_ESCAPE = '\\';
@@ -10,6 +11,7 @@ public class StringReader {
 
   private final String string;
   private int cursor;
+  private int start;
 
   public StringReader(final StringReader other) {
     this.string = other.string;
@@ -20,6 +22,32 @@ public class StringReader {
     this.string = string;
   }
 
+  public static boolean isNumberStrict(final char c) {
+    return c >= '0' && c <= '9';
+  }
+
+  public static boolean isNumber(final char c) {
+    return c >= '0' && c <= '9' || c == '.' || c == '-';
+  }
+
+  public static boolean isAlphabet(final char c) {
+    return c >= '0' && c <= '9'
+        || c >= 'A' && c <= 'Z'
+        || c >= 'a' && c <= 'z';
+  }
+
+  public static boolean isUnquotedString(final char c) {
+    return c >= '0' && c <= '9'
+        || c >= 'A' && c <= 'Z'
+        || c >= 'a' && c <= 'z'
+        || c == '_' || c == '-'
+        || c == '.' || c == '+';
+  }
+
+  public static boolean isQuote(final char c) {
+    return c == SYNTAX_DOUBLE_QUOTE || c == SYNTAX_SINGLE_QUOTE;
+  }
+
   public String getString() {
     return string;
   }
@@ -28,16 +56,32 @@ public class StringReader {
     this.cursor = cursor;
   }
 
+  public int getCursor() {
+    return cursor;
+  }
+
+  public void setStart() {
+    this.start = cursor;
+  }
+
+  public void setStart(final int start) {
+    this.start = start;
+  }
+
+  public void resetCursor() {
+    this.cursor = start;
+  }
+
+  public int getStart() {
+    return start;
+  }
+
   public int getRemainingLength() {
     return string.length() - cursor;
   }
 
   public int getTotalLength() {
     return string.length();
-  }
-
-  public int getCursor() {
-    return cursor;
   }
 
   public String getRead() {
@@ -72,14 +116,6 @@ public class StringReader {
     cursor++;
   }
 
-  public static boolean isAllowedNumber(final char c) {
-    return c >= '0' && c <= '9' || c == '.' || c == '-';
-  }
-
-  public static boolean isQuotedStringStart(final char c) {
-    return c == SYNTAX_DOUBLE_QUOTE || c == SYNTAX_SINGLE_QUOTE;
-  }
-
   public void skipWhitespace() {
     while (canRead() && Character.isWhitespace(peek())) {
       skip();
@@ -88,7 +124,7 @@ public class StringReader {
 
   public int readInt() throws CommandSyntaxException {
     final int start = cursor;
-    while (canRead() && isAllowedNumber(peek())) {
+    while (canRead() && isNumber(peek())) {
       skip();
     }
     final String number = string.substring(start, cursor);
@@ -105,7 +141,7 @@ public class StringReader {
 
   public long readLong() throws CommandSyntaxException {
     final int start = cursor;
-    while (canRead() && isAllowedNumber(peek())) {
+    while (canRead() && isNumber(peek())) {
       skip();
     }
     final String number = string.substring(start, cursor);
@@ -122,7 +158,7 @@ public class StringReader {
 
   public double readDouble() throws CommandSyntaxException {
     final int start = cursor;
-    while (canRead() && isAllowedNumber(peek())) {
+    while (canRead() && isNumber(peek())) {
       skip();
     }
     final String number = string.substring(start, cursor);
@@ -139,7 +175,7 @@ public class StringReader {
 
   public float readFloat() throws CommandSyntaxException {
     final int start = cursor;
-    while (canRead() && isAllowedNumber(peek())) {
+    while (canRead() && isNumber(peek())) {
       skip();
     }
     final String number = string.substring(start, cursor);
@@ -154,17 +190,80 @@ public class StringReader {
     }
   }
 
-  public static boolean isAllowedInUnquotedString(final char c) {
-    return c >= '0' && c <= '9'
-        || c >= 'A' && c <= 'Z'
-        || c >= 'a' && c <= 'z'
-        || c == '_' || c == '-'
-        || c == '.' || c == '+';
+  private String readRange() throws CommandSyntaxException {
+    while (canRead() && isNumber(peek())) {
+      skip();
+    }
+    final String number = string.substring(start, cursor);
+    if (number.isEmpty()) {
+      throw CommandExceptions.readerExpectedRange().createWithContext(this);
+    }
+    return number;
+  }
+
+  public IntegerRange readIntRange() throws CommandSyntaxException {
+    setStart();
+    String str = null;
+    try {
+      str = readRange();
+      return IntegerRange.of(str);
+    } catch (final CommandSyntaxException ex) {
+      resetCursor();
+      throw ex;
+    } catch (final Exception ex) {
+      resetCursor();
+      throw CommandExceptions.readerInvalidRange().createWithContext(this, str);
+    }
+  }
+
+  public LongRange readLongRange() throws CommandSyntaxException {
+    setStart();
+    String str = null;
+    try {
+      str = readRange();
+      return LongRange.of(str);
+    } catch (final CommandSyntaxException ex) {
+      resetCursor();
+      throw ex;
+    } catch (final Exception ex) {
+      resetCursor();
+      throw CommandExceptions.readerInvalidRange().createWithContext(this, str);
+    }
+  }
+
+  public FloatRange readFloatRange() throws CommandSyntaxException {
+    setStart();
+    String str = null;
+    try {
+      str = readRange();
+      return FloatRange.of(str);
+    } catch (final CommandSyntaxException ex) {
+      resetCursor();
+      throw ex;
+    } catch (final Exception ex) {
+      resetCursor();
+      throw CommandExceptions.readerInvalidRange().createWithContext(this, str);
+    }
+  }
+
+  public DoubleRange readDoubleRange() throws CommandSyntaxException {
+    setStart();
+    String str = null;
+    try {
+      str = readRange();
+      return DoubleRange.of(str);
+    } catch (final CommandSyntaxException ex) {
+      resetCursor();
+      throw ex;
+    } catch (final Exception ex) {
+      resetCursor();
+      throw CommandExceptions.readerInvalidRange().createWithContext(this, str);
+    }
   }
 
   public String readUnquotedString() {
     final int start = cursor;
-    while (canRead() && isAllowedInUnquotedString(peek())) {
+    while (canRead() && isUnquotedString(peek())) {
       skip();
     }
     return string.substring(start, cursor);
@@ -175,7 +274,7 @@ public class StringReader {
       return "";
     }
     final char next = peek();
-    if (!isQuotedStringStart(next)) {
+    if (!isQuote(next)) {
       throw CommandExceptions.readerExpectedStartOfQuote().createWithContext(this);
     }
     skip();
@@ -213,7 +312,7 @@ public class StringReader {
       return "";
     }
     final char next = peek();
-    if (isQuotedStringStart(next)) {
+    if (isQuote(next)) {
       skip();
       return readStringUntil(next);
     }

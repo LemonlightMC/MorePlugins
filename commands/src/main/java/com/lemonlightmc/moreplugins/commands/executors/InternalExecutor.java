@@ -3,10 +3,13 @@ package com.lemonlightmc.moreplugins.commands.executors;
 import com.lemonlightmc.moreplugins.base.MorePlugins;
 import com.lemonlightmc.moreplugins.base.PluginBase;
 import com.lemonlightmc.moreplugins.commands.SimpleCommand;
+import com.lemonlightmc.moreplugins.commands.StringReader;
 import com.lemonlightmc.moreplugins.commands.Utils;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.Argument;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.CommandArguments;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.ParsedArgument;
+import com.lemonlightmc.moreplugins.commands.exceptions.CommandSyntaxException;
+import com.lemonlightmc.moreplugins.messages.Logger;
 import com.lemonlightmc.moreplugins.utils.StringUtils;
 
 import java.util.ArrayList;
@@ -44,11 +47,11 @@ public class InternalExecutor extends Command {
               " - plugin is disabled.");
     }
 
-    final CommandArguments cmdArgs = parse(args);
-    final BukkitExecutionInfo<?, ?> info = Utils.toInfo(sender, cmdArgs);
     try {
       PluginBase.getInstanceScheduler()
           .runAsync(() -> {
+            final CommandArguments cmdArgs = parse(args);
+            final BukkitExecutionInfo<?, ?> info = Utils.toInfo(sender, cmdArgs);
             cmd.execute(info);
           });
     } catch (final Throwable ex) {
@@ -75,9 +78,9 @@ public class InternalExecutor extends Command {
     final String[] args = args0 == null ? new String[0] : args0;
 
     List<String> completions = null;
-    final CommandArguments cmdArgs = parse(args);
-    final BukkitExecutionInfo<?, ?> info = Utils.toInfo(sender, cmdArgs);
     try {
+      final CommandArguments cmdArgs = parse(args);
+      final BukkitExecutionInfo<?, ?> info = Utils.toInfo(sender, cmdArgs);
       completions = cmd.tabComplete(info);
     } catch (final Throwable ex) {
       final StringBuilder message = new StringBuilder();
@@ -123,14 +126,20 @@ public class InternalExecutor extends Command {
   public CommandArguments parse(final String[] args) {
     final String fullInput = StringUtils.join(" ", args);
     final ParserCommandArguments cmd_args = new ParserCommandArguments(null, null, fullInput);
+    final StringReader reader = new StringReader(fullInput);
 
     for (final Argument<?, ?> arg : cmd.getArguments()) {
       if (!arg.isListed()) {
         continue;
       }
 
-      final Object value = arg.parseArgument(arg.getName(), cmd_args);
-      cmd_args.add(arg.getName(), new ParsedArgument(arg.getName(), null, value));
+      try {
+        final Object value = arg.parseArgument(arg.getName(), reader, cmd_args);
+        cmd_args.add(arg.getName(), new ParsedArgument(arg.getName(), null, value));
+      } catch (final CommandSyntaxException e) {
+        Logger.warn("Failed to parse Argument " + arg.getName());
+        e.printStackTrace();
+      }
     }
 
     return cmd_args.finish();
