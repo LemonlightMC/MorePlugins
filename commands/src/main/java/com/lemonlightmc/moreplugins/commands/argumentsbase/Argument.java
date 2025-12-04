@@ -5,10 +5,10 @@ import java.util.Collection;
 import java.util.List;
 import java.util.function.Function;
 import java.util.function.Predicate;
-
-import org.bukkit.command.CommandException;
 import org.bukkit.command.CommandSender;
 
+import com.lemonlightmc.moreplugins.commands.StringReader;
+import com.lemonlightmc.moreplugins.commands.exceptions.CommandSyntaxException;
 import com.lemonlightmc.moreplugins.commands.suggestions.SuggestionInfo;
 import com.lemonlightmc.moreplugins.commands.suggestions.Suggestions;
 
@@ -40,7 +40,8 @@ public abstract class Argument<Type, ArgType> {
   public abstract ArgType getInstance();
 
   // Parse
-  public abstract Type parseArgument(String key, CommandArguments previousArgs) throws CommandException;
+  public abstract Type parseArgument(String key, StringReader reader, CommandArguments previousArgs)
+      throws CommandSyntaxException;
 
   public String getName() {
     return name;

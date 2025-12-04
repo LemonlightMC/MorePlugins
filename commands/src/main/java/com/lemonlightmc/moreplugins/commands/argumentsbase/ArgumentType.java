@@ -8,7 +8,7 @@ public enum ArgumentType {
   ADVENTURE_CHATCOLOR,
   ADVENTURE_CHAT_COMPONENT,
 
-  ANGLE("minecraft:angle"),
+  ANGLE("minecraft:angle"), // Not implemented
 
   ASYNC_OFFLINE_PLAYER("api:async_offline_player"),
 
@@ -20,26 +20,22 @@ public enum ArgumentType {
   BLOCKSTATE("minecraft:block_state"),
 
   CHAT("minecraft:message"),
-  CHAT_COMPONENT("minecraft:component"),
+  CHAT_COMPONENT("minecraft:component"), // Not implemented
   CHATCOLOR("minecraft:color"),
 
   COMMAND("api:command"),
 
-  CUSTOM,
+  CUSTOM, // Not implemented
 
   DIMENSION("minecraft:dimension"),
   ENCHANTMENT("minecraft:item_enchantment"),
 
-  ENTITY_SELECTOR("minecraft:entity"),
+  ENTITY_SELECTOR("minecraft:entity"), // Not implemented
   ENTITY_TYPE("minecraft:entity_summon"),
 
   ENVIRONMENT("api:environment"),
 
-  FLOAT_RANGE("minecraft:float_range"),
-
   FUNCTION("minecraft:function"),
-
-  INT_RANGE("minecraft:int_range"),
 
   ITEMSTACK("minecraft:item_stack"),
   ITEMSTACK_PREDICATE("minecraft:item_predicate"),
@@ -62,9 +58,9 @@ public enum ArgumentType {
 
   NAMESPACED_KEY("minecraft:resource_location"),
 
-  NBT_COMPOUND("minecraft:nbt_compound_tag"),
-  OBJECTIVE("minecraft:objective"),
-  OBJECTIVE_CRITERIA("minecraft:objective_criteria"),
+  NBT_COMPOUND("minecraft:nbt_compound_tag"), // Not implemented
+  OBJECTIVE("minecraft:objective"), // Not implemented
+  OBJECTIVE_CRITERIA("minecraft:objective_criteria"), // Not implemented
 
   OFFLINE_PLAYER("api:offline_player"),
 
@@ -83,6 +79,11 @@ public enum ArgumentType {
   PRIMITIVE_STRING("brigadier:string"),
   PRIMITIVE_TEXT("api:text"),
 
+  RANGE_INT("minecraft:int_range"),
+  RANGE_LONG("minecraft:int_range"),
+  RANGE_FLOAT("minecraft:float_range"),
+  RANGE_DOUBLE("minecraft:float_range"),
+
   RECIPE("api:recipe"),
 
   ROTATION("minecraft:rotation"),
@@ -100,7 +101,7 @@ public enum ArgumentType {
 
   public static ArgumentType fromInternal(final String internal) {
     for (final ArgumentType type : ArgumentType.values()) {
-      for (String key : type.internals) {
+      for (final String key : type.internals) {
         if (key == internal) {
           return type;
         }

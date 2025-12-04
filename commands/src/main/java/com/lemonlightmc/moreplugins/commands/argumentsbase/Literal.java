@@ -1,5 +1,5 @@
 package com.lemonlightmc.moreplugins.commands.argumentsbase;
 
-public interface LiteralArgument<Impl extends Argument<String, ?>> {
+public interface Literal {
 	String getLiteral();
 }

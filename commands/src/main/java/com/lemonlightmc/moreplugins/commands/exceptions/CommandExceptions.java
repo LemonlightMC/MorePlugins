@@ -46,6 +46,9 @@ public class CommandExceptions {
   private static final DynamicCommandException<Dynamic2ExceptionFunktion> LONG_TOO_BIG = new DynamicCommandException<Dynamic2ExceptionFunktion>(
       (found, max) -> "Long must not be more than " + max + ", found " + found);
 
+  private static final DynamicCommandException<Dynamic2ExceptionFunktion> LOCATION_TOO_BIG = new DynamicCommandException<Dynamic2ExceptionFunktion>(
+      (found, max) -> "Coordinate must not be more than " + max + ", found " + found);
+
   private static final DynamicCommandException<Dynamic1ExceptionFunktion> LITERAL_INCORRECT = new DynamicCommandException<Dynamic1ExceptionFunktion>(
       expected -> "Expected literal " + expected);
 
@@ -82,11 +85,20 @@ public class CommandExceptions {
   private static final DynamicCommandException<Dynamic1ExceptionFunktion> READER_INVALID_FLOAT = new DynamicCommandException<Dynamic1ExceptionFunktion>(
       value -> "Invalid float '" + value + "'");
 
+  private static final DynamicCommandException<Dynamic1ExceptionFunktion> READER_INVALID_RANGE = new DynamicCommandException<Dynamic1ExceptionFunktion>(
+      value -> "Invalid Range '" + value + "'");
+
+  private static final DynamicCommandException<Dynamic1ExceptionFunktion> READER_INVALID_LOCATION = new DynamicCommandException<Dynamic1ExceptionFunktion>(
+      value -> "Invalid Location '" + value + "'");
+
   private static final SimpleCommandException READER_EXPECTED_FLOAT = new SimpleCommandException(
       "Expected float");
 
   private static final SimpleCommandException READER_EXPECTED_BOOL = new SimpleCommandException(
       "Expected bool");
+
+  private static final SimpleCommandException READER_EXPECTED_RANGE = new SimpleCommandException(
+      "Expected Range");
 
   private static final DynamicCommandException<Dynamic1ExceptionFunktion> READER_EXPECTED_SYMBOL = new DynamicCommandException<Dynamic1ExceptionFunktion>(
       symbol -> "Expected '" + symbol + "'");
@@ -121,6 +133,10 @@ public class CommandExceptions {
 
   public static DynamicCommandException<Dynamic2ExceptionFunktion> longTooHigh() {
     return LONG_TOO_BIG;
+  }
+
+  public static DynamicCommandException<Dynamic2ExceptionFunktion> locationTooHigh() {
+    return LOCATION_TOO_BIG;
   }
 
   public static DynamicCommandException<Dynamic1ExceptionFunktion> literalIncorrect() {
@@ -171,12 +187,24 @@ public class CommandExceptions {
     return READER_INVALID_FLOAT;
   }
 
+  public static DynamicCommandException<Dynamic1ExceptionFunktion> readerInvalidRange() {
+    return READER_INVALID_RANGE;
+  }
+
+  public static DynamicCommandException<Dynamic1ExceptionFunktion> readerInvalidLocation() {
+    return READER_INVALID_LOCATION;
+  }
+
   public static SimpleCommandException readerExpectedFloat() {
     return READER_EXPECTED_FLOAT;
   }
 
   public static SimpleCommandException readerExpectedBool() {
     return READER_EXPECTED_BOOL;
+  }
+
+  public static SimpleCommandException readerExpectedRange() {
+    return READER_EXPECTED_RANGE;
   }
 
   public static DynamicCommandException<Dynamic1ExceptionFunktion> readerExpectedSymbol() {
