@@ -2,15 +2,15 @@ package com.lemonlightmc.moreplugins.math;
 
 public class Rotation {
 
-  private float yaw;
-  private float pitch;
+  private double yaw;
+  private double pitch;
 
-  public Rotation(final float yaw, final float pitch) {
+  public Rotation(final double yaw, final double pitch) {
     this.yaw = yaw;
     this.pitch = pitch;
   }
 
-  public Rotation(final float yaw) {
+  public Rotation(final double yaw) {
     this.yaw = yaw;
     this.pitch = 0;
   }
@@ -20,35 +20,35 @@ public class Rotation {
     this.pitch = 0;
   }
 
-  public float getYaw() {
+  public double getYaw() {
     return this.yaw;
   }
 
-  public void setYaw(final float yaw) {
+  public void setYaw(final double yaw) {
     this.yaw = yaw;
   }
 
-  public float getPitch() {
+  public double getPitch() {
     return this.pitch;
   }
 
-  public void setPitch(final float pitch) {
+  public void setPitch(final double pitch) {
     this.pitch = pitch;
   }
 
   // between +/-180
-  public float getNormalizedYaw() {
+  public double getNormalizedYaw() {
     return normalizeYaw(yaw);
   }
 
   // between +/-90
-  public float getNormalizedPitch() {
+  public double getNormalizedPitch() {
     return normalizePitch(pitch);
   }
 
   @Override
   public int hashCode() {
-    return 31 * (31 + Float.floatToIntBits(yaw)) + Float.floatToIntBits(pitch);
+    return 31 * (31 + Double.hashCode(yaw)) + Double.hashCode(pitch);
   }
 
   @Override
@@ -60,8 +60,8 @@ public class Rotation {
       return false;
     }
     final Rotation other = (Rotation) obj;
-    return Float.floatToIntBits(yaw) == Float.floatToIntBits(other.yaw)
-        && Float.floatToIntBits(pitch) == Float.floatToIntBits(other.pitch);
+    return Double.doubleToLongBits(yaw) == Double.doubleToLongBits(other.yaw)
+        && Double.doubleToLongBits(pitch) == Double.doubleToLongBits(other.pitch);
   }
 
   @Override
@@ -69,8 +69,8 @@ public class Rotation {
     return "Rotation [yaw=" + yaw + ", pitch=" + pitch + "]";
   }
 
-  public static float normalizeYaw(final float yaw) {
-    float normalizedYaw = yaw % 360.0F;
+  public static double normalizeYaw(final double yaw) {
+    double normalizedYaw = yaw % 360.0F;
     if (normalizedYaw >= 180.0F) {
       normalizedYaw -= 360.0F;
     } else if (normalizedYaw < -180.0F) {
@@ -79,7 +79,7 @@ public class Rotation {
     return normalizedYaw;
   }
 
-  public static float normalizePitch(final float pitch) {
+  public static double normalizePitch(final double pitch) {
     return pitch > 90.0F ? 90.0F : Math.max(pitch, -90.0F);
   }
 }

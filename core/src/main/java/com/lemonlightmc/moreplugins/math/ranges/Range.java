@@ -7,6 +7,9 @@ import com.lemonlightmc.moreplugins.wrapper.Cloneable;
 public interface Range<T extends Range<T, V>, V extends Number> extends Cloneable<T>, Comparable<T> {
 
   public static String[] parse(String str) {
+    if (str == null || str.length() == 0) {
+      return null;
+    }
     if (str.charAt(0) == '[') {
       str = str.substring(1);
     }
