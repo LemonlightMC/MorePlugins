@@ -2,126 +2,104 @@ package com.lemonlightmc.moreplugins.commands.argumentsbase;
 
 public enum ArgumentType {
 
-  ADVANCEMENT("api:advancement"),
+  ADVANCEMENT(),
 
-  ADVENTURE_CHAT,
-  ADVENTURE_CHATCOLOR,
-  ADVENTURE_CHAT_COMPONENT,
+  ADVENTURE_CHAT, // wont implemented
+  ADVENTURE_CHATCOLOR, // wont implemented
+  ADVENTURE_CHAT_COMPONENT, // wont implemented
 
-  ANGLE("minecraft:angle"), // Not implemented
-  ROTATION("minecraft:rotation"),
+  ANGLE(), // wont implemented
+  ROTATION(),
 
-  AXIS("minecraft:swizzle"),
+  AXIS(),
 
-  BIOME("api:biome"),
+  BIOME(),
 
-  BLOCK_PREDICATE("minecraft:block_predicate"),
-  BLOCKSTATE("minecraft:block_state"),
-  BLOCKDATA("minecraft:block_data"),
-  MATERIAL("api:material"),
+  BLOCK_PREDICATE(), // wont implemented
+  BLOCKSTATE(),
+  BLOCKDATA(),
+  MATERIAL(),
 
-  CHAT("minecraft:message"),
-  CHAT_COMPONENT("minecraft:component"), // Not implemented
-  CHATCOLOR("minecraft:color"),
+  CHAT(),
+  CHAT_COMPONENT(), // Not implemented
+  CHATCOLOR(),
 
-  COMMAND("api:command"),
+  COMMAND(),
 
   CUSTOM, // Not implemented
 
-  DIMENSION("minecraft:dimension"),
+  DIMENSION(), // Not implemented
 
-  ENCHANTMENT("minecraft:item_enchantment"),
+  ENCHANTMENT(),
 
-  ENTITY_SELECTOR("minecraft:entity"), // Not implemented
-  ENTITY_TYPE("minecraft:entity_summon"),
+  ENTITY_SELECTOR(),
+  ENTITY_TYPE(),
 
-  ENVIRONMENT("api:environment"),
+  ENVIRONMENT(), // Not implemented
 
-  FUNCTION("minecraft:function"),
+  FUNCTION(),
 
-  ITEMSTACK("minecraft:item_stack"),
-  ITEMSTACK_PREDICATE("minecraft:item_predicate"),
+  ITEMSTACK(), // Not implemented
+  ITEMSTACK_PREDICATE(), // wont implemented
 
-  LIST_GREEDY("api:list_greedy"),
-  LIST_TEXT("api:list_text"),
+  LIST_GREEDY(),
+  LIST_TEXT(),
 
   LITERAL,
   MULTI_LITERAL,
 
-  LOCATION(new String[] { "minecraft:vec3", "minecraft:block_pos" }),
-  LOCATION_2D(new String[] { "minecraft:vec2", "minecraft:column_pos" }),
+  LOCATION(),
+  LOCATION_2D(),
 
-  LOOT_TABLE("api:loot_table"),
+  LOOT_TABLE(),
 
-  MAP("api:map"),
+  MAP(),
 
-  MATH_OPERATION("minecraft:operation"),
+  MATH_OPERATION(),
 
-  NAMESPACED_KEY("minecraft:resource_location"),
+  NAMESPACED_KEY(),
 
-  NBT_COMPOUND("minecraft:nbt_compound_tag"), // Not implemented
-  OBJECTIVE("minecraft:objective"), // Not implemented
-  OBJECTIVE_CRITERIA("minecraft:objective_criteria"), // Not implemented
+  PARTICLE(), // unfinished implemented
 
-  PARTICLE("minecraft:particle"),
+  PLAYER(),
+  PLAYERPROFILE(),
+  OFFLINE_PLAYER(),
+  ASYNC_OFFLINE_PLAYER(), // wont implemented
 
-  PLAYER("minecraft:game_profile"),
-  PLAYERPROFILE("minecraft:game_profile"),
-  OFFLINE_PLAYER("api:offline_player"),
-  ASYNC_OFFLINE_PLAYER("api:async_offline_player"), // Not implemented
+  POTION_EFFECT(),
 
-  POTION_EFFECT("minecraft:mob_effect"),
+  PRIMITIVE_BOOLEAN(),
+  PRIMITIVE_DOUBLE(),
+  PRIMITIVE_FLOAT(),
+  PRIMITIVE_GREEDY_STRING(),
+  PRIMITIVE_INTEGER(),
+  PRIMITIVE_LONG(),
+  PRIMITIVE_STRING(),
+  PRIMITIVE_TEXT(),
 
-  PRIMITIVE_BOOLEAN("brigadier:bool"),
-  PRIMITIVE_DOUBLE("brigadier:double"),
-  PRIMITIVE_FLOAT("brigadier:float"),
-  PRIMITIVE_GREEDY_STRING("api:greedy_string"),
-  PRIMITIVE_INTEGER("brigadier:integer"),
-  PRIMITIVE_LONG("brigadier:long"),
-  PRIMITIVE_STRING("brigadier:string"),
-  PRIMITIVE_TEXT("api:text"),
+  RANGE_INT(),
+  RANGE_LONG(),
+  RANGE_FLOAT(),
+  RANGE_DOUBLE(),
 
-  RANGE_INT("minecraft:int_range"),
-  RANGE_LONG("minecraft:int_range"),
-  RANGE_FLOAT("minecraft:float_range"),
-  RANGE_DOUBLE("minecraft:float_range"),
+  RECIPE(),
 
-  RECIPE("api:recipe"),
+  NBT_COMPOUND(), // wont implemented
 
-  SCORE_HOLDER("minecraft:score_holder"),
-  SCOREBOARD_SLOT("minecraft:scoreboard_slot"),
+  OBJECTIVE(),
+  CRITERIA(),
+  SCORE_HOLDER(), // wont implemented
+  SCOREBOARD_SLOT(),
 
-  SOUND("api:sound"),
+  SOUND(),
 
-  TEAM("minecraft:team"),
+  TEAM(),
 
-  TIME("minecraft:time"),
+  TIME(),
 
-  UUID("minecraft:uuid"),
-  WORLD("minecraft:world");
+  UUID(),
+  WORLD();
 
-  public static ArgumentType fromInternal(final String internal) {
-    for (final ArgumentType type : ArgumentType.values()) {
-      for (final String key : type.internals) {
-        if (key == internal) {
-          return type;
-        }
-      }
-    }
-    return null;
-  }
-
-  private final String[] internals;
-
-  ArgumentType() {
-    internals = new String[0];
-  }
-
-  ArgumentType(final String internal) {
-    this.internals = new String[] { internal };
-  }
-
-  ArgumentType(final String[] internals) {
-    this.internals = internals;
+  private ArgumentType() {
   }
 }
