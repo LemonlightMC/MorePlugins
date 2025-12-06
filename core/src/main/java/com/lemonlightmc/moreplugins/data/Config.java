@@ -19,6 +19,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
+import org.bukkit.configuration.Configuration;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -58,8 +60,8 @@ public class Config extends ConfigSection implements IConfig {
   }
 
   @Override
-  public String getStringPath() {
-    return filePath.toString();
+  public String getFileName() {
+    return filePath.getFileName().toString();
   }
 
   @Override
@@ -320,6 +322,63 @@ public class Config extends ConfigSection implements IConfig {
       getConfig().loadFromString(configBuilder.toString());
     } catch (final InvalidConfigurationException e) {
       e.printStackTrace(System.err);
+    }
+  }
+
+  public List<String> getMissing() {
+    try {
+      final Configuration defConfig = getConfig().getDefaults();
+      if (defConfig == null) {
+        return List.of();
+      }
+      return getFaulty(defConfig, getConfig());
+    } catch (final Exception e) {
+      Logger.warn("Failed to get missing Config Options");
+      e.printStackTrace();
+      return null;
+    }
+  }
+
+  public List<String> getRedundent() {
+    try {
+      final Configuration defConfig = getConfig().getDefaults();
+      if (defConfig == null) {
+        return List.of();
+      }
+      return getFaulty(getConfig(), defConfig);
+    } catch (final Exception e) {
+      Logger.warn("Failed to get redundent Config Options");
+      e.printStackTrace();
+      return null;
+    }
+  }
+
+  private List<String> getFaulty(final ConfigurationSection s1, final ConfigurationSection s2) {
+    final List<String> faulty = new ArrayList<String>();
+    for (final String path : s1.getKeys(true)) {
+      if (!s1.isConfigurationSection(path)) {
+        if (!s2.contains(path)) {
+          faulty.add(path);
+        }
+      } else {
+        faulty.addAll(getFaulty(s1.getConfigurationSection(path), s2));
+      }
+    }
+    return faulty;
+  }
+
+  public void reportFaulty() {
+    Logger.warn("MISSING CONFIG OPTIONS!!");
+    Logger.warn("Please add the missing options manually or delete this file and perform a reload/restart");
+    Logger.warn("The default values will be used until then");
+    for (final String path : getMissing()) {
+      Logger.warn("  Missing option: " + path + " with default value: " + getConfig().getDefaults().get(path));
+    }
+    Logger.warn("REDUNTENT CONFIG OPTIONS!!");
+    Logger.warn("Please remove the Reduntent options manually or delete this file and perform a reload/restart");
+    Logger.warn("The values will be ignored!");
+    for (final String path : getRedundent()) {
+      Logger.warn("  Reduntent option: " + path + " with value: " + getConfig().get(path));
     }
   }
 

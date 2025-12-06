@@ -12,9 +12,9 @@ import java.util.Map;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 public interface IConfig extends IConfigSection {
-  public String getStringPath();
-
   public Path getPath();
+
+  public String getFileName();
 
   public File getFile();
 
