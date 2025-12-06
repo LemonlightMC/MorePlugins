@@ -5,8 +5,8 @@ import java.util.List;
 
 import org.bukkit.entity.Player;
 
+import com.lemonlightmc.moreplugins.interfaces.Builder;
 import com.lemonlightmc.moreplugins.utils.StringUtils.Replaceable;
-import com.lemonlightmc.moreplugins.wrapper.Builder;
 
 /**
  * Public contracts for title creation and sending.

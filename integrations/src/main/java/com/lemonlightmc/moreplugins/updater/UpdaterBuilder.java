@@ -5,12 +5,12 @@ import java.util.ArrayList;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 
+import com.lemonlightmc.moreplugins.interfaces.Builder;
 import com.lemonlightmc.moreplugins.updater.PlatformData.AbstractPlatformData;
 import com.lemonlightmc.moreplugins.updater.PlatformData.GithubData;
 import com.lemonlightmc.moreplugins.updater.PlatformData.HangarData;
 import com.lemonlightmc.moreplugins.updater.PlatformData.ModrinthData;
 import com.lemonlightmc.moreplugins.updater.PlatformData.SpigotData;
-import com.lemonlightmc.moreplugins.wrapper.Builder;
 
 public class UpdaterBuilder implements Builder<Updater> {
   private final Plugin plugin;

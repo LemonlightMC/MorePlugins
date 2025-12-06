@@ -14,6 +14,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
+import com.lemonlightmc.moreplugins.interfaces.Builder;
 import com.lemonlightmc.moreplugins.messages.MessageFormatter;
 
 public class MobBuilder implements Builder<LivingEntity> {

@@ -1,4 +1,4 @@
-package com.lemonlightmc.moreplugins.wrapper;
+package com.lemonlightmc.moreplugins.interfaces;
 
 public interface Builder<T> {
   public T build();

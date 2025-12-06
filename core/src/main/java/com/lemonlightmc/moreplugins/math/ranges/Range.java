@@ -2,7 +2,7 @@ package com.lemonlightmc.moreplugins.math.ranges;
 
 import java.util.Comparator;
 
-import com.lemonlightmc.moreplugins.wrapper.Cloneable;
+import com.lemonlightmc.moreplugins.interfaces.Cloneable;
 
 public interface Range<T extends Range<T, V>, V extends Number> extends Cloneable<T>, Comparable<T> {
 

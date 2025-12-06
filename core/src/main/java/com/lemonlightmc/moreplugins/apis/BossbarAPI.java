@@ -21,8 +21,8 @@ import org.bukkit.entity.Player;
 import com.lemonlightmc.moreplugins.apis.IBossBarAPI.IBossBar;
 import com.lemonlightmc.moreplugins.apis.IBossBarAPI.IBossBarListener;
 import com.lemonlightmc.moreplugins.base.MorePlugins;
+import com.lemonlightmc.moreplugins.interfaces.Builder;
 import com.lemonlightmc.moreplugins.messages.MessageFormatter;
-import com.lemonlightmc.moreplugins.wrapper.Builder;
 
 /**
  * High-level boss bar management utilities and simple builder helpers.

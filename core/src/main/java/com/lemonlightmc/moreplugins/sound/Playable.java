@@ -3,8 +3,8 @@ package com.lemonlightmc.moreplugins.sound;
 import org.bukkit.SoundCategory;
 
 import com.lemonlightmc.moreplugins.utils.MathUtils;
-import com.lemonlightmc.moreplugins.wrapper.Builder;
-import com.lemonlightmc.moreplugins.apis.SoundAPI;;
+import com.lemonlightmc.moreplugins.apis.SoundAPI;
+import com.lemonlightmc.moreplugins.interfaces.Builder;;
 
 public abstract class Playable implements Cloneable {
 

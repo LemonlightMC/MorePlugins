@@ -10,7 +10,7 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.potion.PotionEffectTypeCategory;
 
 import com.lemonlightmc.moreplugins.apis.IPotionAPI.IPotion;
-import com.lemonlightmc.moreplugins.wrapper.Builder;
+import com.lemonlightmc.moreplugins.interfaces.Builder;
 
 import java.util.Collection;
 import java.util.List;

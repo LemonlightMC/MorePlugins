@@ -1,7 +1,7 @@
 package com.lemonlightmc.moreplugins.sound;
 
+import com.lemonlightmc.moreplugins.interfaces.Builder;
 import com.lemonlightmc.moreplugins.utils.MathUtils;
-import com.lemonlightmc.moreplugins.wrapper.Builder;
 
 public class Instrument {
 

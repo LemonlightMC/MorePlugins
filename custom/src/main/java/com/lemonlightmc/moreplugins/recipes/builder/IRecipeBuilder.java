@@ -8,10 +8,10 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.recipe.CookingBookCategory;
 import org.bukkit.inventory.recipe.CraftingBookCategory;
 
+import com.lemonlightmc.moreplugins.interfaces.Builder;
 import com.lemonlightmc.moreplugins.recipes.RecipeType;
 import com.lemonlightmc.moreplugins.recipes.Ingredients.Ingredient;
 import com.lemonlightmc.moreplugins.recipes.types.IRecipe;
-import com.lemonlightmc.moreplugins.wrapper.Builder;
 
 public interface IRecipeBuilder extends Builder<IRecipe> {
 
