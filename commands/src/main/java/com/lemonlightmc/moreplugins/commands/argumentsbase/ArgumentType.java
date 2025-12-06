@@ -9,8 +9,7 @@ public enum ArgumentType {
   ADVENTURE_CHAT_COMPONENT,
 
   ANGLE("minecraft:angle"), // Not implemented
-
-  ASYNC_OFFLINE_PLAYER("api:async_offline_player"),
+  ROTATION("minecraft:rotation"),
 
   AXIS("minecraft:swizzle"),
 
@@ -19,6 +18,7 @@ public enum ArgumentType {
   BLOCK_PREDICATE("minecraft:block_predicate"),
   BLOCKSTATE("minecraft:block_state"),
   BLOCKDATA("minecraft:block_data"),
+  MATERIAL("api:material"),
 
   CHAT("minecraft:message"),
   CHAT_COMPONENT("minecraft:component"), // Not implemented
@@ -29,6 +29,7 @@ public enum ArgumentType {
   CUSTOM, // Not implemented
 
   DIMENSION("minecraft:dimension"),
+
   ENCHANTMENT("minecraft:item_enchantment"),
 
   ENTITY_SELECTOR("minecraft:entity"), // Not implemented
@@ -41,10 +42,11 @@ public enum ArgumentType {
   ITEMSTACK("minecraft:item_stack"),
   ITEMSTACK_PREDICATE("minecraft:item_predicate"),
 
-  LIST("api:list"),
+  LIST_GREEDY("api:list_greedy"),
   LIST_TEXT("api:list_text"),
 
   LITERAL,
+  MULTI_LITERAL,
 
   LOCATION(new String[] { "minecraft:vec3", "minecraft:block_pos" }),
   LOCATION_2D(new String[] { "minecraft:vec2", "minecraft:column_pos" }),
@@ -55,19 +57,18 @@ public enum ArgumentType {
 
   MATH_OPERATION("minecraft:operation"),
 
-  MULTI_LITERAL,
-
   NAMESPACED_KEY("minecraft:resource_location"),
 
   NBT_COMPOUND("minecraft:nbt_compound_tag"), // Not implemented
   OBJECTIVE("minecraft:objective"), // Not implemented
   OBJECTIVE_CRITERIA("minecraft:objective_criteria"), // Not implemented
 
-  OFFLINE_PLAYER("api:offline_player"),
-
   PARTICLE("minecraft:particle"),
 
   PLAYER("minecraft:game_profile"),
+  PLAYERPROFILE("minecraft:game_profile"),
+  OFFLINE_PLAYER("api:offline_player"),
+  ASYNC_OFFLINE_PLAYER("api:async_offline_player"), // Not implemented
 
   POTION_EFFECT("minecraft:mob_effect"),
 
@@ -86,8 +87,6 @@ public enum ArgumentType {
   RANGE_DOUBLE("minecraft:float_range"),
 
   RECIPE("api:recipe"),
-
-  ROTATION("minecraft:rotation"),
 
   SCORE_HOLDER("minecraft:score_holder"),
   SCOREBOARD_SLOT("minecraft:scoreboard_slot"),
