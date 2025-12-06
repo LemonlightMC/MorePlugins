@@ -5,9 +5,10 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
+import com.lemonlightmc.moreplugins.interfaces.Reloadable;
 import com.lemonlightmc.moreplugins.messages.Logger;
 
-public class ModuleManager<T extends IModule> {
+public class ModuleManager<T extends IModule> implements Reloadable {
   private final HashMap<String, T> modules = new HashMap<>(6);
   private static ModuleManager<?> instance;
 

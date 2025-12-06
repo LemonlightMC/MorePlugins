@@ -4,7 +4,9 @@ import java.util.HashMap;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
-public class Hooks<H extends IModule> {
+import com.lemonlightmc.moreplugins.interfaces.Reloadable;
+
+public class Hooks<H extends IModule> implements Reloadable {
   private final ModuleManager<H> manager = new ModuleManager<>();
   private static Hooks<Hook> instance;
 

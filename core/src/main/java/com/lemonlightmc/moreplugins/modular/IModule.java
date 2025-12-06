@@ -2,7 +2,9 @@ package com.lemonlightmc.moreplugins.modular;
 
 import java.util.List;
 
-public interface IModule {
+import com.lemonlightmc.moreplugins.interfaces.Reloadable;
+
+public interface IModule extends Reloadable {
 
   public String getKey();
 

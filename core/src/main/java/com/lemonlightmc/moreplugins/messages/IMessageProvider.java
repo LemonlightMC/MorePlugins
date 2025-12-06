@@ -3,7 +3,9 @@ package com.lemonlightmc.moreplugins.messages;
 import java.util.Locale;
 import java.util.Map;
 
-public interface IMessageProvider {
+import com.lemonlightmc.moreplugins.interfaces.Reloadable;
+
+public interface IMessageProvider extends Reloadable {
 
   public String getMessage(final String key, final Locale locale);
 

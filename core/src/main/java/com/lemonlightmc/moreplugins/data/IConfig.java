@@ -10,8 +10,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.bukkit.configuration.file.YamlConfiguration;
+import com.lemonlightmc.moreplugins.interfaces.Reloadable;
 
-public interface IConfig extends IConfigSection {
+public interface IConfig extends IConfigSection, Reloadable {
   public Path getPath();
 
   public String getFileName();
