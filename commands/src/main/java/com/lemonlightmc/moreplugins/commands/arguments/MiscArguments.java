@@ -357,6 +357,52 @@ public class MiscArguments {
     }
   }
 
+  public static class MaterialArgument extends Argument<Material, MaterialArgument> {
+
+    private static final DynamicCommandException<Dynamic1ExceptionFunktion> INVALID_MATERIAL = new DynamicCommandException<Dynamic1ExceptionFunktion>(
+        value -> "Invalid Material '" + value + "'");
+    public static final String[] NAMES = Utils.mapRegistry(Registry.MATERIAL);
+
+    public MaterialArgument(final String name) {
+      super(name, Material.class, ArgumentType.MATERIAL);
+      withSuggestions(NAMES);
+    }
+
+    public MaterialArgument getInstance() {
+      return this;
+    }
+
+    @Override
+    public Material parseArgument(final String key, final StringReader reader, final CommandArguments previousArgs)
+        throws CommandSyntaxException {
+      final int start = reader.getCursor();
+      String value = null;
+      try {
+        value = reader.readString();
+        return Material.getMaterial(value);
+      } catch (final Exception e) {
+        reader.setCursor(start);
+        throw INVALID_MATERIAL.createWithContext(reader, value);
+      }
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+      if (this == obj) {
+        return true;
+      }
+      if (!super.equals(obj) || getClass() != obj.getClass()) {
+        return false;
+      }
+      return true;
+    }
+
+    @Override
+    public String toString() {
+      return "MaterialArgument []";
+    }
+  }
+
   public static class BlockDataArgument extends Argument<BlockData, BlockDataArgument> {
 
     private static final DynamicCommandException<Dynamic1ExceptionFunktion> INVALID_BLOCK = new DynamicCommandException<Dynamic1ExceptionFunktion>(
