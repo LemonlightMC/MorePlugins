@@ -8,20 +8,25 @@ import java.util.function.Function;
 import org.bukkit.command.CommandException;
 import org.bukkit.command.CommandSender;
 
-public interface Suggestions<S> {
+import com.lemonlightmc.moreplugins.messages.StringTooltip;
 
-  abstract List<SuggestionRecord> suggest(SuggestionInfo<S> info) throws CommandException;
+@FunctionalInterface
+public interface Suggestions<S extends CommandSender> {
+
+  abstract Collection<StringTooltip> suggest(SuggestionInfo<S> info) throws CommandException;
 
   public static Suggestions<CommandSender> empty() {
     return _ -> List.of();
   }
 
-  public static Suggestions<CommandSender> from(final String... suggestions) {
-    return _ -> apply(suggestions);
+  public static Suggestions<CommandSender> from(final String... strings) {
+    final Collection<StringTooltip> suggestions = apply(strings);
+    return info -> suggestions;
   }
 
-  public static Suggestions<CommandSender> from(final Collection<String> suggestions) {
-    return _ -> apply(suggestions);
+  public static Suggestions<CommandSender> from(final Collection<String> strings) {
+    final Collection<StringTooltip> suggestions = apply(strings);
+    return info -> suggestions;
   }
 
   public static Suggestions<CommandSender> from(
@@ -51,24 +56,24 @@ public interface Suggestions<S> {
     };
   }
 
-  public static Suggestions<CommandSender> fromTooltip(final SuggestionTooltip... suggestions) {
-    return _ -> applyTooltip(suggestions);
+  public static Suggestions<CommandSender> fromTooltip(final StringTooltip... suggestions) {
+    return _ -> List.of(suggestions);
   }
 
-  public static Suggestions<CommandSender> fromTooltip(final Collection<SuggestionTooltip> suggestions) {
-    return _ -> applyTooltip(suggestions);
+  public static Suggestions<CommandSender> fromTooltip(final Collection<StringTooltip> suggestions) {
+    return _ -> suggestions;
   }
 
   public static Suggestions<CommandSender> fromTooltip(
-      final Function<SuggestionInfo<CommandSender>, Collection<SuggestionTooltip>> suggestions) {
-    return info -> applyTooltip(suggestions.apply(info));
+      final Function<SuggestionInfo<CommandSender>, Collection<StringTooltip>> suggestions) {
+    return info -> suggestions.apply(info);
   }
 
   public static Suggestions<CommandSender> fromAsyncTooltip(
-      final CompletableFuture<Collection<SuggestionTooltip>> suggestions) {
+      final CompletableFuture<Collection<StringTooltip>> suggestions) {
     return (info) -> {
       try {
-        return applyTooltip(suggestions.get());
+        return suggestions.get();
       } catch (final Exception e) {
         return List.of();
       }
@@ -76,111 +81,87 @@ public interface Suggestions<S> {
   }
 
   public static Suggestions<CommandSender> fromAsyncTooltip(
-      final Function<SuggestionInfo<CommandSender>, CompletableFuture<Collection<SuggestionTooltip>>> suggestions) {
+      final Function<SuggestionInfo<CommandSender>, CompletableFuture<Collection<StringTooltip>>> suggestions) {
     return (info) -> {
       try {
-        return applyTooltip(suggestions.apply(info).get());
+        return suggestions.apply(info).get();
       } catch (final Exception e) {
         return List.of();
       }
     };
   }
 
-  private static List<SuggestionRecord> apply(final String[] strings) {
-    final ArrayList<SuggestionRecord> suggestions = new ArrayList<>();
+  public static Suggestions<CommandSender> fromProvider(
+      final SuggestionProvider provider) {
+    return info -> applyProvider(provider);
+  }
+
+  public static Suggestions<CommandSender> fromProvider(final SuggestionProvider... provider) {
+    return info -> applyProvider(provider);
+  }
+
+  public static Suggestions<CommandSender> fromProvider(final Collection<SuggestionProvider> providers) {
+    return info -> applyProvider(providers);
+  }
+
+  public static Suggestions<CommandSender> fromProviderAsync(
+      final CompletableFuture<SuggestionProvider> provider) {
+    return (info) -> {
+      try {
+        return applyProvider(provider.get());
+      } catch (final Exception e) {
+        return List.of();
+      }
+    };
+  }
+
+  private static Collection<StringTooltip> apply(final String[] strings) {
+    final ArrayList<StringTooltip> suggestions = new ArrayList<>();
     for (final String string : strings) {
       if (string != null && string.length() != 0) {
-        suggestions.add(new SuggestionRecord(string));
+        suggestions.add(StringTooltip.of(string));
       }
     }
     return suggestions;
   }
 
-  private static List<SuggestionRecord> apply(final Collection<String> strings) {
-    final ArrayList<SuggestionRecord> suggestions = new ArrayList<>();
+  private static Collection<StringTooltip> apply(final Collection<String> strings) {
+    final ArrayList<StringTooltip> suggestions = new ArrayList<>();
     for (final String string : strings) {
       if (string != null && string.length() != 0) {
-        suggestions.add(new SuggestionRecord(string));
+        suggestions.add(StringTooltip.of(string));
       }
     }
     return suggestions;
   }
 
-  private static List<SuggestionRecord> applyTooltip(final SuggestionTooltip[] strings) {
-    final ArrayList<SuggestionRecord> suggestions = new ArrayList<>();
-    for (final SuggestionTooltip string : strings) {
-      if (string != null && string.getSuggestion() != null && string.getSuggestion().length() != 0) {
-        suggestions.add(new SuggestionRecord(string.getSuggestion(), string.getTooltip()));
+  private static Collection<StringTooltip> applyProvider(final SuggestionProvider provider) {
+    try {
+      return List.of(StringTooltip.of(provider.getSuggestion(), provider.getTooltip()));
+    } catch (final Exception e) {
+      return List.of();
+    }
+  }
+
+  private static Collection<StringTooltip> applyProvider(final SuggestionProvider[] providers) {
+    final ArrayList<StringTooltip> suggestions = new ArrayList<>();
+    for (final SuggestionProvider provider : providers) {
+      if (provider == null) {
+        continue;
+      }
+      try {
+        StringTooltip suggestion = StringTooltip.of(provider.getSuggestion(), provider.getTooltip());
+        if (suggestion != null) {
+          suggestions.add(suggestion);
+        }
+      } catch (Exception e) {
+        continue;
       }
     }
     return suggestions;
   }
 
-  private static List<SuggestionRecord> applyTooltip(final Collection<SuggestionTooltip> strings) {
-    final ArrayList<SuggestionRecord> suggestions = new ArrayList<>();
-    for (final SuggestionTooltip string : strings) {
-      if (string != null && string.getSuggestion() != null && string.getSuggestion().length() != 0) {
-        suggestions.add(new SuggestionRecord(string.getSuggestion(), string.getTooltip()));
-      }
-    }
-    return suggestions;
+  private static Collection<StringTooltip> applyProvider(final Collection<SuggestionProvider> providers) {
+    return applyProvider(providers.toArray(SuggestionProvider[]::new));
   }
-
-  public static class SuggestionRecord {
-    private final String text;
-    private final String tooltip;
-
-    public SuggestionRecord(final String text, final String tooltip) {
-      this.text = text;
-      this.tooltip = tooltip;
-    }
-
-    public SuggestionRecord(final String text) {
-      this.text = text;
-      this.tooltip = null;
-    }
-
-    public String getText() {
-      return text;
-    }
-
-    public String getTooltip() {
-      return tooltip;
-    }
-
-    @Override
-    public int hashCode() {
-      int result = 31 + ((text == null) ? 0 : text.hashCode());
-      result = 31 * result + ((tooltip == null) ? 0 : tooltip.hashCode());
-      return result;
-    }
-
-    @Override
-    public boolean equals(final Object obj) {
-      if (this == obj) {
-        return true;
-      }
-      if (obj == null || getClass() != obj.getClass()) {
-        return false;
-      }
-      final SuggestionRecord other = (SuggestionRecord) obj;
-      if (text == null) {
-        if (other.text != null)
-          return false;
-      } else if (!text.equals(other.text))
-        return false;
-      if (tooltip == null) {
-        if (other.tooltip != null)
-          return false;
-      } else if (!tooltip.equals(other.tooltip))
-        return false;
-      return true;
-    }
-
-    @Override
-    public String toString() {
-      return "SuggestionRecord [text=" + text + ", tooltip=" + tooltip + "]";
-    }
-  }
-
 }

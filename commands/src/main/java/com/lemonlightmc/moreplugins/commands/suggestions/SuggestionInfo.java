@@ -1,10 +1,13 @@
 package com.lemonlightmc.moreplugins.commands.suggestions;
 
-import com.lemonlightmc.moreplugins.commands.argumentsbase.CommandArguments;
+import org.bukkit.command.CommandSender;
 
-public record SuggestionInfo<S>(
-    S sender,
-    CommandArguments previousArgs,
-    String currentInput,
-    String currentArg) {
+import com.lemonlightmc.moreplugins.commands.argumentsbase.CommandArguments;
+import com.lemonlightmc.moreplugins.commands.executors.CommandSource;
+
+public record SuggestionInfo<S extends CommandSender>(
+        CommandSource<S> source,
+        CommandArguments previousArgs,
+        String currentInput,
+        String currentArg) {
 }
