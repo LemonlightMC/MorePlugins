@@ -3,7 +3,7 @@ package com.lemonlightmc.moreplugins.commands;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.CommandArguments;
 import com.lemonlightmc.moreplugins.commands.executors.CommandSource;
 import com.lemonlightmc.moreplugins.commands.executors.ExecutionInfo;
-import com.lemonlightmc.moreplugins.commands.executors.ExecutorType;
+import com.lemonlightmc.moreplugins.commands.executors.Executors.ExecutorType;
 import com.lemonlightmc.moreplugins.messages.Logger;
 import com.lemonlightmc.moreplugins.messages.MessageFormatter;
 
@@ -82,7 +82,8 @@ public class Utils {
      */
   }
 
-  public static ExecutorType[] prioritiesForSender(final CommandSender sender) {
+  public static com.lemonlightmc.moreplugins.commands.executors.Executors.ExecutorType[] prioritiesForSender(
+      final CommandSender sender) {
     if (sender == null) {
       return null;
     }

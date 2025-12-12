@@ -12,6 +12,31 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
 public class Executors {
+
+  public enum ExecutorType {
+    ALL,
+
+    PLAYER,
+
+    ENTITY,
+
+    CONSOLE,
+
+    BLOCK,
+
+    // NativeProxyCommandSender
+    PROXY,
+
+    // NativeProxyCommandSender (always)
+    NATIVE,
+
+    // RemoteConsoleCommandSender
+    REMOTE,
+
+    // Paper's FeedbackForwardingSender
+    FEEDBACK_FORWARDING,
+  }
+
   public interface NormalExecutor<S extends CommandSender> {
     void run(ExecutionInfo<S> info) throws CommandException;
 
