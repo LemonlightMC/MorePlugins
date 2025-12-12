@@ -1,6 +1,5 @@
 package com.lemonlightmc.moreplugins.commands.executors;
 
-import com.lemonlightmc.moreplugins.commands.Senders.*;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.CommandArguments;
 
 import org.bukkit.command.BlockCommandSender;
@@ -17,7 +16,7 @@ public class Executors {
     void run(ExecutionInfo<S> info) throws CommandException;
 
     @SuppressWarnings("unchecked")
-    default int executeWith(final ExecutionInfo<S> info)
+    default int executeWith(final ExecutionInfo<?> info)
         throws CommandException {
       this.run((ExecutionInfo<S>) info);
       return 1;
@@ -33,14 +32,14 @@ public class Executors {
       extends
       NormalExecutor<CommandSender> {
 
-    void run(CommandSender sender, CommandArguments args)
+    void run(CommandSource<CommandSender> source, CommandArguments args)
         throws CommandException;
 
     @Override
     default void run(
         final ExecutionInfo<CommandSender> info)
         throws CommandException {
-      this.run(info.sender(), info.args());
+      this.run(info.source(), info.args());
     }
 
     @Override
@@ -67,12 +66,12 @@ public class Executors {
   public interface PlayerCommandExecutor
       extends NormalExecutor<Player> {
 
-    void run(Player sender, CommandArguments args) throws CommandException;
+    void run(CommandSource<Player> source, CommandArguments args) throws CommandException;
 
     @Override
     default void run(final ExecutionInfo<Player> info)
         throws CommandException {
-      this.run(info.sender(), info.args());
+      this.run(info.source(), info.args());
     }
 
     @Override
@@ -97,12 +96,12 @@ public class Executors {
   public interface EntityCommandExecutor
       extends NormalExecutor<Entity> {
 
-    void run(Entity sender, CommandArguments args) throws CommandException;
+    void run(CommandSource<Entity> source, CommandArguments args) throws CommandException;
 
     @Override
     default void run(final ExecutionInfo<Entity> info)
         throws CommandException {
-      this.run(info.sender(), info.args());
+      this.run(info.source(), info.args());
     }
 
     @Override
@@ -126,13 +125,13 @@ public class Executors {
   @FunctionalInterface
   public interface CommandBlockExecutor
       extends NormalExecutor<BlockCommandSender> {
-    void run(BlockCommandSender sender, CommandArguments args)
+    void run(CommandSource<BlockCommandSender> source, CommandArguments args)
         throws CommandException;
 
     @Override
     default void run(
         final ExecutionInfo<BlockCommandSender> info) throws CommandException {
-      this.run(info.sender(), info.args());
+      this.run(info.source(), info.args());
     }
 
     @Override
@@ -158,13 +157,13 @@ public class Executors {
   public interface ConsoleCommandExecutor
       extends NormalExecutor<ConsoleCommandSender> {
 
-    abstract void run(ConsoleCommandSender sender, CommandArguments args)
+    abstract void run(CommandSource<ConsoleCommandSender> source, CommandArguments args)
         throws CommandException;
 
     @Override
     default void run(
         final ExecutionInfo<ConsoleCommandSender> info) throws CommandException {
-      this.run(info.sender(), info.args());
+      this.run(info.source(), info.args());
     }
 
     @Override
@@ -191,14 +190,14 @@ public class Executors {
       extends
       NormalExecutor<RemoteConsoleCommandSender> {
 
-    void run(RemoteConsoleCommandSender sender, CommandArguments args)
+    void run(CommandSource<RemoteConsoleCommandSender> source, CommandArguments args)
         throws CommandException;
 
     @Override
     default void run(
         final ExecutionInfo<RemoteConsoleCommandSender> info)
         throws CommandException {
-      this.run(info.sender(), info.args());
+      this.run(info.source(), info.args());
     }
 
     @Override
@@ -240,12 +239,12 @@ public class Executors {
       extends
       NormalExecutor<CommandSender> {
 
-    void run(CommandSender sender, CommandArguments args);
+    void run(CommandSource<CommandSender> source, CommandArguments args);
 
     @Override
     default void run(final ExecutionInfo<CommandSender> info)
         throws CommandException {
-      this.run(info.sender(), info.args());
+      this.run(info.source(), info.args());
     }
 
     @Override
@@ -258,12 +257,12 @@ public class Executors {
   public interface ProxyCommandExecutor
       extends NormalExecutor<ProxiedCommandSender> {
 
-    void run(ProxiedCommandSender sender, CommandArguments args) throws CommandException;
+    void run(CommandSource<ProxiedCommandSender> source, CommandArguments args) throws CommandException;
 
     @Override
     default void run(final ExecutionInfo<ProxiedCommandSender> info)
         throws CommandException {
-      this.run(info.sender(), info.args());
+      this.run(info.source(), info.args());
     }
 
     @Override
@@ -287,12 +286,12 @@ public class Executors {
   public interface NativeCommandExecutor
       extends NormalExecutor<ProxiedCommandSender> {
 
-    void run(ProxiedCommandSender sender, CommandArguments args) throws CommandException;
+    void run(CommandSource<ProxiedCommandSender> source, CommandArguments args) throws CommandException;
 
     @Override
     default void run(final ExecutionInfo<ProxiedCommandSender> info)
         throws CommandException {
-      this.run(info.sender(), info.args());
+      this.run(info.source(), info.args());
     }
 
     @Override

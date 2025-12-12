@@ -10,9 +10,12 @@ import java.util.function.Function;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+
+import com.lemonlightmc.moreplugins.commands.executors.CommandSource;
 
 public class EntitySelector<E> {
   public static final EntitySelector<Player> ONE_PLAYER = new EntitySelector<Player>("@s",
@@ -29,9 +32,9 @@ public class EntitySelector<E> {
       (source) -> nearestEntity(source.location()));
 
   private final String symbol;
-  private final Function<CommandSource, List<E>> parser;
+  private final Function<CommandSource<CommandSender>, List<E>> parser;
 
-  private EntitySelector(final String symbol, final Function<CommandSource, List<E>> parser) {
+  private EntitySelector(final String symbol, final Function<CommandSource<CommandSender>, List<E>> parser) {
     this.symbol = symbol;
     this.parser = parser;
   }
@@ -44,11 +47,11 @@ public class EntitySelector<E> {
     return symbol;
   }
 
-  public Function<CommandSource, List<E>> getParser() {
+  public Function<CommandSource<CommandSender>, List<E>> getParser() {
     return parser;
   }
 
-  public List<E> find(final CommandSource source) {
+  public List<E> find(final CommandSource<CommandSender> source) {
     return parser.apply(source);
   }
 

@@ -3,6 +3,7 @@ package com.lemonlightmc.moreplugins.commands;
 import com.lemonlightmc.moreplugins.apis.ChatAPI;
 import com.lemonlightmc.moreplugins.base.MorePlugins;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.Argument;
+import com.lemonlightmc.moreplugins.commands.executors.CommandSource;
 import com.lemonlightmc.moreplugins.commands.executors.Executable;
 import com.lemonlightmc.moreplugins.commands.executors.ExecutionInfo;
 import com.lemonlightmc.moreplugins.commands.executors.ExecutorType;
@@ -201,31 +202,27 @@ public class AbstractCommand extends Executable<AbstractCommand> implements Plug
   }
 
   // utils
-  public boolean hasPermission(final CommandSender sender, final String perm) {
-    if (perm == null || perm.length() == 0)
-      return false;
-    return sender.hasPermission(perm);
-  }
 
-  public boolean checkPermission(final CommandSender sender, final Set<String> perms) {
+  public boolean checkPermission(final CommandSource<CommandSender> source, final Set<String> perms) {
     if (perms == null || perms.size() == 0) {
       return true;
     }
     for (final String perm : perms) {
-      if (!sender.hasPermission(perm)) {
-        ChatAPI.send(sender, CommandManager.getPermissionMessage());
+      if (!source.hasPermission(perm)) {
+        ChatAPI.send(source.sender(), CommandManager.getPermissionMessage());
         return false;
       }
     }
     return true;
   }
 
-  public boolean checkRequirements(final CommandSender sender, final Predicate<CommandSender> requirements) {
+  public boolean checkRequirements(final CommandSource<CommandSender> sender,
+      final Predicate<CommandSender> requirements) {
     if (requirements == null) {
       return true;
     }
-    if (requirements == null || !requirements.test(sender)) {
-      ChatAPI.send(sender, CommandManager.getRequirementsMessage());
+    if (requirements == null || !requirements.test(sender.sender())) {
+      ChatAPI.send(sender.sender(), CommandManager.getRequirementsMessage());
       return false;
     }
     return true;
@@ -240,23 +237,23 @@ public class AbstractCommand extends Executable<AbstractCommand> implements Plug
   }
 
   // execution
-  public void execute(final ExecutionInfo<?, ?> info) throws CommandException {
+  public void execute(final ExecutionInfo<CommandSender> info) throws CommandException {
     if (info == null) {
       return;
     }
     try {
-      if (!checkPermission(info.sender(), permissions) || checkRequirements(info.sender(), requirements)) {
+      if (!checkPermission(info.source(), permissions) || checkRequirements(info.source(), requirements)) {
         return;
       }
       if (executors == null || executors.isEmpty()) {
         return;
       }
-      final ExecutorType[] priorities = Utils.prioritiesForSender(info.wrapper());
+      final ExecutorType[] priorities = Utils.prioritiesForSender(info.source().sender());
       if (priorities == null || priorities.length == 0) {
         return;
       }
       if (!_execute(info, priorities)) {
-        Logger.warn("No valid Executor for " + info.sender().getClass().getSimpleName().toLowerCase());
+        Logger.warn("No valid Executor for " + info.source().getClass().getSimpleName().toLowerCase());
       }
     } catch (final CommandException e) {
       throw e;
@@ -270,21 +267,21 @@ public class AbstractCommand extends Executable<AbstractCommand> implements Plug
     }
   }
 
-  public List<String> tabComplete(final ExecutionInfo<?, ?> info) {
+  public List<String> tabComplete(final ExecutionInfo<CommandSender> info) {
     return null;
   }
 
-  private boolean _execute(final ExecutionInfo<?, ?> info, final ExecutorType... types)
+  private boolean _execute(final ExecutionInfo<CommandSender> info, final ExecutorType... types)
       throws CommandException {
     final Map<ExecutorType, Integer> priorityIndex = new EnumMap<>(ExecutorType.class);
     for (int i = 0; i < types.length; i++) {
       priorityIndex.put(types[i], i);
     }
 
-    NormalExecutor<?, ?> best = null;
+    NormalExecutor<?> best = null;
     int bestPriority = Integer.MAX_VALUE;
 
-    for (final NormalExecutor<?, ?> executor : executors) {
+    for (final NormalExecutor<?> executor : executors) {
       final ExecutorType t = executor.getType();
       final Integer idx = priorityIndex.get(t);
       if (idx != null && idx < bestPriority) {

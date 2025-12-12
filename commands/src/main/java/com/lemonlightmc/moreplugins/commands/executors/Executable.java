@@ -5,7 +5,6 @@ import java.util.List;
 import org.bukkit.command.CommandSender;
 
 import com.lemonlightmc.moreplugins.commands.Utils;
-import com.lemonlightmc.moreplugins.commands.Senders.AbstractCommandSender;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.CommandArguments;
 import com.lemonlightmc.moreplugins.commands.exceptions.InvalidCommandSyntaxException;
 import com.lemonlightmc.moreplugins.commands.executors.Executors.*;
@@ -47,7 +46,7 @@ public abstract class Executable<T> {
       for (final ExecutorType type : types) {
         executors.add(new CommandExecutor() {
           @Override
-          public void run(final CommandSender sender, final CommandArguments args)
+          public void run(final CommandSource<CommandSender> sender, final CommandArguments args)
               throws InvalidCommandSyntaxException {
             executor
                 .executeWith(Utils.toInfo(sender, args));
@@ -68,7 +67,7 @@ public abstract class Executable<T> {
       executors.add(executor);
     } else {
       for (final ExecutorType type : types) {
-        executors.add(new CommandExecutionInfo<CommandSender>() {
+        executors.add(new CommandExecutionInfo() {
 
           @Override
           public void run(final ExecutionInfo<CommandSender> info)

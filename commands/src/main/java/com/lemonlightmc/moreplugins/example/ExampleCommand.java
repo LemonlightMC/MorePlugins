@@ -3,6 +3,7 @@ package com.lemonlightmc.moreplugins.example;
 import com.lemonlightmc.moreplugins.commands.SimpleCommand;
 import com.lemonlightmc.moreplugins.commands.arguments.NumberArguments.*;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.CommandArguments;
+import com.lemonlightmc.moreplugins.commands.executors.CommandSource;
 import com.lemonlightmc.moreplugins.commands.suggestions.SuggestionInfo;
 import com.lemonlightmc.moreplugins.commands.suggestions.Suggestions;
 
@@ -32,11 +33,12 @@ public class ExampleCommand extends SimpleCommand {
     executesConsole(ExampleCommand::executesConsole2);
   }
 
-  public static void executes2(final Player sender, final CommandArguments args) throws CommandException {
+  public static void executes2(final CommandSource<Player> sender, final CommandArguments args)
+      throws CommandException {
   }
 
   public static void executesConsole2(
-      final ConsoleCommandSender sender,
+      final CommandSource<ConsoleCommandSender> sender,
       final CommandArguments args) throws CommandException {
   }
 }

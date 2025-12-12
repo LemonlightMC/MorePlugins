@@ -1,8 +1,8 @@
 package com.lemonlightmc.moreplugins.commands;
 
-import com.lemonlightmc.moreplugins.commands.Senders.*;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.CommandArguments;
-import com.lemonlightmc.moreplugins.commands.executors.BukkitExecutionInfo;
+import com.lemonlightmc.moreplugins.commands.executors.CommandSource;
+import com.lemonlightmc.moreplugins.commands.executors.ExecutionInfo;
 import com.lemonlightmc.moreplugins.commands.executors.ExecutorType;
 import com.lemonlightmc.moreplugins.messages.Logger;
 import com.lemonlightmc.moreplugins.messages.MessageFormatter;
@@ -31,38 +31,64 @@ public class Utils {
 
   static final Pattern NAMESPACE_PATTERN = Pattern.compile("[0-9a-z_.-]+");
 
-  public static <S extends CommandSender> BukkitExecutionInfo<? extends CommandSender> toInfo(
-      final S sender, final CommandArguments args) {
-
+  public static <S extends CommandSender> CommandSource<?> toSource(final S sender) {
     if (sender instanceof final BlockCommandSender block) {
-      return new BukkitExecutionInfo<BlockCommandSender, BukkitBlockCommandSender>(block, args);
+      return new CommandSource<>(block);
     }
     if (sender instanceof final ConsoleCommandSender console) {
-      return new BukkitExecutionInfo<ConsoleCommandSender, BukkitConsoleCommandSender>(console, args);
+      return new CommandSource<>(console);
     }
     if (sender instanceof final Player player) {
-      return new BukkitExecutionInfo<Player, BukkitPlayerCommandSender>(player,args);
+      return new CommandSource<>(player);
     }
     if (sender instanceof final org.bukkit.entity.Entity entity) {
-      return new BukkitExecutionInfo<Entity, BukkitEntityCommandSender>(entity, args);
+      return new CommandSource<>(entity);
     }
     if (sender instanceof final ProxiedCommandSender proxy) {
-      return new BukkitExecutionInfo<ProxiedCommandSender, BukkitProxiedCommandSender>(proxy,args);
+      return new CommandSource<>(proxy);
     }
     if (sender instanceof final RemoteConsoleCommandSender remote) {
-      return new BukkitExecutionInfo<RemoteConsoleCommandSender, BukkitRemoteConsoleCommandSender>(remote, args);
+      return new CommandSource<>(remote);
     }
     throw new RuntimeException(
-        "Failed to create ExecutionInfo for CommandSender " + sender);
+        "Failed to create CommandSource for CommandSender " + sender);
   }
 
-  public static ExecutorType[] prioritiesForSender(final AbstractCommandSender<?> sender) {
+  public static <S extends CommandSender> ExecutionInfo<S> toInfo(
+      final CommandSource<S> source, final CommandArguments args) {
+
+    return new ExecutionInfo<S>(source, args);
+    /*
+     * if (source.getSender() instanceof final BlockCommandSender block) {
+     * return new ExecutionInfo<BlockCommandSender>(source, args);
+     * }
+     * if (source.getSender() instanceof final ConsoleCommandSender console) {
+     * return new ExecutionInfo<ConsoleCommandSender>(console, args);
+     * }
+     * if (source.getSender() instanceof final Player player) {
+     * return new ExecutionInfo<Player>(player, args);
+     * }
+     * if (source.getSender() instanceof final org.bukkit.entity.Entity entity) {
+     * return new ExecutionInfo<Entity>(entity, args);
+     * }
+     * if (source.getSender() instanceof final ProxiedCommandSender proxy) {
+     * return new ExecutionInfo<ProxiedCommandSender>(proxy, args);
+     * }
+     * if (source.getSender() instanceof final RemoteConsoleCommandSender remote) {
+     * return new ExecutionInfo<RemoteConsoleCommandSender>(remote, args);
+     * }
+     * throw new RuntimeException(
+     * "Failed to create ExecutionInfo for CommandSender " + source.getSender());
+     */
+  }
+
+  public static ExecutorType[] prioritiesForSender(final CommandSender sender) {
     if (sender == null) {
       return null;
     }
     if (sender instanceof Player) {
       return new ExecutorType[] { ExecutorType.PLAYER, ExecutorType.NATIVE, ExecutorType.ALL };
-    } else if (sender instanceof org.bukkit.Entity) {
+    } else if (sender instanceof Entity) {
       return new ExecutorType[] { ExecutorType.ENTITY, ExecutorType.NATIVE, ExecutorType.ALL };
     } else if (sender instanceof ConsoleCommandSender) {
       return new ExecutorType[] { ExecutorType.CONSOLE, ExecutorType.NATIVE, ExecutorType.ALL };
@@ -72,8 +98,6 @@ public class Utils {
       return new ExecutorType[] { ExecutorType.PROXY, ExecutorType.NATIVE, ExecutorType.ALL };
     } else if (sender instanceof RemoteConsoleCommandSender) {
       return new ExecutorType[] { ExecutorType.REMOTE, ExecutorType.NATIVE, ExecutorType.ALL };
-    } else if (sender instanceof FeedbackForwardingCommandSender) {
-      return new ExecutorType[] { ExecutorType.FEEDBACK_FORWARDING, ExecutorType.NATIVE, ExecutorType.ALL };
     }
     return new ExecutorType[] { ExecutorType.NATIVE, ExecutorType.ALL };
   }
