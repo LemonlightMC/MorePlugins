@@ -13,16 +13,16 @@ import com.lemonlightmc.moreplugins.exceptions.PlatformException;
 import com.lemonlightmc.moreplugins.version.ServerEnvironment;
 
 public abstract class Executable<T> {
-  protected List<NormalExecutor<?, ?>> executors;
+  protected List<NormalExecutor<?>> executors;
 
   protected abstract T instance();
 
-  public T setExecutors(final List<NormalExecutor<?, ?>> ex) {
+  public T setExecutors(final List<NormalExecutor<?>> ex) {
     executors = ex;
     return instance();
   }
 
-  public boolean hasExecutor(final NormalExecutor<?, ?> executor) {
+  public boolean hasExecutor(final NormalExecutor<?> executor) {
     return executors != null && executors.contains(executor);
   }
 
@@ -30,7 +30,7 @@ public abstract class Executable<T> {
     return executors != null && !executors.isEmpty();
   }
 
-  public List<NormalExecutor<?, ?>> getExecutors() {
+  public List<NormalExecutor<?>> getExecutors() {
     return executors;
   }
 
@@ -68,10 +68,10 @@ public abstract class Executable<T> {
       executors.add(executor);
     } else {
       for (final ExecutorType type : types) {
-        executors.add(new CommandExecutionInfo() {
+        executors.add(new CommandExecutionInfo<CommandSender>() {
 
           @Override
-          public void run(final ExecutionInfo<CommandSender, AbstractCommandSender<? extends CommandSender>> info)
+          public void run(final ExecutionInfo<CommandSender> info)
               throws InvalidCommandSyntaxException {
             executor.executeWith(info);
           }

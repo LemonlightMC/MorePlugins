@@ -51,7 +51,7 @@ public class InternalExecutor extends Command {
       PluginBase.getInstanceScheduler()
           .runAsync(() -> {
             final CommandArguments cmdArgs = parse(args);
-            final BukkitExecutionInfo<?, ?> info = Utils.toInfo(sender, cmdArgs);
+            final ExecutionInfo<?> info = Utils.toInfo(sender, cmdArgs);
             cmd.execute(info);
           });
     } catch (final Throwable ex) {
@@ -80,7 +80,7 @@ public class InternalExecutor extends Command {
     List<String> completions = null;
     try {
       final CommandArguments cmdArgs = parse(args);
-      final BukkitExecutionInfo<?, ?> info = Utils.toInfo(sender, cmdArgs);
+      final ExecutionInfo<?> info = Utils.toInfo(sender, cmdArgs);
       completions = cmd.tabComplete(info);
     } catch (final Throwable ex) {
       final StringBuilder message = new StringBuilder();

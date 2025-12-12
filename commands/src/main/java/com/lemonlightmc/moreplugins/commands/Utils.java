@@ -31,80 +31,48 @@ public class Utils {
 
   static final Pattern NAMESPACE_PATTERN = Pattern.compile("[0-9a-z_.-]+");
 
-  public static AbstractCommandSender<? extends CommandSender> wrapCommandSender(
-      final CommandSender sender) {
-    if (sender instanceof final BlockCommandSender block) {
-      return new BukkitBlockCommandSender(block);
-    }
-    if (sender instanceof final ConsoleCommandSender console) {
-      return new BukkitConsoleCommandSender(console);
-    }
-    if (sender instanceof final Player player) {
-      return new BukkitPlayerCommandSender(player);
-    }
-    if (sender instanceof final org.bukkit.entity.Entity entity) {
-      return new BukkitEntityCommandSender(entity);
-    }
-    if (sender instanceof final ProxiedCommandSender proxy) {
-      return new BukkitProxiedCommandSender(proxy);
-    }
-    if (sender instanceof final RemoteConsoleCommandSender remote) {
-      return new BukkitRemoteConsoleCommandSender(remote);
-    }
-    throw new RuntimeException(
-        "Failed to wrap CommandSender " +
-            sender +
-            " to a compatible BukkitCommandSender");
-  }
-
-  public static <S extends CommandSender> BukkitExecutionInfo<? extends CommandSender, ? extends AbstractCommandSender<?>> toInfo(
+  public static <S extends CommandSender> BukkitExecutionInfo<? extends CommandSender> toInfo(
       final S sender, final CommandArguments args) {
 
     if (sender instanceof final BlockCommandSender block) {
-      return new BukkitExecutionInfo<BlockCommandSender, BukkitBlockCommandSender>(block,
-          new BukkitBlockCommandSender(block), args);
+      return new BukkitExecutionInfo<BlockCommandSender, BukkitBlockCommandSender>(block, args);
     }
     if (sender instanceof final ConsoleCommandSender console) {
-      return new BukkitExecutionInfo<ConsoleCommandSender, BukkitConsoleCommandSender>(console,
-          new BukkitConsoleCommandSender(console), args);
+      return new BukkitExecutionInfo<ConsoleCommandSender, BukkitConsoleCommandSender>(console, args);
     }
     if (sender instanceof final Player player) {
-      return new BukkitExecutionInfo<Player, BukkitPlayerCommandSender>(player,
-          new BukkitPlayerCommandSender(player), args);
+      return new BukkitExecutionInfo<Player, BukkitPlayerCommandSender>(player,args);
     }
     if (sender instanceof final org.bukkit.entity.Entity entity) {
-      return new BukkitExecutionInfo<Entity, BukkitEntityCommandSender>(entity,
-          new BukkitEntityCommandSender(entity), args);
+      return new BukkitExecutionInfo<Entity, BukkitEntityCommandSender>(entity, args);
     }
     if (sender instanceof final ProxiedCommandSender proxy) {
-      return new BukkitExecutionInfo<ProxiedCommandSender, BukkitProxiedCommandSender>(proxy,
-          new BukkitProxiedCommandSender(proxy), args);
+      return new BukkitExecutionInfo<ProxiedCommandSender, BukkitProxiedCommandSender>(proxy,args);
     }
     if (sender instanceof final RemoteConsoleCommandSender remote) {
-      return new BukkitExecutionInfo<RemoteConsoleCommandSender, BukkitRemoteConsoleCommandSender>(remote,
-          new BukkitRemoteConsoleCommandSender(remote), args);
+      return new BukkitExecutionInfo<RemoteConsoleCommandSender, BukkitRemoteConsoleCommandSender>(remote, args);
     }
     throw new RuntimeException(
-        "Failed to wrap CommandSender " + sender + " to a compatible BukkitCommandSender");
+        "Failed to create ExecutionInfo for CommandSender " + sender);
   }
 
   public static ExecutorType[] prioritiesForSender(final AbstractCommandSender<?> sender) {
     if (sender == null) {
       return null;
     }
-    if (sender instanceof Senders.AbstractPlayerCommandSender) {
+    if (sender instanceof Player) {
       return new ExecutorType[] { ExecutorType.PLAYER, ExecutorType.NATIVE, ExecutorType.ALL };
-    } else if (sender instanceof Senders.AbstractEntityCommandSender) {
+    } else if (sender instanceof org.bukkit.Entity) {
       return new ExecutorType[] { ExecutorType.ENTITY, ExecutorType.NATIVE, ExecutorType.ALL };
-    } else if (sender instanceof Senders.AbstractConsoleCommandSender) {
+    } else if (sender instanceof ConsoleCommandSender) {
       return new ExecutorType[] { ExecutorType.CONSOLE, ExecutorType.NATIVE, ExecutorType.ALL };
-    } else if (sender instanceof Senders.AbstractBlockCommandSender) {
+    } else if (sender instanceof BlockCommandSender) {
       return new ExecutorType[] { ExecutorType.BLOCK, ExecutorType.NATIVE, ExecutorType.ALL };
-    } else if (sender instanceof Senders.AbstractProxiedCommandSender) {
+    } else if (sender instanceof ProxiedCommandSender) {
       return new ExecutorType[] { ExecutorType.PROXY, ExecutorType.NATIVE, ExecutorType.ALL };
-    } else if (sender instanceof Senders.AbstractRemoteConsoleCommandSender) {
+    } else if (sender instanceof RemoteConsoleCommandSender) {
       return new ExecutorType[] { ExecutorType.REMOTE, ExecutorType.NATIVE, ExecutorType.ALL };
-    } else if (sender instanceof Senders.AbstractFeedbackForwardingCommandSender) {
+    } else if (sender instanceof FeedbackForwardingCommandSender) {
       return new ExecutorType[] { ExecutorType.FEEDBACK_FORWARDING, ExecutorType.NATIVE, ExecutorType.ALL };
     }
     return new ExecutorType[] { ExecutorType.NATIVE, ExecutorType.ALL };

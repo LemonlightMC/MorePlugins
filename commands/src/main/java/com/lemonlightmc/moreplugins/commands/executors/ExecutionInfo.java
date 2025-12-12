@@ -5,10 +5,7 @@ import com.lemonlightmc.moreplugins.commands.argumentsbase.CommandArguments;
 
 import org.bukkit.command.CommandSender;
 
-public interface ExecutionInfo<S extends CommandSender, W extends AbstractCommandSender<? extends CommandSender>> {
-  S sender();
+public record ExecutionInfo<S extends CommandSender>(
+    S sender, CommandArguments args) {
 
-  W wrapper();
-
-  CommandArguments args();
-}
+    }
