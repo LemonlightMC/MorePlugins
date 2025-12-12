@@ -31,7 +31,7 @@ public class Utils {
 
   static final Pattern NAMESPACE_PATTERN = Pattern.compile("[0-9a-z_.-]+");
 
-  public static <S extends CommandSender> CommandSource<?> toSource(final S sender) {
+  public static CommandSource<CommandSender> toSource(final CommandSender sender) {
     if (sender instanceof final BlockCommandSender block) {
       return new CommandSource<>(block);
     }

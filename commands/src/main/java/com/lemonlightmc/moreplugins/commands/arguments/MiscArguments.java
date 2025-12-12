@@ -12,6 +12,7 @@ import org.bukkit.advancement.Advancement;
 import org.bukkit.block.Biome;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.data.BlockData;
+import org.bukkit.command.CommandSender;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.potion.PotionEffectType;
 
@@ -23,6 +24,7 @@ import com.lemonlightmc.moreplugins.commands.argumentsbase.CommandArguments;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.ParticleData;
 import com.lemonlightmc.moreplugins.commands.exceptions.CommandExceptions.DynamicCommandException;
 import com.lemonlightmc.moreplugins.commands.exceptions.CommandSyntaxException;
+import com.lemonlightmc.moreplugins.commands.executors.CommandSource;
 import com.lemonlightmc.moreplugins.exceptions.DynamicExceptionFunction.Dynamic1ExceptionFunktion;
 import com.lemonlightmc.moreplugins.time.DurationParser;
 
@@ -44,7 +46,8 @@ public class MiscArguments {
     }
 
     @Override
-    public Biome parseArgument(final String key, final StringReader reader, final CommandArguments previousArgs)
+    public Biome parseArgument(final CommandSource<CommandSender> source, final StringReader reader, final String key,
+        final CommandArguments previousArgs)
         throws CommandSyntaxException {
       final int start = reader.getCursor();
       String value = null;
@@ -92,7 +95,8 @@ public class MiscArguments {
     }
 
     @Override
-    public World parseArgument(final String key, final StringReader reader, final CommandArguments previousArgs)
+    public World parseArgument(final CommandSource<CommandSender> source, final StringReader reader, final String key,
+        final CommandArguments previousArgs)
         throws CommandSyntaxException {
       final int start = reader.getCursor();
       String value = null;
@@ -140,7 +144,8 @@ public class MiscArguments {
     }
 
     @Override
-    public Duration parseArgument(final String key, final StringReader reader, final CommandArguments previousArgs)
+    public Duration parseArgument(final CommandSource<CommandSender> source, final StringReader reader,
+        final String key, final CommandArguments previousArgs)
         throws CommandSyntaxException {
       final int start = reader.getCursor();
       String value = null;
@@ -187,7 +192,8 @@ public class MiscArguments {
     }
 
     @Override
-    public Sound parseArgument(final String key, final StringReader reader, final CommandArguments previousArgs)
+    public Sound parseArgument(final CommandSource<CommandSender> source, final StringReader reader, final String key,
+        final CommandArguments previousArgs)
         throws CommandSyntaxException {
       final int start = reader.getCursor();
       String value = null;
@@ -234,7 +240,8 @@ public class MiscArguments {
     }
 
     @Override
-    public PotionEffectType parseArgument(final String key, final StringReader reader,
+    public PotionEffectType parseArgument(final CommandSource<CommandSender> source, final StringReader reader,
+        final String key,
         final CommandArguments previousArgs)
         throws CommandSyntaxException {
       final int start = reader.getCursor();
@@ -283,7 +290,8 @@ public class MiscArguments {
     }
 
     @Override
-    public ParticleData<?> parseArgument(final String key, final StringReader reader,
+    public ParticleData<?> parseArgument(final CommandSource<CommandSender> source, final StringReader reader,
+        final String key,
         final CommandArguments previousArgs)
         throws CommandSyntaxException {
       final int start = reader.getCursor();
@@ -327,7 +335,8 @@ public class MiscArguments {
     }
 
     @Override
-    public NamespacedKey parseArgument(final String key, final StringReader reader, final CommandArguments previousArgs)
+    public NamespacedKey parseArgument(final CommandSource<CommandSender> source, final StringReader reader,
+        final String key, final CommandArguments previousArgs)
         throws CommandSyntaxException {
       final int start = reader.getCursor();
       String value = null;
@@ -373,7 +382,8 @@ public class MiscArguments {
     }
 
     @Override
-    public Material parseArgument(final String key, final StringReader reader, final CommandArguments previousArgs)
+    public Material parseArgument(final CommandSource<CommandSender> source, final StringReader reader,
+        final String key, final CommandArguments previousArgs)
         throws CommandSyntaxException {
       final int start = reader.getCursor();
       String value = null;
@@ -419,7 +429,8 @@ public class MiscArguments {
     }
 
     @Override
-    public BlockData parseArgument(final String key, final StringReader reader, final CommandArguments previousArgs)
+    public BlockData parseArgument(final CommandSource<CommandSender> source, final StringReader reader,
+        final String key, final CommandArguments previousArgs)
         throws CommandSyntaxException {
       final int start = reader.getCursor();
       String value = null;
@@ -462,7 +473,8 @@ public class MiscArguments {
     }
 
     @Override
-    public BlockState parseArgument(final String key, final StringReader reader, final CommandArguments previousArgs)
+    public BlockState parseArgument(final CommandSource<CommandSender> source, final StringReader reader,
+        final String key, final CommandArguments previousArgs)
         throws CommandSyntaxException {
       final int start = reader.getCursor();
       String value = null;
@@ -510,7 +522,8 @@ public class MiscArguments {
     }
 
     @Override
-    public Advancement parseArgument(final String key, final StringReader reader,
+    public Advancement parseArgument(final CommandSource<CommandSender> source, final StringReader reader,
+        final String key,
         final CommandArguments previousArgs)
         throws CommandSyntaxException {
       final int start = reader.getCursor();
@@ -558,7 +571,8 @@ public class MiscArguments {
     }
 
     @Override
-    public Enchantment parseArgument(final String key, final StringReader reader,
+    public Enchantment parseArgument(final CommandSource<CommandSender> source, final StringReader reader,
+        final String key,
         final CommandArguments previousArgs)
         throws CommandSyntaxException {
       final int start = reader.getCursor();

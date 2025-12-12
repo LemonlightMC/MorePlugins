@@ -1,6 +1,7 @@
 package com.lemonlightmc.moreplugins.commands.arguments;
 
 import org.bukkit.Bukkit;
+import org.bukkit.command.CommandSender;
 import org.bukkit.scoreboard.Criteria;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
@@ -15,6 +16,7 @@ import com.lemonlightmc.moreplugins.commands.exceptions.CommandExceptions.Dynami
 import com.lemonlightmc.moreplugins.commands.suggestions.Suggestions;
 import com.lemonlightmc.moreplugins.commands.exceptions.CommandSyntaxException;
 import com.lemonlightmc.moreplugins.exceptions.DynamicExceptionFunction.Dynamic1ExceptionFunktion;
+import com.lemonlightmc.moreplugins.commands.executors.CommandSource;
 
 public class ScoreArguments {
 
@@ -33,7 +35,8 @@ public class ScoreArguments {
     }
 
     @Override
-    public Team parseArgument(final String key, final StringReader reader, final CommandArguments previousArgs)
+    public Team parseArgument(final CommandSource<CommandSender> source, final StringReader reader, final String key,
+        final CommandArguments previousArgs)
         throws CommandSyntaxException {
       reader.point();
       String value = null;
@@ -80,7 +83,8 @@ public class ScoreArguments {
     }
 
     @Override
-    public ScoreboardSlot parseArgument(final String key, final StringReader reader,
+    public ScoreboardSlot parseArgument(final CommandSource<CommandSender> source, final StringReader reader,
+        final String key,
         final CommandArguments previousArgs)
         throws CommandSyntaxException {
       reader.point();
@@ -134,7 +138,8 @@ public class ScoreArguments {
     }
 
     @Override
-    public Objective parseArgument(final String key, final StringReader reader,
+    public Objective parseArgument(final CommandSource<CommandSender> source, final StringReader reader,
+        final String key,
         final CommandArguments previousArgs)
         throws CommandSyntaxException {
       reader.point();
@@ -198,7 +203,8 @@ public class ScoreArguments {
     }
 
     @Override
-    public Criteria parseArgument(final String key, final StringReader reader,
+    public Criteria parseArgument(final CommandSource<CommandSender> source, final StringReader reader,
+        final String key,
         final CommandArguments previousArgs)
         throws CommandSyntaxException {
       reader.point();

@@ -50,8 +50,10 @@ public class InternalExecutor extends Command {
     try {
       PluginBase.getInstanceScheduler()
           .runAsync(() -> {
-            final CommandArguments cmdArgs = parse(args);
-            final ExecutionInfo<CommandSender> info = Utils.toInfo(Utils.toSource(sender), cmdArgs);
+            final CommandSource<CommandSender> source = Utils.toSource(sender);
+            final CommandArguments cmdArgs = parse(source, args);
+            final ExecutionInfo<CommandSender> info = Utils.toInfo(source, cmdArgs);
+
             cmd.execute(info);
           });
     } catch (final Throwable ex) {
@@ -79,8 +81,10 @@ public class InternalExecutor extends Command {
 
     List<String> completions = null;
     try {
-      final CommandArguments cmdArgs = parse(args);
-      final ExecutionInfo<CommandSender> info = Utils.toInfo(Utils.toSource(sender), cmdArgs);
+      final CommandSource<CommandSender> source = Utils.toSource(sender);
+      final CommandArguments cmdArgs = parse(source, args);
+      final ExecutionInfo<CommandSender> info = Utils.toInfo(source, cmdArgs);
+
       completions = cmd.tabComplete(info);
     } catch (final Throwable ex) {
       final StringBuilder message = new StringBuilder();
@@ -123,7 +127,7 @@ public class InternalExecutor extends Command {
     return stringBuilder.toString();
   }
 
-  public CommandArguments parse(final String[] args) {
+  public CommandArguments parse(CommandSource<CommandSender> source, final String[] args) {
     final String fullInput = StringUtils.join(" ", args);
     final ParserCommandArguments cmd_args = new ParserCommandArguments(null, null, fullInput);
     final StringReader reader = new StringReader(fullInput);
@@ -134,7 +138,7 @@ public class InternalExecutor extends Command {
       }
 
       try {
-        final Object value = arg.parseArgument(arg.getName(), reader, cmd_args);
+        final Object value = arg.parseArgument(source, reader, arg.getName(), cmd_args);
         cmd_args.add(arg.getName(), new ParsedArgument(arg.getName(), null, value));
       } catch (final CommandSyntaxException e) {
         Logger.warn("Failed to parse Argument " + arg.getName());

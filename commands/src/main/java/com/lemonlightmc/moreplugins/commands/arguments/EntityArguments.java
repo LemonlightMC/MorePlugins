@@ -2,6 +2,7 @@ package com.lemonlightmc.moreplugins.commands.arguments;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Registry;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.profile.PlayerProfile;
@@ -14,6 +15,7 @@ import com.lemonlightmc.moreplugins.commands.argumentsbase.CommandArguments;
 import com.lemonlightmc.moreplugins.commands.exceptions.CommandExceptions.DynamicCommandException;
 import com.lemonlightmc.moreplugins.commands.suggestions.Suggestions;
 import com.lemonlightmc.moreplugins.commands.exceptions.CommandSyntaxException;
+import com.lemonlightmc.moreplugins.commands.executors.CommandSource;
 import com.lemonlightmc.moreplugins.exceptions.DynamicExceptionFunction.Dynamic1ExceptionFunktion;
 
 public class EntityArguments {
@@ -32,7 +34,8 @@ public class EntityArguments {
     }
 
     @Override
-    public Player parseArgument(final String key, final StringReader reader, final CommandArguments previousArgs)
+    public Player parseArgument(final CommandSource<CommandSender> source, final StringReader reader, final String key,
+        final CommandArguments previousArgs)
         throws CommandSyntaxException {
       final int start = reader.getCursor();
       String value = null;
@@ -76,7 +79,8 @@ public class EntityArguments {
     }
 
     @Override
-    public PlayerProfile parseArgument(final String key, final StringReader reader, final CommandArguments previousArgs)
+    public PlayerProfile parseArgument(final CommandSource<CommandSender> source, final StringReader reader,
+        final String key, final CommandArguments previousArgs)
         throws CommandSyntaxException {
       final int start = reader.getCursor();
       String value = null;
@@ -121,7 +125,8 @@ public class EntityArguments {
     }
 
     @Override
-    public EntityType parseArgument(final String key, final StringReader reader, final CommandArguments previousArgs)
+    public EntityType parseArgument(final CommandSource<CommandSender> source, final StringReader reader,
+        final String key, final CommandArguments previousArgs)
         throws CommandSyntaxException {
       final int start = reader.getCursor();
       String value = null;

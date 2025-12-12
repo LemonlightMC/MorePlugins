@@ -8,6 +8,8 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import org.bukkit.command.CommandSender;
+
 import com.lemonlightmc.moreplugins.commands.StringReader;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.Argument;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.ArgumentType;
@@ -16,6 +18,7 @@ import com.lemonlightmc.moreplugins.commands.argumentsbase.CommandArguments;
 import com.lemonlightmc.moreplugins.commands.exceptions.CommandExceptions.DynamicCommandException;
 import com.lemonlightmc.moreplugins.commands.exceptions.CommandExceptions.SimpleCommandException;
 import com.lemonlightmc.moreplugins.commands.exceptions.CommandSyntaxException;
+import com.lemonlightmc.moreplugins.commands.executors.CommandSource;
 import com.lemonlightmc.moreplugins.exceptions.DynamicExceptionFunction.Dynamic1ExceptionFunktion;
 
 public class CollectionsArguments {
@@ -82,7 +85,8 @@ public class CollectionsArguments {
     }
 
     @Override
-    public List<T> parseArgument(final String input, final StringReader reader, final CommandArguments previousArgs)
+    public List<T> parseArgument(final CommandSource<CommandSender> source, final StringReader reader, final String key,
+        final CommandArguments previousArgs)
         throws CommandSyntaxException {
 
       reader.point();
@@ -94,8 +98,8 @@ public class CollectionsArguments {
           mapping.put(mapper.apply(obj), obj);
         }
         final List<T> values = new ArrayList<>();
-        for (final String key : keys) {
-          final T v = mapping.get(key);
+        for (final String tempKey : keys) {
+          final T v = mapping.get(tempKey);
           if (v == null) {
             throw INVALID_ENTRY.createWithContext(reader);
           }
@@ -203,7 +207,8 @@ public class CollectionsArguments {
     }
 
     @Override
-    public List<T> parseArgument(final String input, final StringReader reader, final CommandArguments previousArgs)
+    public List<T> parseArgument(final CommandSource<CommandSender> source, final StringReader reader, final String key,
+        final CommandArguments previousArgs)
         throws CommandSyntaxException {
 
       reader.point();
@@ -211,8 +216,8 @@ public class CollectionsArguments {
       try {
         keys = parseKeys(reader);
         final List<T> values = new ArrayList<>();
-        for (final String key : keys) {
-          final T v = mapping.get(key);
+        for (final String tempKey : keys) {
+          final T v = mapping.get(tempKey);
           if (v == null) {
             throw INVALID_ENTRY.createWithContext(reader);
           }

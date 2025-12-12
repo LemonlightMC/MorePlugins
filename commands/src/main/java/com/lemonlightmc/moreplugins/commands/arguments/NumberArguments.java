@@ -4,6 +4,7 @@ import java.util.EnumSet;
 
 import org.bukkit.Axis;
 import org.bukkit.Location;
+import org.bukkit.command.CommandSender;
 
 import com.lemonlightmc.moreplugins.commands.StringReader;
 import com.lemonlightmc.moreplugins.commands.Utils;
@@ -14,6 +15,7 @@ import com.lemonlightmc.moreplugins.commands.argumentsbase.LocationType;
 import com.lemonlightmc.moreplugins.commands.exceptions.CommandExceptions;
 import com.lemonlightmc.moreplugins.commands.exceptions.CommandExceptions.DynamicCommandException;
 import com.lemonlightmc.moreplugins.commands.exceptions.CommandSyntaxException;
+import com.lemonlightmc.moreplugins.commands.executors.CommandSource;
 import com.lemonlightmc.moreplugins.exceptions.DynamicExceptionFunction.Dynamic1ExceptionFunktion;
 import com.lemonlightmc.moreplugins.math.Location2D;
 import com.lemonlightmc.moreplugins.math.MathOperation;
@@ -34,7 +36,8 @@ public class NumberArguments {
     }
 
     @Override
-    public Boolean parseArgument(final String key, final StringReader reader, final CommandArguments previousArgs)
+    public Boolean parseArgument(final CommandSource<CommandSender> source, final StringReader reader, final String key,
+        final CommandArguments previousArgs)
         throws CommandSyntaxException {
       return reader.readBoolean();
     }
@@ -77,7 +80,8 @@ public class NumberArguments {
     }
 
     @Override
-    public Integer parseArgument(final String key, final StringReader reader, final CommandArguments previousArgs)
+    public Integer parseArgument(final CommandSource<CommandSender> source, final StringReader reader, final String key,
+        final CommandArguments previousArgs)
         throws CommandSyntaxException {
       final int start = reader.getCursor();
       final int result = reader.readInt();
@@ -136,7 +140,8 @@ public class NumberArguments {
     }
 
     @Override
-    public Long parseArgument(final String key, final StringReader reader, final CommandArguments previousArgs)
+    public Long parseArgument(final CommandSource<CommandSender> source, final StringReader reader, final String key,
+        final CommandArguments previousArgs)
         throws CommandSyntaxException {
       final int start = reader.getCursor();
       final long result = reader.readLong();
@@ -195,7 +200,8 @@ public class NumberArguments {
     }
 
     @Override
-    public Float parseArgument(final String key, final StringReader reader, final CommandArguments previousArgs)
+    public Float parseArgument(final CommandSource<CommandSender> source, final StringReader reader, final String key,
+        final CommandArguments previousArgs)
         throws CommandSyntaxException {
       final int start = reader.getCursor();
       final float result = reader.readFloat();
@@ -254,7 +260,8 @@ public class NumberArguments {
     }
 
     @Override
-    public Double parseArgument(final String key, final StringReader reader, final CommandArguments previousArgs)
+    public Double parseArgument(final CommandSource<CommandSender> source, final StringReader reader, final String key,
+        final CommandArguments previousArgs)
         throws CommandSyntaxException {
       final int start = reader.getCursor();
       final double result = reader.readDouble();
@@ -303,7 +310,8 @@ public class NumberArguments {
     }
 
     @Override
-    public IntegerRange parseArgument(final String key, final StringReader reader, final CommandArguments previousArgs)
+    public IntegerRange parseArgument(final CommandSource<CommandSender> source, final StringReader reader,
+        final String key, final CommandArguments previousArgs)
         throws CommandSyntaxException {
       return reader.readIntRange();
     }
@@ -336,7 +344,8 @@ public class NumberArguments {
     }
 
     @Override
-    public LongRange parseArgument(final String key, final StringReader reader, final CommandArguments previousArgs)
+    public LongRange parseArgument(final CommandSource<CommandSender> source, final StringReader reader,
+        final String key, final CommandArguments previousArgs)
         throws CommandSyntaxException {
       return reader.readLongRange();
     }
@@ -369,7 +378,8 @@ public class NumberArguments {
     }
 
     @Override
-    public FloatRange parseArgument(final String key, final StringReader reader, final CommandArguments previousArgs)
+    public FloatRange parseArgument(final CommandSource<CommandSender> source, final StringReader reader,
+        final String key, final CommandArguments previousArgs)
         throws CommandSyntaxException {
       return reader.readFloatRange();
     }
@@ -402,7 +412,8 @@ public class NumberArguments {
     }
 
     @Override
-    public DoubleRange parseArgument(final String key, final StringReader reader, final CommandArguments previousArgs)
+    public DoubleRange parseArgument(final CommandSource<CommandSender> source, final StringReader reader,
+        final String key, final CommandArguments previousArgs)
         throws CommandSyntaxException {
       return reader.readDoubleRange();
     }
@@ -464,7 +475,8 @@ public class NumberArguments {
     }
 
     @Override
-    public Location parseArgument(final String key, final StringReader reader, final CommandArguments previousArgs)
+    public Location parseArgument(final CommandSource<CommandSender> source, final StringReader reader,
+        final String key, final CommandArguments previousArgs)
         throws CommandSyntaxException {
       final int start = reader.getCursor();
       double x = 0;
@@ -558,7 +570,8 @@ public class NumberArguments {
     }
 
     @Override
-    public Location2D parseArgument(final String key, final StringReader reader, final CommandArguments previousArgs)
+    public Location2D parseArgument(final CommandSource<CommandSender> source, final StringReader reader,
+        final String key, final CommandArguments previousArgs)
         throws CommandSyntaxException {
       final int start = reader.getCursor();
       double x = 0;
@@ -618,7 +631,8 @@ public class NumberArguments {
     }
 
     @Override
-    public Axis parseArgument(final String key, final StringReader reader, final CommandArguments previousArgs)
+    public Axis parseArgument(final CommandSource<CommandSender> source, final StringReader reader, final String key,
+        final CommandArguments previousArgs)
         throws CommandSyntaxException {
       return Axis.valueOf(reader.readString());
     }
@@ -653,7 +667,8 @@ public class NumberArguments {
     }
 
     @Override
-    public EnumSet<Axis> parseArgument(final String key, final StringReader reader, final CommandArguments previousArgs)
+    public EnumSet<Axis> parseArgument(final CommandSource<CommandSender> source, final StringReader reader,
+        final String key, final CommandArguments previousArgs)
         throws CommandSyntaxException {
       final String axises = reader.readString();
       final EnumSet<Axis> set = EnumSet.noneOf(Axis.class);
@@ -692,7 +707,8 @@ public class NumberArguments {
     }
 
     @Override
-    public Rotation parseArgument(final String key, final StringReader reader, final CommandArguments previousArgs)
+    public Rotation parseArgument(final CommandSource<CommandSender> source, final StringReader reader,
+        final String key, final CommandArguments previousArgs)
         throws CommandSyntaxException {
       final int start = reader.getCursor();
       double yaw = 0;
@@ -743,7 +759,8 @@ public class NumberArguments {
     }
 
     @Override
-    public MathOperation parseArgument(final String key, final StringReader reader, final CommandArguments previousArgs)
+    public MathOperation parseArgument(final CommandSource<CommandSender> source, final StringReader reader,
+        final String key, final CommandArguments previousArgs)
         throws CommandSyntaxException {
       final int start = reader.getCursor();
       String value = null;
