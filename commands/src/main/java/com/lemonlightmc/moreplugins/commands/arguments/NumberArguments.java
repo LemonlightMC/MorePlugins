@@ -1,6 +1,7 @@
 package com.lemonlightmc.moreplugins.commands.arguments;
 
 import java.util.EnumSet;
+import java.util.Objects;
 
 import org.bukkit.Axis;
 import org.bukkit.Location;
@@ -766,7 +767,7 @@ public class NumberArguments {
       String value = null;
       try {
         value = reader.readString();
-        return MathOperation.fromString(value);
+        return Objects.requireNonNull(MathOperation.fromString(value));
       } catch (final Exception e) {
         reader.setCursor(start);
         throw INVALID_OPERATION.createWithContext(reader, value);

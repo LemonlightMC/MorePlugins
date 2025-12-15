@@ -1,5 +1,7 @@
 package com.lemonlightmc.moreplugins.commands.arguments;
 
+import java.util.Objects;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Registry;
 import org.bukkit.command.CommandSender;
@@ -132,7 +134,7 @@ public class EntityArguments {
       String value = null;
       try {
         value = reader.readString();
-        return EntityType.valueOf(value);
+        return Objects.requireNonNull(EntityType.valueOf(value));
       } catch (final Exception e) {
         reader.setCursor(start);
         throw INVALID_PLAYER.createWithContext(reader, value);

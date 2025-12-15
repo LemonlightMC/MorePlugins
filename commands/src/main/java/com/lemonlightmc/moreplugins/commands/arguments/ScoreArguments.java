@@ -1,5 +1,7 @@
 package com.lemonlightmc.moreplugins.commands.arguments;
 
+import java.util.Objects;
+
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.scoreboard.Criteria;
@@ -42,7 +44,7 @@ public class ScoreArguments {
       String value = null;
       try {
         value = reader.readString();
-        return Bukkit.getScoreboardManager().getMainScoreboard().getTeam(value);
+        return Objects.requireNonNull(Bukkit.getScoreboardManager().getMainScoreboard().getTeam(value));
       } catch (final CommandSyntaxException ex) {
         reader.resetCursor();
         throw ex;
@@ -91,11 +93,7 @@ public class ScoreArguments {
       String value = null;
       try {
         value = reader.readString();
-        final ScoreboardSlot slot = ScoreboardSlot.of(value);
-        if (slot == null) {
-          throw new Exception();
-        }
-        return slot;
+        return Objects.requireNonNull(ScoreboardSlot.of(value));
       } catch (final CommandSyntaxException ex) {
         reader.resetCursor();
         throw ex;
@@ -123,7 +121,7 @@ public class ScoreArguments {
   }
 
   public static class ObjectiveArgument extends Argument<Objective, ObjectiveArgument> {
-    private static final DynamicCommandException<Dynamic1ExceptionFunktion> INVALID_SLOT = new DynamicCommandException<Dynamic1ExceptionFunktion>(
+    private static final DynamicCommandException<Dynamic1ExceptionFunktion> INVALID_OBJECTIVE = new DynamicCommandException<Dynamic1ExceptionFunktion>(
         value -> "Invalid Scoreboard Objective '" + value + "'");
 
     public ObjectiveArgument(final String name) {
@@ -160,13 +158,13 @@ public class ScoreArguments {
             }
           }
         }
-        throw INVALID_SLOT.createWithContext(reader, value);
+        throw INVALID_OBJECTIVE.createWithContext(reader, value);
       } catch (final CommandSyntaxException ex) {
         reader.resetCursor();
         throw ex;
       } catch (final Exception e) {
         reader.resetCursor();
-        throw INVALID_SLOT.createWithContext(reader, value);
+        throw INVALID_OBJECTIVE.createWithContext(reader, value);
       }
     }
 
@@ -188,7 +186,7 @@ public class ScoreArguments {
   }
 
   public static class CriteriaArgument extends Argument<Criteria, CriteriaArgument> {
-    private static final DynamicCommandException<Dynamic1ExceptionFunktion> INVALID_SLOT = new DynamicCommandException<Dynamic1ExceptionFunktion>(
+    private static final DynamicCommandException<Dynamic1ExceptionFunktion> INVALID_CRITERIA = new DynamicCommandException<Dynamic1ExceptionFunktion>(
         value -> "Invalid Scoreboard Objective '" + value + "'");
 
     public CriteriaArgument(final String name) {
@@ -211,17 +209,13 @@ public class ScoreArguments {
       String value = null;
       try {
         value = reader.readString();
-        final Criteria criteria = Criteria.create(value);
-        if (criteria != null) {
-          return criteria;
-        }
-        throw INVALID_SLOT.createWithContext(reader, value);
+        return Objects.requireNonNull(Criteria.create(value));
       } catch (final CommandSyntaxException ex) {
         reader.resetCursor();
         throw ex;
       } catch (final Exception e) {
         reader.resetCursor();
-        throw INVALID_SLOT.createWithContext(reader, value);
+        throw INVALID_CRITERIA.createWithContext(reader, value);
       }
     }
 

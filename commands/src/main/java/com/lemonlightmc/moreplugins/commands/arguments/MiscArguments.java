@@ -1,6 +1,8 @@
 package com.lemonlightmc.moreplugins.commands.arguments;
 
 import java.time.Duration;
+import java.util.Arrays;
+import java.util.Objects;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -14,6 +16,7 @@ import org.bukkit.block.BlockState;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.command.CommandSender;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffectType;
 
 import com.lemonlightmc.moreplugins.commands.StringReader;
@@ -21,6 +24,7 @@ import com.lemonlightmc.moreplugins.commands.Utils;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.Argument;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.ArgumentType;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.CommandArguments;
+import com.lemonlightmc.moreplugins.commands.argumentsbase.MCFunction;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.ParticleData;
 import com.lemonlightmc.moreplugins.commands.exceptions.CommandExceptions.DynamicCommandException;
 import com.lemonlightmc.moreplugins.commands.exceptions.CommandSyntaxException;
@@ -102,11 +106,7 @@ public class MiscArguments {
       String value = null;
       try {
         value = reader.readString();
-        final World world = Bukkit.getWorld(value);
-        if (world == null) {
-          throw new Exception();
-        }
-        return world;
+        return Objects.requireNonNull(Bukkit.getWorld(value));
       } catch (final Exception e) {
         reader.setCursor(start);
         throw INVALID_WORLD.createWithContext(reader, value);
@@ -342,7 +342,7 @@ public class MiscArguments {
       String value = null;
       try {
         value = reader.readString();
-        return NamespacedKey.fromString(reader.readString());
+        return Objects.requireNonNull(NamespacedKey.fromString(value));
       } catch (final Exception e) {
         reader.setCursor(start);
         throw INVALID_KEY.createWithContext(reader, value);
@@ -389,7 +389,7 @@ public class MiscArguments {
       String value = null;
       try {
         value = reader.readString();
-        return Material.getMaterial(value);
+        return Objects.requireNonNull(Material.getMaterial(value));
       } catch (final Exception e) {
         reader.setCursor(start);
         throw INVALID_MATERIAL.createWithContext(reader, value);
@@ -410,6 +410,63 @@ public class MiscArguments {
     @Override
     public String toString() {
       return "MaterialArgument []";
+    }
+  }
+
+  public static class ItemStackArgument extends Argument<ItemStack, ItemStackArgument> {
+
+    public static final String[] NAMES = Utils.mapRegistry(Registry.ITEM);
+
+    private static final DynamicCommandException<Dynamic1ExceptionFunktion> INVALID_ITEM = new DynamicCommandException<Dynamic1ExceptionFunktion>(
+        value -> "Invalid ItemStack '" + value + "'");
+
+    public ItemStackArgument(final String name) {
+      super(name, ItemStack.class, ArgumentType.ITEMSTACK);
+      withSuggestions(NAMES);
+    }
+
+    public ItemStackArgument getInstance() {
+      return this;
+    }
+
+    @Override
+    public ItemStack parseArgument(final CommandSource<CommandSender> source, final StringReader reader,
+        final String key,
+        final CommandArguments previousArgs)
+        throws CommandSyntaxException {
+      final int start = reader.getCursor();
+      String[] value = null;
+      try {
+        value = reader.readList(':');
+        if (value.length == 0) {
+          throw new Exception();
+        }
+        Material mat = Objects.requireNonNull(Material.getMaterial(value[0]));
+        if (value.length > 1) {
+          int amount = Integer.parseInt(value[1]);
+          return new ItemStack(Material.getMaterial(value[0]), amount);
+        }
+        return new ItemStack(mat, 1);
+      } catch (final Exception e) {
+        reader.setCursor(start);
+        throw INVALID_ITEM.createWithContext(reader, Arrays.toString(value));
+      }
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+      if (this == obj) {
+        return true;
+      }
+      if (!super.equals(obj) || getClass() != obj.getClass()) {
+        return false;
+      }
+      return true;
+    }
+
+    @Override
+    public String toString() {
+      return "ItemStackArgument []";
     }
   }
 
@@ -436,7 +493,7 @@ public class MiscArguments {
       String value = null;
       try {
         value = reader.readString();
-        return Bukkit.createBlockData(Material.getMaterial(value));
+        return Bukkit.createBlockData(Objects.requireNonNull(Material.getMaterial(value)));
       } catch (final Exception e) {
         reader.setCursor(start);
         throw INVALID_BLOCK.createWithContext(reader, value);
@@ -480,7 +537,7 @@ public class MiscArguments {
       String value = null;
       try {
         value = reader.readString();
-        return Bukkit.createBlockData(Material.getMaterial(value)).createBlockState();
+        return Bukkit.createBlockData(Objects.requireNonNull(Material.getMaterial(value))).createBlockState();
       } catch (final Exception e) {
         reader.setCursor(start);
         throw INVALID_BLOCK.createWithContext(reader, value);
@@ -530,7 +587,7 @@ public class MiscArguments {
       String value = null;
       try {
         value = reader.readString();
-        return Bukkit.getAdvancement(NamespacedKey.fromString(value));
+        return Objects.requireNonNull(Bukkit.getAdvancement(Objects.requireNonNull(NamespacedKey.fromString(value))));
       } catch (final Exception e) {
         reader.setCursor(start);
         throw INVALID_ADVANCEMENT.createWithContext(reader, value);
@@ -558,8 +615,8 @@ public class MiscArguments {
 
     public static final String[] NAMES = Utils.mapRegistry(Registry.ENCHANTMENT);
 
-    private static final DynamicCommandException<Dynamic1ExceptionFunktion> INVALID_ADVANCEMENT = new DynamicCommandException<Dynamic1ExceptionFunktion>(
-        value -> "Invalid Advancement '" + value + "'");
+    private static final DynamicCommandException<Dynamic1ExceptionFunktion> INVALID_ENCHANTMENT = new DynamicCommandException<Dynamic1ExceptionFunktion>(
+        value -> "Invalid Enchantment '" + value + "'");
 
     public EnchantmentArgument(final String name) {
       super(name, Enchantment.class, ArgumentType.ENCHANTMENT);
@@ -579,10 +636,10 @@ public class MiscArguments {
       String value = null;
       try {
         value = reader.readString();
-        return Registry.ENCHANTMENT.getOrThrow(NamespacedKey.fromString(value));
+        return Registry.ENCHANTMENT.getOrThrow(Objects.requireNonNull(NamespacedKey.fromString(value)));
       } catch (final Exception e) {
         reader.setCursor(start);
-        throw INVALID_ADVANCEMENT.createWithContext(reader, value);
+        throw INVALID_ENCHANTMENT.createWithContext(reader, value);
       }
     }
 
@@ -600,6 +657,52 @@ public class MiscArguments {
     @Override
     public String toString() {
       return "EnchantmentArgument []";
+    }
+  }
+
+  public static class FunctionArgument extends Argument<MCFunction, FunctionArgument> {
+
+    private static final DynamicCommandException<Dynamic1ExceptionFunktion> INVALID_FUNCTION = new DynamicCommandException<Dynamic1ExceptionFunktion>(
+        value -> "Invalid Function '" + value + "'");
+
+    public FunctionArgument(final String name) {
+      super(name, MCFunction.class, ArgumentType.FUNCTION);
+    }
+
+    public FunctionArgument getInstance() {
+      return this;
+    }
+
+    @Override
+    public MCFunction parseArgument(final CommandSource<CommandSender> source, final StringReader reader,
+        final String key,
+        final CommandArguments previousArgs)
+        throws CommandSyntaxException {
+      final int start = reader.getCursor();
+      String value = null;
+      try {
+        value = reader.readString();
+        return null;
+      } catch (final Exception e) {
+        reader.setCursor(start);
+        throw INVALID_FUNCTION.createWithContext(reader, value);
+      }
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+      if (this == obj) {
+        return true;
+      }
+      if (!super.equals(obj) || getClass() != obj.getClass()) {
+        return false;
+      }
+      return true;
+    }
+
+    @Override
+    public String toString() {
+      return "FunctionArgument []";
     }
   }
 }
