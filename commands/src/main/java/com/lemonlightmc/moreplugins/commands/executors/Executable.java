@@ -1,5 +1,6 @@
 package com.lemonlightmc.moreplugins.commands.executors;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.command.CommandSender;
@@ -14,6 +15,10 @@ import com.lemonlightmc.moreplugins.version.ServerEnvironment;
 public abstract class Executable<T> {
   protected List<NormalExecutor<?>> executors;
 
+  public Executable() {
+    executors = new ArrayList<>();
+  }
+
   protected abstract T instance();
 
   public T setExecutors(final List<NormalExecutor<?>> ex) {
@@ -21,11 +26,11 @@ public abstract class Executable<T> {
     return instance();
   }
 
-  public boolean hasExecutor(final NormalExecutor<?> executor) {
-    return executors != null && executors.contains(executor);
+  public boolean hasExecutors(final NormalExecutor<?>... exes) {
+    return exes != null && exes.length != 0 && this.executors.containsAll(List.of(exes));
   }
 
-  public boolean hasAnyExecutors() {
+  public boolean hasExecutors() {
     return executors != null && !executors.isEmpty();
   }
 

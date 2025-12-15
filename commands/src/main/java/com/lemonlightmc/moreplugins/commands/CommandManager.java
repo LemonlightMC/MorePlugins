@@ -1,6 +1,7 @@
 package com.lemonlightmc.moreplugins.commands;
 
 import com.lemonlightmc.moreplugins.base.PluginBase;
+import com.lemonlightmc.moreplugins.commands.exceptions.MissingCommandExecutorException;
 import com.lemonlightmc.moreplugins.commands.executors.InternalExecutor;
 import com.lemonlightmc.moreplugins.messages.Logger;
 
@@ -82,6 +83,9 @@ public class CommandManager {
   public static void register(final SimpleCommand command, final String namespace) {
     if (command.aliases.size() == 0) {
       throw new IllegalArgumentException("At least one alias must be provided");
+    }
+    if (!command.hasExecutors() && (!command.subcommands.isEmpty() || command.hasArguments())) {
+      throw new MissingCommandExecutorException(command.getName());
     }
     final InternalExecutor cmd = new InternalExecutor(command);
     for (final String alias : command.aliases) {

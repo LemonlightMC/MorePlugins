@@ -3,6 +3,7 @@ package com.lemonlightmc.moreplugins.commands;
 import com.lemonlightmc.moreplugins.apis.ChatAPI;
 import com.lemonlightmc.moreplugins.base.MorePlugins;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.Argument;
+import com.lemonlightmc.moreplugins.commands.exceptions.OptionalArgumentException;
 import com.lemonlightmc.moreplugins.commands.executors.CommandSource;
 import com.lemonlightmc.moreplugins.commands.executors.Executable;
 import com.lemonlightmc.moreplugins.commands.executors.ExecutionInfo;
@@ -33,6 +34,7 @@ public class AbstractCommand extends Executable<AbstractCommand> implements Plug
   protected Predicate<CommandSender> requirements = (_) -> {
     return true;
   };
+  private boolean hasOptional = false;
 
   public Plugin getPlugin() {
     return MorePlugins.instance;
@@ -78,32 +80,67 @@ public class AbstractCommand extends Executable<AbstractCommand> implements Plug
     return this;
   }
 
+  public void addArgument(final Argument<?, ?> arg, final boolean optional) {
+    if (arg == null) {
+      return;
+    }
+    arg.setOptional(optional);
+    if (arg.isOptional()) {
+      hasOptional = true;
+    } else if (!hasOptional) {
+      throw new OptionalArgumentException(arg.getName(), arguments.getLast().getName());
+    }
+    arguments.add(arg);
+  }
+
   // Arguments
   public AbstractCommand withArguments(final List<Argument<?, ?>> args) {
-    arguments.addAll(args);
+    if (args == null || args.isEmpty()) {
+      return this;
+    }
+    for (final Argument<?, ?> arg : args) {
+      addArgument(arg, false);
+    }
     return this;
   }
 
   public AbstractCommand withArguments(final Argument<?, ?>... args) {
-    arguments.addAll(List.of(args));
+    if (args == null || args.length == 0) {
+      return this;
+    }
+    for (final Argument<?, ?> arg : args) {
+      addArgument(arg, false);
+    }
+    return this;
+  }
+
+  public AbstractCommand withArguments(final List<Argument<?, ?>> args, final boolean optional) {
+    if (args == null || args.isEmpty()) {
+      return this;
+    }
+    for (final Argument<?, ?> arg : args) {
+      addArgument(arg, optional);
+    }
+    return this;
+  }
+
+  public AbstractCommand withArguments(final Argument<?, ?>[] args, final boolean optional) {
+    if (args == null || args.length == 0) {
+      return this;
+    }
+    for (final Argument<?, ?> arg : args) {
+      addArgument(arg, optional);
+    }
     return this;
   }
 
   public AbstractCommand withOptionalArguments(final List<Argument<?, ?>> args) {
-    for (final Argument<?, ?> argument : args) {
-      argument.setOptional(true);
-      this.arguments.add(argument);
-    }
-    return this;
+    return withArguments(args, true);
   }
 
   @SafeVarargs
   public final AbstractCommand withOptionalArguments(final Argument<?, ?>... args) {
-    for (final Argument<?, ?> argument : args) {
-      argument.setOptional(true);
-      this.arguments.add(argument);
-    }
-    return this;
+    return withArguments(args, true);
   }
 
   public AbstractCommand setArguments(final List<Argument<?, ?>> args) {
@@ -112,11 +149,19 @@ public class AbstractCommand extends Executable<AbstractCommand> implements Plug
   }
 
   public boolean hasArguments(final Argument<?, ?>... args) {
-    return arguments.containsAll(List.of(args));
+    return args != null && args.length != 0 && arguments.containsAll(List.of(args));
+  }
+
+  public boolean hasArguments() {
+    return !arguments.isEmpty();
   }
 
   public List<Argument<?, ?>> getArguments() {
     return arguments;
+  }
+
+  public List<Argument<?, ?>> getOptionalArguments() {
+    return arguments.stream().filter(a -> !a.isOptional()).toList();
   }
 
   public AbstractCommand removeArguments(final Argument<?, ?> args) {
@@ -151,7 +196,11 @@ public class AbstractCommand extends Executable<AbstractCommand> implements Plug
   }
 
   public boolean hasSubcommands(final AbstractCommand... subs) {
-    return subcommands.containsAll(List.of(subs));
+    return subs != null && subs.length != 0 && subcommands.containsAll(List.of(subs));
+  }
+
+  public boolean hasSubcommands() {
+    return !subcommands.isEmpty();
   }
 
   public List<AbstractCommand> getSubcommands() {
