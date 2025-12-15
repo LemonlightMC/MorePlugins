@@ -38,7 +38,20 @@ public class Executors {
   }
 
   public interface NormalExecutor<S extends CommandSender> {
-    void run(ExecutionInfo<S> info) throws CommandException;
+    void run(CommandSource<S> source, CommandArguments args) throws CommandException;
+
+    default void run(
+        final ExecutionInfo<S> info)
+        throws CommandException {
+      this.run(info.source(), info.args());
+    }
+
+    @SuppressWarnings("unchecked")
+    default int executeWith(CommandSource<?> source, CommandArguments args)
+        throws CommandException {
+      this.run((CommandSource<S>) source, args);
+      return 1;
+    }
 
     @SuppressWarnings("unchecked")
     default int executeWith(final ExecutionInfo<?> info)
@@ -52,20 +65,26 @@ public class Executors {
     }
   }
 
+  public interface NormalExecutorInfo<S extends CommandSender> extends NormalExecutor<S> {
+    void run(ExecutionInfo<S> info) throws CommandException;
+
+    default void run(
+        final CommandSource<S> source, final CommandArguments args)
+        throws CommandException {
+      this.run(new ExecutionInfo<>(source, args));
+    }
+
+    default ExecutorType getType() {
+      return ExecutorType.ALL;
+    }
+  }
+
   @FunctionalInterface
   public interface CommandExecutor
       extends
       NormalExecutor<CommandSender> {
 
-    void run(CommandSource<CommandSender> source, CommandArguments args)
-        throws CommandException;
-
-    @Override
-    default void run(
-        final ExecutionInfo<CommandSender> info)
-        throws CommandException {
-      this.run(info.source(), info.args());
-    }
+    void run(CommandSource<CommandSender> source, CommandArguments args) throws CommandException;
 
     @Override
     default ExecutorType getType() {
@@ -76,10 +95,9 @@ public class Executors {
   @FunctionalInterface
   public interface CommandExecutionInfo
       extends
-      NormalExecutor<CommandSender> {
+      NormalExecutorInfo<CommandSender> {
 
-    void run(
-        ExecutionInfo<CommandSender> info) throws CommandException;
+    void run(ExecutionInfo<CommandSender> info) throws CommandException;
 
     @Override
     default ExecutorType getType() {
@@ -91,13 +109,8 @@ public class Executors {
   public interface PlayerCommandExecutor
       extends NormalExecutor<Player> {
 
-    void run(CommandSource<Player> source, CommandArguments args) throws CommandException;
-
     @Override
-    default void run(final ExecutionInfo<Player> info)
-        throws CommandException {
-      this.run(info.source(), info.args());
-    }
+    void run(CommandSource<Player> source, CommandArguments args) throws CommandException;
 
     @Override
     default ExecutorType getType() {
@@ -107,7 +120,7 @@ public class Executors {
 
   @FunctionalInterface
   public interface PlayerExecutionInfo
-      extends NormalExecutor<Player> {
+      extends NormalExecutorInfo<Player> {
 
     void run(ExecutionInfo<Player> info) throws CommandException;
 
@@ -124,12 +137,6 @@ public class Executors {
     void run(CommandSource<Entity> source, CommandArguments args) throws CommandException;
 
     @Override
-    default void run(final ExecutionInfo<Entity> info)
-        throws CommandException {
-      this.run(info.source(), info.args());
-    }
-
-    @Override
     default ExecutorType getType() {
       return ExecutorType.ENTITY;
     }
@@ -137,7 +144,7 @@ public class Executors {
 
   @FunctionalInterface
   public interface EntityExecutionInfo
-      extends NormalExecutor<Entity> {
+      extends NormalExecutorInfo<Entity> {
 
     void run(ExecutionInfo<Entity> info) throws CommandException;
 
@@ -154,12 +161,6 @@ public class Executors {
         throws CommandException;
 
     @Override
-    default void run(
-        final ExecutionInfo<BlockCommandSender> info) throws CommandException {
-      this.run(info.source(), info.args());
-    }
-
-    @Override
     default ExecutorType getType() {
       return ExecutorType.BLOCK;
     }
@@ -167,7 +168,7 @@ public class Executors {
 
   @FunctionalInterface
   public interface CommandBlockExecutionInfo
-      extends NormalExecutor<BlockCommandSender> {
+      extends NormalExecutorInfo<BlockCommandSender> {
 
     void run(ExecutionInfo<BlockCommandSender> info)
         throws CommandException;
@@ -186,12 +187,6 @@ public class Executors {
         throws CommandException;
 
     @Override
-    default void run(
-        final ExecutionInfo<ConsoleCommandSender> info) throws CommandException {
-      this.run(info.source(), info.args());
-    }
-
-    @Override
     default ExecutorType getType() {
       return ExecutorType.CONSOLE;
     }
@@ -199,10 +194,9 @@ public class Executors {
 
   @FunctionalInterface
   public interface ConsoleExecutionInfo
-      extends NormalExecutor<ConsoleCommandSender> {
+      extends NormalExecutorInfo<ConsoleCommandSender> {
 
-    void run(
-        ExecutionInfo<ConsoleCommandSender> info) throws CommandException;
+    void run(ExecutionInfo<ConsoleCommandSender> info) throws CommandException;
 
     @Override
     default ExecutorType getType() {
@@ -219,13 +213,6 @@ public class Executors {
         throws CommandException;
 
     @Override
-    default void run(
-        final ExecutionInfo<RemoteConsoleCommandSender> info)
-        throws CommandException {
-      this.run(info.source(), info.args());
-    }
-
-    @Override
     default ExecutorType getType() {
       return ExecutorType.REMOTE;
     }
@@ -234,10 +221,9 @@ public class Executors {
   @FunctionalInterface
   public interface RemoteConsoleExecutionInfo
       extends
-      NormalExecutor<RemoteConsoleCommandSender> {
+      NormalExecutorInfo<RemoteConsoleCommandSender> {
 
-    void run(
-        ExecutionInfo<RemoteConsoleCommandSender> info) throws CommandException;
+    void run(ExecutionInfo<RemoteConsoleCommandSender> info) throws CommandException;
 
     @Override
     default ExecutorType getType() {
@@ -246,12 +232,11 @@ public class Executors {
   }
 
   @FunctionalInterface
-  public interface FeedbackForwardingCommandExecutor
+  public interface FeedbackForwardingExecutionInfo
       extends
-      NormalExecutor<CommandSender> {
+      NormalExecutorInfo<CommandSender> {
 
-    void run(final ExecutionInfo<CommandSender> info)
-        throws CommandException;
+    void run(final ExecutionInfo<CommandSender> info) throws CommandException;
 
     @Override
     default ExecutorType getType() {
@@ -260,17 +245,11 @@ public class Executors {
   }
 
   @FunctionalInterface
-  public interface FeedbackForwardingExecutionInfo
+  public interface FeedbackForwardingExecutor
       extends
       NormalExecutor<CommandSender> {
 
     void run(CommandSource<CommandSender> source, CommandArguments args);
-
-    @Override
-    default void run(final ExecutionInfo<CommandSender> info)
-        throws CommandException {
-      this.run(info.source(), info.args());
-    }
 
     @Override
     default ExecutorType getType() {
@@ -285,19 +264,13 @@ public class Executors {
     void run(CommandSource<ProxiedCommandSender> source, CommandArguments args) throws CommandException;
 
     @Override
-    default void run(final ExecutionInfo<ProxiedCommandSender> info)
-        throws CommandException {
-      this.run(info.source(), info.args());
-    }
-
-    @Override
     default ExecutorType getType() {
       return ExecutorType.PROXY;
     }
   }
 
   @FunctionalInterface
-  public interface ProxyExecutionInfo extends NormalExecutor<ProxiedCommandSender> {
+  public interface ProxyExecutionInfo extends NormalExecutorInfo<ProxiedCommandSender> {
 
     void run(ExecutionInfo<ProxiedCommandSender> info) throws CommandException;
 
@@ -314,12 +287,6 @@ public class Executors {
     void run(CommandSource<ProxiedCommandSender> source, CommandArguments args) throws CommandException;
 
     @Override
-    default void run(final ExecutionInfo<ProxiedCommandSender> info)
-        throws CommandException {
-      this.run(info.source(), info.args());
-    }
-
-    @Override
     default ExecutorType getType() {
       return ExecutorType.NATIVE;
     }
@@ -327,10 +294,9 @@ public class Executors {
 
   @FunctionalInterface
   public interface NativeExecutionInfo
-      extends NormalExecutor<ProxiedCommandSender> {
+      extends NormalExecutorInfo<ProxiedCommandSender> {
 
-    void run(ExecutionInfo<ProxiedCommandSender> info)
-        throws CommandException;
+    void run(ExecutionInfo<ProxiedCommandSender> info) throws CommandException;
 
     @Override
     default ExecutorType getType() {

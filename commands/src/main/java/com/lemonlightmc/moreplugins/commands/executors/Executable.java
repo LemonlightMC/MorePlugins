@@ -168,7 +168,7 @@ public abstract class Executable<T> {
   }
 
   // Feedback-forwarding command executor
-  public T executesFeedbackForwarding(final FeedbackForwardingCommandExecutor executor) {
+  public T executesFeedbackForwarding(final FeedbackForwardingExecutor executor) {
     if (!ServerEnvironment.isPaper()) {
       throw new PlatformException(
           "Attempted to use a FeedbackForwardingCommandExecutor on a non-paper platform ("
