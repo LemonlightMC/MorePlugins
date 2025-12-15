@@ -5,7 +5,7 @@ import java.util.Optional;
 
 import com.lemonlightmc.moreplugins.commands.exceptions.InvalidCommandNameException;
 
-public class SimpleCommand extends AbstractCommand {
+public class SimpleCommand extends AbstractCommand<SimpleCommand> {
 
   private final String name;
   private Optional<String> shortDescription = Optional.empty();
@@ -20,6 +20,10 @@ public class SimpleCommand extends AbstractCommand {
     }
     this.name = label.toLowerCase();
     withAliases(name);
+  }
+
+  public SimpleCommand instance() {
+    return this;
   }
 
   public void register(final String namespace) {
@@ -38,7 +42,7 @@ public class SimpleCommand extends AbstractCommand {
     return shortDescription.orElse(null);
   }
 
-  public AbstractCommand withShortDescription(final String description) {
+  public SimpleCommand withShortDescription(final String description) {
     shortDescription = Optional.ofNullable(description);
     return this;
   }
@@ -47,12 +51,12 @@ public class SimpleCommand extends AbstractCommand {
     return fullDescription.orElse(null);
   }
 
-  public AbstractCommand withFullDescription(final String description) {
+  public SimpleCommand withFullDescription(final String description) {
     fullDescription = Optional.ofNullable(description);
     return this;
   }
 
-  public AbstractCommand withUsage(final String... usage) {
+  public SimpleCommand withUsage(final String... usage) {
     usageDescription = Optional.ofNullable(usage);
     return this;
   }
@@ -61,7 +65,7 @@ public class SimpleCommand extends AbstractCommand {
     return usageDescription.orElse(null);
   }
 
-  public AbstractCommand withHelp(
+  public SimpleCommand withHelp(
       final String shortDesc,
       final String fullDesc) {
     shortDescription = Optional.ofNullable(shortDesc);
@@ -69,7 +73,7 @@ public class SimpleCommand extends AbstractCommand {
     return this;
   }
 
-  public AbstractCommand withHelp(final List<String> help) {
+  public SimpleCommand withHelp(final List<String> help) {
     this.helpMessage = Optional.ofNullable(String.join("\n", help));
     return this;
   }

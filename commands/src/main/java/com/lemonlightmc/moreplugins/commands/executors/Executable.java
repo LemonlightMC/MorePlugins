@@ -3,11 +3,9 @@ package com.lemonlightmc.moreplugins.commands.executors;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.bukkit.command.CommandException;
 import org.bukkit.command.CommandSender;
 
-import com.lemonlightmc.moreplugins.commands.Utils;
-import com.lemonlightmc.moreplugins.commands.argumentsbase.CommandArguments;
-import com.lemonlightmc.moreplugins.commands.exceptions.InvalidCommandSyntaxException;
 import com.lemonlightmc.moreplugins.commands.executors.Executors.*;
 import com.lemonlightmc.moreplugins.exceptions.PlatformException;
 import com.lemonlightmc.moreplugins.version.ServerEnvironment;
@@ -49,17 +47,15 @@ public abstract class Executable<T> {
       executors.add(executor);
     } else {
       for (final ExecutorType type : types) {
-        executors.add(new CommandExecutor() {
-          @Override
-          public void run(final CommandSource<CommandSender> sender, final CommandArguments args)
-              throws InvalidCommandSyntaxException {
-            executor
-                .executeWith(Utils.toInfo(sender, args));
-          }
-
+        executors.add(new CommandExecutionInfo() {
           @Override
           public ExecutorType getType() {
             return type;
+          }
+
+          @Override
+          public void run(ExecutionInfo<CommandSender> info) throws CommandException {
+            executor.run(info);
           }
         });
       }
@@ -73,16 +69,14 @@ public abstract class Executable<T> {
     } else {
       for (final ExecutorType type : types) {
         executors.add(new CommandExecutionInfo() {
-
-          @Override
-          public void run(final ExecutionInfo<CommandSender> info)
-              throws InvalidCommandSyntaxException {
-            executor.executeWith(info);
-          }
-
           @Override
           public ExecutorType getType() {
             return type;
+          }
+
+          @Override
+          public void run(ExecutionInfo<CommandSender> info) throws CommandException {
+            executor.run(info);
           }
         });
       }

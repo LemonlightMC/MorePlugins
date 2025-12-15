@@ -24,10 +24,11 @@ import org.bukkit.command.PluginIdentifiableCommand;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
-public class AbstractCommand extends Executable<AbstractCommand> implements PluginIdentifiableCommand {
+public abstract class AbstractCommand<T extends AbstractCommand<T>> extends Executable<T>
+    implements PluginIdentifiableCommand {
 
   protected List<Argument<?, ?>> arguments = new ArrayList<>();
-  protected List<AbstractCommand> subcommands = new ArrayList<>();
+  protected List<T> subcommands = new ArrayList<>();
   protected Set<String> aliases = new HashSet<String>();
 
   protected Set<String> permissions = new HashSet<String>();
@@ -40,24 +41,22 @@ public class AbstractCommand extends Executable<AbstractCommand> implements Plug
     return MorePlugins.instance;
   }
 
-  protected AbstractCommand instance() {
-    return this;
-  }
+  public abstract T instance();
 
   // Aliases
-  public AbstractCommand withAliases(final String... aliases) {
+  public T withAliases(final String... aliases) {
     for (final String alias : aliases) {
       this.aliases.add(alias.toLowerCase());
     }
-    return this;
+    return instance();
   }
 
-  public AbstractCommand setAliases(final Set<String> aliases) {
+  public T setAliases(final Set<String> aliases) {
     this.aliases.clear();
     for (final String alias : aliases) {
       this.aliases.add(alias.toLowerCase());
     }
-    return this;
+    return instance();
   }
 
   public Set<String> getAliases() {
@@ -68,16 +67,16 @@ public class AbstractCommand extends Executable<AbstractCommand> implements Plug
     return this.aliases.contains(alias);
   }
 
-  public AbstractCommand removeAlias(final String... aliases) {
+  public T removeAlias(final String... aliases) {
     for (final String alias : aliases) {
       this.aliases.remove(alias.toLowerCase());
     }
-    return this;
+    return instance();
   }
 
-  public AbstractCommand clearAliases() {
+  public T clearAliases() {
     this.aliases.clear();
-    return this;
+    return instance();
   }
 
   public void addArgument(final Argument<?, ?> arg, final boolean optional) {
@@ -94,58 +93,58 @@ public class AbstractCommand extends Executable<AbstractCommand> implements Plug
   }
 
   // Arguments
-  public AbstractCommand withArguments(final List<Argument<?, ?>> args) {
+  public T withArguments(final List<Argument<?, ?>> args) {
     if (args == null || args.isEmpty()) {
-      return this;
+      return instance();
     }
     for (final Argument<?, ?> arg : args) {
       addArgument(arg, false);
     }
-    return this;
+    return instance();
   }
 
-  public AbstractCommand withArguments(final Argument<?, ?>... args) {
+  public T withArguments(final Argument<?, ?>... args) {
     if (args == null || args.length == 0) {
-      return this;
+      return instance();
     }
     for (final Argument<?, ?> arg : args) {
       addArgument(arg, false);
     }
-    return this;
+    return instance();
   }
 
-  public AbstractCommand withArguments(final List<Argument<?, ?>> args, final boolean optional) {
+  public T withArguments(final List<Argument<?, ?>> args, final boolean optional) {
     if (args == null || args.isEmpty()) {
-      return this;
+      return instance();
     }
     for (final Argument<?, ?> arg : args) {
       addArgument(arg, optional);
     }
-    return this;
+    return instance();
   }
 
-  public AbstractCommand withArguments(final Argument<?, ?>[] args, final boolean optional) {
+  public T withArguments(final Argument<?, ?>[] args, final boolean optional) {
     if (args == null || args.length == 0) {
-      return this;
+      return instance();
     }
     for (final Argument<?, ?> arg : args) {
       addArgument(arg, optional);
     }
-    return this;
+    return instance();
   }
 
-  public AbstractCommand withOptionalArguments(final List<Argument<?, ?>> args) {
+  public T withOptionalArguments(final List<Argument<?, ?>> args) {
     return withArguments(args, true);
   }
 
   @SafeVarargs
-  public final AbstractCommand withOptionalArguments(final Argument<?, ?>... args) {
+  public final T withOptionalArguments(final Argument<?, ?>... args) {
     return withArguments(args, true);
   }
 
-  public AbstractCommand setArguments(final List<Argument<?, ?>> args) {
+  public T setArguments(final List<Argument<?, ?>> args) {
     arguments = args;
-    return this;
+    return instance();
   }
 
   public boolean hasArguments(final Argument<?, ?>... args) {
@@ -164,38 +163,40 @@ public class AbstractCommand extends Executable<AbstractCommand> implements Plug
     return arguments.stream().filter(a -> !a.isOptional()).toList();
   }
 
-  public AbstractCommand removeArguments(final Argument<?, ?> args) {
+  public T removeArguments(final Argument<?, ?> args) {
     arguments.remove(args);
-    return this;
+    return instance();
   }
 
-  public AbstractCommand removeArguments(final Argument<?, ?>... args) {
+  public T removeArguments(final Argument<?, ?>... args) {
     arguments.removeAll(List.of(args));
-    return this;
+    return instance();
   }
 
-  public AbstractCommand clearArguments() {
+  public T clearArguments() {
     arguments.clear();
-    return this;
+    return instance();
   }
 
   // Subcommands
-  public AbstractCommand withSubcommands(final List<AbstractCommand> subs) {
+  public T withSubcommands(final List<T> subs) {
     subcommands.addAll(subs);
-    return this;
+    return instance();
   }
 
-  public final AbstractCommand withSubcommands(final AbstractCommand... subs) {
+  @SafeVarargs
+  public final T withSubcommands(final T... subs) {
     subcommands.addAll(List.of(subs));
-    return this;
+    return instance();
   }
 
-  public AbstractCommand setSubcommands(final List<AbstractCommand> subs) {
+  public T setSubcommands(final List<T> subs) {
     subcommands = subs;
-    return this;
+    return instance();
   }
 
-  public boolean hasSubcommands(final AbstractCommand... subs) {
+  @SafeVarargs
+  public final boolean hasSubcommands(final T... subs) {
     return subs != null && subs.length != 0 && subcommands.containsAll(List.of(subs));
   }
 
@@ -203,29 +204,30 @@ public class AbstractCommand extends Executable<AbstractCommand> implements Plug
     return !subcommands.isEmpty();
   }
 
-  public List<AbstractCommand> getSubcommands() {
+  public List<T> getSubcommands() {
     return subcommands;
   }
 
-  public AbstractCommand removeSubcommands(final AbstractCommand subs) {
+  public T removeSubcommands(final T subs) {
     subcommands.remove(subs);
-    return this;
+    return instance();
   }
 
-  public AbstractCommand removeSubcommands(final AbstractCommand... subs) {
+  @SafeVarargs
+  public final T removeSubcommands(final T... subs) {
     subcommands.removeAll(List.of(subs));
-    return this;
+    return instance();
   }
 
-  public AbstractCommand clearSubcommands() {
+  public T clearSubcommands() {
     subcommands.clear();
-    return this;
+    return instance();
   }
 
   // lesser setter & getters
-  public AbstractCommand withPermission(final String permission) {
+  public T withPermission(final String permission) {
     permissions.add(permission);
-    return this;
+    return instance();
   }
 
   public void setPermissions(final Set<String> permissions) {
@@ -236,9 +238,9 @@ public class AbstractCommand extends Executable<AbstractCommand> implements Plug
     return permissions;
   }
 
-  public AbstractCommand withRequirement(final Predicate<CommandSender> requirement) {
+  public T withRequirement(final Predicate<CommandSender> requirement) {
     requirements = requirements.and(requirement);
-    return this;
+    return instance();
   }
 
   public void setRequirements(final Predicate<CommandSender> requirements) {
@@ -359,6 +361,7 @@ public class AbstractCommand extends Executable<AbstractCommand> implements Plug
     return result;
   }
 
+  @SuppressWarnings("unchecked")
   @Override
   public boolean equals(final Object obj) {
     if (this == obj) {
@@ -367,7 +370,7 @@ public class AbstractCommand extends Executable<AbstractCommand> implements Plug
     if (!super.equals(obj) || getClass() != obj.getClass()) {
       return false;
     }
-    final AbstractCommand other = (AbstractCommand) obj;
+    final T other = (T) obj;
     if (arguments == null) {
       if (other.arguments != null)
         return false;
