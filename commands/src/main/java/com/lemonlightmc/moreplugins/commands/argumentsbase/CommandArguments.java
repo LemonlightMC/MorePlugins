@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Supplier;
 
@@ -15,25 +16,25 @@ public class CommandArguments {
   public String fullInput;
 
   public CommandArguments(
-      ParsedArgument[] args,
-      Map<String, ParsedArgument> argsMap,
-      String fullInput) {
+      final ParsedArgument[] args,
+      final Map<String, ParsedArgument> argsMap,
+      final String fullInput) {
     this.args = args;
     this.argsMap = argsMap;
     this.fullInput = fullInput;
   }
 
   public CommandArguments(
-      Collection<ParsedArgument> args,
-      Map<String, ParsedArgument> argsMap,
-      String fullInput) {
+      final Collection<ParsedArgument> args,
+      final Map<String, ParsedArgument> argsMap,
+      final String fullInput) {
     this.args = args.toArray(ParsedArgument[]::new);
     this.argsMap = argsMap;
     this.fullInput = fullInput;
   }
 
   public CommandArguments(
-      Map<String, ParsedArgument> argsMap, String fullInput) {
+      final Map<String, ParsedArgument> argsMap, final String fullInput) {
     this.args = argsMap.values().toArray(ParsedArgument[]::new);
     this.argsMap = argsMap;
     this.fullInput = fullInput;
@@ -43,7 +44,7 @@ public class CommandArguments {
     return fullInput;
   }
 
-  public int size() {
+  public int count() {
     return args.length;
   }
 
@@ -70,6 +71,14 @@ public class CommandArguments {
 
   public Object get(final String nodeName) {
     return argsMap.get(nodeName);
+  }
+
+  public Object getOptional(final int index) {
+    return Optional.ofNullable(get(index));
+  }
+
+  public Object getOptional(final String nodeName) {
+    return Optional.ofNullable(get(nodeName));
   }
 
   public Object getOrDefault(final int index, final Object defaultValue) {
@@ -112,6 +121,14 @@ public class CommandArguments {
     return v == null ? null : v.raw();
   }
 
+  public Object getRawOptional(final int index) {
+    return Optional.ofNullable(getRaw(index));
+  }
+
+  public Object getRawOptional(final String nodeName) {
+    return Optional.ofNullable(getRaw(nodeName));
+  }
+
   public String getOrDefaultRaw(final int index, final String defaultValue) {
     if (args.length <= index) {
       return defaultValue;
@@ -151,6 +168,14 @@ public class CommandArguments {
     return (T) get(nodeName);
   }
 
+  public Object getUncheckedOptional(final int index) {
+    return Optional.ofNullable(getUnchecked(index));
+  }
+
+  public Object getUncheckedOptional(final String nodeName) {
+    return Optional.ofNullable(getUnchecked(nodeName));
+  }
+
   @SuppressWarnings("unchecked")
   public <T> T getOrDefaultUnchecked(final int index, final T defaultValue) {
     return (T) getOrDefault(index, defaultValue);
@@ -181,6 +206,10 @@ public class CommandArguments {
         argumentType.getName());
   }
 
+  public <T> Optional<T> getByArgumentOptional(final Argument<T, ?> argumentType) {
+    return Optional.ofNullable(getByArgument(argumentType));
+  }
+
   public <T> T getByArgumentOrDefault(
       final Argument<T, ?> argumentType,
       final T defaultValue) {
@@ -194,6 +223,14 @@ public class CommandArguments {
 
   public <T> T getByClass(final int index, final Class<T> argumentType) {
     return castArgument(get(index), argumentType, index);
+  }
+
+  public <T> Optional<T> getByClassOptional(final String nodeName, final Class<T> argumentType) {
+    return Optional.ofNullable(getByClass(nodeName, argumentType));
+  }
+
+  public <T> Optional<T> getByClassOptional(final int index, final Class<T> argumentType) {
+    return Optional.ofNullable(getByClass(index, argumentType));
   }
 
   public <T> T getByClassOrDefault(

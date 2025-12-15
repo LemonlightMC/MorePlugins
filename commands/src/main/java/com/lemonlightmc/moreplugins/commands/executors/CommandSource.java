@@ -24,6 +24,14 @@ public class CommandSource<S extends CommandSender> {
     this(sender, getLocation(sender), getEntity(sender));
   }
 
+  public <T extends CommandSender> CommandSource<T> copyFor(T newSender) {
+    return new CommandSource<T>(newSender, loc, entity);
+  }
+
+  public CommandSource<S> copy() {
+    return new CommandSource<>(sender, loc, entity);
+  }
+
   public S sender() {
     return sender;
   }
