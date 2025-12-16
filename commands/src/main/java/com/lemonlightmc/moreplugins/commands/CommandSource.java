@@ -1,6 +1,7 @@
 package com.lemonlightmc.moreplugins.commands;
 
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
@@ -44,6 +45,10 @@ public class CommandSource<S extends CommandSender> {
     return entity;
   }
 
+  public World world() {
+    return loc != null ? loc.getWorld() : null;
+  }
+
   public boolean hasPermission(final String perm) {
     return perm == null || perm.length() == 0 || sender.hasPermission(perm);
   }
@@ -58,5 +63,13 @@ public class CommandSource<S extends CommandSender> {
 
   public static Entity getEntity(final CommandSender sender) {
     return sender instanceof final Entity entity ? entity : null;
+  }
+
+  public static World getWorld(final CommandSender sender) {
+    return switch (sender) {
+      case final Entity entity -> entity.getWorld();
+      case final BlockCommandSender block -> block.getBlock().getWorld();
+      default -> null;
+    };
   }
 }
