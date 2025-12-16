@@ -39,26 +39,20 @@ public class EntityArguments {
     public Player parseArgument(final CommandSource<CommandSender> source, final StringReader reader, final String key,
         final CommandArguments previousArgs)
         throws CommandSyntaxException {
-      final int start = reader.getCursor();
+      reader.point();
       String value = null;
       try {
         value = reader.readString();
         return Bukkit.getPlayerExact(value);
       } catch (final Exception e) {
-        reader.setCursor(start);
+        reader.resetCursor();
         throw INVALID_PLAYER.createWithContext(reader, value);
       }
     }
 
     @Override
     public boolean equals(final Object obj) {
-      if (this == obj) {
-        return true;
-      }
-      if (!super.equals(obj) || getClass() != obj.getClass()) {
-        return false;
-      }
-      return true;
+      return this == obj && getClass() == obj.getClass() && super.equals(obj);
     }
 
     @Override
@@ -84,26 +78,20 @@ public class EntityArguments {
     public PlayerProfile parseArgument(final CommandSource<CommandSender> source, final StringReader reader,
         final String key, final CommandArguments previousArgs)
         throws CommandSyntaxException {
-      final int start = reader.getCursor();
+      reader.point();
       String value = null;
       try {
         value = reader.readString();
         return Bukkit.getPlayerExact(value).getPlayerProfile();
       } catch (final Exception e) {
-        reader.setCursor(start);
+        reader.resetCursor();
         throw INVALID_PLAYER.createWithContext(reader, value);
       }
     }
 
     @Override
     public boolean equals(final Object obj) {
-      if (this == obj) {
-        return true;
-      }
-      if (!super.equals(obj) || getClass() != obj.getClass()) {
-        return false;
-      }
-      return true;
+      return this == obj && getClass() == obj.getClass() && super.equals(obj);
     }
 
     @Override
@@ -130,26 +118,20 @@ public class EntityArguments {
     public EntityType parseArgument(final CommandSource<CommandSender> source, final StringReader reader,
         final String key, final CommandArguments previousArgs)
         throws CommandSyntaxException {
-      final int start = reader.getCursor();
+      reader.point();
       String value = null;
       try {
         value = reader.readString();
         return Objects.requireNonNull(EntityType.valueOf(value));
       } catch (final Exception e) {
-        reader.setCursor(start);
+        reader.resetCursor();
         throw INVALID_PLAYER.createWithContext(reader, value);
       }
     }
 
     @Override
     public boolean equals(final Object obj) {
-      if (this == obj) {
-        return true;
-      }
-      if (!super.equals(obj) || getClass() != obj.getClass()) {
-        return false;
-      }
-      return true;
+      return this == obj && getClass() == obj.getClass() && super.equals(obj);
     }
 
     @Override

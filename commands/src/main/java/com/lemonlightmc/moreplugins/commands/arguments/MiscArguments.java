@@ -67,13 +67,7 @@ public class MiscArguments {
 
     @Override
     public boolean equals(final Object obj) {
-      if (this == obj) {
-        return true;
-      }
-      if (!super.equals(obj) || getClass() != obj.getClass()) {
-        return false;
-      }
-      return true;
+      return this == obj && getClass() == obj.getClass() && super.equals(obj);
     }
 
     @Override
@@ -116,13 +110,7 @@ public class MiscArguments {
 
     @Override
     public boolean equals(final Object obj) {
-      if (this == obj) {
-        return true;
-      }
-      if (!super.equals(obj) || getClass() != obj.getClass()) {
-        return false;
-      }
-      return true;
+      return this == obj && getClass() == obj.getClass() && super.equals(obj);
     }
 
     @Override
@@ -161,13 +149,7 @@ public class MiscArguments {
 
     @Override
     public boolean equals(final Object obj) {
-      if (this == obj) {
-        return true;
-      }
-      if (!super.equals(obj) || getClass() != obj.getClass()) {
-        return false;
-      }
-      return true;
+      return this == obj && getClass() == obj.getClass() && super.equals(obj);
     }
 
     @Override
@@ -209,13 +191,7 @@ public class MiscArguments {
 
     @Override
     public boolean equals(final Object obj) {
-      if (this == obj) {
-        return true;
-      }
-      if (!super.equals(obj) || getClass() != obj.getClass()) {
-        return false;
-      }
-      return true;
+      return this == obj && getClass() == obj.getClass() && super.equals(obj);
     }
 
     @Override
@@ -258,13 +234,7 @@ public class MiscArguments {
 
     @Override
     public boolean equals(final Object obj) {
-      if (this == obj) {
-        return true;
-      }
-      if (!super.equals(obj) || getClass() != obj.getClass()) {
-        return false;
-      }
-      return true;
+      return this == obj && getClass() == obj.getClass() && super.equals(obj);
     }
 
     @Override
@@ -308,13 +278,7 @@ public class MiscArguments {
 
     @Override
     public boolean equals(final Object obj) {
-      if (this == obj) {
-        return true;
-      }
-      if (!super.equals(obj) || getClass() != obj.getClass()) {
-        return false;
-      }
-      return true;
+      return this == obj && getClass() == obj.getClass() && super.equals(obj);
     }
 
     @Override
@@ -352,13 +316,7 @@ public class MiscArguments {
 
     @Override
     public boolean equals(final Object obj) {
-      if (this == obj) {
-        return true;
-      }
-      if (!super.equals(obj) || getClass() != obj.getClass()) {
-        return false;
-      }
-      return true;
+      return this == obj && getClass() == obj.getClass() && super.equals(obj);
     }
 
     @Override
@@ -399,13 +357,7 @@ public class MiscArguments {
 
     @Override
     public boolean equals(final Object obj) {
-      if (this == obj) {
-        return true;
-      }
-      if (!super.equals(obj) || getClass() != obj.getClass()) {
-        return false;
-      }
-      return true;
+      return this == obj && getClass() == obj.getClass() && super.equals(obj);
     }
 
     @Override
@@ -456,13 +408,7 @@ public class MiscArguments {
 
     @Override
     public boolean equals(final Object obj) {
-      if (this == obj) {
-        return true;
-      }
-      if (!super.equals(obj) || getClass() != obj.getClass()) {
-        return false;
-      }
-      return true;
+      return this == obj && getClass() == obj.getClass() && super.equals(obj);
     }
 
     @Override
@@ -503,13 +449,7 @@ public class MiscArguments {
 
     @Override
     public boolean equals(final Object obj) {
-      if (this == obj) {
-        return true;
-      }
-      if (!super.equals(obj) || getClass() != obj.getClass()) {
-        return false;
-      }
-      return true;
+      return this == obj && getClass() == obj.getClass() && super.equals(obj);
     }
 
     @Override
@@ -547,13 +487,7 @@ public class MiscArguments {
 
     @Override
     public boolean equals(final Object obj) {
-      if (this == obj) {
-        return true;
-      }
-      if (!super.equals(obj) || getClass() != obj.getClass()) {
-        return false;
-      }
-      return true;
+      return this == obj && getClass() == obj.getClass() && super.equals(obj);
     }
 
     @Override
@@ -597,13 +531,7 @@ public class MiscArguments {
 
     @Override
     public boolean equals(final Object obj) {
-      if (this == obj) {
-        return true;
-      }
-      if (!super.equals(obj) || getClass() != obj.getClass()) {
-        return false;
-      }
-      return true;
+      return this == obj && getClass() == obj.getClass() && super.equals(obj);
     }
 
     @Override
@@ -646,13 +574,7 @@ public class MiscArguments {
 
     @Override
     public boolean equals(final Object obj) {
-      if (this == obj) {
-        return true;
-      }
-      if (!super.equals(obj) || getClass() != obj.getClass()) {
-        return false;
-      }
-      return true;
+      return this == obj && getClass() == obj.getClass() && super.equals(obj);
     }
 
     @Override
@@ -696,13 +618,7 @@ public class MiscArguments {
 
     @Override
     public boolean equals(final Object obj) {
-      if (this == obj) {
-        return true;
-      }
-      if (!super.equals(obj) || getClass() != obj.getClass()) {
-        return false;
-      }
-      return true;
+      return this == obj && getClass() == obj.getClass() && super.equals(obj);
     }
 
     @Override

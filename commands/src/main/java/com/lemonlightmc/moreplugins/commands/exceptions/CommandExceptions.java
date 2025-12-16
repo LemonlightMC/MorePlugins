@@ -22,9 +22,6 @@ public class CommandExceptions {
     }
   }
 
-  private static final DynamicCommandException<Dynamic1ExceptionFunktion> LITERAL_INCORRECT = new DynamicCommandException<Dynamic1ExceptionFunktion>(
-      expected -> "Expected literal " + expected);
-
   private static final SimpleCommandException READER_EXPECTED_START_OF_QUOTE = new SimpleCommandException(
       "Expected quote to start a string");
 
@@ -58,12 +55,6 @@ public class CommandExceptions {
   private static final DynamicCommandException<Dynamic1ExceptionFunktion> READER_INVALID_FLOAT = new DynamicCommandException<Dynamic1ExceptionFunktion>(
       value -> "Invalid float '" + value + "'");
 
-  private static final DynamicCommandException<Dynamic1ExceptionFunktion> READER_INVALID_RANGE = new DynamicCommandException<Dynamic1ExceptionFunktion>(
-      value -> "Invalid Range '" + value + "'");
-
-  private static final DynamicCommandException<Dynamic1ExceptionFunktion> READER_INVALID_LOCATION = new DynamicCommandException<Dynamic1ExceptionFunktion>(
-      value -> "Invalid Location '" + value + "'");
-
   private static final SimpleCommandException READER_EXPECTED_FLOAT = new SimpleCommandException(
       "Expected float");
 
@@ -75,10 +66,6 @@ public class CommandExceptions {
 
   private static final DynamicCommandException<Dynamic1ExceptionFunktion> READER_EXPECTED_SYMBOL = new DynamicCommandException<Dynamic1ExceptionFunktion>(
       symbol -> "Expected '" + symbol + "'");
-
-  public static DynamicCommandException<Dynamic1ExceptionFunktion> literalIncorrect() {
-    return LITERAL_INCORRECT;
-  }
 
   public static SimpleCommandException readerExpectedStartOfQuote() {
     return READER_EXPECTED_START_OF_QUOTE;
@@ -122,14 +109,6 @@ public class CommandExceptions {
 
   public static DynamicCommandException<Dynamic1ExceptionFunktion> readerInvalidFloat() {
     return READER_INVALID_FLOAT;
-  }
-
-  public static DynamicCommandException<Dynamic1ExceptionFunktion> readerInvalidRange() {
-    return READER_INVALID_RANGE;
-  }
-
-  public static DynamicCommandException<Dynamic1ExceptionFunktion> readerInvalidLocation() {
-    return READER_INVALID_LOCATION;
   }
 
   public static SimpleCommandException readerExpectedFloat() {

@@ -47,27 +47,21 @@ public class NumberArguments {
     public Boolean parseArgument(final CommandSource<CommandSender> source, final StringReader reader, final String key,
         final CommandArguments previousArgs)
         throws CommandSyntaxException {
-      final int start = reader.getCursor();
+      reader.point();
       try {
         return reader.readBoolean();
       } catch (final CommandSyntaxException e) {
-        reader.setCursor(start);
+        reader.resetCursor();
         throw e;
       } catch (final Exception e) {
-        reader.setCursor(start);
+        reader.resetCursor();
         throw e;
       }
     }
 
     @Override
     public boolean equals(final Object obj) {
-      if (this == obj) {
-        return true;
-      }
-      if (!super.equals(obj) || getClass() != obj.getClass()) {
-        return false;
-      }
-      return true;
+      return this == obj && getClass() == obj.getClass() && super.equals(obj);
     }
 
     @Override
@@ -100,7 +94,7 @@ public class NumberArguments {
     public Integer parseArgument(final CommandSource<CommandSender> source, final StringReader reader, final String key,
         final CommandArguments previousArgs)
         throws CommandSyntaxException {
-      final int start = reader.getCursor();
+      reader.point();
       int value = 0;
       try {
         value = reader.readInt();
@@ -112,10 +106,10 @@ public class NumberArguments {
         }
         return value;
       } catch (final CommandSyntaxException e) {
-        reader.setCursor(start);
+        reader.resetCursor();
         throw e;
       } catch (final Exception e) {
-        reader.setCursor(start);
+        reader.resetCursor();
         throw INVALID_VALUE.createWithContext(reader, value);
       }
     }
@@ -167,7 +161,7 @@ public class NumberArguments {
     public Long parseArgument(final CommandSource<CommandSender> source, final StringReader reader, final String key,
         final CommandArguments previousArgs)
         throws CommandSyntaxException {
-      final int start = reader.getCursor();
+      reader.point();
       long value = 0;
       try {
         value = reader.readLong();
@@ -179,10 +173,10 @@ public class NumberArguments {
         }
         return value;
       } catch (final CommandSyntaxException e) {
-        reader.setCursor(start);
+        reader.resetCursor();
         throw e;
       } catch (final Exception e) {
-        reader.setCursor(start);
+        reader.resetCursor();
         throw INVALID_VALUE.createWithContext(reader, value);
       }
     }
@@ -234,7 +228,7 @@ public class NumberArguments {
     public Float parseArgument(final CommandSource<CommandSender> source, final StringReader reader, final String key,
         final CommandArguments previousArgs)
         throws CommandSyntaxException {
-      final int start = reader.getCursor();
+      reader.point();
       float value = 0;
       try {
         value = reader.readFloat();
@@ -246,10 +240,10 @@ public class NumberArguments {
         }
         return value;
       } catch (final CommandSyntaxException e) {
-        reader.setCursor(start);
+        reader.resetCursor();
         throw e;
       } catch (final Exception e) {
-        reader.setCursor(start);
+        reader.resetCursor();
         throw INVALID_VALUE.createWithContext(reader, value);
       }
     }
@@ -301,7 +295,7 @@ public class NumberArguments {
     public Double parseArgument(final CommandSource<CommandSender> source, final StringReader reader, final String key,
         final CommandArguments previousArgs)
         throws CommandSyntaxException {
-      final int start = reader.getCursor();
+      reader.point();
       double value = 0;
       try {
         value = reader.readDouble();
@@ -313,10 +307,10 @@ public class NumberArguments {
         }
         return value;
       } catch (final CommandSyntaxException e) {
-        reader.setCursor(start);
+        reader.resetCursor();
         throw e;
       } catch (final Exception e) {
-        reader.setCursor(start);
+        reader.resetCursor();
         throw INVALID_VALUE.createWithContext(reader, value);
       }
     }
@@ -358,29 +352,23 @@ public class NumberArguments {
     public IntegerRange parseArgument(final CommandSource<CommandSender> source, final StringReader reader,
         final String key, final CommandArguments previousArgs)
         throws CommandSyntaxException {
-      final int start = reader.getCursor();
+      reader.point();
       String value = null;
       try {
         value = reader.readRange();
         return IntegerRange.of(value);
       } catch (final CommandSyntaxException e) {
-        reader.setCursor(start);
+        reader.resetCursor();
         throw e;
       } catch (final Exception e) {
-        reader.setCursor(start);
+        reader.resetCursor();
         throw INVALID_RANGE.createWithContext(reader, value);
       }
     }
 
     @Override
     public boolean equals(final Object obj) {
-      if (this == obj) {
-        return true;
-      }
-      if (!super.equals(obj) || getClass() != obj.getClass()) {
-        return false;
-      }
-      return true;
+      return this == obj && getClass() == obj.getClass() && super.equals(obj);
     }
 
     @Override
@@ -403,29 +391,23 @@ public class NumberArguments {
     public LongRange parseArgument(final CommandSource<CommandSender> source, final StringReader reader,
         final String key, final CommandArguments previousArgs)
         throws CommandSyntaxException {
-      final int start = reader.getCursor();
+      reader.point();
       String value = null;
       try {
         value = reader.readRange();
         return LongRange.of(value);
       } catch (final CommandSyntaxException e) {
-        reader.setCursor(start);
+        reader.resetCursor();
         throw e;
       } catch (final Exception e) {
-        reader.setCursor(start);
+        reader.resetCursor();
         throw INVALID_RANGE.createWithContext(reader, value);
       }
     }
 
     @Override
     public boolean equals(final Object obj) {
-      if (this == obj) {
-        return true;
-      }
-      if (!super.equals(obj) || getClass() != obj.getClass()) {
-        return false;
-      }
-      return true;
+      return this == obj && getClass() == obj.getClass() && super.equals(obj);
     }
 
     @Override
@@ -448,29 +430,23 @@ public class NumberArguments {
     public FloatRange parseArgument(final CommandSource<CommandSender> source, final StringReader reader,
         final String key, final CommandArguments previousArgs)
         throws CommandSyntaxException {
-      final int start = reader.getCursor();
+      reader.point();
       String value = null;
       try {
         value = reader.readRange();
         return FloatRange.of(value);
       } catch (final CommandSyntaxException e) {
-        reader.setCursor(start);
+        reader.resetCursor();
         throw e;
       } catch (final Exception e) {
-        reader.setCursor(start);
+        reader.resetCursor();
         throw INVALID_RANGE.createWithContext(reader, value);
       }
     }
 
     @Override
     public boolean equals(final Object obj) {
-      if (this == obj) {
-        return true;
-      }
-      if (!super.equals(obj) || getClass() != obj.getClass()) {
-        return false;
-      }
-      return true;
+      return this == obj && getClass() == obj.getClass() && super.equals(obj);
     }
 
     @Override
@@ -493,29 +469,23 @@ public class NumberArguments {
     public DoubleRange parseArgument(final CommandSource<CommandSender> source, final StringReader reader,
         final String key, final CommandArguments previousArgs)
         throws CommandSyntaxException {
-      final int start = reader.getCursor();
+      reader.point();
       String value = null;
       try {
         value = reader.readRange();
         return DoubleRange.of(value);
       } catch (final CommandSyntaxException e) {
-        reader.setCursor(start);
+        reader.resetCursor();
         throw e;
       } catch (final Exception e) {
-        reader.setCursor(start);
+        reader.resetCursor();
         throw INVALID_RANGE.createWithContext(reader, value);
       }
     }
 
     @Override
     public boolean equals(final Object obj) {
-      if (this == obj) {
-        return true;
-      }
-      if (!super.equals(obj) || getClass() != obj.getClass()) {
-        return false;
-      }
-      return true;
+      return this == obj && getClass() == obj.getClass() && super.equals(obj);
     }
 
     @Override
@@ -572,7 +542,7 @@ public class NumberArguments {
     public Location parseArgument(final CommandSource<CommandSender> source, final StringReader reader,
         final String key, final CommandArguments previousArgs)
         throws CommandSyntaxException {
-      final int start = reader.getCursor();
+      reader.point();
       double x = 0;
       double y = 0;
       double z = 0;
@@ -592,10 +562,10 @@ public class NumberArguments {
         }
         return new Location(source.world(), x, y, z);
       } catch (final CommandSyntaxException e) {
-        reader.setCursor(start);
+        reader.resetCursor();
         throw e;
       } catch (final Exception e) {
-        reader.setCursor(start);
+        reader.resetCursor();
         throw INVALID_LOCATION.createWithContext(reader, x + "," + y + "," + z);
       }
     }
@@ -671,7 +641,7 @@ public class NumberArguments {
     public Location2D parseArgument(final CommandSource<CommandSender> source, final StringReader reader,
         final String key, final CommandArguments previousArgs)
         throws CommandSyntaxException {
-      final int start = reader.getCursor();
+      reader.point();
       double x = 0;
       double z = 0;
       try {
@@ -685,10 +655,10 @@ public class NumberArguments {
         }
         return new Location2D(source.world(), x, z);
       } catch (final CommandSyntaxException e) {
-        reader.setCursor(start);
+        reader.resetCursor();
         throw e;
       } catch (final Exception e) {
-        reader.setCursor(start);
+        reader.resetCursor();
         throw INVALID_LOCATION.createWithContext(reader, x + "," + z);
       }
     }
@@ -734,29 +704,23 @@ public class NumberArguments {
     public Axis parseArgument(final CommandSource<CommandSender> source, final StringReader reader, final String key,
         final CommandArguments previousArgs)
         throws CommandSyntaxException {
-      final int start = reader.getCursor();
+      reader.point();
       String value = null;
       try {
         value = reader.readString();
         return Objects.requireNonNull(Axis.valueOf(value));
       } catch (final CommandSyntaxException e) {
-        reader.setCursor(start);
+        reader.resetCursor();
         throw e;
       } catch (final Exception e) {
-        reader.setCursor(start);
+        reader.resetCursor();
         throw INVALID_AXIS.createWithContext(reader, value);
       }
     }
 
     @Override
     public boolean equals(final Object obj) {
-      if (this == obj) {
-        return true;
-      }
-      if (!super.equals(obj) || getClass() != obj.getClass()) {
-        return false;
-      }
-      return true;
+      return this == obj && getClass() == obj.getClass() && super.equals(obj);
     }
 
     @Override
@@ -783,7 +747,7 @@ public class NumberArguments {
     public EnumSet<Axis> parseArgument(final CommandSource<CommandSender> source, final StringReader reader,
         final String key, final CommandArguments previousArgs)
         throws CommandSyntaxException {
-      final int start = reader.getCursor();
+      reader.point();
       String value = null;
       try {
         value = reader.readString();
@@ -793,10 +757,10 @@ public class NumberArguments {
         }
         return set;
       } catch (final CommandSyntaxException e) {
-        reader.setCursor(start);
+        reader.resetCursor();
         throw e;
       } catch (final Exception e) {
-        reader.setCursor(start);
+        reader.resetCursor();
         throw INVALID_AXIS.createWithContext(reader, value);
       }
 
@@ -804,13 +768,7 @@ public class NumberArguments {
 
     @Override
     public boolean equals(final Object obj) {
-      if (this == obj) {
-        return true;
-      }
-      if (!super.equals(obj) || getClass() != obj.getClass()) {
-        return false;
-      }
-      return true;
+      return this == obj && getClass() == obj.getClass() && super.equals(obj);
     }
 
     @Override
@@ -836,7 +794,7 @@ public class NumberArguments {
     public Rotation parseArgument(final CommandSource<CommandSender> source, final StringReader reader,
         final String key, final CommandArguments previousArgs)
         throws CommandSyntaxException {
-      final int start = reader.getCursor();
+      reader.point();
       double yaw = 0;
       double pitch = 0;
       try {
@@ -844,23 +802,17 @@ public class NumberArguments {
         pitch = reader.readDouble();
         return new Rotation(yaw, pitch);
       } catch (final CommandSyntaxException e) {
-        reader.setCursor(start);
+        reader.resetCursor();
         throw e;
       } catch (final Exception e) {
-        reader.setCursor(start);
+        reader.resetCursor();
         throw INVALID_ROTATION.createWithContext(reader, yaw + "," + pitch);
       }
     }
 
     @Override
     public boolean equals(final Object obj) {
-      if (this == obj) {
-        return true;
-      }
-      if (!super.equals(obj) || getClass() != obj.getClass()) {
-        return false;
-      }
-      return true;
+      return this == obj && getClass() == obj.getClass() && super.equals(obj);
     }
 
     @Override
@@ -888,26 +840,20 @@ public class NumberArguments {
     public MathOperation parseArgument(final CommandSource<CommandSender> source, final StringReader reader,
         final String key, final CommandArguments previousArgs)
         throws CommandSyntaxException {
-      final int start = reader.getCursor();
+      reader.point();
       String value = null;
       try {
         value = reader.readString();
         return Objects.requireNonNull(MathOperation.fromString(value));
       } catch (final Exception e) {
-        reader.setCursor(start);
+        reader.resetCursor();
         throw INVALID_OPERATION.createWithContext(reader, value);
       }
     }
 
     @Override
     public boolean equals(final Object obj) {
-      if (this == obj) {
-        return true;
-      }
-      if (!super.equals(obj) || getClass() != obj.getClass()) {
-        return false;
-      }
-      return true;
+      return this == obj && getClass() == obj.getClass() && super.equals(obj);
     }
 
     @Override
