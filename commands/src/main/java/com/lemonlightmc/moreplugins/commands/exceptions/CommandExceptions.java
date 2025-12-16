@@ -1,6 +1,6 @@
 package com.lemonlightmc.moreplugins.commands.exceptions;
 
-import com.lemonlightmc.moreplugins.commands.StringReader;
+import com.lemonlightmc.moreplugins.commands.argumentsbase.StringReader;
 import com.lemonlightmc.moreplugins.exceptions.*;
 import com.lemonlightmc.moreplugins.exceptions.DynamicExceptionFunction.*;
 

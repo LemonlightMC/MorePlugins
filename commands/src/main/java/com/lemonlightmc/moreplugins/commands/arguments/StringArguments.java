@@ -7,17 +7,17 @@ import java.util.Set;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
-import com.lemonlightmc.moreplugins.commands.StringReader;
+import com.lemonlightmc.moreplugins.commands.CommandSource;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.Argument;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.ArgumentType;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.CommandArguments;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.GreedyArgument;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.Literal;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.MultiLiteral;
+import com.lemonlightmc.moreplugins.commands.argumentsbase.StringReader;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.StringType;
 import com.lemonlightmc.moreplugins.commands.exceptions.BadLiteralException;
 import com.lemonlightmc.moreplugins.commands.exceptions.CommandSyntaxException;
-import com.lemonlightmc.moreplugins.commands.executors.CommandSource;
 
 public class StringArguments {
   public static class StringArgument extends Argument<String, StringArgument> {

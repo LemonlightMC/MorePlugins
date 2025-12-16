@@ -1,5 +1,6 @@
 package com.lemonlightmc.moreplugins.commands.executors;
 
+import com.lemonlightmc.moreplugins.commands.CommandSource;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.CommandArguments;
 
 import org.bukkit.command.BlockCommandSender;

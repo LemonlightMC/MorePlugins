@@ -15,7 +15,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 
-import com.lemonlightmc.moreplugins.commands.executors.CommandSource;
+import com.lemonlightmc.moreplugins.commands.CommandSource;
 
 public class EntitySelector<E> {
   public static final EntitySelector<Player> ONE_PLAYER = new EntitySelector<Player>("@s",

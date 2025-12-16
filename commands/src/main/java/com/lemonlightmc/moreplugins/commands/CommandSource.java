@@ -1,4 +1,4 @@
-package com.lemonlightmc.moreplugins.commands.executors;
+package com.lemonlightmc.moreplugins.commands;
 
 import org.bukkit.Location;
 import org.bukkit.command.BlockCommandSender;

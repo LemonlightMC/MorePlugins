@@ -1,4 +1,4 @@
-package com.lemonlightmc.moreplugins.commands;
+package com.lemonlightmc.moreplugins.commands.argumentsbase;
 
 import java.util.ArrayDeque;
 
