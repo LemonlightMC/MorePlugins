@@ -22,33 +22,6 @@ public class CommandExceptions {
     }
   }
 
-  private static final DynamicCommandException<Dynamic2ExceptionFunktion> DOUBLE_TOO_SMALL = new DynamicCommandException<Dynamic2ExceptionFunktion>(
-      (final Object found, final Object min) -> "Double must not be less than " + min + ", found " + found);
-
-  private static final DynamicCommandException<Dynamic2ExceptionFunktion> DOUBLE_TOO_BIG = new DynamicCommandException<Dynamic2ExceptionFunktion>(
-      (found, max) -> "Double must not be more than " + max + ", found " + found);
-
-  private static final DynamicCommandException<Dynamic2ExceptionFunktion> FLOAT_TOO_SMALL = new DynamicCommandException<Dynamic2ExceptionFunktion>(
-      (found, min) -> "Float must not be less than " + min + ", found " + found);
-
-  private static final DynamicCommandException<Dynamic2ExceptionFunktion> FLOAT_TOO_BIG = new DynamicCommandException<Dynamic2ExceptionFunktion>(
-      (found, max) -> "Float must not be more than " + max + ", found " + found);
-
-  private static final DynamicCommandException<Dynamic2ExceptionFunktion> INTEGER_TOO_SMALL = new DynamicCommandException<Dynamic2ExceptionFunktion>(
-      (found, min) -> "Integer must not be less than " + min + ", found " + found);
-
-  private static final DynamicCommandException<Dynamic2ExceptionFunktion> INTEGER_TOO_BIG = new DynamicCommandException<Dynamic2ExceptionFunktion>(
-      (found, max) -> "Integer must not be more than " + max + ", found " + found);
-
-  private static final DynamicCommandException<Dynamic2ExceptionFunktion> LONG_TOO_SMALL = new DynamicCommandException<Dynamic2ExceptionFunktion>(
-      (found, min) -> "Long must not be less than " + min + ", found " + found);
-
-  private static final DynamicCommandException<Dynamic2ExceptionFunktion> LONG_TOO_BIG = new DynamicCommandException<Dynamic2ExceptionFunktion>(
-      (found, max) -> "Long must not be more than " + max + ", found " + found);
-
-  private static final DynamicCommandException<Dynamic2ExceptionFunktion> LOCATION_TOO_BIG = new DynamicCommandException<Dynamic2ExceptionFunktion>(
-      (found, max) -> "Coordinate must not be more than " + max + ", found " + found);
-
   private static final DynamicCommandException<Dynamic1ExceptionFunktion> LITERAL_INCORRECT = new DynamicCommandException<Dynamic1ExceptionFunktion>(
       expected -> "Expected literal " + expected);
 
@@ -102,42 +75,6 @@ public class CommandExceptions {
 
   private static final DynamicCommandException<Dynamic1ExceptionFunktion> READER_EXPECTED_SYMBOL = new DynamicCommandException<Dynamic1ExceptionFunktion>(
       symbol -> "Expected '" + symbol + "'");
-
-  public static DynamicCommandException<Dynamic2ExceptionFunktion> doubleTooLow() {
-    return DOUBLE_TOO_SMALL;
-  }
-
-  public static DynamicCommandException<Dynamic2ExceptionFunktion> doubleTooHigh() {
-    return DOUBLE_TOO_BIG;
-  }
-
-  public static DynamicCommandException<Dynamic2ExceptionFunktion> floatTooLow() {
-    return FLOAT_TOO_SMALL;
-  }
-
-  public static DynamicCommandException<Dynamic2ExceptionFunktion> floatTooHigh() {
-    return FLOAT_TOO_BIG;
-  }
-
-  public static DynamicCommandException<Dynamic2ExceptionFunktion> integerTooLow() {
-    return INTEGER_TOO_SMALL;
-  }
-
-  public static DynamicCommandException<Dynamic2ExceptionFunktion> integerTooHigh() {
-    return INTEGER_TOO_BIG;
-  }
-
-  public static DynamicCommandException<Dynamic2ExceptionFunktion> longTooLow() {
-    return LONG_TOO_SMALL;
-  }
-
-  public static DynamicCommandException<Dynamic2ExceptionFunktion> longTooHigh() {
-    return LONG_TOO_BIG;
-  }
-
-  public static DynamicCommandException<Dynamic2ExceptionFunktion> locationTooHigh() {
-    return LOCATION_TOO_BIG;
-  }
 
   public static DynamicCommandException<Dynamic1ExceptionFunktion> literalIncorrect() {
     return LITERAL_INCORRECT;

@@ -14,7 +14,6 @@ import com.lemonlightmc.moreplugins.commands.argumentsbase.ArgumentType;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.CommandArguments;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.LocationType;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.StringReader;
-import com.lemonlightmc.moreplugins.commands.exceptions.CommandExceptions;
 import com.lemonlightmc.moreplugins.commands.exceptions.CommandExceptions.DynamicCommandException;
 import com.lemonlightmc.moreplugins.commands.exceptions.CommandSyntaxException;
 import com.lemonlightmc.moreplugins.exceptions.DynamicExceptionFunction.Dynamic1ExceptionFunktion;
@@ -24,6 +23,14 @@ import com.lemonlightmc.moreplugins.math.Rotation;
 import com.lemonlightmc.moreplugins.math.ranges.*;
 
 public class NumberArguments {
+  private static final DynamicCommandException<Dynamic1ExceptionFunktion> INVALID_VALUE = new DynamicCommandException<Dynamic1ExceptionFunktion>(
+      value -> "Invalid Value '" + value + "'");
+  private static final DynamicCommandException<Dynamic1ExceptionFunktion> INVALID_RANGE = new DynamicCommandException<Dynamic1ExceptionFunktion>(
+      value -> "Invalid Range '" + value + "'");
+  private static final DynamicCommandException<Dynamic1ExceptionFunktion> VALUE_TOO_LOW = new DynamicCommandException<Dynamic1ExceptionFunktion>(
+      value -> "Value '" + value + "' is too low ");
+  private static final DynamicCommandException<Dynamic1ExceptionFunktion> VALUE_TOO_HIGH = new DynamicCommandException<Dynamic1ExceptionFunktion>(
+      value -> "Value '" + value + "' is too high ");
 
   public static class BoolArgument extends Argument<Boolean, BoolArgument> {
 
@@ -40,7 +47,16 @@ public class NumberArguments {
     public Boolean parseArgument(final CommandSource<CommandSender> source, final StringReader reader, final String key,
         final CommandArguments previousArgs)
         throws CommandSyntaxException {
-      return reader.readBoolean();
+      final int start = reader.getCursor();
+      try {
+        return reader.readBoolean();
+      } catch (final CommandSyntaxException e) {
+        reader.setCursor(start);
+        throw e;
+      } catch (final Exception e) {
+        reader.setCursor(start);
+        throw e;
+      }
     }
 
     @Override
@@ -85,16 +101,23 @@ public class NumberArguments {
         final CommandArguments previousArgs)
         throws CommandSyntaxException {
       final int start = reader.getCursor();
-      final int result = reader.readInt();
-      if (range.isLower(result)) {
+      int value = 0;
+      try {
+        value = reader.readInt();
+        if (range.isLower(value)) {
+          throw VALUE_TOO_LOW.createWithContext(reader, value, range.getMin());
+        }
+        if (range.isHigher(value)) {
+          throw VALUE_TOO_HIGH.createWithContext(reader, value, range.getMax());
+        }
+        return value;
+      } catch (final CommandSyntaxException e) {
         reader.setCursor(start);
-        throw CommandExceptions.integerTooLow().createWithContext(reader, result, range.getMin());
-      }
-      if (range.isHigher(result)) {
+        throw e;
+      } catch (final Exception e) {
         reader.setCursor(start);
-        throw CommandExceptions.integerTooHigh().createWithContext(reader, result, range.getMax());
+        throw INVALID_VALUE.createWithContext(reader, value);
       }
-      return result;
     }
 
     @Override
@@ -145,16 +168,23 @@ public class NumberArguments {
         final CommandArguments previousArgs)
         throws CommandSyntaxException {
       final int start = reader.getCursor();
-      final long result = reader.readLong();
-      if (range.isLower(result)) {
+      long value = 0;
+      try {
+        value = reader.readLong();
+        if (range.isLower(value)) {
+          throw VALUE_TOO_LOW.createWithContext(reader, value, range.getMin());
+        }
+        if (range.isHigher(value)) {
+          throw VALUE_TOO_HIGH.createWithContext(reader, value, range.getMax());
+        }
+        return value;
+      } catch (final CommandSyntaxException e) {
         reader.setCursor(start);
-        throw CommandExceptions.longTooLow().createWithContext(reader, result, range.getMin());
-      }
-      if (range.isHigher(result)) {
+        throw e;
+      } catch (final Exception e) {
         reader.setCursor(start);
-        throw CommandExceptions.longTooHigh().createWithContext(reader, result, range.getMax());
+        throw INVALID_VALUE.createWithContext(reader, value);
       }
-      return result;
     }
 
     @Override
@@ -205,16 +235,23 @@ public class NumberArguments {
         final CommandArguments previousArgs)
         throws CommandSyntaxException {
       final int start = reader.getCursor();
-      final float result = reader.readFloat();
-      if (range.isLower(result)) {
+      float value = 0;
+      try {
+        value = reader.readFloat();
+        if (range.isLower(value)) {
+          throw VALUE_TOO_LOW.createWithContext(reader, value, range.getMin());
+        }
+        if (range.isHigher(value)) {
+          throw VALUE_TOO_HIGH.createWithContext(reader, value, range.getMax());
+        }
+        return value;
+      } catch (final CommandSyntaxException e) {
         reader.setCursor(start);
-        throw CommandExceptions.doubleTooLow().createWithContext(reader, result, range.getMin());
-      }
-      if (range.isHigher(result)) {
+        throw e;
+      } catch (final Exception e) {
         reader.setCursor(start);
-        throw CommandExceptions.doubleTooHigh().createWithContext(reader, result, range.getMax());
+        throw INVALID_VALUE.createWithContext(reader, value);
       }
-      return result;
     }
 
     @Override
@@ -265,16 +302,23 @@ public class NumberArguments {
         final CommandArguments previousArgs)
         throws CommandSyntaxException {
       final int start = reader.getCursor();
-      final double result = reader.readDouble();
-      if (range.isLower(result)) {
+      double value = 0;
+      try {
+        value = reader.readDouble();
+        if (range.isLower(value)) {
+          throw VALUE_TOO_LOW.createWithContext(reader, value, range.getMin());
+        }
+        if (range.isHigher(value)) {
+          throw VALUE_TOO_HIGH.createWithContext(reader, value, range.getMax());
+        }
+        return value;
+      } catch (final CommandSyntaxException e) {
         reader.setCursor(start);
-        throw CommandExceptions.doubleTooLow().createWithContext(reader, result, range.getMin());
-      }
-      if (range.isHigher(result)) {
+        throw e;
+      } catch (final Exception e) {
         reader.setCursor(start);
-        throw CommandExceptions.doubleTooHigh().createWithContext(reader, result, range.getMax());
+        throw INVALID_VALUE.createWithContext(reader, value);
       }
-      return result;
     }
 
     @Override
@@ -314,7 +358,18 @@ public class NumberArguments {
     public IntegerRange parseArgument(final CommandSource<CommandSender> source, final StringReader reader,
         final String key, final CommandArguments previousArgs)
         throws CommandSyntaxException {
-      return reader.readIntRange();
+      final int start = reader.getCursor();
+      String value = null;
+      try {
+        value = reader.readRange();
+        return IntegerRange.of(value);
+      } catch (final CommandSyntaxException e) {
+        reader.setCursor(start);
+        throw e;
+      } catch (final Exception e) {
+        reader.setCursor(start);
+        throw INVALID_RANGE.createWithContext(reader, value);
+      }
     }
 
     @Override
@@ -348,7 +403,18 @@ public class NumberArguments {
     public LongRange parseArgument(final CommandSource<CommandSender> source, final StringReader reader,
         final String key, final CommandArguments previousArgs)
         throws CommandSyntaxException {
-      return reader.readLongRange();
+      final int start = reader.getCursor();
+      String value = null;
+      try {
+        value = reader.readRange();
+        return LongRange.of(value);
+      } catch (final CommandSyntaxException e) {
+        reader.setCursor(start);
+        throw e;
+      } catch (final Exception e) {
+        reader.setCursor(start);
+        throw INVALID_RANGE.createWithContext(reader, value);
+      }
     }
 
     @Override
@@ -382,7 +448,18 @@ public class NumberArguments {
     public FloatRange parseArgument(final CommandSource<CommandSender> source, final StringReader reader,
         final String key, final CommandArguments previousArgs)
         throws CommandSyntaxException {
-      return reader.readFloatRange();
+      final int start = reader.getCursor();
+      String value = null;
+      try {
+        value = reader.readRange();
+        return FloatRange.of(value);
+      } catch (final CommandSyntaxException e) {
+        reader.setCursor(start);
+        throw e;
+      } catch (final Exception e) {
+        reader.setCursor(start);
+        throw INVALID_RANGE.createWithContext(reader, value);
+      }
     }
 
     @Override
@@ -416,7 +493,18 @@ public class NumberArguments {
     public DoubleRange parseArgument(final CommandSource<CommandSender> source, final StringReader reader,
         final String key, final CommandArguments previousArgs)
         throws CommandSyntaxException {
-      return reader.readDoubleRange();
+      final int start = reader.getCursor();
+      String value = null;
+      try {
+        value = reader.readRange();
+        return DoubleRange.of(value);
+      } catch (final CommandSyntaxException e) {
+        reader.setCursor(start);
+        throw e;
+      } catch (final Exception e) {
+        reader.setCursor(start);
+        throw INVALID_RANGE.createWithContext(reader, value);
+      }
     }
 
     @Override
@@ -437,10 +525,15 @@ public class NumberArguments {
   }
 
   public static class LocationArgument extends Argument<Location, LocationArgument> {
-    private final LocationType type;
-    private final boolean centered;
 
     public static final int MAX_COORDINATE = 30_000_000;
+    private static final DynamicCommandException<Dynamic1ExceptionFunktion> INVALID_LOCATION = new DynamicCommandException<Dynamic1ExceptionFunktion>(
+        value -> "Invalid Location '" + value + "'");
+    private static final DynamicCommandException<Dynamic1ExceptionFunktion> OUTOFBOUNDS_LOCATION = new DynamicCommandException<Dynamic1ExceptionFunktion>(
+        value -> "Location is out of bounds'" + value + "' (max " + MAX_COORDINATE + ")");
+
+    private final LocationType type;
+    private final boolean centered;
 
     public LocationArgument(final String nodeName) {
       this(nodeName, LocationType.BLOCK_POSITION);
@@ -488,22 +581,22 @@ public class NumberArguments {
         y = centerPos(reader.readDouble(), false);
         z = centerPos(reader.readDouble(), centered);
         if (x > MAX_COORDINATE || x < -MAX_COORDINATE) {
-          throw CommandExceptions.locationTooHigh().createWithContext(reader, x, "+-30_000_000");
+          throw OUTOFBOUNDS_LOCATION.createWithContext(reader, x);
         }
         if (y > MAX_COORDINATE || y < -MAX_COORDINATE) {
-          throw CommandExceptions.locationTooHigh().createWithContext(reader, y, "+-30_000_000");
+          throw OUTOFBOUNDS_LOCATION.createWithContext(reader, y);
         }
 
         if (z > MAX_COORDINATE || z < -MAX_COORDINATE) {
-          throw CommandExceptions.locationTooHigh().createWithContext(reader, z, "+-30_000_000");
+          throw OUTOFBOUNDS_LOCATION.createWithContext(reader, z);
         }
-        return new Location(null, x, y, z);
+        return new Location(source.world(), x, y, z);
       } catch (final CommandSyntaxException e) {
         reader.setCursor(start);
         throw e;
       } catch (final Exception e) {
         reader.setCursor(start);
-        throw CommandExceptions.readerInvalidLocation().createWithContext(reader, x + "," + y + "," + z);
+        throw INVALID_LOCATION.createWithContext(reader, x + "," + y + "," + z);
       }
     }
 
@@ -532,10 +625,14 @@ public class NumberArguments {
   }
 
   public static class Location2DArgument extends Argument<Location2D, Location2DArgument> {
-    private final LocationType type;
-    private final boolean centered;
 
     public static final int MAX_COORDINATE = 30_000_000;
+    private static final DynamicCommandException<Dynamic1ExceptionFunktion> INVALID_LOCATION = new DynamicCommandException<Dynamic1ExceptionFunktion>(
+        value -> "Invalid Location '" + value + "'");
+    private static final DynamicCommandException<Dynamic1ExceptionFunktion> OUTOFBOUNDS_LOCATION = new DynamicCommandException<Dynamic1ExceptionFunktion>(
+        value -> "Location is out of bounds'" + value + "' (max " + MAX_COORDINATE + ")");
+    private final LocationType type;
+    private final boolean centered;
 
     public Location2DArgument(final String nodeName) {
       this(nodeName, LocationType.BLOCK_POSITION);
@@ -581,18 +678,18 @@ public class NumberArguments {
         x = centerPos(reader.readDouble());
         z = centerPos(reader.readDouble());
         if (x > MAX_COORDINATE || x < -MAX_COORDINATE) {
-          throw CommandExceptions.locationTooHigh().createWithContext(reader, x, "+-30_000_000");
+          throw OUTOFBOUNDS_LOCATION.createWithContext(reader, x);
         }
         if (z > MAX_COORDINATE || z < -MAX_COORDINATE) {
-          throw CommandExceptions.locationTooHigh().createWithContext(reader, z, "+-30_000_000");
+          throw OUTOFBOUNDS_LOCATION.createWithContext(reader, z);
         }
-        return new Location2D(null, x, z);
+        return new Location2D(source.world(), x, z);
       } catch (final CommandSyntaxException e) {
         reader.setCursor(start);
         throw e;
       } catch (final Exception e) {
         reader.setCursor(start);
-        throw CommandExceptions.readerInvalidLocation().createWithContext(reader, x + "," + z);
+        throw INVALID_LOCATION.createWithContext(reader, x + "," + z);
       }
     }
 
@@ -621,6 +718,8 @@ public class NumberArguments {
   }
 
   public static class AxisArgument extends Argument<Axis, AxisArgument> {
+    private static final DynamicCommandException<Dynamic1ExceptionFunktion> INVALID_AXIS = new DynamicCommandException<Dynamic1ExceptionFunktion>(
+        value -> "Invalid Axis '" + value + "'");
 
     public AxisArgument(final String name) {
       super(name, Axis.class, ArgumentType.AXIS);
@@ -635,7 +734,18 @@ public class NumberArguments {
     public Axis parseArgument(final CommandSource<CommandSender> source, final StringReader reader, final String key,
         final CommandArguments previousArgs)
         throws CommandSyntaxException {
-      return Axis.valueOf(reader.readString());
+      final int start = reader.getCursor();
+      String value = null;
+      try {
+        value = reader.readString();
+        return Objects.requireNonNull(Axis.valueOf(value));
+      } catch (final CommandSyntaxException e) {
+        reader.setCursor(start);
+        throw e;
+      } catch (final Exception e) {
+        reader.setCursor(start);
+        throw INVALID_AXIS.createWithContext(reader, value);
+      }
     }
 
     @Override
@@ -657,6 +767,8 @@ public class NumberArguments {
 
   @SuppressWarnings("rawtypes")
   public static class MultiAxisArgument extends Argument<EnumSet, MultiAxisArgument> {
+    private static final DynamicCommandException<Dynamic1ExceptionFunktion> INVALID_AXIS = new DynamicCommandException<Dynamic1ExceptionFunktion>(
+        value -> "Invalid Axis '" + value + "'");
 
     public MultiAxisArgument(final String name) {
       super(name, EnumSet.class, ArgumentType.AXIS);
@@ -671,12 +783,23 @@ public class NumberArguments {
     public EnumSet<Axis> parseArgument(final CommandSource<CommandSender> source, final StringReader reader,
         final String key, final CommandArguments previousArgs)
         throws CommandSyntaxException {
-      final String axises = reader.readString();
-      final EnumSet<Axis> set = EnumSet.noneOf(Axis.class);
-      for (int i = 0; i < axises.length(); i++) {
-        set.add(Axis.valueOf(axises.substring(i, i + 1)));
+      final int start = reader.getCursor();
+      String value = null;
+      try {
+        value = reader.readString();
+        final EnumSet<Axis> set = EnumSet.noneOf(Axis.class);
+        for (int i = 0; i < value.length(); i++) {
+          set.add(Objects.requireNonNull(Axis.valueOf(value.substring(i, i + 1))));
+        }
+        return set;
+      } catch (final CommandSyntaxException e) {
+        reader.setCursor(start);
+        throw e;
+      } catch (final Exception e) {
+        reader.setCursor(start);
+        throw INVALID_AXIS.createWithContext(reader, value);
       }
-      return set;
+
     }
 
     @Override
@@ -697,6 +820,8 @@ public class NumberArguments {
   }
 
   public static class RotationArgument extends Argument<Rotation, RotationArgument> {
+    private static final DynamicCommandException<Dynamic1ExceptionFunktion> INVALID_ROTATION = new DynamicCommandException<Dynamic1ExceptionFunktion>(
+        value -> "Invalid Rotation '" + value + "'");
 
     public RotationArgument(final String name) {
       super(name, Rotation.class, ArgumentType.ROTATION);
@@ -723,7 +848,7 @@ public class NumberArguments {
         throw e;
       } catch (final Exception e) {
         reader.setCursor(start);
-        throw CommandExceptions.readerInvalidLocation().createWithContext(reader, yaw + "," + pitch);
+        throw INVALID_ROTATION.createWithContext(reader, yaw + "," + pitch);
       }
     }
 

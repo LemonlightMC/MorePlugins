@@ -4,7 +4,6 @@ import java.util.ArrayDeque;
 
 import com.lemonlightmc.moreplugins.commands.exceptions.CommandExceptions;
 import com.lemonlightmc.moreplugins.commands.exceptions.CommandSyntaxException;
-import com.lemonlightmc.moreplugins.math.ranges.*;
 
 public class StringReader {
   private static final char SYNTAX_ESCAPE = '\\';
@@ -243,7 +242,7 @@ public class StringReader {
     }
   }
 
-  private String readRange() throws CommandSyntaxException {
+  public String readRange() throws CommandSyntaxException {
     while (canRead() && isNumber(peek())) {
       skip();
     }
@@ -252,66 +251,6 @@ public class StringReader {
       throw CommandExceptions.readerExpectedRange().createWithContext(this);
     }
     return number;
-  }
-
-  public IntegerRange readIntRange() throws CommandSyntaxException {
-    point();
-    String str = null;
-    try {
-      str = readRange();
-      return IntegerRange.of(str);
-    } catch (final CommandSyntaxException ex) {
-      resetCursor();
-      throw ex;
-    } catch (final Exception ex) {
-      resetCursor();
-      throw CommandExceptions.readerInvalidRange().createWithContext(this, str);
-    }
-  }
-
-  public LongRange readLongRange() throws CommandSyntaxException {
-    point();
-    String str = null;
-    try {
-      str = readRange();
-      return LongRange.of(str);
-    } catch (final CommandSyntaxException ex) {
-      resetCursor();
-      throw ex;
-    } catch (final Exception ex) {
-      resetCursor();
-      throw CommandExceptions.readerInvalidRange().createWithContext(this, str);
-    }
-  }
-
-  public FloatRange readFloatRange() throws CommandSyntaxException {
-    point();
-    String str = null;
-    try {
-      str = readRange();
-      return FloatRange.of(str);
-    } catch (final CommandSyntaxException ex) {
-      resetCursor();
-      throw ex;
-    } catch (final Exception ex) {
-      resetCursor();
-      throw CommandExceptions.readerInvalidRange().createWithContext(this, str);
-    }
-  }
-
-  public DoubleRange readDoubleRange() throws CommandSyntaxException {
-    point();
-    String str = null;
-    try {
-      str = readRange();
-      return DoubleRange.of(str);
-    } catch (final CommandSyntaxException ex) {
-      resetCursor();
-      throw ex;
-    } catch (final Exception ex) {
-      resetCursor();
-      throw CommandExceptions.readerInvalidRange().createWithContext(this, str);
-    }
   }
 
   public String readUnquotedString() {
