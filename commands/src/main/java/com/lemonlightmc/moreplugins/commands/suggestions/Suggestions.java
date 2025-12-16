@@ -150,11 +150,11 @@ public interface Suggestions<S extends CommandSender> {
         continue;
       }
       try {
-        StringTooltip suggestion = StringTooltip.of(provider.getSuggestion(), provider.getTooltip());
+        final StringTooltip suggestion = StringTooltip.of(provider.getSuggestion(), provider.getTooltip());
         if (suggestion != null) {
           suggestions.add(suggestion);
         }
-      } catch (Exception e) {
+      } catch (final Exception e) {
         continue;
       }
     }

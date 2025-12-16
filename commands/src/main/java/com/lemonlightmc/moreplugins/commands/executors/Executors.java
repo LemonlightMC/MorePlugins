@@ -48,7 +48,7 @@ public class Executors {
     }
 
     @SuppressWarnings("unchecked")
-    default int executeWith(CommandSource<?> source, CommandArguments args)
+    default int executeWith(final CommandSource<?> source, final CommandArguments args)
         throws CommandException {
       this.run((CommandSource<S>) source, args);
       return 1;

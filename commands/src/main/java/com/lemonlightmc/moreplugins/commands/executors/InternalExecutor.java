@@ -128,7 +128,7 @@ public class InternalExecutor extends Command {
     return stringBuilder.toString();
   }
 
-  public CommandArguments parse(CommandSource<CommandSender> source, final String[] args) {
+  public CommandArguments parse(final CommandSource<CommandSender> source, final String[] args) {
     final String fullInput = StringUtils.join(" ", args);
     final ParserCommandArguments cmd_args = new ParserCommandArguments(null, null, fullInput);
     final StringReader reader = new StringReader(fullInput);

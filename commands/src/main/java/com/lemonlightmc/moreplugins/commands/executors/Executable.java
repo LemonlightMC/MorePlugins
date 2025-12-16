@@ -54,7 +54,7 @@ public abstract class Executable<T> {
           }
 
           @Override
-          public void run(ExecutionInfo<CommandSender> info) throws CommandException {
+          public void run(final ExecutionInfo<CommandSender> info) throws CommandException {
             executor.run(info);
           }
         });
@@ -75,7 +75,7 @@ public abstract class Executable<T> {
           }
 
           @Override
-          public void run(ExecutionInfo<CommandSender> info) throws CommandException {
+          public void run(final ExecutionInfo<CommandSender> info) throws CommandException {
             executor.run(info);
           }
         });

@@ -124,8 +124,8 @@ public enum ScoreboardSlot implements Keyed {
   }
 
   public static Set<String> keys() {
-    HashSet<String> keys = new HashSet<>();
-    for (ScoreboardSlot slot : values()) {
+    final HashSet<String> keys = new HashSet<>();
+    for (final ScoreboardSlot slot : values()) {
       keys.add(slot.key);
     }
     return keys;
