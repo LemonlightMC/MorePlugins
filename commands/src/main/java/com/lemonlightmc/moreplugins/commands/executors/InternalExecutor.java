@@ -17,10 +17,10 @@ import com.lemonlightmc.moreplugins.messages.StringTooltip;
 import com.lemonlightmc.moreplugins.utils.StringUtils;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import org.bukkit.Location;
 import org.bukkit.command.Command;
@@ -93,22 +93,17 @@ public class InternalExecutor extends Command {
 
       final List<Suggestions<CommandSender>> temp = cmd.tabComplete(info);
       if (temp != null) {
-        for (final Suggestions<CommandSender> suggestions : temp) {
-          if (suggestions == null) {
-            continue;
-          }
-          final Collection<StringTooltip> col = suggestions.suggest(info);
-          if (col == null) {
-            continue;
-          }
-          for (final StringTooltip stringTooltip : col) {
-            if (token == null) {
-              tooltips.add(stringTooltip.resolve());
-            } else if (stringTooltip.message().startsWith(token)) {
-              tooltips.add(stringTooltip.resolve());
-            }
-          }
-        }
+        tooltips.addAll(temp.parallelStream()
+            .map((final Suggestions<CommandSender> s) -> s == null ? null : s.suggest(info))
+            .flatMap(col -> col == null ? Stream.empty() : col.stream())
+            .map((final StringTooltip t) -> {
+              if (token == null) {
+                return t.resolve();
+              } else if (t.message().startsWith(token)) {
+                return t.resolve();
+              }
+              return null;
+            }).filter(v -> v != null && v.length() > 0).toList());
       }
     } catch (final Throwable ex) {
       final StringBuilder message = new StringBuilder();
