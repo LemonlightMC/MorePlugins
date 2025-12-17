@@ -54,8 +54,11 @@ public class InternalExecutor extends Command {
             final CommandSource<CommandSender> source = Utils.toSource(sender);
             final CommandArguments cmdArgs = parse(source, args);
             final ExecutionInfo<CommandSender> info = Utils.toInfo(source, cmdArgs);
+            if (info == null) {
+              return;
+            }
 
-            cmd.execute(info);
+            cmd.run(info);
           });
     } catch (final Throwable ex) {
       throw new CommandException(

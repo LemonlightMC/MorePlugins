@@ -3,7 +3,13 @@ package com.lemonlightmc.moreplugins.commands;
 import java.util.List;
 import java.util.Optional;
 
+import org.bukkit.command.CommandException;
+import org.bukkit.command.CommandSender;
+
+import com.lemonlightmc.moreplugins.apis.ChatAPI;
+import com.lemonlightmc.moreplugins.base.PluginBase;
 import com.lemonlightmc.moreplugins.commands.exceptions.InvalidCommandNameException;
+import com.lemonlightmc.moreplugins.commands.executors.ExecutionInfo;
 
 public class SimpleCommand extends AbstractCommand<SimpleCommand> {
 
@@ -12,6 +18,7 @@ public class SimpleCommand extends AbstractCommand<SimpleCommand> {
   private Optional<String> fullDescription = Optional.empty();
   private Optional<String[]> usageDescription = Optional.empty();
   private Optional<String> helpMessage = Optional.empty();
+  private boolean withDefaultSubCommands = true;
 
   public SimpleCommand(final String label) {
     super();
@@ -32,6 +39,21 @@ public class SimpleCommand extends AbstractCommand<SimpleCommand> {
 
   public void register() {
     CommandManager.register(this);
+  }
+
+  public boolean runDefault(final ExecutionInfo<CommandSender> info, final String subStr) throws CommandException {
+    if (!withDefaultSubCommands) {
+      return false;
+    }
+    if (subStr.equalsIgnoreCase("help") && helpMessage.isPresent()) {
+      sendHelp(info.sender());
+      return true;
+    } else if (subStr.equalsIgnoreCase("reload")) {
+      PluginBase.getInstance().reloadConfig();
+      ChatAPI.send(info.sender(), "messages.reload");
+      return true;
+    }
+    return false;
   }
 
   public String getName() {
@@ -80,6 +102,19 @@ public class SimpleCommand extends AbstractCommand<SimpleCommand> {
 
   public List<String> getHelp() {
     return List.of(helpMessage.orElse("").split("\n"));
+  }
+
+  public void sendHelp(final CommandSender sender) {
+    ChatAPI.send(sender, helpMessage.orElse(null));
+  }
+
+  public boolean withDefaultSubCommands() {
+    return withDefaultSubCommands;
+  }
+
+  public boolean withDefaultSubCommands(final boolean value) {
+    withDefaultSubCommands = value;
+    return withDefaultSubCommands;
   }
 
   @Override

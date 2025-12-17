@@ -27,7 +27,7 @@ public abstract class AbstractCommand<T extends AbstractCommand<T>> extends Exec
     implements PluginIdentifiableCommand {
 
   protected List<Argument<?, ?>> arguments = new ArrayList<>();
-  protected List<T> subcommands = new ArrayList<>();
+  protected List<SimpleSubCommand> subcommands = new ArrayList<>();
   protected Set<String> aliases = new HashSet<String>();
 
   protected Set<String> permissions = new HashSet<String>();
@@ -178,18 +178,22 @@ public abstract class AbstractCommand<T extends AbstractCommand<T>> extends Exec
   }
 
   // Subcommands
-  public T withSubcommands(final List<T> subs) {
-    subcommands.addAll(subs);
+  public T withSubcommands(final List<SimpleSubCommand> subs) {
+    if (subs != null) {
+      subcommands.addAll(subs);
+    }
     return instance();
   }
 
   @SafeVarargs
-  public final T withSubcommands(final T... subs) {
-    subcommands.addAll(List.of(subs));
+  public final T withSubcommands(final SimpleSubCommand... subs) {
+    if (subs != null) {
+      subcommands.addAll(List.of(subs));
+    }
     return instance();
   }
 
-  public T setSubcommands(final List<T> subs) {
+  public T setSubcommands(final List<SimpleSubCommand> subs) {
     subcommands = subs;
     return instance();
   }
@@ -203,18 +207,32 @@ public abstract class AbstractCommand<T extends AbstractCommand<T>> extends Exec
     return !subcommands.isEmpty();
   }
 
-  public List<T> getSubcommands() {
+  public final boolean isSubcommand(final String sub) {
+    return sub != null && sub.length() != 0
+        && subcommands.stream().anyMatch((s) -> s.getAliases().contains(sub));
+  }
+
+  public SimpleSubCommand getSubcommand(final String sub) {
+    return sub == null || sub.length() == 0 || subcommands.isEmpty() ? null
+        : subcommands.stream().filter((s) -> s.getAliases().contains(sub)).findFirst().orElse(null);
+  }
+
+  public List<SimpleSubCommand> getSubcommands() {
     return subcommands;
   }
 
-  public T removeSubcommands(final T subs) {
-    subcommands.remove(subs);
+  public T removeSubcommands(final SimpleSubCommand sub) {
+    if (sub != null) {
+      subcommands.remove(sub);
+    }
     return instance();
   }
 
   @SafeVarargs
-  public final T removeSubcommands(final T... subs) {
-    subcommands.removeAll(List.of(subs));
+  public final T removeSubcommands(final SimpleSubCommand... subs) {
+    if (subs != null) {
+      subcommands.removeAll(List.of(subs));
+    }
     return instance();
   }
 
@@ -252,11 +270,11 @@ public abstract class AbstractCommand<T extends AbstractCommand<T>> extends Exec
 
   // utils
 
-  public boolean checkPermission(final CommandSource<CommandSender> source, final Set<String> perms) {
-    if (perms == null || perms.size() == 0) {
+  public boolean checkPermission(final CommandSource<CommandSender> source) {
+    if (permissions == null || permissions.size() == 0) {
       return true;
     }
-    for (final String perm : perms) {
+    for (final String perm : permissions) {
       if (!source.hasPermission(perm)) {
         ChatAPI.send(source.sender(), CommandManager.getPermissionMessage());
         return false;
@@ -265,8 +283,7 @@ public abstract class AbstractCommand<T extends AbstractCommand<T>> extends Exec
     return true;
   }
 
-  public boolean checkRequirements(final CommandSource<CommandSender> sender,
-      final Predicate<CommandSender> requirements) {
+  public boolean checkRequirements(final CommandSource<CommandSender> sender) {
     if (requirements == null) {
       return true;
     }
@@ -286,22 +303,31 @@ public abstract class AbstractCommand<T extends AbstractCommand<T>> extends Exec
   }
 
   // execution
-  public void execute(final ExecutionInfo<CommandSender> info) throws CommandException {
-    if (info == null) {
-      return;
-    }
+  public void run(final ExecutionInfo<CommandSender> info) throws CommandException {
     try {
-      if (!checkPermission(info.source(), permissions) || checkRequirements(info.source(), requirements)) {
+      if (!checkPermission(info.source()) || checkRequirements(info.source())) {
         return;
       }
       if (executors == null || executors.isEmpty()) {
         return;
       }
+
+      final String subStr = info.args().getRaw(0);
+      if (this instanceof final SimpleCommand rootCmd && rootCmd.runDefault(info, subStr)) {
+        return;
+      } else {
+        final SimpleSubCommand sub = getSubcommand(subStr);
+        if (sub != null) {
+          sub.run(info);
+          return;
+        }
+      }
+
       final ExecutorType[] priorities = Utils.prioritiesForSender(info.source().sender());
       if (priorities == null || priorities.length == 0) {
         return;
       }
-      if (!_execute(info, priorities)) {
+      if (!_run(info, priorities)) {
         Logger.warn("No valid Executor for " + info.source().getClass().getSimpleName().toLowerCase());
       }
     } catch (final CommandException e) {
@@ -320,7 +346,7 @@ public abstract class AbstractCommand<T extends AbstractCommand<T>> extends Exec
     return null;
   }
 
-  private boolean _execute(final ExecutionInfo<CommandSender> info, final ExecutorType... types)
+  private boolean _run(final ExecutionInfo<CommandSender> info, final ExecutorType... types)
       throws CommandException {
     final Map<ExecutorType, Integer> priorityIndex = new EnumMap<>(ExecutorType.class);
     for (int i = 0; i < types.length; i++) {
