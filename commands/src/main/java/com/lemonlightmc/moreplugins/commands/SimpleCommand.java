@@ -10,6 +10,8 @@ import com.lemonlightmc.moreplugins.apis.ChatAPI;
 import com.lemonlightmc.moreplugins.base.PluginBase;
 import com.lemonlightmc.moreplugins.commands.exceptions.InvalidCommandNameException;
 import com.lemonlightmc.moreplugins.commands.executors.ExecutionInfo;
+import com.lemonlightmc.moreplugins.commands.suggestions.SuggestionInfo;
+import com.lemonlightmc.moreplugins.commands.suggestions.Suggestions;
 
 public class SimpleCommand extends AbstractCommand<SimpleCommand> {
 
@@ -54,6 +56,11 @@ public class SimpleCommand extends AbstractCommand<SimpleCommand> {
       return true;
     }
     return false;
+  }
+
+  public List<Suggestions<CommandSender>> tabCompleteDefault(final SuggestionInfo<CommandSender> info)
+      throws CommandException {
+    return !withDefaultSubCommands ? List.of() : List.of(Suggestions.from("help", "reload"));
   }
 
   public String getName() {

@@ -9,6 +9,10 @@ import net.md_5.bungee.api.chat.TextComponent;
 
 public record StringTooltip(String message, String tooltip) {
 
+  public String resolve() {
+    return message;
+  }
+
   public static StringTooltip none(final String suggestion) {
     return new StringTooltip(suggestion, null);
   }
@@ -74,4 +78,5 @@ public record StringTooltip(String message, String tooltip) {
   public static StringTooltip of(final String suggestion, final TextComponent component) {
     return of(suggestion, component);
   }
+
 }

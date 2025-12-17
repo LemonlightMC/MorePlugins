@@ -1,7 +1,5 @@
 package com.lemonlightmc.moreplugins.commands;
 
-import com.lemonlightmc.moreplugins.commands.argumentsbase.CommandArguments;
-import com.lemonlightmc.moreplugins.commands.executors.ExecutionInfo;
 import com.lemonlightmc.moreplugins.commands.executors.Executors.ExecutorType;
 import com.lemonlightmc.moreplugins.messages.Logger;
 import com.lemonlightmc.moreplugins.messages.MessageFormatter;
@@ -51,34 +49,6 @@ public class Utils {
     }
     throw new RuntimeException(
         "Failed to create CommandSource for CommandSender " + sender);
-  }
-
-  public static <S extends CommandSender> ExecutionInfo<S> toInfo(
-      final CommandSource<S> source, final CommandArguments args) {
-
-    return new ExecutionInfo<S>(source, args);
-    /*
-     * if (source.getSender() instanceof final BlockCommandSender block) {
-     * return new ExecutionInfo<BlockCommandSender>(source, args);
-     * }
-     * if (source.getSender() instanceof final ConsoleCommandSender console) {
-     * return new ExecutionInfo<ConsoleCommandSender>(console, args);
-     * }
-     * if (source.getSender() instanceof final Player player) {
-     * return new ExecutionInfo<Player>(player, args);
-     * }
-     * if (source.getSender() instanceof final org.bukkit.entity.Entity entity) {
-     * return new ExecutionInfo<Entity>(entity, args);
-     * }
-     * if (source.getSender() instanceof final ProxiedCommandSender proxy) {
-     * return new ExecutionInfo<ProxiedCommandSender>(proxy, args);
-     * }
-     * if (source.getSender() instanceof final RemoteConsoleCommandSender remote) {
-     * return new ExecutionInfo<RemoteConsoleCommandSender>(remote, args);
-     * }
-     * throw new RuntimeException(
-     * "Failed to create ExecutionInfo for CommandSender " + source.getSender());
-     */
   }
 
   public static com.lemonlightmc.moreplugins.commands.executors.Executors.ExecutorType[] prioritiesForSender(

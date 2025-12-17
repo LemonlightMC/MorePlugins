@@ -10,10 +10,14 @@ import com.lemonlightmc.moreplugins.commands.argumentsbase.CommandArguments;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.ParsedArgument;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.StringReader;
 import com.lemonlightmc.moreplugins.commands.exceptions.CommandSyntaxException;
+import com.lemonlightmc.moreplugins.commands.suggestions.SuggestionInfo;
+import com.lemonlightmc.moreplugins.commands.suggestions.Suggestions;
 import com.lemonlightmc.moreplugins.messages.Logger;
+import com.lemonlightmc.moreplugins.messages.StringTooltip;
 import com.lemonlightmc.moreplugins.utils.StringUtils;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -53,11 +57,7 @@ public class InternalExecutor extends Command {
           .runAsync(() -> {
             final CommandSource<CommandSender> source = Utils.toSource(sender);
             final CommandArguments cmdArgs = parse(source, args);
-            final ExecutionInfo<CommandSender> info = Utils.toInfo(source, cmdArgs);
-            if (info == null) {
-              return;
-            }
-
+            final ExecutionInfo<CommandSender> info = new ExecutionInfo<CommandSender>(source, cmdArgs);
             cmd.run(info);
           });
     } catch (final Throwable ex) {
@@ -83,13 +83,33 @@ public class InternalExecutor extends Command {
     final String label = label0 == null ? this.getLabel() : label0;
     final String[] args = args0 == null ? new String[0] : args0;
 
-    List<String> completions = null;
+    final List<String> tooltips = new ArrayList<>();
+    final String token = args.length > 0 ? args[args.length - 1] : null;
+
     try {
       final CommandSource<CommandSender> source = Utils.toSource(sender);
       final CommandArguments cmdArgs = parse(source, args);
-      final ExecutionInfo<CommandSender> info = Utils.toInfo(source, cmdArgs);
+      final SuggestionInfo<CommandSender> info = new SuggestionInfo<CommandSender>(source, cmdArgs, null, null);
 
-      completions = cmd.tabComplete(info);
+      final List<Suggestions<CommandSender>> temp = cmd.tabComplete(info);
+      if (temp != null) {
+        for (final Suggestions<CommandSender> suggestions : temp) {
+          if (suggestions == null) {
+            continue;
+          }
+          final Collection<StringTooltip> col = suggestions.suggest(info);
+          if (col == null) {
+            continue;
+          }
+          for (final StringTooltip stringTooltip : col) {
+            if (token == null) {
+              tooltips.add(stringTooltip.resolve());
+            } else if (stringTooltip.message().startsWith(token)) {
+              tooltips.add(stringTooltip.resolve());
+            }
+          }
+        }
+      }
     } catch (final Throwable ex) {
       final StringBuilder message = new StringBuilder();
       message
@@ -105,19 +125,7 @@ public class InternalExecutor extends Command {
           .append(MorePlugins.instance.getFullName());
       throw new CommandException(message.toString(), ex);
     }
-
-    if (completions == null) {
-      completions = List.of();
-    }
-    if (args.length == 0) {
-      return completions;
-    }
-    completions = Utils.copyPartialMatches(
-        args[args.length - 1],
-        completions,
-        new ArrayList<>());
-    completions.sort(String.CASE_INSENSITIVE_ORDER);
-    return completions;
+    return tooltips;
   }
 
   @Override

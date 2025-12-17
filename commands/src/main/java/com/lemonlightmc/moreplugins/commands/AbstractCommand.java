@@ -7,6 +7,8 @@ import com.lemonlightmc.moreplugins.commands.exceptions.OptionalArgumentExceptio
 import com.lemonlightmc.moreplugins.commands.executors.Executable;
 import com.lemonlightmc.moreplugins.commands.executors.ExecutionInfo;
 import com.lemonlightmc.moreplugins.commands.executors.Executors.*;
+import com.lemonlightmc.moreplugins.commands.suggestions.SuggestionInfo;
+import com.lemonlightmc.moreplugins.commands.suggestions.Suggestions;
 import com.lemonlightmc.moreplugins.messages.Logger;
 
 import java.util.ArrayList;
@@ -14,6 +16,7 @@ import java.util.EnumMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
 
@@ -342,8 +345,39 @@ public abstract class AbstractCommand<T extends AbstractCommand<T>> extends Exec
     }
   }
 
-  public List<String> tabComplete(final ExecutionInfo<CommandSender> info) {
-    return null;
+  public List<Suggestions<CommandSender>> tabComplete(final SuggestionInfo<CommandSender> info) {
+    try {
+      if (!checkPermission(info.source()) || checkRequirements(info.source())) {
+        return List.of();
+      }
+      if (this instanceof final SimpleCommand rootCmd) {
+        return rootCmd.tabCompleteDefault(info);
+      } else {
+        final String subStr = info.args().getRaw(0);
+        final SimpleSubCommand sub = getSubcommand(subStr);
+        if (sub != null) {
+          return sub.tabComplete(info);
+        }
+      }
+
+      for (Argument<?, ?> arg : arguments) {
+        Optional<?> opt = info.args().getByArgumentOptional(arg);
+        if (opt.isPresent()) {
+          return arg.getSuggestions();
+        }
+      }
+      return null;
+    } catch (final CommandException e) {
+      throw e;
+    } catch (final Throwable ex) {
+      Logger.warn(
+          "Unhandled exception executing '" + info.args().getFullInput() + "'");
+      ex.printStackTrace();
+      if (ex instanceof Exception) {
+        throw ex;
+      }
+      return null;
+    }
   }
 
   private boolean _run(final ExecutionInfo<CommandSender> info, final ExecutorType... types)

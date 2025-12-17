@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Supplier;
@@ -73,12 +74,20 @@ public class CommandArguments {
     return argsMap.get(nodeName);
   }
 
-  public Object getOptional(final int index) {
+  public Optional<Object> getOptional(final int index) {
     return Optional.ofNullable(get(index));
   }
 
-  public Object getOptional(final String nodeName) {
+  public Optional<Object> getOptional(final String nodeName) {
     return Optional.ofNullable(get(nodeName));
+  }
+
+  public Object getOrThrow(final int index) {
+    return Objects.requireNonNull(get(index));
+  }
+
+  public Object getOrThrow(final String nodeName) {
+    return Objects.requireNonNull(get(nodeName));
   }
 
   public Object getOrDefault(final int index, final Object defaultValue) {
@@ -121,11 +130,11 @@ public class CommandArguments {
     return v == null ? null : v.raw();
   }
 
-  public Object getRawOptional(final int index) {
+  public Optional<Object> getRawOptional(final int index) {
     return Optional.ofNullable(getRaw(index));
   }
 
-  public Object getRawOptional(final String nodeName) {
+  public Optional<Object> getRawOptional(final String nodeName) {
     return Optional.ofNullable(getRaw(nodeName));
   }
 
@@ -168,11 +177,11 @@ public class CommandArguments {
     return (T) get(nodeName);
   }
 
-  public Object getUncheckedOptional(final int index) {
+  public Optional<Object> getUncheckedOptional(final int index) {
     return Optional.ofNullable(getUnchecked(index));
   }
 
-  public Object getUncheckedOptional(final String nodeName) {
+  public Optional<Object> getUncheckedOptional(final String nodeName) {
     return Optional.ofNullable(getUnchecked(nodeName));
   }
 
