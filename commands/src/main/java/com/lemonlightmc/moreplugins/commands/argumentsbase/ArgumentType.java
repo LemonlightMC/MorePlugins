@@ -24,10 +24,6 @@ public enum ArgumentType {
   CHAT_COMPONENT(), // Not implemented
   CHATCOLOR(),
 
-  COMMAND(),
-
-  CUSTOM, // Not implemented
-
   DIMENSION(), // Not implemented
 
   ENCHANTMENT(),
@@ -39,14 +35,11 @@ public enum ArgumentType {
 
   FUNCTION(),
 
-  ITEMSTACK(), // Not implemented
+  ITEMSTACK(),
   ITEMSTACK_PREDICATE(), // wont implemented
 
   LIST_GREEDY(),
   LIST_TEXT(),
-
-  LITERAL,
-  MULTI_LITERAL,
 
   LOCATION(),
   LOCATION_2D(),
@@ -98,7 +91,13 @@ public enum ArgumentType {
   TIME(),
 
   UUID(),
-  WORLD();
+  WORLD(),
+
+  COMMAND(),
+  CUSTOM, // Not implemented
+  LITERAL,
+  MULTI_LITERAL,
+  BRANCH();
 
   private ArgumentType() {
   }

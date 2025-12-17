@@ -1,9 +1,6 @@
 package com.lemonlightmc.moreplugins.commands.arguments;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Set;
-
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
@@ -11,15 +8,20 @@ import com.lemonlightmc.moreplugins.commands.CommandSource;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.Argument;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.ArgumentType;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.CommandArguments;
-import com.lemonlightmc.moreplugins.commands.argumentsbase.GreedyArgument;
-import com.lemonlightmc.moreplugins.commands.argumentsbase.Literal;
-import com.lemonlightmc.moreplugins.commands.argumentsbase.MultiLiteral;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.StringReader;
-import com.lemonlightmc.moreplugins.commands.argumentsbase.StringType;
-import com.lemonlightmc.moreplugins.commands.exceptions.BadLiteralException;
 import com.lemonlightmc.moreplugins.commands.exceptions.CommandSyntaxException;
 
 public class StringArguments {
+
+  public enum StringType {
+    SINGLE_WORD(),
+    QUOTABLE_PHRASE(),
+    GREEDY_PHRASE();
+
+    StringType() {
+    }
+  }
+
   public static class StringArgument extends Argument<String, StringArgument> {
     private final StringType type;
 
@@ -148,7 +150,7 @@ public class StringArguments {
     }
   }
 
-  public static class GreedyStringArgument extends Argument<String, GreedyStringArgument> implements GreedyArgument {
+  public static class GreedyStringArgument extends Argument<String, GreedyStringArgument> {
 
     public GreedyStringArgument(final String name) {
       super(name, String.class, ArgumentType.PRIMITIVE_GREEDY_STRING);
@@ -183,7 +185,7 @@ public class StringArguments {
     }
   }
 
-  public static class ChatColorArgument extends Argument<ChatColor, ChatColorArgument> implements GreedyArgument {
+  public static class ChatColorArgument extends Argument<ChatColor, ChatColorArgument> {
 
     public ChatColorArgument(final String name) {
       super(name, ChatColor.class, ArgumentType.CHATCOLOR);
@@ -221,7 +223,7 @@ public class StringArguments {
     }
   }
 
-  public static class ChatArgument extends Argument<String, ChatArgument> implements GreedyArgument {
+  public static class ChatArgument extends Argument<String, ChatArgument> {
 
     public ChatArgument(final String name) {
       super(name, String.class, ArgumentType.CHAT);
@@ -256,164 +258,4 @@ public class StringArguments {
     }
   }
 
-  public static class LiteralArgument extends Argument<String, LiteralArgument> implements Literal {
-
-    private final String literal;
-
-    public LiteralArgument(final String literal) {
-      this(literal, literal);
-    }
-
-    public LiteralArgument(final String nodeName, final String literal) {
-      super(nodeName, String.class, ArgumentType.LITERAL);
-
-      if (literal == null) {
-        throw new BadLiteralException(true);
-      }
-      if (literal.isEmpty()) {
-        throw new BadLiteralException(false);
-      }
-      this.literal = literal;
-      this.setListed(false);
-    }
-
-    public static LiteralArgument of(final String literal) {
-      return new LiteralArgument(literal);
-    }
-
-    public static LiteralArgument of(final String nodeName, final String literal) {
-      return new LiteralArgument(nodeName, literal);
-    }
-
-    public static LiteralArgument literal(final String literal) {
-      return new LiteralArgument(literal);
-    }
-
-    public static LiteralArgument literal(final String nodeName, final String literal) {
-      return new LiteralArgument(nodeName, literal);
-    }
-
-    @Override
-    public LiteralArgument getInstance() {
-      return this;
-    }
-
-    @Override
-    public String getLiteral() {
-      return literal;
-    }
-
-    @Override
-    public String getHelpString() {
-      return literal;
-    }
-
-    @Override
-    public String parseArgument(final CommandSource<CommandSender> source, final StringReader reader, final String key,
-        final CommandArguments previousArgs)
-        throws CommandSyntaxException {
-      return literal;
-    }
-
-    @Override
-    public int hashCode() {
-      return 31 * super.hashCode() + literal.hashCode();
-    }
-
-    @Override
-    public boolean equals(final Object obj) {
-      if (this == obj) {
-        return true;
-      }
-      if (!super.equals(obj) || getClass() != obj.getClass()) {
-        return false;
-      }
-      final LiteralArgument other = (LiteralArgument) obj;
-      if (literal == null && other.literal != null) {
-        return false;
-      }
-      return literal.equals(other.literal);
-    }
-
-    @Override
-    public String toString() {
-      return "LiteralArgument [literal=" + literal + "]";
-    }
-  }
-
-  public static class MultiLiteralArgument extends Argument<String, MultiLiteralArgument> implements MultiLiteral {
-
-    private final String[] literals;
-
-    public MultiLiteralArgument(final String nodeName, final Set<String> literals) {
-      this(nodeName, literals.toArray(String[]::new));
-    }
-
-    public MultiLiteralArgument(final String nodeName, final String... literals) {
-      super(nodeName, String.class, ArgumentType.MULTI_LITERAL);
-
-      if (literals == null) {
-        throw new BadLiteralException(true);
-      }
-      if (literals.length == 0) {
-        throw new BadLiteralException(false);
-      }
-      this.literals = literals;
-    }
-
-    public static MultiLiteralArgument of(final String literal) {
-      return new MultiLiteralArgument(literal);
-    }
-
-    public static MultiLiteralArgument of(final String nodeName, final String literal) {
-      return new MultiLiteralArgument(nodeName, literal);
-    }
-
-    public static MultiLiteralArgument literal(final String literal) {
-      return new MultiLiteralArgument(literal);
-    }
-
-    public static MultiLiteralArgument literal(final String nodeName, final String literal) {
-      return new MultiLiteralArgument(nodeName, literal);
-    }
-
-    @Override
-    public MultiLiteralArgument getInstance() {
-      return this;
-    }
-
-    @Override
-    public String[] getLiterals() {
-      return literals;
-    }
-
-    @Override
-    public String parseArgument(final CommandSource<CommandSender> source, final StringReader reader, final String key,
-        final CommandArguments previousArgs)
-        throws CommandSyntaxException {
-      throw new UnsupportedOperationException("Cant parse MultiLiteral");
-    }
-
-    @Override
-    public int hashCode() {
-      return 31 * super.hashCode() + Arrays.hashCode(literals);
-    }
-
-    @Override
-    public boolean equals(final Object obj) {
-      if (this == obj) {
-        return true;
-      }
-      if (!super.equals(obj) || getClass() != obj.getClass()) {
-        return false;
-      }
-      final MultiLiteralArgument other = (MultiLiteralArgument) obj;
-      return Arrays.equals(literals, other.literals);
-    }
-
-    @Override
-    public String toString() {
-      return "MultiLiteralArgument [literals=" + Arrays.toString(literals) + "]";
-    }
-  }
 }

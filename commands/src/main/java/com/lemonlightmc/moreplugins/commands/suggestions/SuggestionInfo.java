@@ -6,8 +6,8 @@ import com.lemonlightmc.moreplugins.commands.CommandSource;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.CommandArguments;
 
 public record SuggestionInfo<S extends CommandSender>(
-                CommandSource<S> source,
-                CommandArguments previousArgs,
-                String currentInput,
-                String currentArg) {
+    CommandSource<S> source,
+    CommandArguments args,
+    String currentInput,
+    String currentArg) {
 }
