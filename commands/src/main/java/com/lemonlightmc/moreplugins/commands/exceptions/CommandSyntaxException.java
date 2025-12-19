@@ -1,6 +1,8 @@
 package com.lemonlightmc.moreplugins.commands.exceptions;
 
 import com.lemonlightmc.moreplugins.commands.argumentsbase.StringReader;
+import com.lemonlightmc.moreplugins.exceptions.DynamicExceptionFunction;
+import com.lemonlightmc.moreplugins.exceptions.DynamicExceptionType;
 import com.lemonlightmc.moreplugins.exceptions.SimpleExceptionType;
 
 public class CommandSyntaxException extends Exception {
@@ -73,4 +75,20 @@ public class CommandSyntaxException extends Exception {
     return builder.toString();
   }
 
+  public static class DynamicCommandException<T extends DynamicExceptionFunction>
+      extends
+      DynamicExceptionType<CommandSyntaxException, T, StringReader> {
+
+    public DynamicCommandException(final T function) {
+      super(CommandSyntaxException.class, function);
+    }
+  }
+
+  public static class SimpleCommandException
+      extends SimpleExceptionType<CommandSyntaxException, StringReader> {
+
+    public SimpleCommandException(final String message) {
+      super(CommandSyntaxException.class, message);
+    }
+  }
 }

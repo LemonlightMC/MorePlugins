@@ -16,8 +16,7 @@ import com.lemonlightmc.moreplugins.commands.argumentsbase.ArgumentType;
 import com.lemonlightmc.moreplugins.commands.suggestions.Suggestions;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.CommandArguments;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.StringReader;
-import com.lemonlightmc.moreplugins.commands.exceptions.CommandExceptions.DynamicCommandException;
-import com.lemonlightmc.moreplugins.commands.exceptions.CommandExceptions.SimpleCommandException;
+import com.lemonlightmc.moreplugins.commands.exceptions.CommandSyntaxException.*;
 import com.lemonlightmc.moreplugins.commands.exceptions.CommandSyntaxException;
 import com.lemonlightmc.moreplugins.exceptions.DynamicExceptionFunction.Dynamic1ExceptionFunktion;
 

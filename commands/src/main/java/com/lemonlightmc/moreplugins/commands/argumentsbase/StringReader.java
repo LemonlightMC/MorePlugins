@@ -1,9 +1,10 @@
 package com.lemonlightmc.moreplugins.commands.argumentsbase;
 
-import java.util.ArrayDeque;
-
-import com.lemonlightmc.moreplugins.commands.exceptions.CommandExceptions;
 import com.lemonlightmc.moreplugins.commands.exceptions.CommandSyntaxException;
+import com.lemonlightmc.moreplugins.commands.exceptions.CommandSyntaxException.*;
+import com.lemonlightmc.moreplugins.exceptions.DynamicExceptionFunction.Dynamic1ExceptionFunktion;
+
+import java.util.ArrayDeque;
 
 public class StringReader {
   private static final char SYNTAX_ESCAPE = '\\';
@@ -13,6 +14,51 @@ public class StringReader {
   private final String string;
   private int cursor = 0;
   private final ArrayDeque<Integer> points = new ArrayDeque<>();
+
+  private static final SimpleCommandException READER_EXPECTED_START_OF_QUOTE = new SimpleCommandException(
+      "Expected quote to start a string");
+
+  private static final SimpleCommandException READER_EXPECTED_END_OF_QUOTE = new SimpleCommandException(
+      "Unclosed quoted string");
+
+  private static final DynamicCommandException<Dynamic1ExceptionFunktion> READER_INVALID_ESCAPE = new DynamicCommandException<Dynamic1ExceptionFunktion>(
+      character -> "Invalid escape sequence '" + character + "' in quoted string");
+
+  private static final DynamicCommandException<Dynamic1ExceptionFunktion> READER_INVALID_BOOL = new DynamicCommandException<Dynamic1ExceptionFunktion>(
+      value -> "Invalid bool, expected true or false but found '" + value + "'");
+
+  private static final DynamicCommandException<Dynamic1ExceptionFunktion> READER_INVALID_INT = new DynamicCommandException<Dynamic1ExceptionFunktion>(
+      value -> "Invalid integer '" + value + "'");
+
+  private static final SimpleCommandException READER_EXPECTED_INT = new SimpleCommandException(
+      "Expected integer");
+
+  private static final DynamicCommandException<Dynamic1ExceptionFunktion> READER_INVALID_LONG = new DynamicCommandException<Dynamic1ExceptionFunktion>(
+      value -> "Invalid long '" + value + "'");
+
+  private static final SimpleCommandException READER_EXPECTED_LONG = new SimpleCommandException(
+      ("Expected long"));
+
+  private static final DynamicCommandException<Dynamic1ExceptionFunktion> READER_INVALID_DOUBLE = new DynamicCommandException<Dynamic1ExceptionFunktion>(
+      value -> "Invalid double '" + value + "'");
+
+  private static final SimpleCommandException READER_EXPECTED_DOUBLE = new SimpleCommandException(
+      "Expected double");
+
+  private static final DynamicCommandException<Dynamic1ExceptionFunktion> READER_INVALID_FLOAT = new DynamicCommandException<Dynamic1ExceptionFunktion>(
+      value -> "Invalid float '" + value + "'");
+
+  private static final SimpleCommandException READER_EXPECTED_FLOAT = new SimpleCommandException(
+      "Expected float");
+
+  private static final SimpleCommandException READER_EXPECTED_BOOL = new SimpleCommandException(
+      "Expected bool");
+
+  private static final SimpleCommandException READER_EXPECTED_RANGE = new SimpleCommandException(
+      "Expected Range");
+
+  private static final DynamicCommandException<Dynamic1ExceptionFunktion> READER_EXPECTED_SYMBOL = new DynamicCommandException<Dynamic1ExceptionFunktion>(
+      symbol -> "Expected '" + symbol + "'");
 
   public StringReader(final StringReader other) {
     if (other == null || other.string == null || other.string.length() == 0) {
@@ -151,7 +197,7 @@ public class StringReader {
 
   public void expect(final char c) throws CommandSyntaxException {
     if (!canRead() || peek() != c) {
-      throw CommandExceptions.readerExpectedSymbol().createWithContext(this,
+      throw READER_EXPECTED_SYMBOL.createWithContext(this,
           String.valueOf(c));
     }
     skip();
@@ -164,13 +210,13 @@ public class StringReader {
     }
     final String number = string.substring(start, cursor);
     if (number.isEmpty()) {
-      throw CommandExceptions.readerExpectedInt().createWithContext(this);
+      throw READER_EXPECTED_INT.createWithContext(this);
     }
     try {
       return Integer.parseInt(number);
     } catch (final NumberFormatException ex) {
       cursor = start;
-      throw CommandExceptions.readerInvalidInt().createWithContext(this, number);
+      throw READER_INVALID_INT.createWithContext(this, number);
     }
   }
 
@@ -181,13 +227,13 @@ public class StringReader {
     }
     final String number = string.substring(getPoint(), cursor);
     if (number.isEmpty()) {
-      throw CommandExceptions.readerExpectedLong().createWithContext(this);
+      throw READER_EXPECTED_LONG.createWithContext(this);
     }
     try {
       return Long.parseLong(number);
     } catch (final NumberFormatException ex) {
       resetCursor();
-      throw CommandExceptions.readerInvalidLong().createWithContext(this, number);
+      throw READER_INVALID_LONG.createWithContext(this, number);
     }
   }
 
@@ -198,13 +244,13 @@ public class StringReader {
     }
     final String number = string.substring(getPoint(), cursor);
     if (number.isEmpty()) {
-      throw CommandExceptions.readerExpectedDouble().createWithContext(this);
+      throw READER_EXPECTED_DOUBLE.createWithContext(this);
     }
     try {
       return Double.parseDouble(number);
     } catch (final NumberFormatException ex) {
       resetCursor();
-      throw CommandExceptions.readerInvalidDouble().createWithContext(this, number);
+      throw READER_INVALID_DOUBLE.createWithContext(this, number);
     }
   }
 
@@ -215,13 +261,13 @@ public class StringReader {
     }
     final String number = string.substring(getPoint(), cursor);
     if (number.isEmpty()) {
-      throw CommandExceptions.readerExpectedFloat().createWithContext(this);
+      throw READER_EXPECTED_FLOAT.createWithContext(this);
     }
     try {
       return Float.parseFloat(number);
     } catch (final NumberFormatException ex) {
       resetCursor();
-      throw CommandExceptions.readerInvalidFloat().createWithContext(this, number);
+      throw READER_INVALID_FLOAT.createWithContext(this, number);
     }
   }
 
@@ -229,7 +275,7 @@ public class StringReader {
     point();
     final String value = readString();
     if (value.isEmpty()) {
-      throw CommandExceptions.readerExpectedBool().createWithContext(this);
+      throw READER_EXPECTED_BOOL.createWithContext(this);
     }
 
     if (value.equals("true")) {
@@ -238,7 +284,7 @@ public class StringReader {
       return false;
     } else {
       resetCursor();
-      throw CommandExceptions.readerInvalidBool().createWithContext(this, value);
+      throw READER_INVALID_BOOL.createWithContext(this, value);
     }
   }
 
@@ -248,7 +294,7 @@ public class StringReader {
     }
     final String number = string.substring(getPoint(), cursor);
     if (number.isEmpty()) {
-      throw CommandExceptions.readerExpectedRange().createWithContext(this);
+      throw READER_EXPECTED_RANGE.createWithContext(this);
     }
     return number;
   }
@@ -267,7 +313,7 @@ public class StringReader {
     }
     final char next = peek();
     if (!isQuote(next)) {
-      throw CommandExceptions.readerExpectedStartOfQuote().createWithContext(this);
+      throw READER_EXPECTED_START_OF_QUOTE.createWithContext(this);
     }
     skip();
     return readStringUntil(next);
@@ -284,7 +330,7 @@ public class StringReader {
           escaped = false;
         } else {
           setCursor(getCursor() - 1);
-          throw CommandExceptions.readerInvalidEscape().createWithContext(this,
+          throw READER_INVALID_ESCAPE.createWithContext(this,
               String.valueOf(c));
         }
       } else if (c == SYNTAX_ESCAPE) {
@@ -296,7 +342,7 @@ public class StringReader {
       }
     }
 
-    throw CommandExceptions.readerExpectedEndOfQuote().createWithContext(this);
+    throw READER_EXPECTED_END_OF_QUOTE.createWithContext(this);
   }
 
   public String readString() throws CommandSyntaxException {

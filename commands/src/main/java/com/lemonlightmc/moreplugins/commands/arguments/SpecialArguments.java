@@ -17,7 +17,7 @@ import com.lemonlightmc.moreplugins.commands.argumentsbase.ArgumentType;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.CommandArguments;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.CommandResult;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.StringReader;
-import com.lemonlightmc.moreplugins.commands.exceptions.CommandExceptions.DynamicCommandException;
+import com.lemonlightmc.moreplugins.commands.exceptions.CommandSyntaxException.*;
 import com.lemonlightmc.moreplugins.commands.exceptions.CommandSyntaxException;
 import com.lemonlightmc.moreplugins.commands.exceptions.InvalidArgumentBranchException;
 import com.lemonlightmc.moreplugins.commands.suggestions.SuggestionInfo;
