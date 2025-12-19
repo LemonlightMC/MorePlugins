@@ -1,5 +1,8 @@
 package com.lemonlightmc.moreplugins.version;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Version implements IVersion {
 
   private final int major;
@@ -7,11 +10,61 @@ public class Version implements IVersion {
   private final int patch;
   private final int build;
 
-  public Version(Version v) {
-    this.major = v.getMajor();
-    this.minor = v.getMinor();
-    this.patch = v.getPatch();
-    this.build = v.getBuild();
+  private VersionModifier modifier;
+
+  public static enum VersionModifier {
+    NON(""),
+    RELEASE("release"),
+    ALPHA("alpha"),
+    BETA("beta"),
+    PATCH("patch"),
+    BUILD("build"),
+    RC("rc");
+
+    private final String name;
+
+    private VersionModifier(final String name) {
+      this.name = name;
+    }
+
+    public String toString() {
+      return name;
+    }
+
+    public static VersionModifier from(final String str) {
+      if (str == null || str.length() == 0) {
+        return null;
+      }
+      return valueOf(str.toUpperCase(java.util.Locale.ENGLISH));
+    }
+  }
+
+  public Version(
+      final int major,
+      final int minor,
+      final int patch,
+      final int build,
+      final VersionModifier modifier) {
+    if (major < 0 || minor < 0 || patch < 0 || build < 0) {
+      throw new IllegalArgumentException("Version numbers cannot be negative");
+    }
+    if (major > Integer.MAX_VALUE ||
+        minor > Integer.MAX_VALUE ||
+        patch > Integer.MAX_VALUE ||
+        build > Integer.MAX_VALUE) {
+      throw new IllegalArgumentException("Version numbers cannot be greater than Integer.MAX_VALUE");
+    }
+    if (major < Integer.MIN_VALUE ||
+        minor < Integer.MIN_VALUE ||
+        patch < Integer.MIN_VALUE ||
+        build < Integer.MIN_VALUE) {
+      throw new IllegalArgumentException("Version numbers cannot be less than Integer.MIN_VALUE");
+    }
+    this.major = major;
+    this.minor = minor;
+    this.patch = patch;
+    this.build = build;
+    this.modifier = modifier;
   }
 
   public Version(
@@ -19,31 +72,23 @@ public class Version implements IVersion {
       final int minor,
       final int patch,
       final int build) {
-    this.major = major;
-    this.minor = minor;
-    this.patch = patch;
-    this.build = build;
+    this(major, minor, patch, build, null);
   }
 
   public Version(final int major, final int minor, final int patch) {
-    this.major = major;
-    this.minor = minor;
-    this.patch = patch;
-    this.build = 0;
+    this(major, minor, patch, 0, null);
   }
 
   public Version(final int major, final int minor) {
-    this.major = major;
-    this.minor = minor;
-    this.patch = 0;
-    this.build = 0;
+    this(major, minor, 0, 0, null);
   }
 
   public Version(final int major) {
-    this.major = major;
-    this.minor = 0;
-    this.patch = 0;
-    this.build = 0;
+    this(major, 0, 0, 0, null);
+  }
+
+  public Version(final Version v) {
+    this(v.major, v.minor, v.patch, v.build, v.modifier);
   }
 
   public Version(final String str) {
@@ -52,14 +97,23 @@ public class Version implements IVersion {
       s = s.substring(1);
     }
     final String[] parts = s.split("[\\\\.|_|-]");
-    if (parts.length < 1 || parts.length > 4) {
+    if (parts.length < 1) {
       throw new IllegalArgumentException("Invalid version string: " + str);
     }
     try {
-      major = parseIntSafe(parts[0]);
-      minor = (parts.length >= 2) ? parseIntSafe(parts[1]) : 0;
-      patch = (parts.length == 3) ? parseIntSafe(parts[2]) : 0;
-      build = (parts.length == 4) ? parseIntSafe(parts[3]) : 0;
+      // parses major, minor, patch, build and modifier
+      final List<Integer> parsedParts = new ArrayList<>(4);
+      for (final String part : parts) {
+        if (VersionModifier.from(parts[0]) != null) {
+          modifier = VersionModifier.from(part);
+        } else {
+          parsedParts.add(parseIntSafe(part));
+        }
+      }
+      major = (parsedParts.size() > 0) ? parsedParts.get(0) : 0;
+      minor = (parsedParts.size() > 1) ? parsedParts.get(1) : 0;
+      patch = (parsedParts.size() > 2) ? parsedParts.get(2) : 0;
+      build = (parsedParts.size() > 3) ? parsedParts.get(3) : 0;
     } catch (final NumberFormatException e) {
       throw new IllegalArgumentException("Invalid version string: " + str, e);
     }
@@ -93,17 +147,8 @@ public class Version implements IVersion {
     return build;
   }
 
-  @Override
-  public String getDisplayName() {
-    return getDisplayName(false);
-  }
-
-  @Override
-  public String getDisplayName(final boolean includeEmpty) {
-    return (major +
-        ((minor == 0 && !includeEmpty) ? "" : "." + minor) +
-        ((patch == 0 && !includeEmpty) ? "" : "." + patch) +
-        ((build == 0 && !includeEmpty) ? "" : "." + build));
+  public VersionModifier getModifier() {
+    return modifier;
   }
 
   @Override
@@ -130,6 +175,11 @@ public class Version implements IVersion {
     return build == version.getBuild();
   }
 
+  public boolean isModifier(final Version version) {
+    checkNotNull(version);
+    return modifier == version.getModifier();
+  }
+
   @Override
   public boolean isSame(final IVersion version) {
     checkNotNull(version);
@@ -137,6 +187,15 @@ public class Version implements IVersion {
         minor == version.getMajor() &&
         patch == version.getPatch() &&
         build == version.getBuild());
+  }
+
+  public boolean isSame(final Version version) {
+    checkNotNull(version);
+    return (major == version.getMajor() &&
+        minor == version.getMajor() &&
+        patch == version.getPatch() &&
+        build == version.getBuild() &&
+        modifier == version.getModifier());
   }
 
   @Override
@@ -185,7 +244,27 @@ public class Version implements IVersion {
   }
 
   @Override
-  public int compareTo(final Version v) {
+  public boolean isDifferent(IVersion version) {
+    checkNotNull(version);
+    return !isSame(version);
+  }
+
+  @Override
+  public boolean isBetween(IVersion minVersion, IVersion maxVersion) {
+    checkNotNull(minVersion);
+    checkNotNull(maxVersion);
+    return isNewerThan(minVersion) && isOlderThan(maxVersion);
+  }
+
+  @Override
+  public boolean isOutside(IVersion minVersion, IVersion maxVersion) {
+    checkNotNull(minVersion);
+    checkNotNull(maxVersion);
+    return isOlderThan(minVersion) || isNewerThan(maxVersion);
+  }
+
+  @Override
+  public int compareTo(final IVersion v) {
     checkNotNull(v);
     if (major > v.getMajor())
       return 1;
@@ -213,43 +292,50 @@ public class Version implements IVersion {
   }
 
   @Override
-  public Object clone() {
-    return new Version(major, minor, patch, build);
-  }
-
-  @Override
-  public boolean equals(final Object o) {
-    if (!(o instanceof IVersion))
-      return false;
-    final IVersion other = (IVersion) o;
-    return (major == other.getMajor() &&
-        minor == other.getMajor() &&
-        patch == other.getPatch() &&
-        build == other.getBuild());
-  }
-
-  @Override
-  public int hashCode() {
-    int result = 31 * 9 + major;
-    result = 31 * result + minor;
-    result = 31 * result + patch;
-    return 31 * result + build;
-  }
-
   public String formatted() {
-    return major + "." + minor + "." + patch + (build != 0 ? "." + build : "");
+    return formatted(false);
+  }
+
+  @Override
+  public String formatted(final boolean includeEmpty) {
+    return (major +
+        ((minor == 0 && !includeEmpty) ? "" : "." + minor) +
+        ((patch == 0 && !includeEmpty) ? "" : "." + patch) +
+        ((build == 0 && !includeEmpty) ? "" : "." + build) +
+        ((modifier == null && !includeEmpty) ? "" : "-" + modifier.toString()));
   }
 
   @Override
   public String toString() {
-    return ("Version(major=" +
-        major +
-        "minor=" +
-        minor +
-        ", patch=" +
-        patch +
-        ", build=" +
-        build +
-        ")");
+    return "Version [major=" + major + ", minor=" + minor + ", patch=" + patch + ", build=" + build + ", modifier="
+        + modifier + "]";
   }
+
+  @Override
+  public Version clone() {
+    return new Version(major, minor, patch, build, modifier);
+  }
+
+  @Override
+  public int hashCode() {
+    int result = 31 + major;
+    result = 31 * result + minor;
+    result = 31 * result + patch;
+    result = 31 * result + build;
+    return 31 * result + ((modifier == null) ? 0 : modifier.hashCode());
+  }
+
+  @Override
+  public boolean equals(final Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null || getClass() != obj.getClass()) {
+      return false;
+    }
+    final Version other = (Version) obj;
+    return major == other.major && minor == other.minor && patch == other.patch && build == other.build
+        && modifier == other.modifier;
+  }
+
 }

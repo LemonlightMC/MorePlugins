@@ -1,6 +1,9 @@
 package com.lemonlightmc.moreplugins.version;
 
-public interface IVersion {
+import com.lemonlightmc.moreplugins.interfaces.Cloneable;
+import com.lemonlightmc.moreplugins.version.Version.VersionModifier;
+
+public interface IVersion extends Comparable<IVersion>, Cloneable<IVersion> {
   public int getMajor();
 
   public int getMinor();
@@ -9,9 +12,7 @@ public interface IVersion {
 
   public int getBuild();
 
-  public String getDisplayName();
-
-  public String getDisplayName(boolean includeEmpty);
+  public VersionModifier getModifier();
 
   public boolean isMajor(IVersion version);
 
@@ -23,19 +24,26 @@ public interface IVersion {
 
   public boolean isSame(IVersion version);
 
+  public boolean isDifferent(IVersion version);
+
   public boolean isNewerThan(IVersion version);
 
   public boolean isOlderThan(IVersion version);
 
   public boolean isAtLeast(IVersion version);
 
-  public int compareTo(Version v);
+  public boolean isBetween(IVersion minVersion, IVersion maxVersion);
 
-  public Object clone();
+  public boolean isOutside(IVersion minVersion, IVersion maxVersion);
+
+  public String formatted();
+
+  public String formatted(boolean includeEmpty);
+
+  public String toString();
 
   public boolean equals(Object o);
 
   public int hashCode();
 
-  public String toString();
 }

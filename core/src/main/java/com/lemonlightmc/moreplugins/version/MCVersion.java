@@ -67,7 +67,12 @@ public class MCVersion extends Version {
   public static final MCVersion v1_21_3 = new MCVersion(21, 3);
   public static final MCVersion v1_21_4 = new MCVersion(21, 4);
   public static final MCVersion v1_21_5 = new MCVersion(21, 5);
-  public static final MCVersion v1_22_0 = new MCVersion(22, 0);
+  public static final MCVersion v1_21_6 = new MCVersion(21, 6);
+  public static final MCVersion v1_21_7 = new MCVersion(21, 7);
+  public static final MCVersion v1_21_8 = new MCVersion(21, 8);
+  public static final MCVersion v1_21_9 = new MCVersion(21, 9);
+  public static final MCVersion v1_21_10 = new MCVersion(21, 10);
+  public static final MCVersion v1_21_11 = new MCVersion(21, 11);
 
   private static final MCVersion currentVersion;
 
@@ -95,21 +100,20 @@ public class MCVersion extends Version {
     super(str);
   }
 
-  @Override
-  public String toString() {
-    return ("MCVersion(minor=" + getMinor() + ", patch=" + getPatch() + ")");
-  }
-
   public static MCVersion getCurrent() {
     return currentVersion;
   }
 
   public static boolean isNew() {
-    return currentVersion.getMajor() >= 13;
+    return currentVersion.getMajor() != 1;
   }
 
   public static boolean isOld() {
-    return currentVersion.getMajor() < 13;
+    return currentVersion.getMinor() >= 13;
+  }
+
+  public static boolean isLegacy() {
+    return currentVersion.getMinor() < 13;
   }
 
   public static boolean isNewerThan(final MCVersion version) {
@@ -132,18 +136,6 @@ public class MCVersion extends Version {
 
   public static boolean isBetween(final MCVersion version1, final MCVersion version2) {
     return isNewerThan(version1) && isOlderThan(version2);
-  }
-
-  public int compareTo(final MCVersion v) {
-    if (currentVersion.getMinor() > v.getMinor())
-      return 1;
-    if (currentVersion.getMinor() < v.getMinor())
-      return -1;
-    if (currentVersion.getPatch() > v.getPatch())
-      return 1;
-    if (currentVersion.getPatch() < v.getPatch())
-      return -1;
-    return 0;
   }
 
   @Deprecated
