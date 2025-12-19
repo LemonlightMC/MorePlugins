@@ -89,7 +89,8 @@ public class InternalExecutor extends Command {
     try {
       final CommandSource<CommandSender> source = Utils.toSource(sender);
       final CommandArguments cmdArgs = parse(source, args);
-      final SuggestionInfo<CommandSender> info = new SuggestionInfo<CommandSender>(source, cmdArgs, null, null);
+      final SuggestionInfo<CommandSender> info = new SuggestionInfo<CommandSender>(source, cmdArgs,
+          cmdArgs.getLastRaw());
 
       final List<Suggestions<CommandSender>> temp = cmd.tabComplete(info);
       if (temp != null) {

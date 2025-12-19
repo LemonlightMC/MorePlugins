@@ -152,31 +152,31 @@ public class CommandArguments {
     return v == null ? null : v.raw();
   }
 
-  public Object getLastRaw() {
+  public String getLastRaw() {
     return args.length == 0 ? null : getRaw(args.length - 1);
   }
 
-  public Object getRawOrThrow(final int index) {
+  public String getRawOrThrow(final int index) {
     return Objects.requireNonNull(getRaw(index));
   }
 
-  public Object getRawOrThrow(final String nodeName) {
+  public String getRawOrThrow(final String nodeName) {
     return Objects.requireNonNull(getRaw(nodeName));
   }
 
-  public Object getRawLastOrThrow() {
+  public String getRawLastOrThrow() {
     return Objects.requireNonNull(getLastRaw());
   }
 
-  public Optional<Object> getRawOptional(final int index) {
+  public Optional<String> getRawOptional(final int index) {
     return Optional.ofNullable(getRaw(index));
   }
 
-  public Optional<Object> getRawOptional(final String nodeName) {
+  public Optional<String> getRawOptional(final String nodeName) {
     return Optional.ofNullable(getRaw(nodeName));
   }
 
-  public Optional<Object> getRawLastOptional() {
+  public Optional<String> getRawLastOptional() {
     return Optional.ofNullable(getLastRaw());
   }
 
@@ -208,13 +208,13 @@ public class CommandArguments {
     return v == null ? defaultValue.get() : v.raw();
   }
 
-  public Object getRawLastOrDefault(final Object defaultValue) {
-    final Object obj = getLastRaw();
+  public String getRawLastOrDefault(final String defaultValue) {
+    final String obj = getLastRaw();
     return obj == null ? defaultValue : obj;
   }
 
-  public Object getRawLastOrDefault(final Supplier<?> defaultValue) {
-    final Object obj = getLastRaw();
+  public String getRawLastOrDefault(final Supplier<String> defaultValue) {
+    final String obj = getLastRaw();
     return obj == null ? defaultValue.get() : obj;
   }
 

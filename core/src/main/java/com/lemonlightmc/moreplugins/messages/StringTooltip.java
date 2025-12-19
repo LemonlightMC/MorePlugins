@@ -5,12 +5,16 @@ import java.util.Collection;
 import java.util.function.Function;
 
 import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.api.chat.hover.content.Text;
 
 public record StringTooltip(String message, String tooltip) {
 
   public String resolve() {
-    return message;
+    TextComponent component = new TextComponent(message);
+    component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(tooltip)));
+    return component.toLegacyText();
   }
 
   public static StringTooltip none(final String suggestion) {
