@@ -74,6 +74,10 @@ public class CommandArguments {
     return argsMap.get(nodeName);
   }
 
+  public Object getLast() {
+    return args.length == 0 ? null : get(args.length - 1);
+  }
+
   public Optional<Object> getOptional(final int index) {
     return Optional.ofNullable(get(index));
   }
@@ -82,12 +86,20 @@ public class CommandArguments {
     return Optional.ofNullable(get(nodeName));
   }
 
+  public Optional<Object> getLastOptional() {
+    return Optional.ofNullable(getLast());
+  }
+
   public Object getOrThrow(final int index) {
     return Objects.requireNonNull(get(index));
   }
 
   public Object getOrThrow(final String nodeName) {
     return Objects.requireNonNull(get(nodeName));
+  }
+
+  public Object getLastOrThrow() {
+    return Objects.requireNonNull(getLast());
   }
 
   public Object getOrDefault(final int index, final Object defaultValue) {
@@ -116,6 +128,16 @@ public class CommandArguments {
     return v == null ? defaultValue.get() : v.value();
   }
 
+  public Object getLastOrDefault(final Object defaultValue) {
+    final Object obj = getLast();
+    return obj == null ? defaultValue : obj;
+  }
+
+  public Object getLastOrDefault(final Supplier<?> defaultValue) {
+    final Object obj = getLast();
+    return obj == null ? defaultValue.get() : obj;
+  }
+
   // raw
   public String getRaw(final int index) {
     if (args.length <= index) {
@@ -130,12 +152,32 @@ public class CommandArguments {
     return v == null ? null : v.raw();
   }
 
+  public Object getLastRaw() {
+    return args.length == 0 ? null : getRaw(args.length - 1);
+  }
+
+  public Object getRawOrThrow(final int index) {
+    return Objects.requireNonNull(getRaw(index));
+  }
+
+  public Object getRawOrThrow(final String nodeName) {
+    return Objects.requireNonNull(getRaw(nodeName));
+  }
+
+  public Object getRawLastOrThrow() {
+    return Objects.requireNonNull(getLastRaw());
+  }
+
   public Optional<Object> getRawOptional(final int index) {
     return Optional.ofNullable(getRaw(index));
   }
 
   public Optional<Object> getRawOptional(final String nodeName) {
     return Optional.ofNullable(getRaw(nodeName));
+  }
+
+  public Optional<Object> getRawLastOptional() {
+    return Optional.ofNullable(getLastRaw());
   }
 
   public String getOrDefaultRaw(final int index, final String defaultValue) {
@@ -166,6 +208,16 @@ public class CommandArguments {
     return v == null ? defaultValue.get() : v.raw();
   }
 
+  public Object getRawLastOrDefault(final Object defaultValue) {
+    final Object obj = getLastRaw();
+    return obj == null ? defaultValue : obj;
+  }
+
+  public Object getRawLastOrDefault(final Supplier<?> defaultValue) {
+    final Object obj = getLastRaw();
+    return obj == null ? defaultValue.get() : obj;
+  }
+
   // unchecked
   @SuppressWarnings("unchecked")
   public <T> T getUnchecked(final int index) {
@@ -177,34 +229,65 @@ public class CommandArguments {
     return (T) get(nodeName);
   }
 
-  public Optional<Object> getUncheckedOptional(final int index) {
+  @SuppressWarnings("unchecked")
+  public <T> T getUncheckedLast() {
+    return args.length == 0 ? null : (T) get(args.length - 1);
+  }
+
+  public <T> T getUncheckedLastOrThrow() {
+    return Objects.requireNonNull(getUncheckedLast());
+  }
+
+  public <T> T getUncheckedOrThrow(final int index) {
+    return Objects.requireNonNull(getUnchecked(index));
+  }
+
+  public <T> T getUncheckedOrThrow(final String nodeName) {
+    return Objects.requireNonNull(getUnchecked(nodeName));
+  }
+
+  public <T> Optional<T> getUncheckedOptional(final int index) {
     return Optional.ofNullable(getUnchecked(index));
   }
 
-  public Optional<Object> getUncheckedOptional(final String nodeName) {
+  public <T> Optional<T> getUncheckedOptional(final String nodeName) {
     return Optional.ofNullable(getUnchecked(nodeName));
   }
 
+  public <T> Optional<T> getUncheckedLastOptional() {
+    return Optional.ofNullable(getUncheckedLast());
+  }
+
   @SuppressWarnings("unchecked")
-  public <T> T getOrDefaultUnchecked(final int index, final T defaultValue) {
+  public <T> T getUncheckedOrDefault(final int index, final T defaultValue) {
     return (T) getOrDefault(index, defaultValue);
   }
 
   @SuppressWarnings("unchecked")
-  public <T> T getOrDefaultUnchecked(final String nodeName, final T defaultValue) {
+  public <T> T getUncheckedOrDefault(final String nodeName, final T defaultValue) {
     return (T) getOrDefault(nodeName, defaultValue);
   }
 
   @SuppressWarnings("unchecked")
-  public <T> T getOrDefaultUnchecked(final int index, final Supplier<T> defaultValue) {
+  public <T> T getUncheckedOrDefault(final int index, final Supplier<T> defaultValue) {
     return (T) getOrDefault(index, defaultValue);
   }
 
   @SuppressWarnings("unchecked")
-  public <T> T getOrDefaultUnchecked(
+  public <T> T getUncheckedOrDefault(
       final String nodeName,
       final Supplier<T> defaultValue) {
     return (T) getOrDefault(nodeName, defaultValue);
+  }
+
+  public <T> T getUncheckedLastOrDefault(final T defaultValue) {
+    final T obj = getUncheckedLast();
+    return obj == null ? defaultValue : obj;
+  }
+
+  public <T> T getUncheckedLastOrDefault(final Supplier<T> defaultValue) {
+    final T obj = getUncheckedLast();
+    return obj == null ? defaultValue.get() : obj;
   }
 
   // byArgument
@@ -240,6 +323,14 @@ public class CommandArguments {
 
   public <T> Optional<T> getByClassOptional(final int index, final Class<T> argumentType) {
     return Optional.ofNullable(getByClass(index, argumentType));
+  }
+
+  public <T> T getByClassOrThrow(final String nodeName, final Class<T> argumentType) {
+    return Objects.requireNonNull(getByClass(nodeName, argumentType));
+  }
+
+  public <T> T getByClassOrThrow(final int index, final Class<T> argumentType) {
+    return Objects.requireNonNull(getByClass(index, argumentType));
   }
 
   public <T> T getByClassOrDefault(
