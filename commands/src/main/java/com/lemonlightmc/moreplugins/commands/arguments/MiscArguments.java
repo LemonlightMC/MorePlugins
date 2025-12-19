@@ -10,6 +10,7 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.Registry;
 import org.bukkit.Sound;
 import org.bukkit.World;
+import org.bukkit.World.Environment;
 import org.bukkit.advancement.Advancement;
 import org.bukkit.block.Biome;
 import org.bukkit.block.BlockState;
@@ -28,7 +29,7 @@ import com.lemonlightmc.moreplugins.commands.argumentsbase.ArgumentType;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.CommandArguments;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.ParticleData;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.StringReader;
-import com.lemonlightmc.moreplugins.commands.exceptions.CommandExceptions.DynamicCommandException;
+import com.lemonlightmc.moreplugins.commands.exceptions.CommandSyntaxException.*;
 import com.lemonlightmc.moreplugins.commands.exceptions.CommandSyntaxException;
 import com.lemonlightmc.moreplugins.exceptions.DynamicExceptionFunction.Dynamic1ExceptionFunktion;
 import com.lemonlightmc.moreplugins.time.DurationParser;
@@ -624,6 +625,49 @@ public class MiscArguments {
     @Override
     public String toString() {
       return "LootTableArgument []";
+    }
+  }
+
+  public static class EnvironmentArgument extends Argument<Environment, EnvironmentArgument> {
+
+    public static final String[] NAMES = Utils.mapRegistry(Environment.values());
+
+    private static final DynamicCommandException<Dynamic1ExceptionFunktion> INVALID_LOOTTABLE = new DynamicCommandException<Dynamic1ExceptionFunktion>(
+        value -> "Invalid Environment '" + value + "'");
+
+    public EnvironmentArgument(final String name) {
+      super(name, Environment.class, ArgumentType.ENVIRONMENT);
+      withSuggestions(NAMES);
+    }
+
+    public EnvironmentArgument getInstance() {
+      return this;
+    }
+
+    @Override
+    public Environment parseArgument(final CommandSource<CommandSender> source, final StringReader reader,
+        final String key,
+        final CommandArguments previousArgs)
+        throws CommandSyntaxException {
+      final int start = reader.getCursor();
+      String value = null;
+      try {
+        value = reader.readString();
+        return Objects.requireNonNull(Environment.valueOf(Objects.requireNonNull(value)));
+      } catch (final Exception e) {
+        reader.setCursor(start);
+        throw INVALID_LOOTTABLE.createWithContext(reader, value);
+      }
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+      return this == obj && getClass() == obj.getClass() && super.equals(obj);
+    }
+
+    @Override
+    public String toString() {
+      return "EnvironmentArgument []";
     }
   }
 }

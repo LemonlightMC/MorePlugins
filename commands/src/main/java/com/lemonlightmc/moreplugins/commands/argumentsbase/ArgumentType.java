@@ -13,8 +13,6 @@ public enum ArgumentType {
 
   AXIS(),
 
-  BIOME(),
-
   BLOCK_PREDICATE(), // wont implemented
   BLOCKSTATE(),
   BLOCKDATA(),
@@ -24,42 +22,19 @@ public enum ArgumentType {
   CHAT_COMPONENT(), // Not implemented
   CHATCOLOR(),
 
-  DIMENSION(), // Not implemented
-
-  ENCHANTMENT(),
-
   ENTITY_SELECTOR(),
   ENTITY_TYPE(),
-
-  ENVIRONMENT(), // Not implemented
-
-  FUNCTION(),
 
   ITEMSTACK(),
   ITEMSTACK_PREDICATE(), // wont implemented
 
-  LIST_GREEDY(),
-  LIST_TEXT(),
-
-  LOCATION(),
-  LOCATION_2D(),
-
-  LOOT_TABLE(),
-
-  MAP(),
-
-  MATH_OPERATION(),
-
   NAMESPACED_KEY(),
-
-  PARTICLE(), // unfinished implemented
+  UUID(),
 
   PLAYER(),
   PLAYERPROFILE(),
   OFFLINE_PLAYER(),
   ASYNC_OFFLINE_PLAYER(), // wont implemented
-
-  POTION_EFFECT(),
 
   PRIMITIVE_BOOLEAN(),
   PRIMITIVE_DOUBLE(),
@@ -75,23 +50,34 @@ public enum ArgumentType {
   RANGE_FLOAT(),
   RANGE_DOUBLE(),
 
-  RECIPE(),
-
+  LIST_GREEDY(),
+  LIST_TEXT(),
+  FUNCTION(),
+  MAP(),
   NBT_COMPOUND(), // wont implemented
 
+  MATH_OPERATION(),
   OBJECTIVE(),
   CRITERIA(),
   SCORE_HOLDER(), // wont implemented
   SCOREBOARD_SLOT(),
 
   SOUND(),
+  PARTICLE(), // unfinished implemented
+  ENCHANTMENT(),
+  LOOT_TABLE(),
+  RECIPE(),
+  POTION_EFFECT(),
 
   TEAM(),
 
+  LOCATION(),
+  LOCATION_2D(),
   TIME(),
-
-  UUID(),
+  BIOME(),
   WORLD(),
+  ENVIRONMENT(),
+  DIMENSION(), // wont implemented
 
   COMMAND(),
   CUSTOM, // Not implemented
