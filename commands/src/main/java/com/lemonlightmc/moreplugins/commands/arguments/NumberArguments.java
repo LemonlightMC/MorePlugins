@@ -13,21 +13,20 @@ import com.lemonlightmc.moreplugins.commands.argumentsbase.ArgumentType;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.CommandArguments;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.LocationType;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.StringReader;
-import com.lemonlightmc.moreplugins.commands.exceptions.CommandSyntaxException.*;
 import com.lemonlightmc.moreplugins.commands.exceptions.CommandSyntaxException;
-import com.lemonlightmc.moreplugins.exceptions.DynamicExceptionFunction.Dynamic1ExceptionFunktion;
+import com.lemonlightmc.moreplugins.commands.exceptions.CommandSyntaxException.CommandSyntaxExceptionContainer;
 import com.lemonlightmc.moreplugins.math.Location2D;
 import com.lemonlightmc.moreplugins.math.Rotation;
 import com.lemonlightmc.moreplugins.math.ranges.*;
 
 public class NumberArguments {
-  private static final DynamicCommandException<Dynamic1ExceptionFunktion> INVALID_VALUE = new DynamicCommandException<Dynamic1ExceptionFunktion>(
+  private static final CommandSyntaxExceptionContainer INVALID_VALUE = new CommandSyntaxExceptionContainer(
       value -> "Invalid Value '" + value + "'");
-  private static final DynamicCommandException<Dynamic1ExceptionFunktion> INVALID_RANGE = new DynamicCommandException<Dynamic1ExceptionFunktion>(
+  private static final CommandSyntaxExceptionContainer INVALID_RANGE = new CommandSyntaxExceptionContainer(
       value -> "Invalid Range '" + value + "'");
-  private static final DynamicCommandException<Dynamic1ExceptionFunktion> VALUE_TOO_LOW = new DynamicCommandException<Dynamic1ExceptionFunktion>(
+  private static final CommandSyntaxExceptionContainer VALUE_TOO_LOW = new CommandSyntaxExceptionContainer(
       value -> "Value '" + value + "' is too low ");
-  private static final DynamicCommandException<Dynamic1ExceptionFunktion> VALUE_TOO_HIGH = new DynamicCommandException<Dynamic1ExceptionFunktion>(
+  private static final CommandSyntaxExceptionContainer VALUE_TOO_HIGH = new CommandSyntaxExceptionContainer(
       value -> "Value '" + value + "' is too high ");
 
   public static class BoolArgument extends Argument<Boolean, BoolArgument> {
@@ -55,11 +54,6 @@ public class NumberArguments {
         reader.resetCursor();
         throw e;
       }
-    }
-
-    @Override
-    public String toString() {
-      return "BoolArgument []";
     }
   }
 
@@ -123,7 +117,7 @@ public class NumberArguments {
 
     @Override
     public String toString() {
-      return "IntegerArgument (" + range.toString() + ")";
+      return toStringWithMore("range=" + range.toString());
     }
   }
 
@@ -187,7 +181,7 @@ public class NumberArguments {
 
     @Override
     public String toString() {
-      return "LongArgument (" + range.toString() + ")";
+      return toStringWithMore("range=" + range.toString());
     }
   }
 
@@ -251,7 +245,7 @@ public class NumberArguments {
 
     @Override
     public String toString() {
-      return "FloatArgument (" + range.toString() + ")";
+      return toStringWithMore("range=" + range.toString());
     }
   }
 
@@ -315,7 +309,7 @@ public class NumberArguments {
 
     @Override
     public String toString() {
-      return "DoubleArgument (" + range.toString() + ")";
+      return toStringWithMore("range=" + range.toString());
     }
   }
 
@@ -346,11 +340,6 @@ public class NumberArguments {
         throw INVALID_RANGE.createWithContext(reader, value);
       }
     }
-
-    @Override
-    public String toString() {
-      return "IntegerRangeArgument []";
-    }
   }
 
   public static class LongRangeArgument extends Argument<LongRange, LongRangeArgument> {
@@ -379,11 +368,6 @@ public class NumberArguments {
         reader.resetCursor();
         throw INVALID_RANGE.createWithContext(reader, value);
       }
-    }
-
-    @Override
-    public String toString() {
-      return "LongRangeArgument []";
     }
   }
 
@@ -414,11 +398,6 @@ public class NumberArguments {
         throw INVALID_RANGE.createWithContext(reader, value);
       }
     }
-
-    @Override
-    public String toString() {
-      return "FloatRangeArgument []";
-    }
   }
 
   public static class DoubleRangeArgument extends Argument<DoubleRange, DoubleRangeArgument> {
@@ -448,19 +427,14 @@ public class NumberArguments {
         throw INVALID_RANGE.createWithContext(reader, value);
       }
     }
-
-    @Override
-    public String toString() {
-      return "DoubleRangeArgument []";
-    }
   }
 
   public static class LocationArgument extends Argument<Location, LocationArgument> {
 
     public static final int MAX_COORDINATE = 30_000_000;
-    private static final DynamicCommandException<Dynamic1ExceptionFunktion> INVALID_LOCATION = new DynamicCommandException<Dynamic1ExceptionFunktion>(
+    private static final CommandSyntaxExceptionContainer INVALID_LOCATION = new CommandSyntaxExceptionContainer(
         value -> "Invalid Location '" + value + "'");
-    private static final DynamicCommandException<Dynamic1ExceptionFunktion> OUTOFBOUNDS_LOCATION = new DynamicCommandException<Dynamic1ExceptionFunktion>(
+    private static final CommandSyntaxExceptionContainer OUTOFBOUNDS_LOCATION = new CommandSyntaxExceptionContainer(
         value -> "Location is out of bounds'" + value + "' (max " + MAX_COORDINATE + ")");
 
     private final LocationType type;
@@ -548,16 +522,16 @@ public class NumberArguments {
 
     @Override
     public String toString() {
-      return "LocationArgument [type=" + type + ", centered=" + centered + "]";
+      return toStringWithMore("type=" + type + ", centered=" + centered);
     }
   }
 
   public static class Location2DArgument extends Argument<Location2D, Location2DArgument> {
 
     public static final int MAX_COORDINATE = 30_000_000;
-    private static final DynamicCommandException<Dynamic1ExceptionFunktion> INVALID_LOCATION = new DynamicCommandException<Dynamic1ExceptionFunktion>(
+    private static final CommandSyntaxExceptionContainer INVALID_LOCATION = new CommandSyntaxExceptionContainer(
         value -> "Invalid Location '" + value + "'");
-    private static final DynamicCommandException<Dynamic1ExceptionFunktion> OUTOFBOUNDS_LOCATION = new DynamicCommandException<Dynamic1ExceptionFunktion>(
+    private static final CommandSyntaxExceptionContainer OUTOFBOUNDS_LOCATION = new CommandSyntaxExceptionContainer(
         value -> "Location is out of bounds'" + value + "' (max " + MAX_COORDINATE + ")");
     private final LocationType type;
     private final boolean centered;
@@ -638,12 +612,12 @@ public class NumberArguments {
 
     @Override
     public String toString() {
-      return "Location2DArgument [type=" + type + ", centered=" + centered + "]";
+      return toStringWithMore("type=" + type + ", centered=" + centered);
     }
   }
 
   public static class AxisArgument extends Argument<Axis, AxisArgument> {
-    private static final DynamicCommandException<Dynamic1ExceptionFunktion> INVALID_AXIS = new DynamicCommandException<Dynamic1ExceptionFunktion>(
+    private static final CommandSyntaxExceptionContainer INVALID_AXIS = new CommandSyntaxExceptionContainer(
         value -> "Invalid Axis '" + value + "'");
 
     public AxisArgument(final String name) {
@@ -672,16 +646,11 @@ public class NumberArguments {
         throw INVALID_AXIS.createWithContext(reader, value);
       }
     }
-
-    @Override
-    public String toString() {
-      return "AxisArgument []";
-    }
   }
 
   @SuppressWarnings("rawtypes")
   public static class MultiAxisArgument extends Argument<EnumSet, MultiAxisArgument> {
-    private static final DynamicCommandException<Dynamic1ExceptionFunktion> INVALID_AXIS = new DynamicCommandException<Dynamic1ExceptionFunktion>(
+    private static final CommandSyntaxExceptionContainer INVALID_AXIS = new CommandSyntaxExceptionContainer(
         value -> "Invalid Axis '" + value + "'");
 
     public MultiAxisArgument(final String name) {
@@ -715,15 +684,10 @@ public class NumberArguments {
       }
 
     }
-
-    @Override
-    public String toString() {
-      return "MultiAxisArgument []";
-    }
   }
 
   public static class RotationArgument extends Argument<Rotation, RotationArgument> {
-    private static final DynamicCommandException<Dynamic1ExceptionFunktion> INVALID_ROTATION = new DynamicCommandException<Dynamic1ExceptionFunktion>(
+    private static final CommandSyntaxExceptionContainer INVALID_ROTATION = new CommandSyntaxExceptionContainer(
         value -> "Invalid Rotation '" + value + "'");
 
     public RotationArgument(final String name) {
@@ -753,11 +717,6 @@ public class NumberArguments {
         reader.resetCursor();
         throw INVALID_ROTATION.createWithContext(reader, yaw + "," + pitch);
       }
-    }
-
-    @Override
-    public String toString() {
-      return "RotationArgument []";
     }
   }
 

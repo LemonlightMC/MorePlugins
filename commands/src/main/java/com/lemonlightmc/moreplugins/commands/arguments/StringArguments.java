@@ -110,7 +110,7 @@ public class StringArguments {
 
     @Override
     public String toString() {
-      return "StringArgument [type=" + type + "]";
+      return toStringWithMore("type=" + type);
     }
   }
 
@@ -129,11 +129,6 @@ public class StringArguments {
         final CommandArguments previousArgs)
         throws CommandSyntaxException {
       return reader.readString();
-    }
-
-    @Override
-    public String toString() {
-      return "TextArgument []";
     }
   }
 
@@ -154,11 +149,6 @@ public class StringArguments {
       final String text = reader.getRemaining();
       reader.setCursor(reader.getTotalLength());
       return text;
-    }
-
-    @Override
-    public String toString() {
-      return "GreedyStringArgument []";
     }
   }
 
@@ -183,11 +173,6 @@ public class StringArguments {
         throws CommandSyntaxException {
       return ChatColor.valueOf(reader.readUnquotedString());
     }
-
-    @Override
-    public String toString() {
-      return "ChatColorArgument []";
-    }
   }
 
   public static class ChatArgument extends Argument<String, ChatArgument> {
@@ -207,11 +192,6 @@ public class StringArguments {
       final String text = reader.getRemaining();
       reader.setCursor(reader.getTotalLength());
       return text;
-    }
-
-    @Override
-    public String toString() {
-      return "ChatArgument []";
     }
   }
 

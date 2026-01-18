@@ -17,11 +17,10 @@ import com.lemonlightmc.moreplugins.commands.argumentsbase.ArgumentType;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.CommandArguments;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.CommandResult;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.StringReader;
-import com.lemonlightmc.moreplugins.commands.exceptions.CommandSyntaxException.*;
-import com.lemonlightmc.moreplugins.commands.exceptions.CommandSyntaxException;
 import com.lemonlightmc.moreplugins.commands.exceptions.InvalidArgumentBranchException;
 import com.lemonlightmc.moreplugins.commands.suggestions.SuggestionInfo;
-import com.lemonlightmc.moreplugins.exceptions.DynamicExceptionFunction.Dynamic1ExceptionFunktion;
+import com.lemonlightmc.moreplugins.commands.exceptions.CommandSyntaxException;
+import com.lemonlightmc.moreplugins.commands.exceptions.CommandSyntaxException.CommandSyntaxExceptionContainer;
 
 public class SpecialArguments {
 
@@ -129,12 +128,12 @@ public class SpecialArguments {
 
     @Override
     public String toString() {
-      return "BranchArgument [branches=" + branches + "]";
+      return toStringWithMore("branches=" + branches);
     }
   }
 
   public static class CommandArgument extends Argument<CommandResult, CommandArgument> {
-    private static final DynamicCommandException<Dynamic1ExceptionFunktion> INVALID_COMMAND = new DynamicCommandException<Dynamic1ExceptionFunktion>(
+    private static final CommandSyntaxExceptionContainer INVALID_COMMAND = new CommandSyntaxExceptionContainer(
         value -> "Invalid Command '" + value);
 
     public CommandArgument(final String name) {
@@ -176,11 +175,6 @@ public class SpecialArguments {
         reader.resetCursor();
         throw e;
       }
-    }
-
-    @Override
-    public String toString() {
-      return "CommandArgument []";
     }
   }
 
@@ -251,7 +245,7 @@ public class SpecialArguments {
 
     @Override
     public String toString() {
-      return "LiteralArgument [literal=" + literal + "]";
+      return toStringWithMore("literal=" + literal);
     }
   }
 
@@ -322,7 +316,7 @@ public class SpecialArguments {
 
     @Override
     public String toString() {
-      return "MultiLiteralArgument [literals=" + Arrays.toString(literals) + "]";
+      return toStringWithMore("literals=" + Arrays.toString(literals));
     }
   }
 
@@ -377,8 +371,7 @@ public class SpecialArguments {
 
     @Override
     public String toString() {
-      return "DynamicMultiLiteralArgument [literals=" + literals + "]";
+      return toStringWithMore("literals=" + literals);
     }
-
   }
 }

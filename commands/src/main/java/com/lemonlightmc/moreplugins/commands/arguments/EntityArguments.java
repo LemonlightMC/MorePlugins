@@ -10,15 +10,14 @@ import com.lemonlightmc.moreplugins.commands.argumentsbase.Argument;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.ArgumentType;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.CommandArguments;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.StringReader;
-import com.lemonlightmc.moreplugins.commands.exceptions.CommandSyntaxException.*;
 import com.lemonlightmc.moreplugins.commands.suggestions.Suggestions;
 import com.lemonlightmc.moreplugins.commands.exceptions.CommandSyntaxException;
-import com.lemonlightmc.moreplugins.exceptions.DynamicExceptionFunction.Dynamic1ExceptionFunktion;
+import com.lemonlightmc.moreplugins.commands.exceptions.CommandSyntaxException.CommandSyntaxExceptionContainer;
 
 public class EntityArguments {
   public static class PlayerArgument extends Argument<Player, PlayerArgument> {
-    private static final DynamicCommandException<Dynamic1ExceptionFunktion> INVALID_PLAYER = new DynamicCommandException<Dynamic1ExceptionFunktion>(
-        value -> "Invalid Player '" + value + "'");
+    private static final CommandSyntaxExceptionContainer INVALID_PLAYER = new CommandSyntaxExceptionContainer(
+        (value) -> "Invalid Player '" + value + "'");
 
     public PlayerArgument(final String name) {
       super(name, Player.class, ArgumentType.PLAYER);
@@ -44,15 +43,10 @@ public class EntityArguments {
         throw INVALID_PLAYER.createWithContext(reader, value);
       }
     }
-
-    @Override
-    public String toString() {
-      return "PlayerArgument []";
-    }
   }
 
   public static class PlayerProfileArgument extends Argument<PlayerProfile, PlayerProfileArgument> {
-    private static final DynamicCommandException<Dynamic1ExceptionFunktion> INVALID_PLAYER = new DynamicCommandException<Dynamic1ExceptionFunktion>(
+    private static final CommandSyntaxExceptionContainer INVALID_PLAYER = new CommandSyntaxExceptionContainer(
         value -> "Invalid Player '" + value + "'");
 
     public PlayerProfileArgument(final String name) {
@@ -77,11 +71,6 @@ public class EntityArguments {
         reader.resetCursor();
         throw INVALID_PLAYER.createWithContext(reader, value);
       }
-    }
-
-    @Override
-    public String toString() {
-      return "PlayerProfileArgument []";
     }
   }
 

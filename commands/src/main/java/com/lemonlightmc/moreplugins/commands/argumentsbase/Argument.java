@@ -178,9 +178,17 @@ public abstract class Argument<Type, ArgType> {
 
   @Override
   public String toString() {
-    return "Argument [name=" + name + ", rawType=" + rawType + ", primitiveType=" + primitiveType + ", isOptional="
+    return getInstance().getClass().getName() + " [name=" + name + ", rawType=" + rawType + ", primitiveType="
+        + primitiveType + ", isOptional="
         + isOptional + ", isListed=" + isListed + ", permission=" + permission + ", requirements=" + requirements
         + ", suggestions=" + suggestions + "]";
+  }
+
+  public String toStringWithMore(final String str) {
+    return getInstance().getClass().getName() + " [name=" + name + ", rawType=" + rawType + ", primitiveType="
+        + primitiveType + ", isOptional="
+        + isOptional + ", isListed=" + isListed + ", permission=" + permission + ", requirements=" + requirements
+        + ", suggestions=" + suggestions + ", " + str + "]";
   }
 
 }

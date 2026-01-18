@@ -19,9 +19,8 @@ import com.lemonlightmc.moreplugins.commands.argumentsbase.ArgumentType;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.CommandArguments;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.LookAnchor;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.StringReader;
-import com.lemonlightmc.moreplugins.commands.exceptions.CommandSyntaxException.*;
 import com.lemonlightmc.moreplugins.commands.exceptions.CommandSyntaxException;
-import com.lemonlightmc.moreplugins.exceptions.DynamicExceptionFunction.Dynamic1ExceptionFunktion;
+import com.lemonlightmc.moreplugins.commands.exceptions.CommandSyntaxException.CommandSyntaxExceptionContainer;
 import com.lemonlightmc.moreplugins.math.MathOperation;
 import com.lemonlightmc.moreplugins.time.DurationParser;
 
@@ -32,7 +31,7 @@ public class MiscArguments {
     public static final String[] NAMES = Bukkit.getWorlds().stream().map((final World w) -> {
       return w == null ? null : w.getName();
     }).toArray(String[]::new);
-    private static final DynamicCommandException<Dynamic1ExceptionFunktion> INVALID_WORLD = new DynamicCommandException<Dynamic1ExceptionFunktion>(
+    private static final CommandSyntaxExceptionContainer INVALID_WORLD = new CommandSyntaxExceptionContainer(
         value -> "Invalid World '" + value + "'");
 
     public WorldArgument(final String name) {
@@ -58,15 +57,10 @@ public class MiscArguments {
         throw INVALID_WORLD.createWithContext(reader, value);
       }
     }
-
-    @Override
-    public String toString() {
-      return "WorldArgument []";
-    }
   }
 
   public static class TimeArgument extends Argument<Duration, TimeArgument> {
-    private static final DynamicCommandException<Dynamic1ExceptionFunktion> INVALID_TIME = new DynamicCommandException<Dynamic1ExceptionFunktion>(
+    private static final CommandSyntaxExceptionContainer INVALID_TIME = new CommandSyntaxExceptionContainer(
         value -> "Invalid Time '" + value + "'");
 
     public TimeArgument(final String name) {
@@ -92,15 +86,10 @@ public class MiscArguments {
         throw INVALID_TIME.createWithContext(reader, value);
       }
     }
-
-    @Override
-    public String toString() {
-      return "TimeArgument []";
-    }
   }
 
   public static class NamespacedKeyArgument extends Argument<NamespacedKey, NamespacedKeyArgument> {
-    private static final DynamicCommandException<Dynamic1ExceptionFunktion> INVALID_KEY = new DynamicCommandException<Dynamic1ExceptionFunktion>(
+    private static final CommandSyntaxExceptionContainer INVALID_KEY = new CommandSyntaxExceptionContainer(
         value -> "Invalid Key '" + value + "'");
 
     public NamespacedKeyArgument(final String name) {
@@ -125,15 +114,10 @@ public class MiscArguments {
         throw INVALID_KEY.createWithContext(reader, value);
       }
     }
-
-    @Override
-    public String toString() {
-      return "NamespacedKeyArgument []";
-    }
   }
 
   public static class BlockStateArgument extends Argument<BlockState, BlockStateArgument> {
-    private static final DynamicCommandException<Dynamic1ExceptionFunktion> INVALID_BLOCK = new DynamicCommandException<Dynamic1ExceptionFunktion>(
+    private static final CommandSyntaxExceptionContainer INVALID_BLOCK = new CommandSyntaxExceptionContainer(
         value -> "Invalid Block '" + value + "'");
 
     public BlockStateArgument(final String name) {
@@ -158,18 +142,13 @@ public class MiscArguments {
         throw INVALID_BLOCK.createWithContext(reader, value);
       }
     }
-
-    @Override
-    public String toString() {
-      return "BlockStateArgument []";
-    }
   }
 
   public static class LootTableArgument extends Argument<LootTable, LootTableArgument> {
 
     public static final String[] NAMES = _mapArray(LootTables.values());
 
-    private static final DynamicCommandException<Dynamic1ExceptionFunktion> INVALID_LOOTTABLE = new DynamicCommandException<Dynamic1ExceptionFunktion>(
+    private static final CommandSyntaxExceptionContainer INVALID_LOOTTABLE = new CommandSyntaxExceptionContainer(
         value -> "Invalid Loot Table '" + value + "'");
 
     public LootTableArgument(final String name) {
@@ -197,18 +176,13 @@ public class MiscArguments {
         throw INVALID_LOOTTABLE.createWithContext(reader, value);
       }
     }
-
-    @Override
-    public String toString() {
-      return "LootTableArgument []";
-    }
   }
 
   public static class EnvironmentArgument extends Argument<Environment, EnvironmentArgument> {
 
     public static final String[] NAMES = _mapArray(Environment.values());
 
-    private static final DynamicCommandException<Dynamic1ExceptionFunktion> INVALID_ENVIRONMENT = new DynamicCommandException<Dynamic1ExceptionFunktion>(
+    private static final CommandSyntaxExceptionContainer INVALID_ENVIRONMENT = new CommandSyntaxExceptionContainer(
         value -> "Invalid Environment '" + value + "'");
 
     public EnvironmentArgument(final String name) {
@@ -235,18 +209,13 @@ public class MiscArguments {
         throw INVALID_ENVIRONMENT.createWithContext(reader, value);
       }
     }
-
-    @Override
-    public String toString() {
-      return "EnvironmentArgument []";
-    }
   }
 
   public static class GameModeArgument extends Argument<GameMode, GameModeArgument> {
 
     public static final String[] NAMES = _mapArray(GameMode.values());
 
-    private static final DynamicCommandException<Dynamic1ExceptionFunktion> INVALID_LOOKANCHOR = new DynamicCommandException<Dynamic1ExceptionFunktion>(
+    private static final CommandSyntaxExceptionContainer INVALID_LOOKANCHOR = new CommandSyntaxExceptionContainer(
         value -> "Invalid GameMode '" + value + "'");
 
     public GameModeArgument(final String name) {
@@ -273,18 +242,13 @@ public class MiscArguments {
         throw INVALID_LOOKANCHOR.createWithContext(reader, value);
       }
     }
-
-    @Override
-    public String toString() {
-      return "GameModeArgument []";
-    }
   }
 
   public static class LookAnchorArgument extends Argument<LookAnchor, LookAnchorArgument> {
 
     public static final String[] NAMES = _mapArray(LookAnchor.values());
 
-    private static final DynamicCommandException<Dynamic1ExceptionFunktion> INVALID_LOOKANCHOR = new DynamicCommandException<Dynamic1ExceptionFunktion>(
+    private static final CommandSyntaxExceptionContainer INVALID_LOOKANCHOR = new CommandSyntaxExceptionContainer(
         value -> "Invalid LookAnchor '" + value + "'");
 
     public LookAnchorArgument(final String name) {
@@ -311,17 +275,12 @@ public class MiscArguments {
         throw INVALID_LOOKANCHOR.createWithContext(reader, value);
       }
     }
-
-    @Override
-    public String toString() {
-      return "LookAnchorArgument []";
-    }
   }
 
   public static class MathOperationArgument extends Argument<MathOperation, MathOperationArgument> {
     public static final String[] NAMES = _mapArray(MathOperation.values());
 
-    private static final DynamicCommandException<Dynamic1ExceptionFunktion> INVALID_OPERATION = new DynamicCommandException<Dynamic1ExceptionFunktion>(
+    private static final CommandSyntaxExceptionContainer INVALID_OPERATION = new CommandSyntaxExceptionContainer(
         value -> "Invalid MathOperation '" + value + "'");
 
     public MathOperationArgument(final String name) {
@@ -346,11 +305,6 @@ public class MiscArguments {
         reader.resetCursor();
         throw INVALID_OPERATION.createWithContext(reader, value);
       }
-    }
-
-    @Override
-    public String toString() {
-      return "MathOperationArgument []";
     }
   }
 

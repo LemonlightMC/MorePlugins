@@ -16,9 +16,8 @@ import com.lemonlightmc.moreplugins.commands.argumentsbase.ArgumentType;
 import com.lemonlightmc.moreplugins.commands.suggestions.Suggestions;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.CommandArguments;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.StringReader;
-import com.lemonlightmc.moreplugins.commands.exceptions.CommandSyntaxException.*;
 import com.lemonlightmc.moreplugins.commands.exceptions.CommandSyntaxException;
-import com.lemonlightmc.moreplugins.exceptions.DynamicExceptionFunction.Dynamic1ExceptionFunktion;
+import com.lemonlightmc.moreplugins.commands.exceptions.CommandSyntaxException.CommandSyntaxExceptionContainer;
 
 public class CollectionsArguments {
 
@@ -36,11 +35,11 @@ public class CollectionsArguments {
     private final boolean allowDuplicates;
     private final Supplier<List<T>> supplier;
     private final Function<T, String> mapper;
-    private static final SimpleCommandException DUPLICATE_ARGUMENTS = new SimpleCommandException(
+    private static final CommandSyntaxExceptionContainer DUPLICATE_ARGUMENTS = new CommandSyntaxExceptionContainer(
         "Duplicate arguments are not allowed");
-    private static final DynamicCommandException<Dynamic1ExceptionFunktion> INVALID_ENTRY = new DynamicCommandException<Dynamic1ExceptionFunktion>(
+    private static final CommandSyntaxExceptionContainer INVALID_ENTRY = new CommandSyntaxExceptionContainer(
         (value) -> "Item '" + value + "'' is not allowed in list");
-    private static final DynamicCommandException<Dynamic1ExceptionFunktion> INVALID_LIST = new DynamicCommandException<Dynamic1ExceptionFunktion>(
+    private static final CommandSyntaxExceptionContainer INVALID_LIST = new CommandSyntaxExceptionContainer(
         (value) -> "Invalid List '" + value);
 
     public DynamicListArgument(final String nodeName, final char delimiter, final boolean allowDuplicates,
@@ -153,11 +152,11 @@ public class CollectionsArguments {
     private final List<T> values;
     private final HashMap<String, T> mapping;
 
-    private static final SimpleCommandException DUPLICATE_ARGUMENTS = new SimpleCommandException(
+    private static final CommandSyntaxExceptionContainer DUPLICATE_ARGUMENTS = new CommandSyntaxExceptionContainer(
         "Duplicate arguments are not allowed");
-    private static final DynamicCommandException<Dynamic1ExceptionFunktion> INVALID_ENTRY = new DynamicCommandException<Dynamic1ExceptionFunktion>(
+    private static final CommandSyntaxExceptionContainer INVALID_ENTRY = new CommandSyntaxExceptionContainer(
         (value) -> "Item '" + value + "'' is not allowed in list");
-    private static final DynamicCommandException<Dynamic1ExceptionFunktion> INVALID_LIST = new DynamicCommandException<Dynamic1ExceptionFunktion>(
+    private static final CommandSyntaxExceptionContainer INVALID_LIST = new CommandSyntaxExceptionContainer(
         (value) -> "Invalid List '" + value);
 
     public StaticListArgument(final String nodeName, final char delimiter, final boolean allowDuplicates,

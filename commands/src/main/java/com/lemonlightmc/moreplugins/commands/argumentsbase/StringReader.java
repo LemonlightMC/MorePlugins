@@ -2,7 +2,6 @@ package com.lemonlightmc.moreplugins.commands.argumentsbase;
 
 import com.lemonlightmc.moreplugins.commands.exceptions.CommandSyntaxException;
 import com.lemonlightmc.moreplugins.commands.exceptions.CommandSyntaxException.*;
-import com.lemonlightmc.moreplugins.exceptions.DynamicExceptionFunction.Dynamic1ExceptionFunktion;
 
 import java.util.ArrayDeque;
 
@@ -15,49 +14,49 @@ public class StringReader {
   private int cursor = 0;
   private final ArrayDeque<Integer> points = new ArrayDeque<>();
 
-  private static final SimpleCommandException READER_EXPECTED_START_OF_QUOTE = new SimpleCommandException(
+  private static final CommandSyntaxExceptionContainer READER_EXPECTED_START_OF_QUOTE = new CommandSyntaxExceptionContainer(
       "Expected quote to start a string");
 
-  private static final SimpleCommandException READER_EXPECTED_END_OF_QUOTE = new SimpleCommandException(
+  private static final CommandSyntaxExceptionContainer READER_EXPECTED_END_OF_QUOTE = new CommandSyntaxExceptionContainer(
       "Unclosed quoted string");
 
-  private static final DynamicCommandException<Dynamic1ExceptionFunktion> READER_INVALID_ESCAPE = new DynamicCommandException<Dynamic1ExceptionFunktion>(
+  private static final CommandSyntaxExceptionContainer READER_INVALID_ESCAPE = new CommandSyntaxExceptionContainer(
       character -> "Invalid escape sequence '" + character + "' in quoted string");
 
-  private static final DynamicCommandException<Dynamic1ExceptionFunktion> READER_INVALID_BOOL = new DynamicCommandException<Dynamic1ExceptionFunktion>(
+  private static final CommandSyntaxExceptionContainer READER_INVALID_BOOL = new CommandSyntaxExceptionContainer(
       value -> "Invalid bool, expected true or false but found '" + value + "'");
 
-  private static final DynamicCommandException<Dynamic1ExceptionFunktion> READER_INVALID_INT = new DynamicCommandException<Dynamic1ExceptionFunktion>(
+  private static final CommandSyntaxExceptionContainer READER_INVALID_INT = new CommandSyntaxExceptionContainer(
       value -> "Invalid integer '" + value + "'");
 
-  private static final SimpleCommandException READER_EXPECTED_INT = new SimpleCommandException(
+  private static final CommandSyntaxExceptionContainer READER_EXPECTED_INT = new CommandSyntaxExceptionContainer(
       "Expected integer");
 
-  private static final DynamicCommandException<Dynamic1ExceptionFunktion> READER_INVALID_LONG = new DynamicCommandException<Dynamic1ExceptionFunktion>(
+  private static final CommandSyntaxExceptionContainer READER_INVALID_LONG = new CommandSyntaxExceptionContainer(
       value -> "Invalid long '" + value + "'");
 
-  private static final SimpleCommandException READER_EXPECTED_LONG = new SimpleCommandException(
+  private static final CommandSyntaxExceptionContainer READER_EXPECTED_LONG = new CommandSyntaxExceptionContainer(
       ("Expected long"));
 
-  private static final DynamicCommandException<Dynamic1ExceptionFunktion> READER_INVALID_DOUBLE = new DynamicCommandException<Dynamic1ExceptionFunktion>(
+  private static final CommandSyntaxExceptionContainer READER_INVALID_DOUBLE = new CommandSyntaxExceptionContainer(
       value -> "Invalid double '" + value + "'");
 
-  private static final SimpleCommandException READER_EXPECTED_DOUBLE = new SimpleCommandException(
+  private static final CommandSyntaxExceptionContainer READER_EXPECTED_DOUBLE = new CommandSyntaxExceptionContainer(
       "Expected double");
 
-  private static final DynamicCommandException<Dynamic1ExceptionFunktion> READER_INVALID_FLOAT = new DynamicCommandException<Dynamic1ExceptionFunktion>(
+  private static final CommandSyntaxExceptionContainer READER_INVALID_FLOAT = new CommandSyntaxExceptionContainer(
       value -> "Invalid float '" + value + "'");
 
-  private static final SimpleCommandException READER_EXPECTED_FLOAT = new SimpleCommandException(
+  private static final CommandSyntaxExceptionContainer READER_EXPECTED_FLOAT = new CommandSyntaxExceptionContainer(
       "Expected float");
 
-  private static final SimpleCommandException READER_EXPECTED_BOOL = new SimpleCommandException(
+  private static final CommandSyntaxExceptionContainer READER_EXPECTED_BOOL = new CommandSyntaxExceptionContainer(
       "Expected bool");
 
-  private static final SimpleCommandException READER_EXPECTED_RANGE = new SimpleCommandException(
+  private static final CommandSyntaxExceptionContainer READER_EXPECTED_RANGE = new CommandSyntaxExceptionContainer(
       "Expected Range");
 
-  private static final DynamicCommandException<Dynamic1ExceptionFunktion> READER_EXPECTED_SYMBOL = new DynamicCommandException<Dynamic1ExceptionFunktion>(
+  private static final CommandSyntaxExceptionContainer READER_EXPECTED_SYMBOL = new CommandSyntaxExceptionContainer(
       symbol -> "Expected '" + symbol + "'");
 
   public StringReader(final StringReader other) {

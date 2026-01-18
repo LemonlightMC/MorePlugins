@@ -15,15 +15,14 @@ import com.lemonlightmc.moreplugins.commands.argumentsbase.ArgumentType;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.CommandArguments;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.ScoreboardSlot;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.StringReader;
-import com.lemonlightmc.moreplugins.commands.exceptions.CommandSyntaxException.*;
 import com.lemonlightmc.moreplugins.commands.suggestions.Suggestions;
 import com.lemonlightmc.moreplugins.commands.exceptions.CommandSyntaxException;
-import com.lemonlightmc.moreplugins.exceptions.DynamicExceptionFunction.Dynamic1ExceptionFunktion;
+import com.lemonlightmc.moreplugins.commands.exceptions.CommandSyntaxException.CommandSyntaxExceptionContainer;
 
 public class ScoreArguments {
 
   public static class TeamArgument extends Argument<Team, TeamArgument> {
-    private static final DynamicCommandException<Dynamic1ExceptionFunktion> INVALID_TEAM = new DynamicCommandException<Dynamic1ExceptionFunktion>(
+    private static final CommandSyntaxExceptionContainer INVALID_TEAM = new CommandSyntaxExceptionContainer(
         value -> "Invalid Team '" + value + "'");
 
     public TeamArgument(final String name) {
@@ -53,15 +52,10 @@ public class ScoreArguments {
         throw INVALID_TEAM.createWithContext(reader, value);
       }
     }
-
-    @Override
-    public String toString() {
-      return "TeamArgument []";
-    }
   }
 
   public static class ScoreboardSlotArgument extends Argument<ScoreboardSlot, ScoreboardSlotArgument> {
-    private static final DynamicCommandException<Dynamic1ExceptionFunktion> INVALID_SLOT = new DynamicCommandException<Dynamic1ExceptionFunktion>(
+    private static final CommandSyntaxExceptionContainer INVALID_SLOT = new CommandSyntaxExceptionContainer(
         value -> "Invalid Scoreboard Slot '" + value + "'");
 
     public ScoreboardSlotArgument(final String name) {
@@ -91,15 +85,10 @@ public class ScoreArguments {
         throw INVALID_SLOT.createWithContext(reader, value);
       }
     }
-
-    @Override
-    public String toString() {
-      return "ScoreboardSlotArgument []";
-    }
   }
 
   public static class ObjectiveArgument extends Argument<Objective, ObjectiveArgument> {
-    private static final DynamicCommandException<Dynamic1ExceptionFunktion> INVALID_OBJECTIVE = new DynamicCommandException<Dynamic1ExceptionFunktion>(
+    private static final CommandSyntaxExceptionContainer INVALID_OBJECTIVE = new CommandSyntaxExceptionContainer(
         value -> "Invalid Scoreboard Objective '" + value + "'");
 
     public ObjectiveArgument(final String name) {
@@ -145,15 +134,10 @@ public class ScoreArguments {
         throw INVALID_OBJECTIVE.createWithContext(reader, value);
       }
     }
-
-    @Override
-    public String toString() {
-      return "ObjectiveArgument []";
-    }
   }
 
   public static class CriteriaArgument extends Argument<Criteria, CriteriaArgument> {
-    private static final DynamicCommandException<Dynamic1ExceptionFunktion> INVALID_CRITERIA = new DynamicCommandException<Dynamic1ExceptionFunktion>(
+    private static final CommandSyntaxExceptionContainer INVALID_CRITERIA = new CommandSyntaxExceptionContainer(
         value -> "Invalid Scoreboard Objective '" + value + "'");
 
     public CriteriaArgument(final String name) {
@@ -184,11 +168,6 @@ public class ScoreArguments {
         reader.resetCursor();
         throw INVALID_CRITERIA.createWithContext(reader, value);
       }
-    }
-
-    @Override
-    public String toString() {
-      return "CriteriaArgument []";
     }
   }
 }
