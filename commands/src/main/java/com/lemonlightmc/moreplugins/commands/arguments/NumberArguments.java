@@ -36,6 +36,7 @@ public class NumberArguments {
       withSuggestions("true", "false");
     }
 
+    @Override
     public BoolArgument getInstance() {
       return this;
     }
@@ -73,6 +74,7 @@ public class NumberArguments {
       this.range = new IntegerRange(min, max);
     }
 
+    @Override
     public IntegerArgument getInstance() {
       return this;
     }
@@ -137,6 +139,7 @@ public class NumberArguments {
       this.range = new LongRange(min, max);
     }
 
+    @Override
     public LongArgument getInstance() {
       return this;
     }
@@ -201,6 +204,7 @@ public class NumberArguments {
       this.range = new FloatRange(min, max);
     }
 
+    @Override
     public FloatArgument getInstance() {
       return this;
     }
@@ -265,6 +269,7 @@ public class NumberArguments {
       this.range = new DoubleRange(min, max);
     }
 
+    @Override
     public DoubleArgument getInstance() {
       return this;
     }
@@ -319,6 +324,7 @@ public class NumberArguments {
       super(name, IntegerRange.class, ArgumentType.RANGE_INT);
     }
 
+    @Override
     public IntegerRangeArgument getInstance() {
       return this;
     }
@@ -348,6 +354,7 @@ public class NumberArguments {
       super(name, LongRange.class, ArgumentType.RANGE_LONG);
     }
 
+    @Override
     public LongRangeArgument getInstance() {
       return this;
     }
@@ -377,6 +384,7 @@ public class NumberArguments {
       super(name, FloatRange.class, ArgumentType.RANGE_FLOAT);
     }
 
+    @Override
     public FloatRangeArgument getInstance() {
       return this;
     }
@@ -406,6 +414,7 @@ public class NumberArguments {
       super(name, DoubleRange.class, ArgumentType.RANGE_DOUBLE);
     }
 
+    @Override
     public DoubleRangeArgument getInstance() {
       return this;
     }
@@ -625,6 +634,7 @@ public class NumberArguments {
       withSuggestions("x", "y", "z");
     }
 
+    @Override
     public AxisArgument getInstance() {
       return this;
     }
@@ -658,6 +668,7 @@ public class NumberArguments {
       withSuggestions("x", "xy", "xyz", "xzy", "xz", "y", "yx", "yxz", "yzx", "yz", "z", "zx", "zxy", "zyx", "zy");
     }
 
+    @Override
     public MultiAxisArgument getInstance() {
       return this;
     }
@@ -695,6 +706,7 @@ public class NumberArguments {
       withSuggestions("0", "90", "180", "270", "-90", "-180", "-270");
     }
 
+    @Override
     public RotationArgument getInstance() {
       return this;
     }

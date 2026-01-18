@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
 
@@ -20,7 +21,6 @@ import com.lemonlightmc.moreplugins.commands.argumentsbase.StringReader;
 import com.lemonlightmc.moreplugins.commands.exceptions.InvalidArgumentBranchException;
 import com.lemonlightmc.moreplugins.commands.suggestions.SuggestionInfo;
 import com.lemonlightmc.moreplugins.commands.exceptions.CommandSyntaxException;
-import com.lemonlightmc.moreplugins.commands.exceptions.CommandSyntaxException.CommandSyntaxExceptionContainer;
 
 public class SpecialArguments {
 
@@ -46,6 +46,7 @@ public class SpecialArguments {
       branches = new ArrayList<>();
     }
 
+    @Override
     public BranchArgument getInstance() {
       return this;
     }
@@ -133,8 +134,6 @@ public class SpecialArguments {
   }
 
   public static class CommandArgument extends Argument<CommandResult, CommandArgument> {
-    private static final CommandSyntaxExceptionContainer INVALID_COMMAND = new CommandSyntaxExceptionContainer(
-        value -> "Invalid Command '" + value);
 
     public CommandArgument(final String name) {
       super(name, CommandResult.class, ArgumentType.COMMAND);
@@ -148,6 +147,7 @@ public class SpecialArguments {
       });
     }
 
+    @Override
     public CommandArgument getInstance() {
       return this;
     }
@@ -163,17 +163,11 @@ public class SpecialArguments {
         if (args.length == 0) {
           return null;
         }
-        final Command cmd = CommandManager.getCommandMap().getCommand(args[0]);
-        if (cmd == null) {
-          throw INVALID_COMMAND.createWithContext(reader, cmd);
-        }
+        final Command cmd = Objects.requireNonNull(CommandManager.getCommandMap().getCommand(args[0]));
         return new CommandResult(cmd, Arrays.copyOfRange(args, 1, args.length));
-      } catch (final CommandSyntaxException e) {
-        reader.resetCursor();
-        throw e;
       } catch (final Exception e) {
         reader.resetCursor();
-        throw e;
+        throw createError(reader, null);
       }
     }
   }

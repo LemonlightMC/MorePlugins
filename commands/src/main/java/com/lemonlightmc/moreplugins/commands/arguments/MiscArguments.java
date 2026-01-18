@@ -20,7 +20,6 @@ import com.lemonlightmc.moreplugins.commands.argumentsbase.CommandArguments;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.LookAnchor;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.StringReader;
 import com.lemonlightmc.moreplugins.commands.exceptions.CommandSyntaxException;
-import com.lemonlightmc.moreplugins.commands.exceptions.CommandSyntaxException.CommandSyntaxExceptionContainer;
 import com.lemonlightmc.moreplugins.math.MathOperation;
 import com.lemonlightmc.moreplugins.time.DurationParser;
 
@@ -31,14 +30,13 @@ public class MiscArguments {
     public static final String[] NAMES = Bukkit.getWorlds().stream().map((final World w) -> {
       return w == null ? null : w.getName();
     }).toArray(String[]::new);
-    private static final CommandSyntaxExceptionContainer INVALID_WORLD = new CommandSyntaxExceptionContainer(
-        value -> "Invalid World '" + value + "'");
 
     public WorldArgument(final String name) {
       super(name, World.class, ArgumentType.WORLD);
       withSuggestions(NAMES);
     }
 
+    @Override
     public WorldArgument getInstance() {
       return this;
     }
@@ -54,20 +52,18 @@ public class MiscArguments {
         return Objects.requireNonNull(Bukkit.getWorld(value));
       } catch (final Exception e) {
         reader.setCursor(start);
-        throw INVALID_WORLD.createWithContext(reader, value);
+        throw createError(reader, value);
       }
     }
   }
 
   public static class TimeArgument extends Argument<Duration, TimeArgument> {
-    private static final CommandSyntaxExceptionContainer INVALID_TIME = new CommandSyntaxExceptionContainer(
-        value -> "Invalid Time '" + value + "'");
-
     public TimeArgument(final String name) {
       super(name, Duration.class, ArgumentType.TIME);
       withSuggestions("true", "false");
     }
 
+    @Override
     public TimeArgument getInstance() {
       return this;
     }
@@ -83,19 +79,18 @@ public class MiscArguments {
         return Duration.ofMillis(DurationParser.parse(value));
       } catch (final Exception e) {
         reader.setCursor(start);
-        throw INVALID_TIME.createWithContext(reader, value);
+        throw createError(reader, value);
       }
     }
   }
 
   public static class NamespacedKeyArgument extends Argument<NamespacedKey, NamespacedKeyArgument> {
-    private static final CommandSyntaxExceptionContainer INVALID_KEY = new CommandSyntaxExceptionContainer(
-        value -> "Invalid Key '" + value + "'");
 
     public NamespacedKeyArgument(final String name) {
       super(name, NamespacedKey.class, ArgumentType.NAMESPACED_KEY);
     }
 
+    @Override
     public NamespacedKeyArgument getInstance() {
       return this;
     }
@@ -111,19 +106,18 @@ public class MiscArguments {
         return Objects.requireNonNull(NamespacedKey.fromString(value));
       } catch (final Exception e) {
         reader.setCursor(start);
-        throw INVALID_KEY.createWithContext(reader, value);
+        throw createError(reader, value);
       }
     }
   }
 
   public static class BlockStateArgument extends Argument<BlockState, BlockStateArgument> {
-    private static final CommandSyntaxExceptionContainer INVALID_BLOCK = new CommandSyntaxExceptionContainer(
-        value -> "Invalid Block '" + value + "'");
 
     public BlockStateArgument(final String name) {
       super(name, BlockState.class, ArgumentType.BLOCKSTATE);
     }
 
+    @Override
     public BlockStateArgument getInstance() {
       return this;
     }
@@ -139,7 +133,7 @@ public class MiscArguments {
         return Bukkit.createBlockData(Objects.requireNonNull(Material.getMaterial(value))).createBlockState();
       } catch (final Exception e) {
         reader.setCursor(start);
-        throw INVALID_BLOCK.createWithContext(reader, value);
+        throw createError(reader, value);
       }
     }
   }
@@ -148,14 +142,12 @@ public class MiscArguments {
 
     public static final String[] NAMES = _mapArray(LootTables.values());
 
-    private static final CommandSyntaxExceptionContainer INVALID_LOOTTABLE = new CommandSyntaxExceptionContainer(
-        value -> "Invalid Loot Table '" + value + "'");
-
     public LootTableArgument(final String name) {
       super(name, LootTable.class, ArgumentType.LOOT_TABLE);
       withSuggestions(NAMES);
     }
 
+    @Override
     public LootTableArgument getInstance() {
       return this;
     }
@@ -173,7 +165,7 @@ public class MiscArguments {
             LootTables.valueOf(Objects.requireNonNull(value))).getLootTable());
       } catch (final Exception e) {
         reader.setCursor(start);
-        throw INVALID_LOOTTABLE.createWithContext(reader, value);
+        throw createError(reader, value);
       }
     }
   }
@@ -182,14 +174,12 @@ public class MiscArguments {
 
     public static final String[] NAMES = _mapArray(Environment.values());
 
-    private static final CommandSyntaxExceptionContainer INVALID_ENVIRONMENT = new CommandSyntaxExceptionContainer(
-        value -> "Invalid Environment '" + value + "'");
-
     public EnvironmentArgument(final String name) {
       super(name, Environment.class, ArgumentType.ENVIRONMENT);
       withSuggestions(NAMES);
     }
 
+    @Override
     public EnvironmentArgument getInstance() {
       return this;
     }
@@ -206,7 +196,7 @@ public class MiscArguments {
         return Objects.requireNonNull(Environment.valueOf(Objects.requireNonNull(value)));
       } catch (final Exception e) {
         reader.setCursor(start);
-        throw INVALID_ENVIRONMENT.createWithContext(reader, value);
+        throw createError(reader, value);
       }
     }
   }
@@ -215,14 +205,12 @@ public class MiscArguments {
 
     public static final String[] NAMES = _mapArray(GameMode.values());
 
-    private static final CommandSyntaxExceptionContainer INVALID_LOOKANCHOR = new CommandSyntaxExceptionContainer(
-        value -> "Invalid GameMode '" + value + "'");
-
     public GameModeArgument(final String name) {
       super(name, GameMode.class, ArgumentType.GAME_MODE);
       withSuggestions(NAMES);
     }
 
+    @Override
     public GameModeArgument getInstance() {
       return this;
     }
@@ -239,7 +227,7 @@ public class MiscArguments {
         return Objects.requireNonNull(GameMode.valueOf(Objects.requireNonNull(value)));
       } catch (final Exception e) {
         reader.setCursor(start);
-        throw INVALID_LOOKANCHOR.createWithContext(reader, value);
+        throw createError(reader, value);
       }
     }
   }
@@ -248,14 +236,12 @@ public class MiscArguments {
 
     public static final String[] NAMES = _mapArray(LookAnchor.values());
 
-    private static final CommandSyntaxExceptionContainer INVALID_LOOKANCHOR = new CommandSyntaxExceptionContainer(
-        value -> "Invalid LookAnchor '" + value + "'");
-
     public LookAnchorArgument(final String name) {
       super(name, LookAnchor.class, ArgumentType.LOOK_ANCHOR);
       withSuggestions(NAMES);
     }
 
+    @Override
     public LookAnchorArgument getInstance() {
       return this;
     }
@@ -272,7 +258,7 @@ public class MiscArguments {
         return Objects.requireNonNull(LookAnchor.valueOf(Objects.requireNonNull(value)));
       } catch (final Exception e) {
         reader.setCursor(start);
-        throw INVALID_LOOKANCHOR.createWithContext(reader, value);
+        throw createError(reader, value);
       }
     }
   }
@@ -280,14 +266,12 @@ public class MiscArguments {
   public static class MathOperationArgument extends Argument<MathOperation, MathOperationArgument> {
     public static final String[] NAMES = _mapArray(MathOperation.values());
 
-    private static final CommandSyntaxExceptionContainer INVALID_OPERATION = new CommandSyntaxExceptionContainer(
-        value -> "Invalid MathOperation '" + value + "'");
-
     public MathOperationArgument(final String name) {
       super(name, MathOperation.class, ArgumentType.MATH_OPERATION);
       withSuggestions("true", "false");
     }
 
+    @Override
     public MathOperationArgument getInstance() {
       return this;
     }
@@ -303,7 +287,7 @@ public class MiscArguments {
         return Objects.requireNonNull(MathOperation.fromString(value));
       } catch (final Exception e) {
         reader.resetCursor();
-        throw INVALID_OPERATION.createWithContext(reader, value);
+        throw createError(reader, value);
       }
     }
   }

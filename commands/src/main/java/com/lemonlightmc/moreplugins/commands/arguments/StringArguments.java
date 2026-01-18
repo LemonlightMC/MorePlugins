@@ -49,6 +49,7 @@ public class StringArguments {
       return new StringArgument(name, StringType.GREEDY_PHRASE);
     }
 
+    @Override
     public StringArgument getInstance() {
       return this;
     }
@@ -120,6 +121,7 @@ public class StringArguments {
       super(name, String.class, ArgumentType.PRIMITIVE_TEXT);
     }
 
+    @Override
     public TextArgument getInstance() {
       return this;
     }
@@ -138,6 +140,7 @@ public class StringArguments {
       super(name, String.class, ArgumentType.PRIMITIVE_GREEDY_STRING);
     }
 
+    @Override
     public GreedyStringArgument getInstance() {
       return this;
     }
@@ -163,6 +166,7 @@ public class StringArguments {
       withSuggestions(list);
     }
 
+    @Override
     public ChatColorArgument getInstance() {
       return this;
     }
@@ -181,6 +185,7 @@ public class StringArguments {
       super(name, String.class, ArgumentType.CHAT);
     }
 
+    @Override
     public ChatArgument getInstance() {
       return this;
     }

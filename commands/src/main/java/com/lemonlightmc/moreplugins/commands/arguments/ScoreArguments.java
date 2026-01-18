@@ -17,13 +17,10 @@ import com.lemonlightmc.moreplugins.commands.argumentsbase.ScoreboardSlot;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.StringReader;
 import com.lemonlightmc.moreplugins.commands.suggestions.Suggestions;
 import com.lemonlightmc.moreplugins.commands.exceptions.CommandSyntaxException;
-import com.lemonlightmc.moreplugins.commands.exceptions.CommandSyntaxException.CommandSyntaxExceptionContainer;
 
 public class ScoreArguments {
 
   public static class TeamArgument extends Argument<Team, TeamArgument> {
-    private static final CommandSyntaxExceptionContainer INVALID_TEAM = new CommandSyntaxExceptionContainer(
-        value -> "Invalid Team '" + value + "'");
 
     public TeamArgument(final String name) {
       super(name, Team.class, ArgumentType.TEAM);
@@ -31,6 +28,7 @@ public class ScoreArguments {
           .map((v) -> v.getName()).toList()));
     }
 
+    @Override
     public TeamArgument getInstance() {
       return this;
     }
@@ -49,20 +47,19 @@ public class ScoreArguments {
         throw ex;
       } catch (final Exception e) {
         reader.resetCursor();
-        throw INVALID_TEAM.createWithContext(reader, value);
+        throw createError(reader, value);
       }
     }
   }
 
   public static class ScoreboardSlotArgument extends Argument<ScoreboardSlot, ScoreboardSlotArgument> {
-    private static final CommandSyntaxExceptionContainer INVALID_SLOT = new CommandSyntaxExceptionContainer(
-        value -> "Invalid Scoreboard Slot '" + value + "'");
 
     public ScoreboardSlotArgument(final String name) {
       super(name, ScoreboardSlot.class, ArgumentType.SCOREBOARD_SLOT);
       withSuggestions(ScoreboardSlot.keys());
     }
 
+    @Override
     public ScoreboardSlotArgument getInstance() {
       return this;
     }
@@ -82,14 +79,12 @@ public class ScoreArguments {
         throw ex;
       } catch (final Exception e) {
         reader.resetCursor();
-        throw INVALID_SLOT.createWithContext(reader, value);
+        throw createError(reader, value);
       }
     }
   }
 
   public static class ObjectiveArgument extends Argument<Objective, ObjectiveArgument> {
-    private static final CommandSyntaxExceptionContainer INVALID_OBJECTIVE = new CommandSyntaxExceptionContainer(
-        value -> "Invalid Scoreboard Objective '" + value + "'");
 
     public ObjectiveArgument(final String name) {
       super(name, Objective.class, ArgumentType.OBJECTIVE);
@@ -98,6 +93,7 @@ public class ScoreArguments {
               .map((v) -> v.getName()).toList()));
     }
 
+    @Override
     public ObjectiveArgument getInstance() {
       return this;
     }
@@ -125,20 +121,18 @@ public class ScoreArguments {
             }
           }
         }
-        throw INVALID_OBJECTIVE.createWithContext(reader, value);
+        throw createError(reader, value);
       } catch (final CommandSyntaxException ex) {
         reader.resetCursor();
         throw ex;
       } catch (final Exception e) {
         reader.resetCursor();
-        throw INVALID_OBJECTIVE.createWithContext(reader, value);
+        throw createError(reader, value);
       }
     }
   }
 
   public static class CriteriaArgument extends Argument<Criteria, CriteriaArgument> {
-    private static final CommandSyntaxExceptionContainer INVALID_CRITERIA = new CommandSyntaxExceptionContainer(
-        value -> "Invalid Scoreboard Objective '" + value + "'");
 
     public CriteriaArgument(final String name) {
       super(name, Criteria.class, ArgumentType.CRITERIA);
@@ -147,6 +141,7 @@ public class ScoreArguments {
               .map((v) -> v.getTrackedCriteria().getName()).toList()));
     }
 
+    @Override
     public CriteriaArgument getInstance() {
       return this;
     }
@@ -166,7 +161,7 @@ public class ScoreArguments {
         throw ex;
       } catch (final Exception e) {
         reader.resetCursor();
-        throw INVALID_CRITERIA.createWithContext(reader, value);
+        throw createError(reader, value);
       }
     }
   }

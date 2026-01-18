@@ -39,7 +39,10 @@ public abstract class Argument<Type, ArgType> {
 
   public abstract ArgType getInstance();
 
-  // Parse
+  public CommandSyntaxException createError(final StringReader reader, final String value) {
+    return new CommandSyntaxException(reader, "Invalid Value '" + value + "' for Argument '" + name + "'");
+  }
+
   public abstract Type parseArgument(CommandSource<CommandSender> source, StringReader reader, String key,
       CommandArguments previousArgs)
       throws CommandSyntaxException;

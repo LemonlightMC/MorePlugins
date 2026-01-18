@@ -12,12 +12,9 @@ import com.lemonlightmc.moreplugins.commands.argumentsbase.CommandArguments;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.StringReader;
 import com.lemonlightmc.moreplugins.commands.suggestions.Suggestions;
 import com.lemonlightmc.moreplugins.commands.exceptions.CommandSyntaxException;
-import com.lemonlightmc.moreplugins.commands.exceptions.CommandSyntaxException.CommandSyntaxExceptionContainer;
 
 public class EntityArguments {
   public static class PlayerArgument extends Argument<Player, PlayerArgument> {
-    private static final CommandSyntaxExceptionContainer INVALID_PLAYER = new CommandSyntaxExceptionContainer(
-        (value) -> "Invalid Player '" + value + "'");
 
     public PlayerArgument(final String name) {
       super(name, Player.class, ArgumentType.PLAYER);
@@ -25,6 +22,7 @@ public class EntityArguments {
 
     }
 
+    @Override
     public PlayerArgument getInstance() {
       return this;
     }
@@ -40,15 +38,12 @@ public class EntityArguments {
         return Bukkit.getPlayerExact(value);
       } catch (final Exception e) {
         reader.resetCursor();
-        throw INVALID_PLAYER.createWithContext(reader, value);
+        throw createError(reader, value);
       }
     }
   }
 
   public static class PlayerProfileArgument extends Argument<PlayerProfile, PlayerProfileArgument> {
-    private static final CommandSyntaxExceptionContainer INVALID_PLAYER = new CommandSyntaxExceptionContainer(
-        value -> "Invalid Player '" + value + "'");
-
     public PlayerProfileArgument(final String name) {
       super(name, PlayerProfile.class, ArgumentType.PLAYERPROFILE);
       withSuggestions(Suggestions.from((info) -> Bukkit.getOnlinePlayers().stream().map(p -> p.getName()).toList()));
@@ -69,7 +64,7 @@ public class EntityArguments {
         return Bukkit.getPlayerExact(value).getPlayerProfile();
       } catch (final Exception e) {
         reader.resetCursor();
-        throw INVALID_PLAYER.createWithContext(reader, value);
+        throw createError(reader, value);
       }
     }
   }
