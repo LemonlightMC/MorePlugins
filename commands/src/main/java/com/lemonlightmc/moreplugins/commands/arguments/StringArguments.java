@@ -101,10 +101,7 @@ public class StringArguments {
 
     @Override
     public boolean equals(final Object obj) {
-      if (this == obj) {
-        return true;
-      }
-      if (!super.equals(obj) || getClass() != obj.getClass()) {
+      if (!super.equals(obj)) {
         return false;
       }
       final StringArgument other = (StringArgument) obj;
@@ -135,16 +132,6 @@ public class StringArguments {
     }
 
     @Override
-    public int hashCode() {
-      return 31 + super.hashCode();
-    }
-
-    @Override
-    public boolean equals(final Object obj) {
-      return this == obj && getClass() == obj.getClass() && super.equals(obj);
-    }
-
-    @Override
     public String toString() {
       return "TextArgument []";
     }
@@ -167,16 +154,6 @@ public class StringArguments {
       final String text = reader.getRemaining();
       reader.setCursor(reader.getTotalLength());
       return text;
-    }
-
-    @Override
-    public int hashCode() {
-      return 31 + super.hashCode();
-    }
-
-    @Override
-    public boolean equals(final Object obj) {
-      return this == obj && getClass() == obj.getClass() && super.equals(obj);
     }
 
     @Override
@@ -208,16 +185,6 @@ public class StringArguments {
     }
 
     @Override
-    public int hashCode() {
-      return 31 + super.hashCode();
-    }
-
-    @Override
-    public boolean equals(final Object obj) {
-      return this == obj && getClass() == obj.getClass() && super.equals(obj);
-    }
-
-    @Override
     public String toString() {
       return "ChatColorArgument []";
     }
@@ -240,16 +207,6 @@ public class StringArguments {
       final String text = reader.getRemaining();
       reader.setCursor(reader.getTotalLength());
       return text;
-    }
-
-    @Override
-    public int hashCode() {
-      return 31 + super.hashCode();
-    }
-
-    @Override
-    public boolean equals(final Object obj) {
-      return this == obj && getClass() == obj.getClass() && super.equals(obj);
     }
 
     @Override

@@ -67,11 +67,6 @@ public class MiscArguments {
     }
 
     @Override
-    public boolean equals(final Object obj) {
-      return this == obj && getClass() == obj.getClass() && super.equals(obj);
-    }
-
-    @Override
     public String toString() {
       return "BiomeArgument []";
     }
@@ -110,11 +105,6 @@ public class MiscArguments {
     }
 
     @Override
-    public boolean equals(final Object obj) {
-      return this == obj && getClass() == obj.getClass() && super.equals(obj);
-    }
-
-    @Override
     public String toString() {
       return "WorldArgument []";
     }
@@ -146,11 +136,6 @@ public class MiscArguments {
         reader.setCursor(start);
         throw INVALID_TIME.createWithContext(reader, value);
       }
-    }
-
-    @Override
-    public boolean equals(final Object obj) {
-      return this == obj && getClass() == obj.getClass() && super.equals(obj);
     }
 
     @Override
@@ -191,11 +176,6 @@ public class MiscArguments {
     }
 
     @Override
-    public boolean equals(final Object obj) {
-      return this == obj && getClass() == obj.getClass() && super.equals(obj);
-    }
-
-    @Override
     public String toString() {
       return "SoundArgument []";
     }
@@ -231,11 +211,6 @@ public class MiscArguments {
         reader.setCursor(start);
         throw INVALID_POTION.createWithContext(reader, value);
       }
-    }
-
-    @Override
-    public boolean equals(final Object obj) {
-      return this == obj && getClass() == obj.getClass() && super.equals(obj);
     }
 
     @Override
@@ -278,11 +253,6 @@ public class MiscArguments {
     }
 
     @Override
-    public boolean equals(final Object obj) {
-      return this == obj && getClass() == obj.getClass() && super.equals(obj);
-    }
-
-    @Override
     public String toString() {
       return "ParticleArgument []";
     }
@@ -313,11 +283,6 @@ public class MiscArguments {
         reader.setCursor(start);
         throw INVALID_KEY.createWithContext(reader, value);
       }
-    }
-
-    @Override
-    public boolean equals(final Object obj) {
-      return this == obj && getClass() == obj.getClass() && super.equals(obj);
     }
 
     @Override
@@ -354,11 +319,6 @@ public class MiscArguments {
         reader.setCursor(start);
         throw INVALID_MATERIAL.createWithContext(reader, value);
       }
-    }
-
-    @Override
-    public boolean equals(final Object obj) {
-      return this == obj && getClass() == obj.getClass() && super.equals(obj);
     }
 
     @Override
@@ -408,11 +368,6 @@ public class MiscArguments {
     }
 
     @Override
-    public boolean equals(final Object obj) {
-      return this == obj && getClass() == obj.getClass() && super.equals(obj);
-    }
-
-    @Override
     public String toString() {
       return "ItemStackArgument []";
     }
@@ -449,11 +404,6 @@ public class MiscArguments {
     }
 
     @Override
-    public boolean equals(final Object obj) {
-      return this == obj && getClass() == obj.getClass() && super.equals(obj);
-    }
-
-    @Override
     public String toString() {
       return "BlockDataArgument []";
     }
@@ -484,11 +434,6 @@ public class MiscArguments {
         reader.setCursor(start);
         throw INVALID_BLOCK.createWithContext(reader, value);
       }
-    }
-
-    @Override
-    public boolean equals(final Object obj) {
-      return this == obj && getClass() == obj.getClass() && super.equals(obj);
     }
 
     @Override
@@ -531,11 +476,6 @@ public class MiscArguments {
     }
 
     @Override
-    public boolean equals(final Object obj) {
-      return this == obj && getClass() == obj.getClass() && super.equals(obj);
-    }
-
-    @Override
     public String toString() {
       return "AdvancementArgument []";
     }
@@ -571,11 +511,6 @@ public class MiscArguments {
         reader.setCursor(start);
         throw INVALID_ENCHANTMENT.createWithContext(reader, value);
       }
-    }
-
-    @Override
-    public boolean equals(final Object obj) {
-      return this == obj && getClass() == obj.getClass() && super.equals(obj);
     }
 
     @Override
@@ -618,11 +553,6 @@ public class MiscArguments {
     }
 
     @Override
-    public boolean equals(final Object obj) {
-      return this == obj && getClass() == obj.getClass() && super.equals(obj);
-    }
-
-    @Override
     public String toString() {
       return "LootTableArgument []";
     }
@@ -658,11 +588,6 @@ public class MiscArguments {
         reader.setCursor(start);
         throw INVALID_LOOTTABLE.createWithContext(reader, value);
       }
-    }
-
-    @Override
-    public boolean equals(final Object obj) {
-      return this == obj && getClass() == obj.getClass() && super.equals(obj);
     }
 
     @Override

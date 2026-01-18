@@ -157,10 +157,10 @@ public abstract class Argument<Type, ArgType> {
 
   @Override
   public boolean equals(final Object obj) {
-    if (this == obj) {
+    if (getInstance() == obj) {
       return true;
     }
-    if (obj == null || getClass() != obj.getClass()) {
+    if (obj == null || getInstance().getClass() != obj.getClass()) {
       return false;
     }
     final Argument<?, ?> other = (Argument<?, ?>) obj;

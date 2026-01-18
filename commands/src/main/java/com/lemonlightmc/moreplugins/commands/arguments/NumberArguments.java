@@ -60,11 +60,6 @@ public class NumberArguments {
     }
 
     @Override
-    public boolean equals(final Object obj) {
-      return this == obj && getClass() == obj.getClass() && super.equals(obj);
-    }
-
-    @Override
     public String toString() {
       return "BoolArgument []";
     }
@@ -121,10 +116,7 @@ public class NumberArguments {
 
     @Override
     public boolean equals(final Object obj) {
-      if (this == obj) {
-        return true;
-      }
-      if (!super.equals(obj) || getClass() != obj.getClass()) {
+      if (!super.equals(obj)) {
         return false;
       }
       final IntegerArgument other = (IntegerArgument) obj;
@@ -188,10 +180,7 @@ public class NumberArguments {
 
     @Override
     public boolean equals(final Object obj) {
-      if (this == obj) {
-        return true;
-      }
-      if (!super.equals(obj) || getClass() != obj.getClass()) {
+      if (!super.equals(obj)) {
         return false;
       }
       final LongArgument other = (LongArgument) obj;
@@ -255,10 +244,7 @@ public class NumberArguments {
 
     @Override
     public boolean equals(final Object obj) {
-      if (this == obj) {
-        return true;
-      }
-      if (!super.equals(obj) || getClass() != obj.getClass()) {
+      if (!super.equals(obj)) {
         return false;
       }
       final FloatArgument other = (FloatArgument) obj;
@@ -322,10 +308,7 @@ public class NumberArguments {
 
     @Override
     public boolean equals(final Object obj) {
-      if (this == obj) {
-        return true;
-      }
-      if (!super.equals(obj) || getClass() != obj.getClass()) {
+      if (!super.equals(obj)) {
         return false;
       }
       final DoubleArgument other = (DoubleArgument) obj;
@@ -367,11 +350,6 @@ public class NumberArguments {
     }
 
     @Override
-    public boolean equals(final Object obj) {
-      return this == obj && getClass() == obj.getClass() && super.equals(obj);
-    }
-
-    @Override
     public String toString() {
       return "IntegerRangeArgument []";
     }
@@ -403,11 +381,6 @@ public class NumberArguments {
         reader.resetCursor();
         throw INVALID_RANGE.createWithContext(reader, value);
       }
-    }
-
-    @Override
-    public boolean equals(final Object obj) {
-      return this == obj && getClass() == obj.getClass() && super.equals(obj);
     }
 
     @Override
@@ -445,11 +418,6 @@ public class NumberArguments {
     }
 
     @Override
-    public boolean equals(final Object obj) {
-      return this == obj && getClass() == obj.getClass() && super.equals(obj);
-    }
-
-    @Override
     public String toString() {
       return "FloatRangeArgument []";
     }
@@ -481,11 +449,6 @@ public class NumberArguments {
         reader.resetCursor();
         throw INVALID_RANGE.createWithContext(reader, value);
       }
-    }
-
-    @Override
-    public boolean equals(final Object obj) {
-      return this == obj && getClass() == obj.getClass() && super.equals(obj);
     }
 
     @Override
@@ -578,10 +541,7 @@ public class NumberArguments {
 
     @Override
     public boolean equals(final Object obj) {
-      if (this == obj) {
-        return true;
-      }
-      if (!super.equals(obj) || getClass() != obj.getClass()) {
+      if (!super.equals(obj)) {
         return false;
       }
       final LocationArgument other = (LocationArgument) obj;
@@ -671,10 +631,7 @@ public class NumberArguments {
 
     @Override
     public boolean equals(final Object obj) {
-      if (this == obj) {
-        return true;
-      }
-      if (!super.equals(obj) || getClass() != obj.getClass()) {
+      if (!super.equals(obj)) {
         return false;
       }
       final LocationArgument other = (LocationArgument) obj;
@@ -716,11 +673,6 @@ public class NumberArguments {
         reader.resetCursor();
         throw INVALID_AXIS.createWithContext(reader, value);
       }
-    }
-
-    @Override
-    public boolean equals(final Object obj) {
-      return this == obj && getClass() == obj.getClass() && super.equals(obj);
     }
 
     @Override
@@ -767,11 +719,6 @@ public class NumberArguments {
     }
 
     @Override
-    public boolean equals(final Object obj) {
-      return this == obj && getClass() == obj.getClass() && super.equals(obj);
-    }
-
-    @Override
     public String toString() {
       return "MultiAxisArgument []";
     }
@@ -811,11 +758,6 @@ public class NumberArguments {
     }
 
     @Override
-    public boolean equals(final Object obj) {
-      return this == obj && getClass() == obj.getClass() && super.equals(obj);
-    }
-
-    @Override
     public String toString() {
       return "RotationArgument []";
     }
@@ -849,11 +791,6 @@ public class NumberArguments {
         reader.resetCursor();
         throw INVALID_OPERATION.createWithContext(reader, value);
       }
-    }
-
-    @Override
-    public boolean equals(final Object obj) {
-      return this == obj && getClass() == obj.getClass() && super.equals(obj);
     }
 
     @Override

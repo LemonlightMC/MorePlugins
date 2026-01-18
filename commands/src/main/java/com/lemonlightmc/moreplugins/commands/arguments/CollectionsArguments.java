@@ -126,10 +126,7 @@ public class CollectionsArguments {
 
     @Override
     public boolean equals(final Object obj) {
-      if (this == obj) {
-        return true;
-      }
-      if (!super.equals(obj) || getClass() != obj.getClass()) {
+      if (!super.equals(obj)) {
         return false;
       }
       final DynamicListArgument other = (DynamicListArgument) obj;
@@ -234,8 +231,7 @@ public class CollectionsArguments {
 
     @Override
     public int hashCode() {
-      int result = super.hashCode();
-      result = 31 * result + delimiter;
+      int result = 31 * super.hashCode() + delimiter;
       result = 31 * result + (allowDuplicates ? 1231 : 1237);
       result = 31 * result + ((values == null) ? 0 : values.hashCode());
       result = 31 * result + ((mapping == null) ? 0 : mapping.hashCode());
@@ -244,10 +240,7 @@ public class CollectionsArguments {
 
     @Override
     public boolean equals(final Object obj) {
-      if (this == obj) {
-        return true;
-      }
-      if (!super.equals(obj) || getClass() != obj.getClass()) {
+      if (!super.equals(obj)) {
         return false;
       }
       final StaticListArgument other = (StaticListArgument) obj;
@@ -358,10 +351,7 @@ public class CollectionsArguments {
 
     @Override
     public boolean equals(final Object obj) {
-      if (this == obj) {
-        return true;
-      }
-      if (!super.equals(obj) || getClass() != obj.getClass()) {
+      if (!super.equals(obj)) {
         return false;
       }
       final ListArgumentBuilder<?> other = (ListArgumentBuilder<?>) obj;

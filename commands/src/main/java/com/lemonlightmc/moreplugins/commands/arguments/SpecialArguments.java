@@ -121,8 +121,10 @@ public class SpecialArguments {
 
     @Override
     public boolean equals(final Object obj) {
-      return this == obj && getClass() == obj.getClass() && super.equals(obj)
-          && branches.equals(((BranchArgument) obj).branches);
+      if (!super.equals(obj)) {
+        return false;
+      }
+      return branches.equals(((BranchArgument) obj).branches);
     }
 
     @Override
@@ -174,11 +176,6 @@ public class SpecialArguments {
         reader.resetCursor();
         throw e;
       }
-    }
-
-    @Override
-    public boolean equals(final Object obj) {
-      return this == obj && getClass() == obj.getClass() && super.equals(obj);
     }
 
     @Override
@@ -242,10 +239,7 @@ public class SpecialArguments {
 
     @Override
     public boolean equals(final Object obj) {
-      if (this == obj) {
-        return true;
-      }
-      if (!super.equals(obj) || getClass() != obj.getClass()) {
+      if (!super.equals(obj)) {
         return false;
       }
       final LiteralArgument other = (LiteralArgument) obj;
@@ -319,10 +313,7 @@ public class SpecialArguments {
 
     @Override
     public boolean equals(final Object obj) {
-      if (this == obj) {
-        return true;
-      }
-      if (!super.equals(obj) || getClass() != obj.getClass()) {
+      if (!super.equals(obj)) {
         return false;
       }
       final MultiLiteralArgument other = (MultiLiteralArgument) obj;
@@ -377,10 +368,7 @@ public class SpecialArguments {
 
     @Override
     public boolean equals(final Object obj) {
-      if (this == obj) {
-        return true;
-      }
-      if (!super.equals(obj) || getClass() != obj.getClass()) {
+      if (!super.equals(obj)) {
         return false;
       }
       final DynamicMultiLiteralArgument other = (DynamicMultiLiteralArgument) obj;

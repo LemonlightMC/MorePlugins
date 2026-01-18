@@ -55,11 +55,6 @@ public class ScoreArguments {
     }
 
     @Override
-    public boolean equals(final Object obj) {
-      return this == obj && getClass() == obj.getClass() && super.equals(obj);
-    }
-
-    @Override
     public String toString() {
       return "TeamArgument []";
     }
@@ -95,11 +90,6 @@ public class ScoreArguments {
         reader.resetCursor();
         throw INVALID_SLOT.createWithContext(reader, value);
       }
-    }
-
-    @Override
-    public boolean equals(final Object obj) {
-      return this == obj && getClass() == obj.getClass() && super.equals(obj);
     }
 
     @Override
@@ -157,11 +147,6 @@ public class ScoreArguments {
     }
 
     @Override
-    public boolean equals(final Object obj) {
-      return this == obj && getClass() == obj.getClass() && super.equals(obj);
-    }
-
-    @Override
     public String toString() {
       return "ObjectiveArgument []";
     }
@@ -199,11 +184,6 @@ public class ScoreArguments {
         reader.resetCursor();
         throw INVALID_CRITERIA.createWithContext(reader, value);
       }
-    }
-
-    @Override
-    public boolean equals(final Object obj) {
-      return this == obj && getClass() == obj.getClass() && super.equals(obj);
     }
 
     @Override

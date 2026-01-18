@@ -51,11 +51,6 @@ public class EntityArguments {
     }
 
     @Override
-    public boolean equals(final Object obj) {
-      return this == obj && getClass() == obj.getClass() && super.equals(obj);
-    }
-
-    @Override
     public String toString() {
       return "PlayerArgument []";
     }
@@ -87,11 +82,6 @@ public class EntityArguments {
         reader.resetCursor();
         throw INVALID_PLAYER.createWithContext(reader, value);
       }
-    }
-
-    @Override
-    public boolean equals(final Object obj) {
-      return this == obj && getClass() == obj.getClass() && super.equals(obj);
     }
 
     @Override
@@ -127,11 +117,6 @@ public class EntityArguments {
         reader.resetCursor();
         throw INVALID_PLAYER.createWithContext(reader, value);
       }
-    }
-
-    @Override
-    public boolean equals(final Object obj) {
-      return this == obj && getClass() == obj.getClass() && super.equals(obj);
     }
 
     @Override
