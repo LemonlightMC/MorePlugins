@@ -10,9 +10,6 @@ import java.util.Map;
 import java.util.regex.Pattern;
 import org.bukkit.Bukkit;
 import org.bukkit.GameRule;
-import org.bukkit.Keyed;
-import org.bukkit.NamespacedKey;
-import org.bukkit.Registry;
 import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
@@ -196,21 +193,4 @@ public class Utils {
     }
   }
 
-  public static <T extends Keyed> String[] mapRegistry(final Registry<T> registry) {
-    return registry.stream().map((final T b) -> {
-      final NamespacedKey key = b.getKey();
-      return key == null ? null : key.toString();
-    }).filter((s) -> s != null).toArray(String[]::new);
-  }
-
-  public static <T> String[] mapRegistry(final T[] registry) {
-    final String[] arr = new String[registry.length];
-    for (int i = 0; i < registry.length; i++) {
-      final T t = registry[i];
-      if (t != null) {
-        arr[i] = t.toString();
-      }
-    }
-    return arr;
-  }
 }

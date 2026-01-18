@@ -78,6 +78,11 @@ public enum ArgumentType {
   WORLD(),
   ENVIRONMENT(),
   DIMENSION(), // wont implemented
+  LOOK_ANCHOR(),
+  GAME_MODE(),
+  STRUCTURE(),
+  STRUCTURE_TYPE(),
+  ATTRIBUTE(),
 
   COMMAND(),
   CUSTOM, // Not implemented

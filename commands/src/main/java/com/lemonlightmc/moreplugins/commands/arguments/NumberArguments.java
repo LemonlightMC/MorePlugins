@@ -8,7 +8,6 @@ import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 
 import com.lemonlightmc.moreplugins.commands.CommandSource;
-import com.lemonlightmc.moreplugins.commands.Utils;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.Argument;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.ArgumentType;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.CommandArguments;
@@ -18,7 +17,6 @@ import com.lemonlightmc.moreplugins.commands.exceptions.CommandSyntaxException.*
 import com.lemonlightmc.moreplugins.commands.exceptions.CommandSyntaxException;
 import com.lemonlightmc.moreplugins.exceptions.DynamicExceptionFunction.Dynamic1ExceptionFunktion;
 import com.lemonlightmc.moreplugins.math.Location2D;
-import com.lemonlightmc.moreplugins.math.MathOperation;
 import com.lemonlightmc.moreplugins.math.Rotation;
 import com.lemonlightmc.moreplugins.math.ranges.*;
 
@@ -763,39 +761,4 @@ public class NumberArguments {
     }
   }
 
-  public static class MathOperationArgument extends Argument<MathOperation, MathOperationArgument> {
-    public static final String[] NAMES = Utils.mapRegistry(MathOperation.values());
-
-    private static final DynamicCommandException<Dynamic1ExceptionFunktion> INVALID_OPERATION = new DynamicCommandException<Dynamic1ExceptionFunktion>(
-        value -> "Invalid MathOperation '" + value + "'");
-
-    public MathOperationArgument(final String name) {
-      super(name, MathOperation.class, ArgumentType.MATH_OPERATION);
-      withSuggestions("true", "false");
-    }
-
-    public MathOperationArgument getInstance() {
-      return this;
-    }
-
-    @Override
-    public MathOperation parseArgument(final CommandSource<CommandSender> source, final StringReader reader,
-        final String key, final CommandArguments previousArgs)
-        throws CommandSyntaxException {
-      reader.point();
-      String value = null;
-      try {
-        value = reader.readString();
-        return Objects.requireNonNull(MathOperation.fromString(value));
-      } catch (final Exception e) {
-        reader.resetCursor();
-        throw INVALID_OPERATION.createWithContext(reader, value);
-      }
-    }
-
-    @Override
-    public String toString() {
-      return "MathOperationArgument []";
-    }
-  }
 }

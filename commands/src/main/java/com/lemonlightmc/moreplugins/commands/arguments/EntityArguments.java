@@ -1,16 +1,11 @@
 package com.lemonlightmc.moreplugins.commands.arguments;
 
-import java.util.Objects;
-
 import org.bukkit.Bukkit;
-import org.bukkit.Registry;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.profile.PlayerProfile;
 
 import com.lemonlightmc.moreplugins.commands.CommandSource;
-import com.lemonlightmc.moreplugins.commands.Utils;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.Argument;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.ArgumentType;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.CommandArguments;
@@ -90,38 +85,4 @@ public class EntityArguments {
     }
   }
 
-  public static class EntityTypeArgument extends Argument<EntityType, EntityTypeArgument> {
-    private static final DynamicCommandException<Dynamic1ExceptionFunktion> INVALID_PLAYER = new DynamicCommandException<Dynamic1ExceptionFunktion>(
-        value -> "Invalid EntityType '" + value + "'");
-    public static final String[] NAMES = Utils.mapRegistry(Registry.ENTITY_TYPE);
-
-    public EntityTypeArgument(final String name) {
-      super(name, EntityType.class, ArgumentType.ENTITY_TYPE);
-      withSuggestions(NAMES);
-    }
-
-    public EntityTypeArgument getInstance() {
-      return this;
-    }
-
-    @Override
-    public EntityType parseArgument(final CommandSource<CommandSender> source, final StringReader reader,
-        final String key, final CommandArguments previousArgs)
-        throws CommandSyntaxException {
-      reader.point();
-      String value = null;
-      try {
-        value = reader.readString();
-        return Objects.requireNonNull(EntityType.valueOf(value));
-      } catch (final Exception e) {
-        reader.resetCursor();
-        throw INVALID_PLAYER.createWithContext(reader, value);
-      }
-    }
-
-    @Override
-    public String toString() {
-      return "EntityTypeArgument []";
-    }
-  }
 }
