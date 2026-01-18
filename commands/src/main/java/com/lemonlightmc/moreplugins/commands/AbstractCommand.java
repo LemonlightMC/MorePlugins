@@ -290,7 +290,7 @@ public abstract class AbstractCommand<T extends AbstractCommand<T>> extends Exec
     if (requirements == null) {
       return true;
     }
-    if (requirements == null || !requirements.test(sender.sender())) {
+    if (requirements != null || !requirements.test(sender.sender())) {
       ChatAPI.send(sender.sender(), CommandManager.getRequirementsMessage());
       return false;
     }
