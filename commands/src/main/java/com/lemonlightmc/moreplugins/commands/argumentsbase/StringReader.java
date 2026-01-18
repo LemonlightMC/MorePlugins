@@ -141,11 +141,15 @@ public class StringReader {
   }
 
   public int getPoint() {
-    return points.peek();
+    return points.getLast();
   }
 
   public Integer[] getAllPoints() {
     return points.toArray(Integer[]::new);
+  }
+
+  public void revokePoint() {
+    points.pollLast();
   }
 
   public int getRemainingLength() {
@@ -162,6 +166,14 @@ public class StringReader {
 
   public String getRemaining() {
     return string.substring(cursor);
+  }
+
+  public String getSubString(int start, int end) {
+    return string.substring(start, end);
+  }
+
+  public String getLastRead() {
+    return string.substring(getPoint(), cursor);
   }
 
   public boolean canRead(final int length) {

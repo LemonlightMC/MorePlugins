@@ -15,7 +15,6 @@ import com.lemonlightmc.moreplugins.commands.CommandManager;
 import com.lemonlightmc.moreplugins.commands.CommandSource;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.Argument;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.ArgumentType;
-import com.lemonlightmc.moreplugins.commands.argumentsbase.CommandArguments;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.CommandResult;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.StringReader;
 import com.lemonlightmc.moreplugins.commands.exceptions.InvalidArgumentBranchException;
@@ -99,8 +98,7 @@ public class SpecialArguments {
     }
 
     @Override
-    public Boolean parseArgument(final CommandSource<CommandSender> source, final StringReader reader, final String key,
-        final CommandArguments previousArgs)
+    public Boolean parseArgument(final CommandSource<CommandSender> source, final StringReader reader, final String key)
         throws CommandSyntaxException {
       reader.point();
       try {
@@ -154,8 +152,7 @@ public class SpecialArguments {
 
     @Override
     public CommandResult parseArgument(final CommandSource<CommandSender> source, final StringReader reader,
-        final String key,
-        final CommandArguments previousArgs)
+        final String key)
         throws CommandSyntaxException {
       reader.point();
       try {
@@ -214,8 +211,7 @@ public class SpecialArguments {
     }
 
     @Override
-    public String parseArgument(final CommandSource<CommandSender> source, final StringReader reader, final String key,
-        final CommandArguments previousArgs)
+    public String parseArgument(final CommandSource<CommandSender> source, final StringReader reader, final String key)
         throws CommandSyntaxException {
       return literal;
     }
@@ -288,8 +284,7 @@ public class SpecialArguments {
     }
 
     @Override
-    public String parseArgument(final CommandSource<CommandSender> source, final StringReader reader, final String key,
-        final CommandArguments previousArgs)
+    public String parseArgument(final CommandSource<CommandSender> source, final StringReader reader, final String key)
         throws CommandSyntaxException {
       throw new UnsupportedOperationException("Cant parse MultiLiteral");
     }
@@ -343,8 +338,7 @@ public class SpecialArguments {
     }
 
     @Override
-    public String parseArgument(final CommandSource<CommandSender> source, final StringReader reader, final String key,
-        final CommandArguments previousArgs)
+    public String parseArgument(final CommandSource<CommandSender> source, final StringReader reader, final String key)
         throws CommandSyntaxException {
       throw new UnsupportedOperationException("Cant parse MultiLiteral");
     }

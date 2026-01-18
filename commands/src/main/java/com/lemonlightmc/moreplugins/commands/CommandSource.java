@@ -6,6 +6,8 @@ import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
 
+import com.lemonlightmc.moreplugins.commands.exceptions.CommandSyntaxException;
+
 public class CommandSource<S extends CommandSender> {
 
   private final S sender;
@@ -51,6 +53,10 @@ public class CommandSource<S extends CommandSender> {
 
   public boolean hasPermission(final String perm) {
     return perm == null || perm.length() == 0 || sender.hasPermission(perm);
+  }
+
+  public void sendError(final CommandSyntaxException e) {
+    sender.sendMessage(e.getMessage());
   }
 
   public static Location getLocation(final CommandSender sender) {

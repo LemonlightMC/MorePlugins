@@ -16,7 +16,6 @@ import org.bukkit.loot.LootTables;
 import com.lemonlightmc.moreplugins.commands.CommandSource;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.Argument;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.ArgumentType;
-import com.lemonlightmc.moreplugins.commands.argumentsbase.CommandArguments;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.LookAnchor;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.StringReader;
 import com.lemonlightmc.moreplugins.commands.exceptions.CommandSyntaxException;
@@ -42,8 +41,7 @@ public class MiscArguments {
     }
 
     @Override
-    public World parseArgument(final CommandSource<CommandSender> source, final StringReader reader, final String key,
-        final CommandArguments previousArgs)
+    public World parseArgument(final CommandSource<CommandSender> source, final StringReader reader, final String key)
         throws CommandSyntaxException {
       final int start = reader.getCursor();
       String value = null;
@@ -70,7 +68,7 @@ public class MiscArguments {
 
     @Override
     public Duration parseArgument(final CommandSource<CommandSender> source, final StringReader reader,
-        final String key, final CommandArguments previousArgs)
+        final String key)
         throws CommandSyntaxException {
       final int start = reader.getCursor();
       String value = null;
@@ -97,7 +95,7 @@ public class MiscArguments {
 
     @Override
     public NamespacedKey parseArgument(final CommandSource<CommandSender> source, final StringReader reader,
-        final String key, final CommandArguments previousArgs)
+        final String key)
         throws CommandSyntaxException {
       final int start = reader.getCursor();
       String value = null;
@@ -124,7 +122,7 @@ public class MiscArguments {
 
     @Override
     public BlockState parseArgument(final CommandSource<CommandSender> source, final StringReader reader,
-        final String key, final CommandArguments previousArgs)
+        final String key)
         throws CommandSyntaxException {
       final int start = reader.getCursor();
       String value = null;
@@ -154,8 +152,7 @@ public class MiscArguments {
 
     @Override
     public LootTable parseArgument(final CommandSource<CommandSender> source, final StringReader reader,
-        final String key,
-        final CommandArguments previousArgs)
+        final String key)
         throws CommandSyntaxException {
       final int start = reader.getCursor();
       String value = null;
@@ -186,8 +183,7 @@ public class MiscArguments {
 
     @Override
     public Environment parseArgument(final CommandSource<CommandSender> source, final StringReader reader,
-        final String key,
-        final CommandArguments previousArgs)
+        final String key)
         throws CommandSyntaxException {
       final int start = reader.getCursor();
       String value = null;
@@ -217,8 +213,7 @@ public class MiscArguments {
 
     @Override
     public GameMode parseArgument(final CommandSource<CommandSender> source, final StringReader reader,
-        final String key,
-        final CommandArguments previousArgs)
+        final String key)
         throws CommandSyntaxException {
       final int start = reader.getCursor();
       String value = null;
@@ -248,8 +243,7 @@ public class MiscArguments {
 
     @Override
     public LookAnchor parseArgument(final CommandSource<CommandSender> source, final StringReader reader,
-        final String key,
-        final CommandArguments previousArgs)
+        final String key)
         throws CommandSyntaxException {
       final int start = reader.getCursor();
       String value = null;
@@ -278,7 +272,7 @@ public class MiscArguments {
 
     @Override
     public MathOperation parseArgument(final CommandSource<CommandSender> source, final StringReader reader,
-        final String key, final CommandArguments previousArgs)
+        final String key)
         throws CommandSyntaxException {
       reader.point();
       String value = null;

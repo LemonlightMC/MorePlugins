@@ -10,7 +10,6 @@ import org.bukkit.command.CommandSender;
 import com.lemonlightmc.moreplugins.commands.CommandSource;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.Argument;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.ArgumentType;
-import com.lemonlightmc.moreplugins.commands.argumentsbase.CommandArguments;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.LocationType;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.StringReader;
 import com.lemonlightmc.moreplugins.commands.exceptions.CommandSyntaxException;
@@ -42,8 +41,7 @@ public class NumberArguments {
     }
 
     @Override
-    public Boolean parseArgument(final CommandSource<CommandSender> source, final StringReader reader, final String key,
-        final CommandArguments previousArgs)
+    public Boolean parseArgument(final CommandSource<CommandSender> source, final StringReader reader, final String key)
         throws CommandSyntaxException {
       reader.point();
       try {
@@ -80,8 +78,7 @@ public class NumberArguments {
     }
 
     @Override
-    public Integer parseArgument(final CommandSource<CommandSender> source, final StringReader reader, final String key,
-        final CommandArguments previousArgs)
+    public Integer parseArgument(final CommandSource<CommandSender> source, final StringReader reader, final String key)
         throws CommandSyntaxException {
       reader.point();
       int value = 0;
@@ -145,8 +142,7 @@ public class NumberArguments {
     }
 
     @Override
-    public Long parseArgument(final CommandSource<CommandSender> source, final StringReader reader, final String key,
-        final CommandArguments previousArgs)
+    public Long parseArgument(final CommandSource<CommandSender> source, final StringReader reader, final String key)
         throws CommandSyntaxException {
       reader.point();
       long value = 0;
@@ -210,8 +206,7 @@ public class NumberArguments {
     }
 
     @Override
-    public Float parseArgument(final CommandSource<CommandSender> source, final StringReader reader, final String key,
-        final CommandArguments previousArgs)
+    public Float parseArgument(final CommandSource<CommandSender> source, final StringReader reader, final String key)
         throws CommandSyntaxException {
       reader.point();
       float value = 0;
@@ -275,8 +270,7 @@ public class NumberArguments {
     }
 
     @Override
-    public Double parseArgument(final CommandSource<CommandSender> source, final StringReader reader, final String key,
-        final CommandArguments previousArgs)
+    public Double parseArgument(final CommandSource<CommandSender> source, final StringReader reader, final String key)
         throws CommandSyntaxException {
       reader.point();
       double value = 0;
@@ -331,7 +325,7 @@ public class NumberArguments {
 
     @Override
     public IntegerRange parseArgument(final CommandSource<CommandSender> source, final StringReader reader,
-        final String key, final CommandArguments previousArgs)
+        final String key)
         throws CommandSyntaxException {
       reader.point();
       String value = null;
@@ -361,7 +355,7 @@ public class NumberArguments {
 
     @Override
     public LongRange parseArgument(final CommandSource<CommandSender> source, final StringReader reader,
-        final String key, final CommandArguments previousArgs)
+        final String key)
         throws CommandSyntaxException {
       reader.point();
       String value = null;
@@ -391,7 +385,7 @@ public class NumberArguments {
 
     @Override
     public FloatRange parseArgument(final CommandSource<CommandSender> source, final StringReader reader,
-        final String key, final CommandArguments previousArgs)
+        final String key)
         throws CommandSyntaxException {
       reader.point();
       String value = null;
@@ -421,7 +415,7 @@ public class NumberArguments {
 
     @Override
     public DoubleRange parseArgument(final CommandSource<CommandSender> source, final StringReader reader,
-        final String key, final CommandArguments previousArgs)
+        final String key)
         throws CommandSyntaxException {
       reader.point();
       String value = null;
@@ -484,7 +478,7 @@ public class NumberArguments {
 
     @Override
     public Location parseArgument(final CommandSource<CommandSender> source, final StringReader reader,
-        final String key, final CommandArguments previousArgs)
+        final String key)
         throws CommandSyntaxException {
       reader.point();
       double x = 0;
@@ -580,7 +574,7 @@ public class NumberArguments {
 
     @Override
     public Location2D parseArgument(final CommandSource<CommandSender> source, final StringReader reader,
-        final String key, final CommandArguments previousArgs)
+        final String key)
         throws CommandSyntaxException {
       reader.point();
       double x = 0;
@@ -640,8 +634,7 @@ public class NumberArguments {
     }
 
     @Override
-    public Axis parseArgument(final CommandSource<CommandSender> source, final StringReader reader, final String key,
-        final CommandArguments previousArgs)
+    public Axis parseArgument(final CommandSource<CommandSender> source, final StringReader reader, final String key)
         throws CommandSyntaxException {
       reader.point();
       String value = null;
@@ -675,7 +668,7 @@ public class NumberArguments {
 
     @Override
     public EnumSet<Axis> parseArgument(final CommandSource<CommandSender> source, final StringReader reader,
-        final String key, final CommandArguments previousArgs)
+        final String key)
         throws CommandSyntaxException {
       reader.point();
       String value = null;
@@ -713,7 +706,7 @@ public class NumberArguments {
 
     @Override
     public Rotation parseArgument(final CommandSource<CommandSender> source, final StringReader reader,
-        final String key, final CommandArguments previousArgs)
+        final String key)
         throws CommandSyntaxException {
       reader.point();
       double yaw = 0;

@@ -43,8 +43,7 @@ public abstract class Argument<Type, ArgType> {
     return new CommandSyntaxException(reader, "Invalid Value '" + value + "' for Argument '" + name + "'");
   }
 
-  public abstract Type parseArgument(CommandSource<CommandSender> source, StringReader reader, String key,
-      CommandArguments previousArgs)
+  public abstract Type parseArgument(CommandSource<CommandSender> source, StringReader reader, String key)
       throws CommandSyntaxException;
 
   public String getName() {

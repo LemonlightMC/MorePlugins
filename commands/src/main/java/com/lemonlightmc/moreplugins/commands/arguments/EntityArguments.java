@@ -8,7 +8,6 @@ import org.bukkit.profile.PlayerProfile;
 import com.lemonlightmc.moreplugins.commands.CommandSource;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.Argument;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.ArgumentType;
-import com.lemonlightmc.moreplugins.commands.argumentsbase.CommandArguments;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.StringReader;
 import com.lemonlightmc.moreplugins.commands.suggestions.Suggestions;
 import com.lemonlightmc.moreplugins.commands.exceptions.CommandSyntaxException;
@@ -28,8 +27,7 @@ public class EntityArguments {
     }
 
     @Override
-    public Player parseArgument(final CommandSource<CommandSender> source, final StringReader reader, final String key,
-        final CommandArguments previousArgs)
+    public Player parseArgument(final CommandSource<CommandSender> source, final StringReader reader, final String key)
         throws CommandSyntaxException {
       reader.point();
       String value = null;
@@ -55,7 +53,7 @@ public class EntityArguments {
 
     @Override
     public PlayerProfile parseArgument(final CommandSource<CommandSender> source, final StringReader reader,
-        final String key, final CommandArguments previousArgs)
+        final String key)
         throws CommandSyntaxException {
       reader.point();
       String value = null;

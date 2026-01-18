@@ -12,7 +12,6 @@ import org.bukkit.scoreboard.Team;
 import com.lemonlightmc.moreplugins.commands.CommandSource;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.Argument;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.ArgumentType;
-import com.lemonlightmc.moreplugins.commands.argumentsbase.CommandArguments;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.ScoreboardSlot;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.StringReader;
 import com.lemonlightmc.moreplugins.commands.suggestions.Suggestions;
@@ -34,8 +33,7 @@ public class ScoreArguments {
     }
 
     @Override
-    public Team parseArgument(final CommandSource<CommandSender> source, final StringReader reader, final String key,
-        final CommandArguments previousArgs)
+    public Team parseArgument(final CommandSource<CommandSender> source, final StringReader reader, final String key)
         throws CommandSyntaxException {
       reader.point();
       String value = null;
@@ -66,8 +64,7 @@ public class ScoreArguments {
 
     @Override
     public ScoreboardSlot parseArgument(final CommandSource<CommandSender> source, final StringReader reader,
-        final String key,
-        final CommandArguments previousArgs)
+        final String key)
         throws CommandSyntaxException {
       reader.point();
       String value = null;
@@ -100,8 +97,7 @@ public class ScoreArguments {
 
     @Override
     public Objective parseArgument(final CommandSource<CommandSender> source, final StringReader reader,
-        final String key,
-        final CommandArguments previousArgs)
+        final String key)
         throws CommandSyntaxException {
       reader.point();
       String value = null;
@@ -148,8 +144,7 @@ public class ScoreArguments {
 
     @Override
     public Criteria parseArgument(final CommandSource<CommandSender> source, final StringReader reader,
-        final String key,
-        final CommandArguments previousArgs)
+        final String key)
         throws CommandSyntaxException {
       reader.point();
       String value = null;

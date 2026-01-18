@@ -14,7 +14,6 @@ import com.lemonlightmc.moreplugins.commands.CommandSource;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.Argument;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.ArgumentType;
 import com.lemonlightmc.moreplugins.commands.suggestions.Suggestions;
-import com.lemonlightmc.moreplugins.commands.argumentsbase.CommandArguments;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.StringReader;
 import com.lemonlightmc.moreplugins.commands.exceptions.CommandSyntaxException;
 import com.lemonlightmc.moreplugins.commands.exceptions.CommandSyntaxException.CommandSyntaxExceptionContainer;
@@ -83,8 +82,7 @@ public class CollectionsArguments {
     }
 
     @Override
-    public List<T> parseArgument(final CommandSource<CommandSender> source, final StringReader reader, final String key,
-        final CommandArguments previousArgs)
+    public List<T> parseArgument(final CommandSource<CommandSender> source, final StringReader reader, final String key)
         throws CommandSyntaxException {
 
       reader.point();
@@ -202,8 +200,7 @@ public class CollectionsArguments {
     }
 
     @Override
-    public List<T> parseArgument(final CommandSource<CommandSender> source, final StringReader reader, final String key,
-        final CommandArguments previousArgs)
+    public List<T> parseArgument(final CommandSource<CommandSender> source, final StringReader reader, final String key)
         throws CommandSyntaxException {
 
       reader.point();

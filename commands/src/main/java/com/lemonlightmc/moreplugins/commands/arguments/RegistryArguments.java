@@ -24,7 +24,6 @@ import org.bukkit.potion.PotionEffectType;
 import com.lemonlightmc.moreplugins.commands.CommandSource;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.Argument;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.ArgumentType;
-import com.lemonlightmc.moreplugins.commands.argumentsbase.CommandArguments;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.ParticleData;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.StringReader;
 import com.lemonlightmc.moreplugins.commands.exceptions.CommandSyntaxException;
@@ -45,8 +44,7 @@ public class RegistryArguments {
     }
 
     @Override
-    public Biome parseArgument(final CommandSource<CommandSender> source, final StringReader reader, final String key,
-        final CommandArguments previousArgs)
+    public Biome parseArgument(final CommandSource<CommandSender> source, final StringReader reader, final String key)
         throws CommandSyntaxException {
       final int start = reader.getCursor();
       String value = null;
@@ -74,8 +72,7 @@ public class RegistryArguments {
     }
 
     @Override
-    public Sound parseArgument(final CommandSource<CommandSender> source, final StringReader reader, final String key,
-        final CommandArguments previousArgs)
+    public Sound parseArgument(final CommandSource<CommandSender> source, final StringReader reader, final String key)
         throws CommandSyntaxException {
       final int start = reader.getCursor();
       String value = null;
@@ -105,8 +102,7 @@ public class RegistryArguments {
 
     @Override
     public ParticleData<?> parseArgument(final CommandSource<CommandSender> source, final StringReader reader,
-        final String key,
-        final CommandArguments previousArgs)
+        final String key)
         throws CommandSyntaxException {
       final int start = reader.getCursor();
       String value = null;
@@ -135,8 +131,7 @@ public class RegistryArguments {
 
     @Override
     public PotionEffectType parseArgument(final CommandSource<CommandSender> source, final StringReader reader,
-        final String key,
-        final CommandArguments previousArgs)
+        final String key)
         throws CommandSyntaxException {
       final int start = reader.getCursor();
       String value = null;
@@ -165,8 +160,7 @@ public class RegistryArguments {
 
     @Override
     public Enchantment parseArgument(final CommandSource<CommandSender> source, final StringReader reader,
-        final String key,
-        final CommandArguments previousArgs)
+        final String key)
         throws CommandSyntaxException {
       final int start = reader.getCursor();
       String value = null;
@@ -196,8 +190,7 @@ public class RegistryArguments {
 
     @Override
     public Advancement parseArgument(final CommandSource<CommandSender> source, final StringReader reader,
-        final String key,
-        final CommandArguments previousArgs)
+        final String key)
         throws CommandSyntaxException {
       final int start = reader.getCursor();
       String value = null;
@@ -225,7 +218,7 @@ public class RegistryArguments {
 
     @Override
     public BlockData parseArgument(final CommandSource<CommandSender> source, final StringReader reader,
-        final String key, final CommandArguments previousArgs)
+        final String key)
         throws CommandSyntaxException {
       final int start = reader.getCursor();
       String value = null;
@@ -254,8 +247,7 @@ public class RegistryArguments {
 
     @Override
     public ItemStack parseArgument(final CommandSource<CommandSender> source, final StringReader reader,
-        final String key,
-        final CommandArguments previousArgs)
+        final String key)
         throws CommandSyntaxException {
       final int start = reader.getCursor();
       String[] value = null;
@@ -292,7 +284,7 @@ public class RegistryArguments {
 
     @Override
     public Material parseArgument(final CommandSource<CommandSender> source, final StringReader reader,
-        final String key, final CommandArguments previousArgs)
+        final String key)
         throws CommandSyntaxException {
       final int start = reader.getCursor();
       String value = null;
@@ -322,8 +314,7 @@ public class RegistryArguments {
 
     @Override
     public Structure parseArgument(final CommandSource<CommandSender> source, final StringReader reader,
-        final String key,
-        final CommandArguments previousArgs)
+        final String key)
         throws CommandSyntaxException {
       final int start = reader.getCursor();
       String value = null;
@@ -353,8 +344,7 @@ public class RegistryArguments {
 
     @Override
     public Attribute parseArgument(final CommandSource<CommandSender> source, final StringReader reader,
-        final String key,
-        final CommandArguments previousArgs)
+        final String key)
         throws CommandSyntaxException {
       final int start = reader.getCursor();
       String value = null;
@@ -384,8 +374,7 @@ public class RegistryArguments {
 
     @Override
     public StructureType parseArgument(final CommandSource<CommandSender> source, final StringReader reader,
-        final String key,
-        final CommandArguments previousArgs)
+        final String key)
         throws CommandSyntaxException {
       final int start = reader.getCursor();
       String value = null;
@@ -414,7 +403,7 @@ public class RegistryArguments {
 
     @Override
     public EntityType parseArgument(final CommandSource<CommandSender> source, final StringReader reader,
-        final String key, final CommandArguments previousArgs)
+        final String key)
         throws CommandSyntaxException {
       reader.point();
       String value = null;

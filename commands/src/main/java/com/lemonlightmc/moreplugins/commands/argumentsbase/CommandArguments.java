@@ -17,24 +17,6 @@ public class CommandArguments {
   public String fullInput;
 
   public CommandArguments(
-      final ParsedArgument[] args,
-      final Map<String, ParsedArgument> argsMap,
-      final String fullInput) {
-    this.args = args;
-    this.argsMap = argsMap;
-    this.fullInput = fullInput;
-  }
-
-  public CommandArguments(
-      final Collection<ParsedArgument> args,
-      final Map<String, ParsedArgument> argsMap,
-      final String fullInput) {
-    this.args = args.toArray(ParsedArgument[]::new);
-    this.argsMap = argsMap;
-    this.fullInput = fullInput;
-  }
-
-  public CommandArguments(
       final Map<String, ParsedArgument> argsMap, final String fullInput) {
     this.args = argsMap.values().toArray(ParsedArgument[]::new);
     this.argsMap = argsMap;

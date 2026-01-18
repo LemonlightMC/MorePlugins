@@ -19,7 +19,6 @@ import com.lemonlightmc.moreplugins.utils.StringUtils;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Stream;
 
 import org.bukkit.Location;
@@ -136,45 +135,32 @@ public class InternalExecutor extends Command {
   }
 
   public CommandArguments parse(final CommandSource<CommandSender> source, final String[] args) {
-    final String fullInput = StringUtils.join(" ", args);
-    final ParserCommandArguments cmd_args = new ParserCommandArguments(null, null, fullInput);
-    final StringReader reader = new StringReader(fullInput);
+    final StringReader reader = new StringReader(StringUtils.join(" ", args));
+    final HashMap<String, ParsedArgument> cmd_args = new HashMap<>();
 
     for (final Argument<?, ?> arg : cmd.getArguments()) {
       if (!arg.isListed()) {
         continue;
       }
 
+      reader.point();
       try {
-        final Object value = arg.parseArgument(source, reader, arg.getName(), cmd_args);
-        cmd_args.add(arg.getName(), new ParsedArgument(arg.getName(), null, value));
-      } catch (final CommandSyntaxException e) {
+        final Object value = arg.parseArgument(source, reader, arg.getName());
+        cmd_args.put(arg.getName(), new ParsedArgument(arg.getName(), reader.getLastRead(), value));
+        reader.revokePoint();
+
+      } catch (CommandSyntaxException e) {
+        source.sendError(e);
+        reader.resetCursor();
+
+      } catch (Exception e) {
+        source.sendError(arg.createError(reader, reader.getLastRead()));
         Logger.warn("Failed to parse Argument " + arg.getName());
         e.printStackTrace();
+        reader.resetCursor();
       }
     }
 
-    return cmd_args.finish();
-  }
-
-  private static class ParserCommandArguments extends CommandArguments {
-
-    public ParserCommandArguments(final String fullInput) {
-      super(new ParsedArgument[] {}, new HashMap<>(), fullInput);
-    }
-
-    public ParserCommandArguments(final ParsedArgument[] args, final Map<String, ParsedArgument> argsMap,
-        final String fullInput) {
-      super(args, argsMap, fullInput);
-    }
-
-    public void add(final String key, final ParsedArgument arg) {
-      argsMap.put(key, arg);
-      args = argsMap.values().toArray(ParsedArgument[]::new);
-    }
-
-    public CommandArguments finish() {
-      return new CommandArguments(args, argsMap, fullInput);
-    }
+    return new CommandArguments(cmd_args, reader.getString());
   }
 }
