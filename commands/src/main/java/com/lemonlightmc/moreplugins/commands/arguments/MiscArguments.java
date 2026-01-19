@@ -43,15 +43,7 @@ public class MiscArguments {
     @Override
     public World parseArgument(final CommandSource<CommandSender> source, final StringReader reader, final String key)
         throws CommandSyntaxException {
-      final int start = reader.getCursor();
-      String value = null;
-      try {
-        value = reader.readString();
-        return Objects.requireNonNull(Bukkit.getWorld(value));
-      } catch (final Exception e) {
-        reader.setCursor(start);
-        throw createError(reader, value);
-      }
+      return Objects.requireNonNull(Bukkit.getWorld(reader.readString()));
     }
   }
 
@@ -70,15 +62,7 @@ public class MiscArguments {
     public Duration parseArgument(final CommandSource<CommandSender> source, final StringReader reader,
         final String key)
         throws CommandSyntaxException {
-      final int start = reader.getCursor();
-      String value = null;
-      try {
-        value = reader.readString();
-        return Duration.ofMillis(DurationParser.parse(value));
-      } catch (final Exception e) {
-        reader.setCursor(start);
-        throw createError(reader, value);
-      }
+      return Duration.ofMillis(DurationParser.parse(reader.readString()));
     }
   }
 
@@ -97,15 +81,7 @@ public class MiscArguments {
     public NamespacedKey parseArgument(final CommandSource<CommandSender> source, final StringReader reader,
         final String key)
         throws CommandSyntaxException {
-      final int start = reader.getCursor();
-      String value = null;
-      try {
-        value = reader.readString();
-        return Objects.requireNonNull(NamespacedKey.fromString(value));
-      } catch (final Exception e) {
-        reader.setCursor(start);
-        throw createError(reader, value);
-      }
+      return Objects.requireNonNull(NamespacedKey.fromString(reader.readString()));
     }
   }
 
@@ -124,15 +100,8 @@ public class MiscArguments {
     public BlockState parseArgument(final CommandSource<CommandSender> source, final StringReader reader,
         final String key)
         throws CommandSyntaxException {
-      final int start = reader.getCursor();
-      String value = null;
-      try {
-        value = reader.readString();
-        return Bukkit.createBlockData(Objects.requireNonNull(Material.getMaterial(value))).createBlockState();
-      } catch (final Exception e) {
-        reader.setCursor(start);
-        throw createError(reader, value);
-      }
+      return Bukkit.createBlockData(Objects.requireNonNull(Material.getMaterial(reader.readString())))
+          .createBlockState();
     }
   }
 
@@ -154,16 +123,8 @@ public class MiscArguments {
     public LootTable parseArgument(final CommandSource<CommandSender> source, final StringReader reader,
         final String key)
         throws CommandSyntaxException {
-      final int start = reader.getCursor();
-      String value = null;
-      try {
-        value = reader.readString();
-        return Objects.requireNonNull(Objects.requireNonNull(
-            LootTables.valueOf(Objects.requireNonNull(value))).getLootTable());
-      } catch (final Exception e) {
-        reader.setCursor(start);
-        throw createError(reader, value);
-      }
+      return Objects.requireNonNull(Objects.requireNonNull(
+          LootTables.valueOf(Objects.requireNonNull(reader.readString()))).getLootTable());
     }
   }
 
@@ -185,15 +146,7 @@ public class MiscArguments {
     public Environment parseArgument(final CommandSource<CommandSender> source, final StringReader reader,
         final String key)
         throws CommandSyntaxException {
-      final int start = reader.getCursor();
-      String value = null;
-      try {
-        value = reader.readString();
-        return Objects.requireNonNull(Environment.valueOf(Objects.requireNonNull(value)));
-      } catch (final Exception e) {
-        reader.setCursor(start);
-        throw createError(reader, value);
-      }
+      return Objects.requireNonNull(Environment.valueOf(Objects.requireNonNull(reader.readString())));
     }
   }
 
@@ -215,15 +168,7 @@ public class MiscArguments {
     public GameMode parseArgument(final CommandSource<CommandSender> source, final StringReader reader,
         final String key)
         throws CommandSyntaxException {
-      final int start = reader.getCursor();
-      String value = null;
-      try {
-        value = reader.readString();
-        return Objects.requireNonNull(GameMode.valueOf(Objects.requireNonNull(value)));
-      } catch (final Exception e) {
-        reader.setCursor(start);
-        throw createError(reader, value);
-      }
+      return Objects.requireNonNull(GameMode.valueOf(Objects.requireNonNull(reader.readString())));
     }
   }
 
@@ -245,15 +190,7 @@ public class MiscArguments {
     public LookAnchor parseArgument(final CommandSource<CommandSender> source, final StringReader reader,
         final String key)
         throws CommandSyntaxException {
-      final int start = reader.getCursor();
-      String value = null;
-      try {
-        value = reader.readString();
-        return Objects.requireNonNull(LookAnchor.valueOf(Objects.requireNonNull(value)));
-      } catch (final Exception e) {
-        reader.setCursor(start);
-        throw createError(reader, value);
-      }
+      return Objects.requireNonNull(LookAnchor.valueOf(Objects.requireNonNull(reader.readString())));
     }
   }
 
@@ -271,7 +208,8 @@ public class MiscArguments {
     }
 
     @Override
-    public MathOperation parseArgument(final CommandSource<CommandSender> source, final StringReader reader,
+    public MathOperation parseArgument(final CommandSource<CommandSender> source,
+        final StringReader reader,
         final String key)
         throws CommandSyntaxException {
       reader.point();

@@ -12,7 +12,6 @@ import com.lemonlightmc.moreplugins.commands.argumentsbase.StringReader;
 import com.lemonlightmc.moreplugins.commands.exceptions.CommandSyntaxException;
 import com.lemonlightmc.moreplugins.commands.suggestions.SuggestionInfo;
 import com.lemonlightmc.moreplugins.commands.suggestions.Suggestions;
-import com.lemonlightmc.moreplugins.messages.Logger;
 import com.lemonlightmc.moreplugins.messages.StringTooltip;
 import com.lemonlightmc.moreplugins.utils.StringUtils;
 
@@ -155,8 +154,6 @@ public class InternalExecutor extends Command {
 
       } catch (Exception e) {
         source.sendError(arg.createError(reader, reader.getLastRead()));
-        Logger.warn("Failed to parse Argument " + arg.getName());
-        e.printStackTrace();
         reader.resetCursor();
       }
     }

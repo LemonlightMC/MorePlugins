@@ -35,18 +35,7 @@ public class ScoreArguments {
     @Override
     public Team parseArgument(final CommandSource<CommandSender> source, final StringReader reader, final String key)
         throws CommandSyntaxException {
-      reader.point();
-      String value = null;
-      try {
-        value = reader.readString();
-        return Objects.requireNonNull(Bukkit.getScoreboardManager().getMainScoreboard().getTeam(value));
-      } catch (final CommandSyntaxException ex) {
-        reader.resetCursor();
-        throw ex;
-      } catch (final Exception e) {
-        reader.resetCursor();
-        throw createError(reader, value);
-      }
+      return Bukkit.getScoreboardManager().getMainScoreboard().getTeam(reader.readString());
     }
   }
 
@@ -66,18 +55,7 @@ public class ScoreArguments {
     public ScoreboardSlot parseArgument(final CommandSource<CommandSender> source, final StringReader reader,
         final String key)
         throws CommandSyntaxException {
-      reader.point();
-      String value = null;
-      try {
-        value = reader.readString();
-        return Objects.requireNonNull(ScoreboardSlot.of(value));
-      } catch (final CommandSyntaxException ex) {
-        reader.resetCursor();
-        throw ex;
-      } catch (final Exception e) {
-        reader.resetCursor();
-        throw createError(reader, value);
-      }
+      return ScoreboardSlot.of(reader.readString());
     }
   }
 
@@ -146,18 +124,7 @@ public class ScoreArguments {
     public Criteria parseArgument(final CommandSource<CommandSender> source, final StringReader reader,
         final String key)
         throws CommandSyntaxException {
-      reader.point();
-      String value = null;
-      try {
-        value = reader.readString();
-        return Objects.requireNonNull(Criteria.create(value));
-      } catch (final CommandSyntaxException ex) {
-        reader.resetCursor();
-        throw ex;
-      } catch (final Exception e) {
-        reader.resetCursor();
-        throw createError(reader, value);
-      }
+      return Objects.requireNonNull(Criteria.create(reader.readString()));
     }
   }
 }

@@ -29,15 +29,7 @@ public class EntityArguments {
     @Override
     public Player parseArgument(final CommandSource<CommandSender> source, final StringReader reader, final String key)
         throws CommandSyntaxException {
-      reader.point();
-      String value = null;
-      try {
-        value = reader.readString();
-        return Bukkit.getPlayerExact(value);
-      } catch (final Exception e) {
-        reader.resetCursor();
-        throw createError(reader, value);
-      }
+      return Bukkit.getPlayerExact(reader.readString());
     }
   }
 
@@ -55,15 +47,7 @@ public class EntityArguments {
     public PlayerProfile parseArgument(final CommandSource<CommandSender> source, final StringReader reader,
         final String key)
         throws CommandSyntaxException {
-      reader.point();
-      String value = null;
-      try {
-        value = reader.readString();
-        return Bukkit.getPlayerExact(value).getPlayerProfile();
-      } catch (final Exception e) {
-        reader.resetCursor();
-        throw createError(reader, value);
-      }
+      return Bukkit.getPlayerExact(reader.readString()).getPlayerProfile();
     }
   }
 

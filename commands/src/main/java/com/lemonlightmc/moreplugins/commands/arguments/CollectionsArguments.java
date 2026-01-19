@@ -19,6 +19,10 @@ import com.lemonlightmc.moreplugins.commands.exceptions.CommandSyntaxException;
 import com.lemonlightmc.moreplugins.commands.exceptions.CommandSyntaxException.CommandSyntaxExceptionContainer;
 
 public class CollectionsArguments {
+  private static final CommandSyntaxExceptionContainer DUPLICATE_ARGUMENTS = new CommandSyntaxExceptionContainer(
+      "Duplicate arguments are not allowed");
+  private static final CommandSyntaxExceptionContainer INVALID_ENTRY = new CommandSyntaxExceptionContainer(
+      (value) -> "Item '" + value + "'' is not allowed in list");
 
   @SuppressWarnings("rawtypes")
   public static abstract class ListArgument<I extends ListArgument<I>> extends Argument<List, I> {
@@ -34,12 +38,6 @@ public class CollectionsArguments {
     private final boolean allowDuplicates;
     private final Supplier<List<T>> supplier;
     private final Function<T, String> mapper;
-    private static final CommandSyntaxExceptionContainer DUPLICATE_ARGUMENTS = new CommandSyntaxExceptionContainer(
-        "Duplicate arguments are not allowed");
-    private static final CommandSyntaxExceptionContainer INVALID_ENTRY = new CommandSyntaxExceptionContainer(
-        (value) -> "Item '" + value + "'' is not allowed in list");
-    private static final CommandSyntaxExceptionContainer INVALID_LIST = new CommandSyntaxExceptionContainer(
-        (value) -> "Invalid List '" + value);
 
     public DynamicListArgument(final String nodeName, final char delimiter, final boolean allowDuplicates,
         final Supplier<List<T>> supplier,
@@ -60,55 +58,43 @@ public class CollectionsArguments {
       return this;
     }
 
+    @Override
+    public CommandSyntaxException createError(final StringReader reader, final String value) {
+      return new CommandSyntaxException(reader, "Invalid List '" + value);
+    }
+
     private Set<String> parseKeys(final StringReader reader) throws CommandSyntaxException {
-      reader.point();
-      String[] strings = null;
-      try {
-        final Set<String> listKeys = new HashSet<>();
-        strings = reader.readList(delimiter);
-        for (int i = 0; i < strings.length; i++) {
-          final String str = strings[i];
-          if (!allowDuplicates && listKeys.contains(str)) {
-            throw DUPLICATE_ARGUMENTS.createWithContext(reader);
-          } else {
-            listKeys.add(str);
-          }
+      final Set<String> listKeys = new HashSet<>();
+      String[] strings = reader.readList(delimiter);
+      for (int i = 0; i < strings.length; i++) {
+        final String str = strings[i];
+        if (!allowDuplicates && listKeys.contains(str)) {
+          throw DUPLICATE_ARGUMENTS.createWithContext(reader);
+        } else {
+          listKeys.add(str);
         }
-        return listKeys;
-      } catch (final Exception e) {
-        reader.resetCursor();
-        throw INVALID_LIST.createWithContext(reader, (Object[]) strings);
       }
+      return listKeys;
+
     }
 
     @Override
     public List<T> parseArgument(final CommandSource<CommandSender> source, final StringReader reader, final String key)
         throws CommandSyntaxException {
-
-      reader.point();
-      Set<String> keys = Set.of();
-      try {
-        keys = parseKeys(reader);
-        final HashMap<String, T> mapping = new HashMap<>();
-        for (final T obj : supplier.get()) {
-          mapping.put(mapper.apply(obj), obj);
-        }
-        final List<T> values = new ArrayList<>();
-        for (final String tempKey : keys) {
-          final T v = mapping.get(tempKey);
-          if (v == null) {
-            throw INVALID_ENTRY.createWithContext(reader);
-          }
-          values.add(v);
-        }
-        return values;
-      } catch (final CommandSyntaxException ex) {
-        reader.resetCursor();
-        throw ex;
-      } catch (final Exception e) {
-        reader.resetCursor();
-        throw INVALID_LIST.createWithContext(reader, keys.toArray());
+      Set<String> keys = parseKeys(reader);
+      final HashMap<String, T> mapping = new HashMap<>();
+      for (final T obj : supplier.get()) {
+        mapping.put(mapper.apply(obj), obj);
       }
+      final List<T> values = new ArrayList<>();
+      for (final String tempKey : keys) {
+        final T v = mapping.get(tempKey);
+        if (v == null) {
+          throw INVALID_ENTRY.createWithContext(reader);
+        }
+        values.add(v);
+      }
+      return values;
     }
 
     @Override
@@ -150,13 +136,6 @@ public class CollectionsArguments {
     private final List<T> values;
     private final HashMap<String, T> mapping;
 
-    private static final CommandSyntaxExceptionContainer DUPLICATE_ARGUMENTS = new CommandSyntaxExceptionContainer(
-        "Duplicate arguments are not allowed");
-    private static final CommandSyntaxExceptionContainer INVALID_ENTRY = new CommandSyntaxExceptionContainer(
-        (value) -> "Item '" + value + "'' is not allowed in list");
-    private static final CommandSyntaxExceptionContainer INVALID_LIST = new CommandSyntaxExceptionContainer(
-        (value) -> "Invalid List '" + value);
-
     public StaticListArgument(final String nodeName, final char delimiter, final boolean allowDuplicates,
         final List<T> values, final Function<T, String> mapper, final ArgumentType type) {
       super(nodeName, List.class, type);
@@ -178,51 +157,38 @@ public class CollectionsArguments {
       return this;
     }
 
+    @Override
+    public CommandSyntaxException createError(final StringReader reader, final String value) {
+      return new CommandSyntaxException(reader, "Invalid List '" + value);
+    }
+
     private Set<String> parseKeys(final StringReader reader) throws CommandSyntaxException {
-      reader.point();
-      String[] strings = null;
-      try {
-        final Set<String> listKeys = new HashSet<>();
-        strings = reader.readList(delimiter);
-        for (int i = 0; i < strings.length; i++) {
-          final String str = strings[i];
-          if (!allowDuplicates && listKeys.contains(str)) {
-            throw DUPLICATE_ARGUMENTS.createWithContext(reader);
-          } else {
-            listKeys.add(str);
-          }
+      final Set<String> listKeys = new HashSet<>();
+      String[] strings = reader.readList(delimiter);
+      for (int i = 0; i < strings.length; i++) {
+        final String str = strings[i];
+        if (!allowDuplicates && listKeys.contains(str)) {
+          throw DUPLICATE_ARGUMENTS.createWithContext(reader);
+        } else {
+          listKeys.add(str);
         }
-        return listKeys;
-      } catch (final Exception e) {
-        reader.resetCursor();
-        throw INVALID_LIST.createWithContext(reader, (Object[]) strings);
       }
+      return listKeys;
     }
 
     @Override
     public List<T> parseArgument(final CommandSource<CommandSender> source, final StringReader reader, final String key)
         throws CommandSyntaxException {
-
-      reader.point();
-      Set<String> keys = Set.of();
-      try {
-        keys = parseKeys(reader);
-        final List<T> values = new ArrayList<>();
-        for (final String tempKey : keys) {
-          final T v = mapping.get(tempKey);
-          if (v == null) {
-            throw INVALID_ENTRY.createWithContext(reader);
-          }
-          values.add(v);
+      Set<String> keys = parseKeys(reader);
+      final List<T> values = new ArrayList<>();
+      for (final String tempKey : keys) {
+        final T v = mapping.get(tempKey);
+        if (v == null) {
+          throw INVALID_ENTRY.createWithContext(reader);
         }
-        return values;
-      } catch (final CommandSyntaxException ex) {
-        reader.resetCursor();
-        throw ex;
-      } catch (final Exception e) {
-        reader.resetCursor();
-        throw INVALID_LIST.createWithContext(reader, keys.toArray());
+        values.add(v);
       }
+      return values;
     }
 
     @Override

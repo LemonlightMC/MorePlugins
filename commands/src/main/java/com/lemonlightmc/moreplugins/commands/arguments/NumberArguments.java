@@ -19,8 +19,6 @@ import com.lemonlightmc.moreplugins.math.Rotation;
 import com.lemonlightmc.moreplugins.math.ranges.*;
 
 public class NumberArguments {
-  private static final CommandSyntaxExceptionContainer INVALID_VALUE = new CommandSyntaxExceptionContainer(
-      value -> "Invalid Value '" + value + "'");
   private static final CommandSyntaxExceptionContainer INVALID_RANGE = new CommandSyntaxExceptionContainer(
       value -> "Invalid Range '" + value + "'");
   private static final CommandSyntaxExceptionContainer VALUE_TOO_LOW = new CommandSyntaxExceptionContainer(
@@ -80,24 +78,14 @@ public class NumberArguments {
     @Override
     public Integer parseArgument(final CommandSource<CommandSender> source, final StringReader reader, final String key)
         throws CommandSyntaxException {
-      reader.point();
-      int value = 0;
-      try {
-        value = reader.readInt();
-        if (range.isLower(value)) {
-          throw VALUE_TOO_LOW.createWithContext(reader, value, range.getMin());
-        }
-        if (range.isHigher(value)) {
-          throw VALUE_TOO_HIGH.createWithContext(reader, value, range.getMax());
-        }
-        return value;
-      } catch (final CommandSyntaxException e) {
-        reader.resetCursor();
-        throw e;
-      } catch (final Exception e) {
-        reader.resetCursor();
-        throw INVALID_VALUE.createWithContext(reader, value);
+      final int value = reader.readInt();
+      if (range.isLower(value)) {
+        throw VALUE_TOO_LOW.createWithContext(reader, value, range.getMin());
       }
+      if (range.isHigher(value)) {
+        throw VALUE_TOO_HIGH.createWithContext(reader, value, range.getMax());
+      }
+      return value;
     }
 
     @Override
@@ -144,24 +132,14 @@ public class NumberArguments {
     @Override
     public Long parseArgument(final CommandSource<CommandSender> source, final StringReader reader, final String key)
         throws CommandSyntaxException {
-      reader.point();
-      long value = 0;
-      try {
-        value = reader.readLong();
-        if (range.isLower(value)) {
-          throw VALUE_TOO_LOW.createWithContext(reader, value, range.getMin());
-        }
-        if (range.isHigher(value)) {
-          throw VALUE_TOO_HIGH.createWithContext(reader, value, range.getMax());
-        }
-        return value;
-      } catch (final CommandSyntaxException e) {
-        reader.resetCursor();
-        throw e;
-      } catch (final Exception e) {
-        reader.resetCursor();
-        throw INVALID_VALUE.createWithContext(reader, value);
+      final long value = reader.readLong();
+      if (range.isLower(value)) {
+        throw VALUE_TOO_LOW.createWithContext(reader, value, range.getMin());
       }
+      if (range.isHigher(value)) {
+        throw VALUE_TOO_HIGH.createWithContext(reader, value, range.getMax());
+      }
+      return value;
     }
 
     @Override
@@ -208,24 +186,14 @@ public class NumberArguments {
     @Override
     public Float parseArgument(final CommandSource<CommandSender> source, final StringReader reader, final String key)
         throws CommandSyntaxException {
-      reader.point();
-      float value = 0;
-      try {
-        value = reader.readFloat();
-        if (range.isLower(value)) {
-          throw VALUE_TOO_LOW.createWithContext(reader, value, range.getMin());
-        }
-        if (range.isHigher(value)) {
-          throw VALUE_TOO_HIGH.createWithContext(reader, value, range.getMax());
-        }
-        return value;
-      } catch (final CommandSyntaxException e) {
-        reader.resetCursor();
-        throw e;
-      } catch (final Exception e) {
-        reader.resetCursor();
-        throw INVALID_VALUE.createWithContext(reader, value);
+      final float value = reader.readFloat();
+      if (range.isLower(value)) {
+        throw VALUE_TOO_LOW.createWithContext(reader, value, range.getMin());
       }
+      if (range.isHigher(value)) {
+        throw VALUE_TOO_HIGH.createWithContext(reader, value, range.getMax());
+      }
+      return value;
     }
 
     @Override
@@ -272,24 +240,14 @@ public class NumberArguments {
     @Override
     public Double parseArgument(final CommandSource<CommandSender> source, final StringReader reader, final String key)
         throws CommandSyntaxException {
-      reader.point();
-      double value = 0;
-      try {
-        value = reader.readDouble();
-        if (range.isLower(value)) {
-          throw VALUE_TOO_LOW.createWithContext(reader, value, range.getMin());
-        }
-        if (range.isHigher(value)) {
-          throw VALUE_TOO_HIGH.createWithContext(reader, value, range.getMax());
-        }
-        return value;
-      } catch (final CommandSyntaxException e) {
-        reader.resetCursor();
-        throw e;
-      } catch (final Exception e) {
-        reader.resetCursor();
-        throw INVALID_VALUE.createWithContext(reader, value);
+      final double value = reader.readDouble();
+      if (range.isLower(value)) {
+        throw VALUE_TOO_LOW.createWithContext(reader, value, range.getMin());
       }
+      if (range.isHigher(value)) {
+        throw VALUE_TOO_HIGH.createWithContext(reader, value, range.getMax());
+      }
+      return value;
     }
 
     @Override
@@ -324,21 +282,15 @@ public class NumberArguments {
     }
 
     @Override
+    public CommandSyntaxException createError(final StringReader reader, final String value) {
+      return INVALID_RANGE.createWithContext(reader, value);
+    }
+
+    @Override
     public IntegerRange parseArgument(final CommandSource<CommandSender> source, final StringReader reader,
         final String key)
         throws CommandSyntaxException {
-      reader.point();
-      String value = null;
-      try {
-        value = reader.readRange();
-        return IntegerRange.of(value);
-      } catch (final CommandSyntaxException e) {
-        reader.resetCursor();
-        throw e;
-      } catch (final Exception e) {
-        reader.resetCursor();
-        throw INVALID_RANGE.createWithContext(reader, value);
-      }
+      return IntegerRange.of(reader.readRange());
     }
   }
 
@@ -354,21 +306,15 @@ public class NumberArguments {
     }
 
     @Override
+    public CommandSyntaxException createError(final StringReader reader, final String value) {
+      return INVALID_RANGE.createWithContext(reader, value);
+    }
+
+    @Override
     public LongRange parseArgument(final CommandSource<CommandSender> source, final StringReader reader,
         final String key)
         throws CommandSyntaxException {
-      reader.point();
-      String value = null;
-      try {
-        value = reader.readRange();
-        return LongRange.of(value);
-      } catch (final CommandSyntaxException e) {
-        reader.resetCursor();
-        throw e;
-      } catch (final Exception e) {
-        reader.resetCursor();
-        throw INVALID_RANGE.createWithContext(reader, value);
-      }
+      return LongRange.of(reader.readRange());
     }
   }
 
@@ -384,21 +330,15 @@ public class NumberArguments {
     }
 
     @Override
+    public CommandSyntaxException createError(final StringReader reader, final String value) {
+      return INVALID_RANGE.createWithContext(reader, value);
+    }
+
+    @Override
     public FloatRange parseArgument(final CommandSource<CommandSender> source, final StringReader reader,
         final String key)
         throws CommandSyntaxException {
-      reader.point();
-      String value = null;
-      try {
-        value = reader.readRange();
-        return FloatRange.of(value);
-      } catch (final CommandSyntaxException e) {
-        reader.resetCursor();
-        throw e;
-      } catch (final Exception e) {
-        reader.resetCursor();
-        throw INVALID_RANGE.createWithContext(reader, value);
-      }
+      return FloatRange.of(reader.readRange());
     }
   }
 
@@ -414,29 +354,21 @@ public class NumberArguments {
     }
 
     @Override
+    public CommandSyntaxException createError(final StringReader reader, final String value) {
+      return INVALID_RANGE.createWithContext(reader, value);
+    }
+
+    @Override
     public DoubleRange parseArgument(final CommandSource<CommandSender> source, final StringReader reader,
         final String key)
         throws CommandSyntaxException {
-      reader.point();
-      String value = null;
-      try {
-        value = reader.readRange();
-        return DoubleRange.of(value);
-      } catch (final CommandSyntaxException e) {
-        reader.resetCursor();
-        throw e;
-      } catch (final Exception e) {
-        reader.resetCursor();
-        throw INVALID_RANGE.createWithContext(reader, value);
-      }
+      return DoubleRange.of(reader.readRange());
     }
   }
 
   public static class LocationArgument extends Argument<Location, LocationArgument> {
 
     public static final int MAX_COORDINATE = 30_000_000;
-    private static final CommandSyntaxExceptionContainer INVALID_LOCATION = new CommandSyntaxExceptionContainer(
-        value -> "Invalid Location '" + value + "'");
     private static final CommandSyntaxExceptionContainer OUTOFBOUNDS_LOCATION = new CommandSyntaxExceptionContainer(
         value -> "Location is out of bounds'" + value + "' (max " + MAX_COORDINATE + ")");
 
@@ -480,32 +412,20 @@ public class NumberArguments {
     public Location parseArgument(final CommandSource<CommandSender> source, final StringReader reader,
         final String key)
         throws CommandSyntaxException {
-      reader.point();
-      double x = 0;
-      double y = 0;
-      double z = 0;
-      try {
-        x = centerPos(reader.readDouble(), centered);
-        y = centerPos(reader.readDouble(), false);
-        z = centerPos(reader.readDouble(), centered);
-        if (x > MAX_COORDINATE || x < -MAX_COORDINATE) {
-          throw OUTOFBOUNDS_LOCATION.createWithContext(reader, x);
-        }
-        if (y > MAX_COORDINATE || y < -MAX_COORDINATE) {
-          throw OUTOFBOUNDS_LOCATION.createWithContext(reader, y);
-        }
-
-        if (z > MAX_COORDINATE || z < -MAX_COORDINATE) {
-          throw OUTOFBOUNDS_LOCATION.createWithContext(reader, z);
-        }
-        return new Location(source.world(), x, y, z);
-      } catch (final CommandSyntaxException e) {
-        reader.resetCursor();
-        throw e;
-      } catch (final Exception e) {
-        reader.resetCursor();
-        throw INVALID_LOCATION.createWithContext(reader, x + "," + y + "," + z);
+      final double x = centerPos(reader.readDouble(), centered);
+      final double y = centerPos(reader.readDouble(), false);
+      final double z = centerPos(reader.readDouble(), centered);
+      if (x > MAX_COORDINATE || x < -MAX_COORDINATE) {
+        throw OUTOFBOUNDS_LOCATION.createWithContext(reader, x);
       }
+      if (y > MAX_COORDINATE || y < -MAX_COORDINATE) {
+        throw OUTOFBOUNDS_LOCATION.createWithContext(reader, y);
+      }
+
+      if (z > MAX_COORDINATE || z < -MAX_COORDINATE) {
+        throw OUTOFBOUNDS_LOCATION.createWithContext(reader, z);
+      }
+      return new Location(source.world(), x, y, z);
     }
 
     @Override
@@ -532,8 +452,6 @@ public class NumberArguments {
   public static class Location2DArgument extends Argument<Location2D, Location2DArgument> {
 
     public static final int MAX_COORDINATE = 30_000_000;
-    private static final CommandSyntaxExceptionContainer INVALID_LOCATION = new CommandSyntaxExceptionContainer(
-        value -> "Invalid Location '" + value + "'");
     private static final CommandSyntaxExceptionContainer OUTOFBOUNDS_LOCATION = new CommandSyntaxExceptionContainer(
         value -> "Location is out of bounds'" + value + "' (max " + MAX_COORDINATE + ")");
     private final LocationType type;
@@ -576,26 +494,15 @@ public class NumberArguments {
     public Location2D parseArgument(final CommandSource<CommandSender> source, final StringReader reader,
         final String key)
         throws CommandSyntaxException {
-      reader.point();
-      double x = 0;
-      double z = 0;
-      try {
-        x = centerPos(reader.readDouble());
-        z = centerPos(reader.readDouble());
-        if (x > MAX_COORDINATE || x < -MAX_COORDINATE) {
-          throw OUTOFBOUNDS_LOCATION.createWithContext(reader, x);
-        }
-        if (z > MAX_COORDINATE || z < -MAX_COORDINATE) {
-          throw OUTOFBOUNDS_LOCATION.createWithContext(reader, z);
-        }
-        return new Location2D(source.world(), x, z);
-      } catch (final CommandSyntaxException e) {
-        reader.resetCursor();
-        throw e;
-      } catch (final Exception e) {
-        reader.resetCursor();
-        throw INVALID_LOCATION.createWithContext(reader, x + "," + z);
+      final double x = centerPos(reader.readDouble());
+      final double z = centerPos(reader.readDouble());
+      if (x > MAX_COORDINATE || x < -MAX_COORDINATE) {
+        throw OUTOFBOUNDS_LOCATION.createWithContext(reader, x);
       }
+      if (z > MAX_COORDINATE || z < -MAX_COORDINATE) {
+        throw OUTOFBOUNDS_LOCATION.createWithContext(reader, z);
+      }
+      return new Location2D(source.world(), x, z);
     }
 
     @Override
@@ -620,9 +527,6 @@ public class NumberArguments {
   }
 
   public static class AxisArgument extends Argument<Axis, AxisArgument> {
-    private static final CommandSyntaxExceptionContainer INVALID_AXIS = new CommandSyntaxExceptionContainer(
-        value -> "Invalid Axis '" + value + "'");
-
     public AxisArgument(final String name) {
       super(name, Axis.class, ArgumentType.AXIS);
       withSuggestions("x", "y", "z");
@@ -636,25 +540,12 @@ public class NumberArguments {
     @Override
     public Axis parseArgument(final CommandSource<CommandSender> source, final StringReader reader, final String key)
         throws CommandSyntaxException {
-      reader.point();
-      String value = null;
-      try {
-        value = reader.readString();
-        return Objects.requireNonNull(Axis.valueOf(value));
-      } catch (final CommandSyntaxException e) {
-        reader.resetCursor();
-        throw e;
-      } catch (final Exception e) {
-        reader.resetCursor();
-        throw INVALID_AXIS.createWithContext(reader, value);
-      }
+      return Axis.valueOf(reader.readString());
     }
   }
 
   @SuppressWarnings("rawtypes")
   public static class MultiAxisArgument extends Argument<EnumSet, MultiAxisArgument> {
-    private static final CommandSyntaxExceptionContainer INVALID_AXIS = new CommandSyntaxExceptionContainer(
-        value -> "Invalid Axis '" + value + "'");
 
     public MultiAxisArgument(final String name) {
       super(name, EnumSet.class, ArgumentType.AXIS);
@@ -670,29 +561,16 @@ public class NumberArguments {
     public EnumSet<Axis> parseArgument(final CommandSource<CommandSender> source, final StringReader reader,
         final String key)
         throws CommandSyntaxException {
-      reader.point();
-      String value = null;
-      try {
-        value = reader.readString();
-        final EnumSet<Axis> set = EnumSet.noneOf(Axis.class);
-        for (int i = 0; i < value.length(); i++) {
-          set.add(Objects.requireNonNull(Axis.valueOf(value.substring(i, i + 1))));
-        }
-        return set;
-      } catch (final CommandSyntaxException e) {
-        reader.resetCursor();
-        throw e;
-      } catch (final Exception e) {
-        reader.resetCursor();
-        throw INVALID_AXIS.createWithContext(reader, value);
+      final String value = reader.readString();
+      final EnumSet<Axis> set = EnumSet.noneOf(Axis.class);
+      for (int i = 0; i < value.length(); i++) {
+        set.add(Objects.requireNonNull(Axis.valueOf(value.substring(i, i + 1))));
       }
-
+      return set;
     }
   }
 
   public static class RotationArgument extends Argument<Rotation, RotationArgument> {
-    private static final CommandSyntaxExceptionContainer INVALID_ROTATION = new CommandSyntaxExceptionContainer(
-        value -> "Invalid Rotation '" + value + "'");
 
     public RotationArgument(final String name) {
       super(name, Rotation.class, ArgumentType.ROTATION);
@@ -708,20 +586,7 @@ public class NumberArguments {
     public Rotation parseArgument(final CommandSource<CommandSender> source, final StringReader reader,
         final String key)
         throws CommandSyntaxException {
-      reader.point();
-      double yaw = 0;
-      double pitch = 0;
-      try {
-        yaw = reader.readDouble();
-        pitch = reader.readDouble();
-        return new Rotation(yaw, pitch);
-      } catch (final CommandSyntaxException e) {
-        reader.resetCursor();
-        throw e;
-      } catch (final Exception e) {
-        reader.resetCursor();
-        throw INVALID_ROTATION.createWithContext(reader, yaw + "," + pitch);
-      }
+      return new Rotation(reader.readDouble(), reader.readDouble());
     }
   }
 

@@ -46,15 +46,7 @@ public class RegistryArguments {
     @Override
     public Biome parseArgument(final CommandSource<CommandSender> source, final StringReader reader, final String key)
         throws CommandSyntaxException {
-      final int start = reader.getCursor();
-      String value = null;
-      try {
-        value = reader.readString();
-        return Registry.BIOME.getOrThrow(NamespacedKey.fromString(value));
-      } catch (final Exception e) {
-        reader.setCursor(start);
-        throw createError(reader, value);
-      }
+      return Registry.BIOME.getOrThrow(NamespacedKey.fromString(reader.readString()));
     }
   }
 
@@ -74,15 +66,7 @@ public class RegistryArguments {
     @Override
     public Sound parseArgument(final CommandSource<CommandSender> source, final StringReader reader, final String key)
         throws CommandSyntaxException {
-      final int start = reader.getCursor();
-      String value = null;
-      try {
-        value = reader.readString();
-        return Registry.SOUNDS.getOrThrow(NamespacedKey.fromString(value));
-      } catch (final Exception e) {
-        reader.setCursor(start);
-        throw createError(reader, value);
-      }
+      return Registry.SOUNDS.getOrThrow(NamespacedKey.fromString(reader.readString()));
     }
   }
 
@@ -104,15 +88,7 @@ public class RegistryArguments {
     public ParticleData<?> parseArgument(final CommandSource<CommandSender> source, final StringReader reader,
         final String key)
         throws CommandSyntaxException {
-      final int start = reader.getCursor();
-      String value = null;
-      try {
-        value = reader.readString();
-        return new ParticleData<>(Registry.PARTICLE_TYPE.getOrThrow(NamespacedKey.fromString(value)), null);
-      } catch (final Exception e) {
-        reader.setCursor(start);
-        throw createError(reader, value);
-      }
+      return new ParticleData<>(Registry.PARTICLE_TYPE.getOrThrow(NamespacedKey.fromString(reader.readString())), null);
     }
   }
 
@@ -133,15 +109,7 @@ public class RegistryArguments {
     public PotionEffectType parseArgument(final CommandSource<CommandSender> source, final StringReader reader,
         final String key)
         throws CommandSyntaxException {
-      final int start = reader.getCursor();
-      String value = null;
-      try {
-        value = reader.readString();
-        return Registry.EFFECT.getOrThrow(NamespacedKey.fromString(value));
-      } catch (final Exception e) {
-        reader.setCursor(start);
-        throw createError(reader, value);
-      }
+      return Registry.EFFECT.getOrThrow(NamespacedKey.fromString(reader.readString()));
     }
   }
 
@@ -162,15 +130,7 @@ public class RegistryArguments {
     public Enchantment parseArgument(final CommandSource<CommandSender> source, final StringReader reader,
         final String key)
         throws CommandSyntaxException {
-      final int start = reader.getCursor();
-      String value = null;
-      try {
-        value = reader.readString();
-        return Registry.ENCHANTMENT.getOrThrow(Objects.requireNonNull(NamespacedKey.fromString(value)));
-      } catch (final Exception e) {
-        reader.setCursor(start);
-        throw createError(reader, value);
-      }
+      return Registry.ENCHANTMENT.getOrThrow(Objects.requireNonNull(NamespacedKey.fromString(reader.readString())));
     }
   }
 
@@ -192,15 +152,8 @@ public class RegistryArguments {
     public Advancement parseArgument(final CommandSource<CommandSender> source, final StringReader reader,
         final String key)
         throws CommandSyntaxException {
-      final int start = reader.getCursor();
-      String value = null;
-      try {
-        value = reader.readString();
-        return Objects.requireNonNull(Bukkit.getAdvancement(Objects.requireNonNull(NamespacedKey.fromString(value))));
-      } catch (final Exception e) {
-        reader.setCursor(start);
-        throw createError(reader, value);
-      }
+      return Objects
+          .requireNonNull(Bukkit.getAdvancement(Objects.requireNonNull(NamespacedKey.fromString(reader.readString()))));
     }
   }
 
@@ -220,15 +173,7 @@ public class RegistryArguments {
     public BlockData parseArgument(final CommandSource<CommandSender> source, final StringReader reader,
         final String key)
         throws CommandSyntaxException {
-      final int start = reader.getCursor();
-      String value = null;
-      try {
-        value = reader.readString();
-        return Bukkit.createBlockData(Objects.requireNonNull(Material.getMaterial(value)));
-      } catch (final Exception e) {
-        reader.setCursor(start);
-        throw createError(reader, value);
-      }
+      return Bukkit.createBlockData(Objects.requireNonNull(Material.getMaterial(reader.readString())));
     }
   }
 
@@ -286,15 +231,7 @@ public class RegistryArguments {
     public Material parseArgument(final CommandSource<CommandSender> source, final StringReader reader,
         final String key)
         throws CommandSyntaxException {
-      final int start = reader.getCursor();
-      String value = null;
-      try {
-        value = reader.readString();
-        return Objects.requireNonNull(Material.getMaterial(value));
-      } catch (final Exception e) {
-        reader.setCursor(start);
-        throw createError(reader, value);
-      }
+      return Objects.requireNonNull(Material.getMaterial(reader.readString()));
     }
   }
 
@@ -316,15 +253,7 @@ public class RegistryArguments {
     public Structure parseArgument(final CommandSource<CommandSender> source, final StringReader reader,
         final String key)
         throws CommandSyntaxException {
-      final int start = reader.getCursor();
-      String value = null;
-      try {
-        value = reader.readString();
-        return Registry.STRUCTURE.getOrThrow(NamespacedKey.fromString(value));
-      } catch (final Exception e) {
-        reader.setCursor(start);
-        throw createError(reader, value);
-      }
+      return Registry.STRUCTURE.getOrThrow(NamespacedKey.fromString(reader.readString()));
     }
   }
 
@@ -346,15 +275,7 @@ public class RegistryArguments {
     public Attribute parseArgument(final CommandSource<CommandSender> source, final StringReader reader,
         final String key)
         throws CommandSyntaxException {
-      final int start = reader.getCursor();
-      String value = null;
-      try {
-        value = reader.readString();
-        return Registry.ATTRIBUTE.getOrThrow(NamespacedKey.fromString(value));
-      } catch (final Exception e) {
-        reader.setCursor(start);
-        throw createError(reader, value);
-      }
+      return Registry.ATTRIBUTE.getOrThrow(NamespacedKey.fromString(reader.readString()));
     }
   }
 
@@ -376,15 +297,7 @@ public class RegistryArguments {
     public StructureType parseArgument(final CommandSource<CommandSender> source, final StringReader reader,
         final String key)
         throws CommandSyntaxException {
-      final int start = reader.getCursor();
-      String value = null;
-      try {
-        value = reader.readString();
-        return Registry.STRUCTURE_TYPE.getOrThrow(NamespacedKey.fromString(value));
-      } catch (final Exception e) {
-        reader.setCursor(start);
-        throw createError(reader, value);
-      }
+      return Registry.STRUCTURE_TYPE.getOrThrow(NamespacedKey.fromString(reader.readString()));
     }
   }
 
@@ -402,7 +315,8 @@ public class RegistryArguments {
     }
 
     @Override
-    public EntityType parseArgument(final CommandSource<CommandSender> source, final StringReader reader,
+    public EntityType parseArgument(final CommandSource<CommandSender> source,
+        final StringReader reader,
         final String key)
         throws CommandSyntaxException {
       reader.point();

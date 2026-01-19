@@ -100,16 +100,7 @@ public class SpecialArguments {
     @Override
     public Boolean parseArgument(final CommandSource<CommandSender> source, final StringReader reader, final String key)
         throws CommandSyntaxException {
-      reader.point();
-      try {
-        return reader.readBoolean();
-      } catch (final CommandSyntaxException e) {
-        reader.resetCursor();
-        throw e;
-      } catch (final Exception e) {
-        reader.resetCursor();
-        throw e;
-      }
+      return null;
     }
 
     @Override
@@ -154,18 +145,12 @@ public class SpecialArguments {
     public CommandResult parseArgument(final CommandSource<CommandSender> source, final StringReader reader,
         final String key)
         throws CommandSyntaxException {
-      reader.point();
-      try {
-        final String[] args = reader.getRemaining().split(" ");
-        if (args.length == 0) {
-          return null;
-        }
-        final Command cmd = Objects.requireNonNull(CommandManager.getCommandMap().getCommand(args[0]));
-        return new CommandResult(cmd, Arrays.copyOfRange(args, 1, args.length));
-      } catch (final Exception e) {
-        reader.resetCursor();
-        throw createError(reader, null);
+      final String[] args = reader.getRemaining().split(" ");
+      if (args.length == 0) {
+        return null;
       }
+      final Command cmd = Objects.requireNonNull(CommandManager.getCommandMap().getCommand(args[0]));
+      return new CommandResult(cmd, Arrays.copyOfRange(args, 1, args.length));
     }
   }
 
