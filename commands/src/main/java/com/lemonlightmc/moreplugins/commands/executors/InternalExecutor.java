@@ -4,7 +4,6 @@ import com.lemonlightmc.moreplugins.base.MorePlugins;
 import com.lemonlightmc.moreplugins.base.PluginBase;
 import com.lemonlightmc.moreplugins.commands.CommandSource;
 import com.lemonlightmc.moreplugins.commands.SimpleCommand;
-import com.lemonlightmc.moreplugins.commands.Utils;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.Argument;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.CommandArguments;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.ParsedArgument;
@@ -36,36 +35,35 @@ public class InternalExecutor extends Command {
 
   @Override
   public boolean execute(final CommandSender sender, final String label0, final String[] args0) {
-    if (sender == null) {
-      return true;
-    }
-    final String label = label0 == null ? this.getLabel() : label0;
-    final String[] args = args0 == null ? new String[0] : args0;
-    if (!MorePlugins.instance.isEnabled()) {
-      throw new CommandException(
-          "Cannot execute command '" +
-              label +
-              "' in plugin " +
-              MorePlugins.instance.getDescription().getFullName() +
-              " - plugin is disabled.");
-    }
-
-    try {
-      PluginBase.getInstanceScheduler()
-          .runAsync(() -> {
-            final CommandSource<CommandSender> source = Utils.toSource(sender);
+    PluginBase.getInstanceScheduler()
+        .runAsync(() -> {
+          if (sender == null) {
+            return;
+          }
+          final String label = label0 == null || label0.length() == 0 ? cmd.getName() : label0;
+          final String[] args = args0 == null ? new String[0] : args0;
+          if (!MorePlugins.instance.isEnabled()) {
+            throw new CommandException(
+                "Cannot execute command '" +
+                    label +
+                    "' in plugin " +
+                    MorePlugins.instance.getDescription().getFullName() +
+                    " - plugin is disabled.");
+          }
+          try {
+            final CommandSource<CommandSender> source = CommandSource.from(sender);
             final CommandArguments cmdArgs = parse(source, args);
             final ExecutionInfo<CommandSender> info = new ExecutionInfo<CommandSender>(source, cmdArgs);
             cmd.run(info);
-          });
-    } catch (final Throwable ex) {
-      throw new CommandException(
-          "Unhandled exception executing command '" +
-              label +
-              "' in plugin " +
-              MorePlugins.instance.getFullName(),
-          ex);
-    }
+          } catch (final Throwable ex) {
+            throw new CommandException(
+                "Exception while executing command '" +
+                    label +
+                    "' in plugin " +
+                    MorePlugins.instance.getFullName(),
+                ex);
+          }
+        });
     return true;
   }
 
@@ -85,7 +83,7 @@ public class InternalExecutor extends Command {
     final String token = args.length > 0 ? args[args.length - 1] : null;
 
     try {
-      final CommandSource<CommandSender> source = Utils.toSource(sender);
+      final CommandSource<CommandSender> source = CommandSource.from(sender);
       final CommandArguments cmdArgs = parse(source, args);
       final SuggestionInfo<CommandSender> info = new SuggestionInfo<CommandSender>(source, cmdArgs,
           cmdArgs.getLastRaw());
@@ -148,11 +146,11 @@ public class InternalExecutor extends Command {
         cmd_args.put(arg.getName(), new ParsedArgument(arg.getName(), reader.getLastRead(), value));
         reader.revokePoint();
 
-      } catch (CommandSyntaxException e) {
+      } catch (final CommandSyntaxException e) {
         source.sendError(e);
         reader.resetCursor();
 
-      } catch (Exception e) {
+      } catch (final Exception e) {
         source.sendError(arg.createError(reader, reader.getLastRead()));
         reader.resetCursor();
       }

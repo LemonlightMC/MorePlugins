@@ -8,31 +8,18 @@ import org.bukkit.entity.Entity;
 
 import com.lemonlightmc.moreplugins.commands.exceptions.CommandSyntaxException;
 
-public class CommandSource<S extends CommandSender> {
+public record CommandSource<S extends CommandSender>(S sender, Location location, Entity entity) {
 
-  private final S sender;
-  private final Location loc;
-  private final Entity entity;
-
-  public CommandSource(final S sender, final Location location, final Entity entity) {
-    if (sender == null) {
-      throw new IllegalArgumentException("Failed to create CommandSource due empty Sender");
-    }
-    this.sender = sender;
-    this.loc = location;
-    this.entity = entity;
-  }
-
-  public CommandSource(final S sender) {
-    this(sender, getLocation(sender), getEntity(sender));
+  public static <T extends CommandSender> CommandSource<T> from(final T sender) {
+    return new CommandSource<T>(sender, getLocation(sender), getEntity(sender));
   }
 
   public <T extends CommandSender> CommandSource<T> copyFor(final T newSender) {
-    return new CommandSource<T>(newSender, loc, entity);
+    return new CommandSource<T>(newSender, location, entity);
   }
 
   public CommandSource<S> copy() {
-    return new CommandSource<>(sender, loc, entity);
+    return new CommandSource<>(sender, location, entity);
   }
 
   public S sender() {
@@ -40,7 +27,7 @@ public class CommandSource<S extends CommandSender> {
   }
 
   public Location location() {
-    return loc;
+    return location;
   }
 
   public Entity entity() {
@@ -48,7 +35,7 @@ public class CommandSource<S extends CommandSender> {
   }
 
   public World world() {
-    return loc != null ? loc.getWorld() : null;
+    return location != null ? location.getWorld() : null;
   }
 
   public boolean hasPermission(final String perm) {

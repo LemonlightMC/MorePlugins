@@ -25,29 +25,6 @@ public class Utils {
 
   static final Pattern NAMESPACE_PATTERN = Pattern.compile("[0-9a-z_.-]+");
 
-  public static CommandSource<CommandSender> toSource(final CommandSender sender) {
-    if (sender instanceof final BlockCommandSender block) {
-      return new CommandSource<>(block);
-    }
-    if (sender instanceof final ConsoleCommandSender console) {
-      return new CommandSource<>(console);
-    }
-    if (sender instanceof final Player player) {
-      return new CommandSource<>(player);
-    }
-    if (sender instanceof final org.bukkit.entity.Entity entity) {
-      return new CommandSource<>(entity);
-    }
-    if (sender instanceof final ProxiedCommandSender proxy) {
-      return new CommandSource<>(proxy);
-    }
-    if (sender instanceof final RemoteConsoleCommandSender remote) {
-      return new CommandSource<>(remote);
-    }
-    throw new RuntimeException(
-        "Failed to create CommandSource for CommandSender " + sender);
-  }
-
   public static com.lemonlightmc.moreplugins.commands.executors.Executors.ExecutorType[] prioritiesForSender(
       final CommandSender sender) {
     if (sender == null) {
