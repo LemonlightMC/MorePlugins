@@ -92,4 +92,16 @@ public enum ArgumentType {
 
   private ArgumentType() {
   }
+
+  public boolean isPrimitive() {
+    return this.name().startsWith("PRIMITIVE_");
+  }
+
+  public boolean isList() {
+    return this.name().startsWith("LIST_");
+  }
+
+  public boolean isLiteral() {
+    return this == LITERAL || this == MULTI_LITERAL;
+  }
 }

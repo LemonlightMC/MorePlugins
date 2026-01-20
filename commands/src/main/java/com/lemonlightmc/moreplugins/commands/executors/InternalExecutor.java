@@ -4,18 +4,16 @@ import com.lemonlightmc.moreplugins.base.MorePlugins;
 import com.lemonlightmc.moreplugins.base.PluginBase;
 import com.lemonlightmc.moreplugins.commands.CommandSource;
 import com.lemonlightmc.moreplugins.commands.SimpleCommand;
-import com.lemonlightmc.moreplugins.commands.argumentsbase.Argument;
+import com.lemonlightmc.moreplugins.commands.SimpleSubCommand;
+import com.lemonlightmc.moreplugins.commands.Utils;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.CommandArguments;
-import com.lemonlightmc.moreplugins.commands.argumentsbase.ParsedArgument;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.StringReader;
-import com.lemonlightmc.moreplugins.commands.exceptions.CommandSyntaxException;
 import com.lemonlightmc.moreplugins.commands.suggestions.SuggestionInfo;
 import com.lemonlightmc.moreplugins.commands.suggestions.Suggestions;
 import com.lemonlightmc.moreplugins.messages.StringTooltip;
 import com.lemonlightmc.moreplugins.utils.StringUtils;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -131,31 +129,14 @@ public class InternalExecutor extends Command {
     return stringBuilder.toString();
   }
 
-  public CommandArguments parse(final CommandSource<CommandSender> source, final String[] args) {
+  private CommandArguments parse(final CommandSource<CommandSender> source, final String[] args) {
     final StringReader reader = new StringReader(StringUtils.join(" ", args));
-    final HashMap<String, ParsedArgument> cmd_args = new HashMap<>();
-
-    for (final Argument<?, ?> arg : cmd.getArguments()) {
-      if (!arg.isListed()) {
-        continue;
-      }
-
-      reader.point();
-      try {
-        final Object value = arg.parseArgument(source, reader, arg.getName());
-        cmd_args.put(arg.getName(), new ParsedArgument(arg.getName(), reader.getLastRead(), value));
-        reader.revokePoint();
-
-      } catch (final CommandSyntaxException e) {
-        source.sendError(e);
-        reader.resetCursor();
-
-      } catch (final Exception e) {
-        source.sendError(arg.createError(reader, reader.getLastRead()));
-        reader.resetCursor();
+    for (final SimpleSubCommand sub : cmd.getSubcommands()) {
+      if (Utils.isSubCommand(args[0], sub)) {
+        return sub._parseArguments(reader, source);
       }
     }
-
-    return new CommandArguments(cmd_args, reader.getString());
+    return cmd._parseArguments(reader, source);
   }
+
 }
