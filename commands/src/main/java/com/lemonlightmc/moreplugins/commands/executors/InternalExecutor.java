@@ -2,19 +2,25 @@ package com.lemonlightmc.moreplugins.commands.executors;
 
 import com.lemonlightmc.moreplugins.base.MorePlugins;
 import com.lemonlightmc.moreplugins.base.PluginBase;
+import com.lemonlightmc.moreplugins.commands.AbstractCommand;
 import com.lemonlightmc.moreplugins.commands.CommandSource;
 import com.lemonlightmc.moreplugins.commands.SimpleCommand;
 import com.lemonlightmc.moreplugins.commands.SimpleSubCommand;
-import com.lemonlightmc.moreplugins.commands.Utils;
+import com.lemonlightmc.moreplugins.commands.arguments.SpecialArguments.LiteralArgument;
+import com.lemonlightmc.moreplugins.commands.argumentsbase.Argument;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.CommandArguments;
+import com.lemonlightmc.moreplugins.commands.argumentsbase.ParsedArgument;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.StringReader;
+import com.lemonlightmc.moreplugins.commands.exceptions.CommandSyntaxException;
 import com.lemonlightmc.moreplugins.commands.suggestions.SuggestionInfo;
 import com.lemonlightmc.moreplugins.commands.suggestions.Suggestions;
 import com.lemonlightmc.moreplugins.messages.StringTooltip;
 import com.lemonlightmc.moreplugins.utils.StringUtils;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Stream;
 
 import org.bukkit.Location;
@@ -131,12 +137,58 @@ public class InternalExecutor extends Command {
 
   private CommandArguments parse(final CommandSource<CommandSender> source, final String[] args) {
     final StringReader reader = new StringReader(StringUtils.join(" ", args));
-    for (final SimpleSubCommand sub : cmd.getSubcommands()) {
-      if (Utils.isSubCommand(args[0], sub)) {
-        return sub._parseArguments(reader, source);
-      }
-    }
-    return cmd._parseArguments(reader, source);
+    return _parseArguments(cmd, reader, source, args);
   }
 
+  private CommandArguments _parseArguments(AbstractCommand<?> thisCmd, final StringReader reader,
+      final CommandSource<CommandSender> source, final String[] args) {
+    int i = 0;
+    boolean hadSubcommand = true;
+    while (hadSubcommand && args.length > i && thisCmd.hasSubcommands()) {
+      hadSubcommand = false;
+      for (final SimpleSubCommand sub : cmd.getSubcommands()) {
+        if (_isSubCommand(args[i], sub)) {
+          thisCmd = sub;
+          i++;
+          hadSubcommand = true;
+          break;
+        }
+      }
+    }
+
+    final Map<String, ParsedArgument> parsedArgs = new HashMap<>();
+    for (final Argument<?, ?> arg : cmd.getArguments()) {
+      final Object value = _parseArg(reader, source, arg);
+      if (!arg.isListed()) {
+        parsedArgs.put(arg.getName(), new ParsedArgument(arg.getName(), reader.getLastRead(), value));
+      }
+    }
+    return new CommandArguments(parsedArgs, reader.getString());
+  }
+
+  private static Object _parseArg(final StringReader reader, final CommandSource<CommandSender> source,
+      final Argument<?, ?> arg) {
+    reader.point();
+    try {
+      final Object value = arg.parseArgument(source, reader, arg.getName());
+      reader.revokePoint();
+      return value;
+    } catch (final CommandSyntaxException e) {
+      source.sendError(e);
+      reader.resetCursor();
+
+    } catch (final Exception e) {
+      source.sendError(arg.createError(reader, reader.getLastRead()));
+      reader.resetCursor();
+    }
+    return null;
+  }
+
+  private static boolean _isSubCommand(final String arg, final SimpleSubCommand sub) {
+    final Argument<?, ?> firstArg = sub.getArguments().getFirst();
+    if (!firstArg.getType().isLiteral()) {
+      return false;
+    }
+    return ((LiteralArgument) firstArg).getLiteral().equals(arg);
+  }
 }

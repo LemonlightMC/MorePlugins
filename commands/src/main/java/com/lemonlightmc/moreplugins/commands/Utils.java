@@ -1,9 +1,5 @@
 package com.lemonlightmc.moreplugins.commands;
 
-import com.lemonlightmc.moreplugins.commands.arguments.SpecialArguments.LiteralArgument;
-import com.lemonlightmc.moreplugins.commands.argumentsbase.Argument;
-import com.lemonlightmc.moreplugins.commands.argumentsbase.StringReader;
-import com.lemonlightmc.moreplugins.commands.exceptions.CommandSyntaxException;
 import com.lemonlightmc.moreplugins.commands.executors.Executors.ExecutorType;
 import com.lemonlightmc.moreplugins.messages.Logger;
 import com.lemonlightmc.moreplugins.messages.MessageFormatter;
@@ -28,32 +24,6 @@ import org.bukkit.permissions.Permission;
 public class Utils {
 
   static final Pattern NAMESPACE_PATTERN = Pattern.compile("[0-9a-z_.-]+");
-
-  public static Object _parseArg(final StringReader reader, final CommandSource<CommandSender> source,
-      final Argument<?, ?> arg) {
-    reader.point();
-    try {
-      final Object value = arg.parseArgument(source, reader, arg.getName());
-      reader.revokePoint();
-      return value;
-    } catch (final CommandSyntaxException e) {
-      source.sendError(e);
-      reader.resetCursor();
-
-    } catch (final Exception e) {
-      source.sendError(arg.createError(reader, reader.getLastRead()));
-      reader.resetCursor();
-    }
-    return null;
-  }
-
-  public static boolean isSubCommand(final String arg, final SimpleSubCommand sub) {
-    final Argument<?, ?> firstArg = sub.getArguments().getFirst();
-    if (!firstArg.getType().isLiteral()) {
-      return false;
-    }
-    return ((LiteralArgument) firstArg).getLiteral().equals(arg);
-  }
 
   public static com.lemonlightmc.moreplugins.commands.executors.Executors.ExecutorType[] prioritiesForSender(
       final CommandSender sender) {

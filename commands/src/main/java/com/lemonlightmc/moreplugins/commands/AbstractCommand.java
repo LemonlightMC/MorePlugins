@@ -3,9 +3,6 @@ package com.lemonlightmc.moreplugins.commands;
 import com.lemonlightmc.moreplugins.apis.ChatAPI;
 import com.lemonlightmc.moreplugins.base.MorePlugins;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.Argument;
-import com.lemonlightmc.moreplugins.commands.argumentsbase.CommandArguments;
-import com.lemonlightmc.moreplugins.commands.argumentsbase.ParsedArgument;
-import com.lemonlightmc.moreplugins.commands.argumentsbase.StringReader;
 import com.lemonlightmc.moreplugins.commands.exceptions.OptionalArgumentException;
 import com.lemonlightmc.moreplugins.commands.executors.Executable;
 import com.lemonlightmc.moreplugins.commands.executors.ExecutionInfo;
@@ -16,7 +13,6 @@ import com.lemonlightmc.moreplugins.messages.Logger;
 
 import java.util.ArrayList;
 import java.util.EnumMap;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -411,17 +407,6 @@ public abstract class AbstractCommand<T extends AbstractCommand<T>> extends Exec
 
     best.executeWith(info);
     return true;
-  }
-
-  public CommandArguments _parseArguments(final StringReader reader, final CommandSource<CommandSender> source) {
-    final Map<String, ParsedArgument> parsedArgs = new HashMap<>();
-    for (final Argument<?, ?> arg : arguments) {
-      final Object value = Utils._parseArg(reader, source, arg);
-      if (!arg.isListed()) {
-        parsedArgs.put(arg.getName(), new ParsedArgument(arg.getName(), reader.getLastRead(), value));
-      }
-    }
-    return new CommandArguments(parsedArgs, reader.getString());
   }
 
   @Override
