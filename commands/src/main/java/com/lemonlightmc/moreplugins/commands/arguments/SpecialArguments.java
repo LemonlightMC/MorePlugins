@@ -3,6 +3,7 @@ package com.lemonlightmc.moreplugins.commands.arguments;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -247,15 +248,7 @@ public class SpecialArguments {
       return new MultiLiteralArgument(literal);
     }
 
-    public static MultiLiteralArgument of(final String nodeName, final String literal) {
-      return new MultiLiteralArgument(nodeName, literal);
-    }
-
-    public static MultiLiteralArgument literal(final String literal) {
-      return new MultiLiteralArgument(literal);
-    }
-
-    public static MultiLiteralArgument literal(final String nodeName, final String literal) {
+    public static MultiLiteralArgument of(final String nodeName, final String... literal) {
       return new MultiLiteralArgument(nodeName, literal);
     }
 
@@ -345,6 +338,182 @@ public class SpecialArguments {
     @Override
     public String toString() {
       return toStringWithMore("literals=" + literals);
+    }
+  }
+
+  @SuppressWarnings("rawtypes")
+  public static class SwitchArgument extends Argument<List, SwitchArgument>
+      implements LiteralArgumentType {
+
+    private final String[] switches;
+
+    public SwitchArgument(final String nodeName, final Set<String> switches) {
+      this(nodeName, switches.toArray(String[]::new));
+    }
+
+    public SwitchArgument(final String nodeName, final String... switches) {
+      super(nodeName, List.class, ArgumentType.SWITCH);
+
+      if (switches == null || switches.length == 0) {
+        throw new IllegalArgumentException("The switches cant be empty");
+      }
+      for (int i = 0; i < switches.length; i++) {
+        switches[i] = switches[i].trim();
+        if (!switches[i].startsWith("--") || !switches[i].startsWith("-")) {
+          switches[i] = "-" + switches[i];
+        }
+      }
+      this.switches = switches;
+      withSuggestions(switches);
+    }
+
+    public static SwitchArgument of(final String switches) {
+      return new SwitchArgument(switches);
+    }
+
+    public static SwitchArgument of(final String nodeName, final String... switches) {
+      return new SwitchArgument(nodeName, switches);
+    }
+
+    @Override
+    public SwitchArgument getInstance() {
+      return this;
+    }
+
+    public String[] getSwitches() {
+      return switches;
+    }
+
+    @Override
+    public List<String> parseArgument(final CommandSource<CommandSender> source, final StringReader reader,
+        final String key)
+        throws CommandSyntaxException {
+      final List<String> foundSwitches = new ArrayList<>();
+      int switchLen = 0;
+      for (final String sw : switches) {
+        switchLen = sw.length();
+        if (reader.canRead(switchLen)
+            && reader.getRemaining().startsWith(sw)
+            && (reader.getRemaining().length() == switchLen
+                || Character.isWhitespace(reader.getRemaining().charAt(switchLen)))) {
+          foundSwitches.add(sw);
+          reader.setCursor(reader.getCursor() + switchLen);
+        }
+      }
+      return foundSwitches;
+    }
+
+    @Override
+    public int hashCode() {
+      return 31 * super.hashCode() + Arrays.hashCode(switches);
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+      if (!super.equals(obj)) {
+        return false;
+      }
+      final SwitchArgument other = (SwitchArgument) obj;
+      return Arrays.equals(switches, other.switches);
+    }
+
+    @Override
+    public String toString() {
+      return toStringWithMore("switches=" + Arrays.toString(switches));
+    }
+  }
+
+  @SuppressWarnings("rawtypes")
+  public static class FlagArgument extends Argument<HashMap, FlagArgument>
+      implements LiteralArgumentType {
+
+    private final String[] flags;
+
+    public FlagArgument(final String nodeName, final Set<String> flags) {
+      this(nodeName, flags.toArray(String[]::new));
+    }
+
+    public FlagArgument(final String nodeName, final String... flags) {
+      super(nodeName, HashMap.class, ArgumentType.FLAG);
+
+      if (flags == null || flags.length == 0) {
+        throw new IllegalArgumentException("The flags cant be empty");
+      }
+      for (int i = 0; i < flags.length; i++) {
+        flags[i] = flags[i].trim();
+        if (!flags[i].startsWith("--") || !flags[i].startsWith("-")) {
+          flags[i] = "-" + flags[i];
+        }
+      }
+      this.flags = flags;
+      withSuggestions(flags);
+    }
+
+    public static FlagArgument of(final String flags) {
+      return new FlagArgument(flags);
+    }
+
+    public static FlagArgument of(final String nodeName, final String... flags) {
+      return new FlagArgument(nodeName, flags);
+    }
+
+    @Override
+    public FlagArgument getInstance() {
+      return this;
+    }
+
+    public String[] getFlags() {
+      return flags;
+    }
+
+    @Override
+    public HashMap<String, String> parseArgument(final CommandSource<CommandSender> source, final StringReader reader,
+        final String key)
+        throws CommandSyntaxException {
+      final HashMap<String, String> foundFlags = new HashMap<>();
+      int flagLen = 0;
+      String remaining;
+      for (final String flag : flags) {
+        flagLen = flag.length();
+        remaining = reader.getRemaining();
+        if (!reader.canRead(flagLen)
+            || !remaining.startsWith(flag)) {
+          continue;
+        }
+        if (remaining.length() == flagLen) {
+          reader.setCursor(reader.getCursor() + flagLen);
+          foundFlags.put(flag, "true");
+        } else if (Character.isWhitespace(remaining.charAt(flagLen))
+            || remaining.charAt(flagLen) == '=') {
+          reader.setCursor(reader.getCursor() + flagLen);
+          String value = "true";
+          if (reader.canRead() && (reader.peek() == '=' || Character.isWhitespace(reader.peek()))) {
+            reader.skip();
+            value = reader.readString();
+          }
+          foundFlags.put(flag, value);
+        }
+      }
+      return foundFlags;
+    }
+
+    @Override
+    public int hashCode() {
+      return 31 * super.hashCode() + Arrays.hashCode(flags);
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+      if (!super.equals(obj)) {
+        return false;
+      }
+      final FlagArgument other = (FlagArgument) obj;
+      return Arrays.equals(flags, other.flags);
+    }
+
+    @Override
+    public String toString() {
+      return toStringWithMore("flags=" + Arrays.toString(flags));
     }
   }
 }

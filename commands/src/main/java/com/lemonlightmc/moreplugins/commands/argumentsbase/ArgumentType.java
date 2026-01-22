@@ -86,6 +86,8 @@ public enum ArgumentType {
 
   COMMAND(),
   CUSTOM, // Not implemented
+  FLAG,
+  SWITCH,
   LITERAL,
   MULTI_LITERAL,
   BRANCH();
