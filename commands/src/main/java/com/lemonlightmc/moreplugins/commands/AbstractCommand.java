@@ -315,15 +315,10 @@ public abstract class AbstractCommand<T extends AbstractCommand<T>> extends Exec
         return;
       }
 
-      final String subStr = info.args().getRaw(0);
-      if (this instanceof final SimpleCommand rootCmd && rootCmd.runDefault(info, subStr)) {
+      final SimpleSubCommand sub = getSubcommand(info.args().getRaw(0));
+      if (sub != null) {
+        sub.run(info);
         return;
-      } else {
-        final SimpleSubCommand sub = getSubcommand(subStr);
-        if (sub != null) {
-          sub.run(info);
-          return;
-        }
       }
 
       final ExecutorType[] priorities = Utils.prioritiesForSender(info.source().sender());
@@ -350,14 +345,10 @@ public abstract class AbstractCommand<T extends AbstractCommand<T>> extends Exec
       if (!checkPermission(info.source()) || checkRequirements(info.source())) {
         return List.of();
       }
-      if (this instanceof final SimpleCommand rootCmd) {
-        return rootCmd.tabCompleteDefault(info);
-      } else {
-        final String subStr = info.args().getRaw(0);
-        final SimpleSubCommand sub = getSubcommand(subStr);
-        if (sub != null) {
-          return sub.tabComplete(info);
-        }
+      final String subStr = info.args().getRaw(0);
+      final SimpleSubCommand sub = getSubcommand(subStr);
+      if (sub != null) {
+        return sub.tabComplete(info);
       }
 
       for (final Argument<?, ?> arg : arguments) {

@@ -139,7 +139,7 @@ public abstract class Argument<Type, ArgType> {
   // Help
   public String getHelpString() {
     if (!isListed) {
-      return "";
+      return name;
     }
     return isOptional ? "[" + name + "]" : "<" + name + ">";
   }

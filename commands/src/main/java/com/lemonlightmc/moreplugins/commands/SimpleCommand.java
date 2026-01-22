@@ -1,17 +1,14 @@
 package com.lemonlightmc.moreplugins.commands;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import org.bukkit.command.CommandException;
 import org.bukkit.command.CommandSender;
 
 import com.lemonlightmc.moreplugins.apis.ChatAPI;
-import com.lemonlightmc.moreplugins.base.PluginBase;
+import com.lemonlightmc.moreplugins.commands.argumentsbase.Argument;
 import com.lemonlightmc.moreplugins.commands.exceptions.InvalidCommandNameException;
-import com.lemonlightmc.moreplugins.commands.executors.ExecutionInfo;
-import com.lemonlightmc.moreplugins.commands.suggestions.SuggestionInfo;
-import com.lemonlightmc.moreplugins.commands.suggestions.Suggestions;
 
 public class SimpleCommand extends AbstractCommand<SimpleCommand> {
 
@@ -20,7 +17,6 @@ public class SimpleCommand extends AbstractCommand<SimpleCommand> {
   private Optional<String> fullDescription = Optional.empty();
   private Optional<String[]> usageDescription = Optional.empty();
   private Optional<String> helpMessage = Optional.empty();
-  private boolean withDefaultSubCommands = true;
 
   public SimpleCommand(final String label) {
     super();
@@ -36,31 +32,13 @@ public class SimpleCommand extends AbstractCommand<SimpleCommand> {
   }
 
   public void register(final String namespace) {
+    build();
     CommandManager.register(this, namespace);
   }
 
   public void register() {
+    build();
     CommandManager.register(this);
-  }
-
-  public boolean runDefault(final ExecutionInfo<CommandSender> info, final String subStr) throws CommandException {
-    if (!withDefaultSubCommands) {
-      return false;
-    }
-    if (subStr.equalsIgnoreCase("help") && helpMessage.isPresent()) {
-      sendHelp(info.sender());
-      return true;
-    } else if (subStr.equalsIgnoreCase("reload")) {
-      PluginBase.getInstance().reloadConfig();
-      ChatAPI.send(info.sender(), "messages.reload");
-      return true;
-    }
-    return false;
-  }
-
-  public List<Suggestions<CommandSender>> tabCompleteDefault(final SuggestionInfo<CommandSender> info)
-      throws CommandException {
-    return !withDefaultSubCommands ? List.of() : List.of(Suggestions.from("help", "reload"));
   }
 
   public String getName() {
@@ -115,13 +93,41 @@ public class SimpleCommand extends AbstractCommand<SimpleCommand> {
     ChatAPI.send(sender, helpMessage.orElse(null));
   }
 
-  public boolean withDefaultSubCommands() {
-    return withDefaultSubCommands;
+  private void build() {
+    if (usageDescription.isEmpty()) {
+      usageDescription = Optional.of(buildUsageString("/" + name, this).toArray(new String[0]));
+    }
+    if (helpMessage.isEmpty()) {
+      final StringBuilder builder = new StringBuilder();
+      final ArrayList<String> helpLines = new ArrayList<>();
+      if (fullDescription.isPresent()) {
+        builder.append(fullDescription.get());
+      } else {
+        builder.append("\nDescription not available!");
+      }
+      if (usageDescription.isPresent()) {
+        builder.append("\nUsage:");
+        for (String usageLine : usageDescription.get()) {
+          builder.append(" ");
+          builder.append(usageLine);
+        }
+      }
+      builder.append("\nAliases: " + String.join(", ", aliases));
+      helpMessage = Optional.of(helpLines.toString());
+    }
   }
 
-  public boolean withDefaultSubCommands(final boolean value) {
-    withDefaultSubCommands = value;
-    return withDefaultSubCommands;
+  private ArrayList<String> buildUsageString(String str, AbstractCommand<?> command) {
+    final ArrayList<String> usageList = new ArrayList<>();
+    for (SimpleSubCommand subCmd : subcommands) {
+      usageList.addAll(buildUsageString(str, subCmd));
+    }
+    for (Argument<?, ?> arg : command.arguments) {
+      str += " ";
+      str += arg.getHelpString();
+    }
+    usageList.add(str);
+    return usageList;
   }
 
   @Override
