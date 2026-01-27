@@ -1,6 +1,5 @@
 package com.lemonlightmc.moreplugins.commands;
 
-import com.lemonlightmc.moreplugins.apis.ChatAPI;
 import com.lemonlightmc.moreplugins.base.MorePlugins;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.Argument;
 import com.lemonlightmc.moreplugins.commands.exceptions.OptionalArgumentException;
@@ -23,7 +22,6 @@ import java.util.function.Predicate;
 import org.bukkit.command.CommandException;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginIdentifiableCommand;
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
 public abstract class AbstractCommand<T extends AbstractCommand<T>> extends Executable<T>
@@ -33,24 +31,21 @@ public abstract class AbstractCommand<T extends AbstractCommand<T>> extends Exec
   protected List<SimpleSubCommand> subcommands = new ArrayList<>();
   protected Set<String> aliases = new HashSet<String>();
 
-  protected Set<String> permissions = new HashSet<String>();
-  protected Predicate<CommandSender> requirements = (_) -> {
-    return true;
-  };
+  protected List<CommandRequirement<CommandSender>> requirements;
   private boolean hasOptional = false;
 
   public Plugin getPlugin() {
-    return MorePlugins.instance;
+    return MorePlugins.getInstance();
   }
 
-  public abstract T instance();
+  public abstract T getInstance();
 
   // Aliases
   public T withAliases(final String... aliases) {
     for (final String alias : aliases) {
       this.aliases.add(alias.toLowerCase());
     }
-    return instance();
+    return getInstance();
   }
 
   public T setAliases(final Set<String> aliases) {
@@ -58,7 +53,7 @@ public abstract class AbstractCommand<T extends AbstractCommand<T>> extends Exec
     for (final String alias : aliases) {
       this.aliases.add(alias.toLowerCase());
     }
-    return instance();
+    return getInstance();
   }
 
   public Set<String> getAliases() {
@@ -73,12 +68,12 @@ public abstract class AbstractCommand<T extends AbstractCommand<T>> extends Exec
     for (final String alias : aliases) {
       this.aliases.remove(alias.toLowerCase());
     }
-    return instance();
+    return getInstance();
   }
 
   public T clearAliases() {
     this.aliases.clear();
-    return instance();
+    return getInstance();
   }
 
   public void addArgument(final Argument<?, ?> arg, final boolean optional) {
@@ -97,42 +92,42 @@ public abstract class AbstractCommand<T extends AbstractCommand<T>> extends Exec
   // Arguments
   public T withArguments(final List<Argument<?, ?>> args) {
     if (args == null || args.isEmpty()) {
-      return instance();
+      return getInstance();
     }
     for (final Argument<?, ?> arg : args) {
       addArgument(arg, false);
     }
-    return instance();
+    return getInstance();
   }
 
   public T withArguments(final Argument<?, ?>... args) {
     if (args == null || args.length == 0) {
-      return instance();
+      return getInstance();
     }
     for (final Argument<?, ?> arg : args) {
       addArgument(arg, false);
     }
-    return instance();
+    return getInstance();
   }
 
   public T withArguments(final List<Argument<?, ?>> args, final boolean optional) {
     if (args == null || args.isEmpty()) {
-      return instance();
+      return getInstance();
     }
     for (final Argument<?, ?> arg : args) {
       addArgument(arg, optional);
     }
-    return instance();
+    return getInstance();
   }
 
   public T withArguments(final Argument<?, ?>[] args, final boolean optional) {
     if (args == null || args.length == 0) {
-      return instance();
+      return getInstance();
     }
     for (final Argument<?, ?> arg : args) {
       addArgument(arg, optional);
     }
-    return instance();
+    return getInstance();
   }
 
   public T withOptionalArguments(final List<Argument<?, ?>> args) {
@@ -146,7 +141,7 @@ public abstract class AbstractCommand<T extends AbstractCommand<T>> extends Exec
 
   public T setArguments(final List<Argument<?, ?>> args) {
     arguments = args;
-    return instance();
+    return getInstance();
   }
 
   public boolean hasArguments(final Argument<?, ?>... args) {
@@ -167,17 +162,17 @@ public abstract class AbstractCommand<T extends AbstractCommand<T>> extends Exec
 
   public T removeArguments(final Argument<?, ?> args) {
     arguments.remove(args);
-    return instance();
+    return getInstance();
   }
 
   public T removeArguments(final Argument<?, ?>... args) {
     arguments.removeAll(List.of(args));
-    return instance();
+    return getInstance();
   }
 
   public T clearArguments() {
     arguments.clear();
-    return instance();
+    return getInstance();
   }
 
   // Subcommands
@@ -185,7 +180,7 @@ public abstract class AbstractCommand<T extends AbstractCommand<T>> extends Exec
     if (subs != null) {
       subcommands.addAll(subs);
     }
-    return instance();
+    return getInstance();
   }
 
   @SafeVarargs
@@ -193,12 +188,12 @@ public abstract class AbstractCommand<T extends AbstractCommand<T>> extends Exec
     if (subs != null) {
       subcommands.addAll(List.of(subs));
     }
-    return instance();
+    return getInstance();
   }
 
   public T setSubcommands(final List<SimpleSubCommand> subs) {
     subcommands = subs;
-    return instance();
+    return getInstance();
   }
 
   @SafeVarargs
@@ -228,7 +223,7 @@ public abstract class AbstractCommand<T extends AbstractCommand<T>> extends Exec
     if (sub != null) {
       subcommands.remove(sub);
     }
-    return instance();
+    return getInstance();
   }
 
   @SafeVarargs
@@ -236,79 +231,92 @@ public abstract class AbstractCommand<T extends AbstractCommand<T>> extends Exec
     if (subs != null) {
       subcommands.removeAll(List.of(subs));
     }
-    return instance();
+    return getInstance();
   }
 
   public T clearSubcommands() {
     subcommands.clear();
-    return instance();
+    return getInstance();
   }
 
-  // lesser setter & getters
-  public T withPermission(final String permission) {
-    permissions.add(permission);
-    return instance();
+  // requirements
+  public T withRequirement(final CommandRequirement<CommandSender> requirement) {
+    if (requirements == null) {
+      requirements = new ArrayList<>();
+    }
+    requirements.add(requirement);
+    return getInstance();
   }
 
-  public void setPermissions(final Set<String> permissions) {
-    this.permissions = permissions;
+  public T withRequirement(final Predicate<CommandSource<CommandSender>> requirement, final String message,
+      final boolean hide) {
+    return withRequirement(CommandRequirement.from(requirement, message, hide));
   }
 
-  public Set<String> getPermissions() {
-    return permissions;
+  public T withRequirement(final Predicate<CommandSource<CommandSender>> requirement, final boolean hide) {
+    return withRequirement(CommandRequirement.from(requirement, hide));
   }
 
-  public T withRequirement(final Predicate<CommandSender> requirement) {
-    requirements = requirements.and(requirement);
-    return instance();
+  public T withRequirement(final Predicate<CommandSource<CommandSender>> requirement, final String message) {
+    return withRequirement(CommandRequirement.from(requirement, message));
   }
 
-  public void setRequirements(final Predicate<CommandSender> requirements) {
+  public T withRequirement(final Predicate<CommandSource<CommandSender>> requirement) {
+    return withRequirement(CommandRequirement.from(requirement));
+  }
+
+  public T setRequirements(final List<CommandRequirement<CommandSender>> requirements) {
     this.requirements = requirements;
+    return getInstance();
   }
 
-  public Predicate<CommandSender> getRequirements() {
+  public T withPermission(final String permission, final String message, final boolean hide) {
+    return withRequirement(CommandRequirement.permission(permission, message, hide));
+  }
+
+  public T withPermission(final String permission, final boolean hide) {
+    return withRequirement(CommandRequirement.permission(permission, hide));
+  }
+
+  public T withPermission(final String permission, final String message) {
+    return withRequirement(CommandRequirement.permission(permission, message));
+  }
+
+  public T withPermission(final String permission) {
+    return withRequirement(CommandRequirement.permission(permission));
+  }
+
+  public boolean hasRequirements() {
+    return requirements != null && !requirements.isEmpty();
+  }
+
+  public T clearRequirements() {
+    if (requirements != null) {
+      requirements.clear();
+    }
+    return getInstance();
+  }
+
+  public List<CommandRequirement<CommandSender>> getRequirements() {
     return requirements;
   }
 
-  // utils
-
-  public boolean checkPermission(final CommandSource<CommandSender> source) {
-    if (permissions == null || permissions.size() == 0) {
+  public boolean checkRequirements(final CommandSource<CommandSender> source) {
+    if (requirements == null || requirements.size() == 0) {
       return true;
     }
-    for (final String perm : permissions) {
-      if (!source.hasPermission(perm)) {
-        ChatAPI.send(source.sender(), CommandManager.getPermissionMessage());
+    for (final CommandRequirement<CommandSender> requirement : requirements) {
+      if (!requirement.check(source)) {
         return false;
       }
     }
     return true;
   }
 
-  public boolean checkRequirements(final CommandSource<CommandSender> sender) {
-    if (requirements == null) {
-      return true;
-    }
-    if (requirements != null || !requirements.test(sender.sender())) {
-      ChatAPI.send(sender.sender(), CommandManager.getRequirementsMessage());
-      return false;
-    }
-    return true;
-  }
-
-  public boolean isPlayer(final CommandSender sender) {
-    return sender != null && sender instanceof Player;
-  }
-
-  public void sendPermissionMessage(final CommandSender sender) {
-    ChatAPI.send(sender, CommandManager.getPermissionMessage());
-  }
-
   // execution
   public void run(final ExecutionInfo<CommandSender> info) throws CommandException {
     try {
-      if (!checkPermission(info.source()) || checkRequirements(info.source())) {
+      if (!checkRequirements(info.source())) {
         return;
       }
       if (executors == null || executors.isEmpty()) {
@@ -342,7 +350,7 @@ public abstract class AbstractCommand<T extends AbstractCommand<T>> extends Exec
 
   public List<Suggestions<CommandSender>> tabComplete(final SuggestionInfo<CommandSender> info) {
     try {
-      if (!checkPermission(info.source()) || checkRequirements(info.source())) {
+      if (!checkRequirements(info.source())) {
         return List.of();
       }
       final String subStr = info.args().getRaw(0);
@@ -406,7 +414,6 @@ public abstract class AbstractCommand<T extends AbstractCommand<T>> extends Exec
     result = 31 * result + ((arguments == null) ? 0 : arguments.hashCode());
     result = 31 * result + ((subcommands == null) ? 0 : subcommands.hashCode());
     result = 31 * result + ((aliases == null) ? 0 : aliases.hashCode());
-    result = 31 * result + ((permissions == null) ? 0 : permissions.hashCode());
     result = 31 * result + ((requirements == null) ? 0 : requirements.hashCode());
     return result;
   }
@@ -436,11 +443,6 @@ public abstract class AbstractCommand<T extends AbstractCommand<T>> extends Exec
         return false;
     } else if (!aliases.equals(other.aliases))
       return false;
-    if (permissions == null) {
-      if (other.permissions != null)
-        return false;
-    } else if (!permissions.equals(other.permissions))
-      return false;
     if (requirements == null) {
       if (other.requirements != null)
         return false;
@@ -452,7 +454,7 @@ public abstract class AbstractCommand<T extends AbstractCommand<T>> extends Exec
   @Override
   public String toString() {
     return "AbstractCommand [arguments=" + arguments + ", subcommands=" + subcommands + ", aliases=" + aliases
-        + ", executors=" + executors + ", permissions=" + permissions + ", requirements=" + requirements + "]";
+        + ", executors=" + executors + ", requirements=" + requirements + "]";
   }
 
 }

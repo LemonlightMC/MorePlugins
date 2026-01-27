@@ -5,8 +5,10 @@ import java.util.Collection;
 import java.util.List;
 import java.util.function.Function;
 import java.util.function.Predicate;
+
 import org.bukkit.command.CommandSender;
 
+import com.lemonlightmc.moreplugins.commands.CommandRequirement;
 import com.lemonlightmc.moreplugins.commands.CommandSource;
 import com.lemonlightmc.moreplugins.commands.exceptions.CommandSyntaxException;
 import com.lemonlightmc.moreplugins.commands.suggestions.SuggestionInfo;
@@ -18,8 +20,7 @@ public abstract class Argument<Type, ArgType> {
   protected Class<Type> primitiveType;
   protected boolean isOptional = false;
   protected boolean isListed = true;
-  protected String permission = "";
-  protected Predicate<CommandSender> requirements = _ -> true;
+  protected List<CommandRequirement<CommandSender>> requirements;
   protected List<Suggestions<CommandSender>> suggestions = new ArrayList<>(4);
 
   protected Argument(final String name, final Class<Type> primitiveType, final ArgumentType rawType) {
@@ -82,34 +83,6 @@ public abstract class Argument<Type, ArgType> {
     return getInstance();
   }
 
-  // Permission
-  public ArgType withPermission(final String permission) {
-    this.permission = permission;
-    return getInstance();
-  }
-
-  public String getPermission() {
-    return permission;
-  }
-
-  public void clearPermission() {
-    this.permission = "";
-  }
-
-  // Requirements
-  public ArgType withRequirement(final Predicate<CommandSender> requirement) {
-    this.requirements = this.requirements.and(requirement);
-    return getInstance();
-  }
-
-  public Predicate<CommandSender> getRequirements() {
-    return this.requirements;
-  }
-
-  public void clearRequirements() {
-    this.requirements = _ -> true;
-  }
-
   // Suggestions
 
   public ArgType withSuggestions(final Suggestions<CommandSender> func) {
@@ -135,6 +108,68 @@ public abstract class Argument<Type, ArgType> {
   public List<Suggestions<CommandSender>> getSuggestions() {
     return this.suggestions;
   }
+  // requirements
+
+  public ArgType withRequirement(final CommandRequirement<CommandSender> requirement) {
+    if (requirements == null) {
+      requirements = new ArrayList<>();
+    }
+    requirements.add(requirement);
+    return getInstance();
+  }
+
+  public ArgType withRequirement(final Predicate<CommandSource<CommandSender>> requirement, final String message,
+      final boolean hide) {
+    return withRequirement(CommandRequirement.from(requirement, message, hide));
+  }
+
+  public ArgType withRequirement(final Predicate<CommandSource<CommandSender>> requirement, final boolean hide) {
+    return withRequirement(CommandRequirement.from(requirement, hide));
+  }
+
+  public ArgType withRequirement(final Predicate<CommandSource<CommandSender>> requirement, final String message) {
+    return withRequirement(CommandRequirement.from(requirement, message));
+  }
+
+  public ArgType withRequirement(final Predicate<CommandSource<CommandSender>> requirement) {
+    return withRequirement(CommandRequirement.from(requirement));
+  }
+
+  public ArgType setRequirements(final List<CommandRequirement<CommandSender>> requirements) {
+    this.requirements = requirements;
+    return getInstance();
+  }
+
+  public ArgType withPermission(final String permission, final String message, final boolean hide) {
+    return withRequirement(CommandRequirement.permission(permission, message, hide));
+  }
+
+  public ArgType withPermission(final String permission, final boolean hide) {
+    return withRequirement(CommandRequirement.permission(permission, hide));
+  }
+
+  public ArgType withPermission(final String permission, final String message) {
+    return withRequirement(CommandRequirement.permission(permission, message));
+  }
+
+  public ArgType withPermission(final String permission) {
+    return withRequirement(CommandRequirement.permission(permission));
+  }
+
+  public boolean hasRequirements() {
+    return requirements != null && !requirements.isEmpty();
+  }
+
+  public ArgType clearRequirements() {
+    if (requirements != null) {
+      requirements.clear();
+    }
+    return getInstance();
+  }
+
+  public List<CommandRequirement<CommandSender>> getRequirements() {
+    return requirements;
+  }
 
   // Help
   public String getHelpString() {
@@ -151,7 +186,6 @@ public abstract class Argument<Type, ArgType> {
     result = 31 * result + primitiveType.hashCode();
     result = 31 * result + (isOptional ? 1231 : 1237);
     result = 31 * result + (isListed ? 1231 : 1237);
-    result = 31 * result + ((permission == null) ? 0 : permission.hashCode());
     result = 31 * result + requirements.hashCode();
     result = 31 * result + suggestions.hashCode();
     return result;
@@ -166,14 +200,10 @@ public abstract class Argument<Type, ArgType> {
       return false;
     }
     final Argument<?, ?> other = (Argument<?, ?>) obj;
-    if (permission == null && other.permission != null) {
-      return false;
-    }
     return isListed == other.isListed && isOptional == other.isOptional && isOptional == other.isOptional
         && rawType == other.rawType
         && name.equals(other.name) && name.equals(other.name)
         && primitiveType.equals(other.primitiveType)
-        && permission.equals(other.permission)
         && requirements.equals(other.requirements)
         && suggestions.equals(other.suggestions);
   }
@@ -182,14 +212,14 @@ public abstract class Argument<Type, ArgType> {
   public String toString() {
     return getInstance().getClass().getName() + " [name=" + name + ", rawType=" + rawType + ", primitiveType="
         + primitiveType + ", isOptional="
-        + isOptional + ", isListed=" + isListed + ", permission=" + permission + ", requirements=" + requirements
+        + isOptional + ", isListed=" + isListed + ", requirements=" + requirements
         + ", suggestions=" + suggestions + "]";
   }
 
   public String toStringWithMore(final String str) {
     return getInstance().getClass().getName() + " [name=" + name + ", rawType=" + rawType + ", primitiveType="
         + primitiveType + ", isOptional="
-        + isOptional + ", isListed=" + isListed + ", permission=" + permission + ", requirements=" + requirements
+        + isOptional + ", isListed=" + isListed + ", requirements=" + requirements
         + ", suggestions=" + suggestions + ", " + str + "]";
   }
 

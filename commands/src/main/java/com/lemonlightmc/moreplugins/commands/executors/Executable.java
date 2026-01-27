@@ -17,11 +17,11 @@ public abstract class Executable<T> {
     executors = new ArrayList<>();
   }
 
-  protected abstract T instance();
+  protected abstract T getInstance();
 
   public T setExecutors(final List<NormalExecutor<?>> ex) {
     executors = ex;
-    return instance();
+    return getInstance();
   }
 
   public boolean hasExecutors(final NormalExecutor<?>... exes) {
@@ -60,7 +60,7 @@ public abstract class Executable<T> {
         });
       }
     }
-    return instance();
+    return getInstance();
   }
 
   public T executes(final CommandExecutionInfo executor, final ExecutorType... types) {
@@ -81,84 +81,84 @@ public abstract class Executable<T> {
         });
       }
     }
-    return instance();
+    return getInstance();
   }
 
   // Player command executor
   public T executesPlayer(final PlayerCommandExecutor executor) {
     executors.add(executor);
-    return instance();
+    return getInstance();
   }
 
   public T executesPlayer(final PlayerExecutionInfo info) {
     executors.add(info);
-    return instance();
+    return getInstance();
   }
 
   // Entity command executor
   public T executesEntity(final EntityCommandExecutor executor) {
     executors.add(executor);
-    return instance();
+    return getInstance();
   }
 
   public T executesEntity(final EntityExecutionInfo info) {
     executors.add(info);
-    return instance();
+    return getInstance();
   }
 
   // Command block command executor
   public T executesCommandBlock(final CommandBlockExecutor executor) {
     executors.add(executor);
-    return instance();
+    return getInstance();
   }
 
   public T executesCommandBlock(final CommandBlockExecutionInfo info) {
     executors.add(info);
-    return instance();
+    return getInstance();
   }
 
   // Console command executor
   public T executesConsole(final ConsoleCommandExecutor executor) {
     executors.add(executor);
-    return instance();
+    return getInstance();
   }
 
   public T executesConsole(final ConsoleExecutionInfo info) {
     executors.add(info);
-    return instance();
+    return getInstance();
   }
 
   // RemoteConsole command executor
   public T executesRemoteConsole(final RemoteConsoleCommandExecutor executor) {
     executors.add(executor);
-    return instance();
+    return getInstance();
   }
 
   public T executesRemoteConsole(final RemoteConsoleExecutionInfo info) {
     executors.add(info);
-    return instance();
+    return getInstance();
   }
 
   // Native command executor
   public T executesNative(final NativeCommandExecutor executor) {
     executors.add(executor);
-    return instance();
+    return getInstance();
   }
 
   public T executesNative(final NativeExecutionInfo info) {
     executors.add(info);
-    return instance();
+    return getInstance();
   }
 
   // Proxy command executor
   public T executesNative(final ProxyCommandExecutor executor) {
     executors.add(executor);
-    return instance();
+    return getInstance();
   }
 
   public T executesNative(final ProxyExecutionInfo info) {
     executors.add(info);
-    return instance();
+    return getInstance();
   }
 
   // Feedback-forwarding command executor
@@ -169,7 +169,7 @@ public abstract class Executable<T> {
               + ServerEnvironment.current().name() + ")!");
     }
     executors.add(executor);
-    return instance();
+    return getInstance();
   }
 
   public T executesFeedbackForwarding(final FeedbackForwardingExecutionInfo info) {
@@ -179,7 +179,7 @@ public abstract class Executable<T> {
               + ServerEnvironment.current().name() + ")!");
     }
     executors.add(info);
-    return instance();
+    return getInstance();
   }
 
   @Override

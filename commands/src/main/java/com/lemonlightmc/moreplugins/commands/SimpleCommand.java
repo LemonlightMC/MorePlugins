@@ -27,7 +27,7 @@ public class SimpleCommand extends AbstractCommand<SimpleCommand> {
     withAliases(name);
   }
 
-  public SimpleCommand instance() {
+  public SimpleCommand getInstance() {
     return this;
   }
 
@@ -192,7 +192,7 @@ public class SimpleCommand extends AbstractCommand<SimpleCommand> {
   public String toString() {
     return "SimpleCommand [name=" + name + ", shortDescription=" + shortDescription + ", usageDescription="
         + usageDescription + ", arguments=" + arguments + ", subcommands=" + subcommands + ", aliases=" + aliases
-        + ", permissions=" + permissions + "]";
+        + "]";
   }
 
 }

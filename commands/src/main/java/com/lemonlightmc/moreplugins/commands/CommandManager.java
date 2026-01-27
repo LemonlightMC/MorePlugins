@@ -21,9 +21,6 @@ public class CommandManager {
   private static CommandMap commandMap;
   private static Map<String, Command> knownCommandMap;
 
-  protected static String permissionMessage = "&cYou dont have permission to use this command!";
-  protected static String requirementsMessage = "&cYou dont fulfill all requirements use this command!";
-
   static {
     try {
       COMMAND_MAP_FIELD = SimplePluginManager.class.getDeclaredField("commandMap");
@@ -157,21 +154,5 @@ public class CommandManager {
 
   public static String getNamespace() {
     return namespace;
-  }
-
-  public static void setPermissionMessage(final String permissionMessage) {
-    CommandManager.permissionMessage = permissionMessage;
-  }
-
-  public static String getPermissionMessage() {
-    return permissionMessage;
-  }
-
-  public static void setRequirementsMessage(final String requirementsMessage) {
-    CommandManager.requirementsMessage = requirementsMessage;
-  }
-
-  public static String getRequirementsMessage() {
-    return requirementsMessage;
   }
 }

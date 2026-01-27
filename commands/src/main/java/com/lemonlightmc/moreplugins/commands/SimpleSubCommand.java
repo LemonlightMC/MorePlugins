@@ -6,7 +6,7 @@ public class SimpleSubCommand extends AbstractCommand<SimpleSubCommand> {
     super();
   }
 
-  public SimpleSubCommand instance() {
+  public SimpleSubCommand getInstance() {
     return this;
   }
 
