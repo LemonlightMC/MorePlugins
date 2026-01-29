@@ -33,39 +33,63 @@ public class CommandRequirement<S extends CommandSender> implements Cloneable<Co
 
   public static <T extends CommandSender> CommandRequirement<T> from(final Predicate<CommandSource<T>> predicate,
       final String message, final boolean hide) {
+    if (predicate == null) {
+      return null;
+    }
     return new CommandRequirement<T>(predicate, message, hide);
   }
 
   public static <T extends CommandSender> CommandRequirement<T> from(final Predicate<CommandSource<T>> predicate,
       final boolean hide) {
+    if (predicate == null) {
+      return null;
+    }
     return new CommandRequirement<T>(predicate, defaultMessage, hide);
   }
 
   public static <T extends CommandSender> CommandRequirement<T> from(final Predicate<CommandSource<T>> predicate,
       final String message) {
+    if (predicate == null) {
+      return null;
+    }
     return new CommandRequirement<T>(predicate, message, false);
   }
 
   public static <T extends CommandSender> CommandRequirement<T> from(final Predicate<CommandSource<T>> predicate) {
+    if (predicate == null) {
+      return null;
+    }
     return new CommandRequirement<T>(predicate, defaultMessage, false);
   }
 
   public static <T extends CommandSender> CommandRequirement<T> permission(final String permission,
       final String message, final boolean hide) {
+    if (permission == null) {
+      return null;
+    }
     return new CommandRequirement<T>((s) -> s.hasPermission(permission), message, hide);
   }
 
   public static <T extends CommandSender> CommandRequirement<T> permission(final String permission,
       final boolean hide) {
+    if (permission == null) {
+      return null;
+    }
     return new CommandRequirement<T>((s) -> s.hasPermission(permission), defaultPermissionMessage, hide);
   }
 
   public static <T extends CommandSender> CommandRequirement<T> permission(final String permission,
       final String message) {
+    if (permission == null) {
+      return null;
+    }
     return new CommandRequirement<T>((s) -> s.hasPermission(permission), message, false);
   }
 
   public static <T extends CommandSender> CommandRequirement<T> permission(final String permission) {
+    if (permission == null) {
+      return null;
+    }
     return new CommandRequirement<T>((s) -> s.hasPermission(permission), defaultPermissionMessage, false);
   }
 

@@ -139,11 +139,6 @@ public abstract class AbstractCommand<T extends AbstractCommand<T>> extends Exec
     return withArguments(args, true);
   }
 
-  public T setArguments(final List<Argument<?, ?>> args) {
-    arguments = args;
-    return getInstance();
-  }
-
   public boolean hasArguments(final Argument<?, ?>... args) {
     return args != null && args.length != 0 && arguments.containsAll(List.of(args));
   }
@@ -188,11 +183,6 @@ public abstract class AbstractCommand<T extends AbstractCommand<T>> extends Exec
     if (subs != null) {
       subcommands.addAll(List.of(subs));
     }
-    return getInstance();
-  }
-
-  public T setSubcommands(final List<SimpleSubCommand> subs) {
-    subcommands = subs;
     return getInstance();
   }
 
@@ -241,6 +231,9 @@ public abstract class AbstractCommand<T extends AbstractCommand<T>> extends Exec
 
   // requirements
   public T withRequirement(final CommandRequirement<CommandSender> requirement) {
+    if (requirement == null) {
+      return getInstance();
+    }
     if (requirements == null) {
       requirements = new ArrayList<>();
     }
@@ -248,41 +241,11 @@ public abstract class AbstractCommand<T extends AbstractCommand<T>> extends Exec
     return getInstance();
   }
 
-  public T withRequirement(final Predicate<CommandSource<CommandSender>> requirement, final String message,
-      final boolean hide) {
-    return withRequirement(CommandRequirement.from(requirement, message, hide));
-  }
-
-  public T withRequirement(final Predicate<CommandSource<CommandSender>> requirement, final boolean hide) {
-    return withRequirement(CommandRequirement.from(requirement, hide));
-  }
-
-  public T withRequirement(final Predicate<CommandSource<CommandSender>> requirement, final String message) {
-    return withRequirement(CommandRequirement.from(requirement, message));
-  }
-
   public T withRequirement(final Predicate<CommandSource<CommandSender>> requirement) {
     return withRequirement(CommandRequirement.from(requirement));
   }
 
-  public T setRequirements(final List<CommandRequirement<CommandSender>> requirements) {
-    this.requirements = requirements;
-    return getInstance();
-  }
-
-  public T withPermission(final String permission, final String message, final boolean hide) {
-    return withRequirement(CommandRequirement.permission(permission, message, hide));
-  }
-
-  public T withPermission(final String permission, final boolean hide) {
-    return withRequirement(CommandRequirement.permission(permission, hide));
-  }
-
-  public T withPermission(final String permission, final String message) {
-    return withRequirement(CommandRequirement.permission(permission, message));
-  }
-
-  public T withPermission(final String permission) {
+  public T withPermissions(final String permission) {
     return withRequirement(CommandRequirement.permission(permission));
   }
 

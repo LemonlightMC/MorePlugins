@@ -22,7 +22,7 @@ public class ExampleCommand extends SimpleCommand {
     withShortDescription("An example command");
     withFullDescription("An example command that does random stuff!");
     withUsage("&cUsage: /example <random|player>");
-    withPermission("moreplugins.example");
+    withPermissions("moreplugins.example");
     // withHelp(List.of("&e/example &7- &fAn example command"));
     withArguments(new DoubleArgument("amount").withSuggestions((SuggestionInfo<CommandSender> _) -> {
       return List.of("64", "128");
