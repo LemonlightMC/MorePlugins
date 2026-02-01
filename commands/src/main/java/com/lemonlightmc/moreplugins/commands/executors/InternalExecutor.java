@@ -57,6 +57,9 @@ public class InternalExecutor extends Command {
           try {
             final CommandSource<CommandSender> source = CommandSource.from(sender);
             final CommandArguments cmdArgs = parse(source, args);
+            if (cmdArgs == null) {
+              return;
+            }
             final ExecutionInfo<CommandSender> info = new ExecutionInfo<CommandSender>(source, cmdArgs);
             cmd.run(info);
           } catch (final Throwable ex) {
@@ -89,6 +92,9 @@ public class InternalExecutor extends Command {
     try {
       final CommandSource<CommandSender> source = CommandSource.from(sender);
       final CommandArguments cmdArgs = parse(source, args);
+      if (cmdArgs == null) {
+        return tooltips;
+      }
       final SuggestionInfo<CommandSender> info = new SuggestionInfo<CommandSender>(source, cmdArgs,
           cmdArgs.getLastRaw());
 
@@ -148,6 +154,9 @@ public class InternalExecutor extends Command {
       hadSubcommand = false;
       for (final SimpleSubCommand sub : cmd.getSubcommands()) {
         if (_isSubCommand(args[i], sub)) {
+          if (!sub.checkRequirements(source)) {
+            return null;
+          }
           thisCmd = sub;
           i++;
           hadSubcommand = true;
@@ -158,6 +167,9 @@ public class InternalExecutor extends Command {
 
     final Map<String, ParsedArgument> parsedArgs = new HashMap<>();
     for (final Argument<?, ?> arg : cmd.getArguments()) {
+      if (!arg.checkRequirements(source)) {
+        return null;
+      }
       final Object value = _parseArg(reader, source, arg);
       if (!arg.isListed()) {
         parsedArgs.put(arg.getName(), new ParsedArgument(arg.getName(), reader.getLastRead(), value));

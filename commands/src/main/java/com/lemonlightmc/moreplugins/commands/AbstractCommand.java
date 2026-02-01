@@ -316,9 +316,6 @@ public abstract class AbstractCommand<T extends AbstractCommand<T>> extends Exec
   // execution
   public void run(final ExecutionInfo<CommandSender> info) throws CommandException {
     try {
-      if (!checkRequirements(info.source())) {
-        return;
-      }
       if (executors == null || executors.isEmpty()) {
         return;
       }

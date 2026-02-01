@@ -118,38 +118,8 @@ public abstract class Argument<Type, ArgType> {
     return getInstance();
   }
 
-  public ArgType withRequirement(final Predicate<CommandSource<CommandSender>> requirement, final String message,
-      final boolean hide) {
-    return withRequirement(CommandRequirement.from(requirement, message, hide));
-  }
-
-  public ArgType withRequirement(final Predicate<CommandSource<CommandSender>> requirement, final boolean hide) {
-    return withRequirement(CommandRequirement.from(requirement, hide));
-  }
-
-  public ArgType withRequirement(final Predicate<CommandSource<CommandSender>> requirement, final String message) {
-    return withRequirement(CommandRequirement.from(requirement, message));
-  }
-
   public ArgType withRequirement(final Predicate<CommandSource<CommandSender>> requirement) {
     return withRequirement(CommandRequirement.from(requirement));
-  }
-
-  public ArgType setRequirements(final List<CommandRequirement<CommandSender>> requirements) {
-    this.requirements = requirements;
-    return getInstance();
-  }
-
-  public ArgType withPermission(final String permission, final String message, final boolean hide) {
-    return withRequirement(CommandRequirement.permission(permission, message, hide));
-  }
-
-  public ArgType withPermission(final String permission, final boolean hide) {
-    return withRequirement(CommandRequirement.permission(permission, hide));
-  }
-
-  public ArgType withPermission(final String permission, final String message) {
-    return withRequirement(CommandRequirement.permission(permission, message));
   }
 
   public ArgType withPermission(final String permission) {
@@ -169,6 +139,18 @@ public abstract class Argument<Type, ArgType> {
 
   public List<CommandRequirement<CommandSender>> getRequirements() {
     return requirements;
+  }
+
+  public boolean checkRequirements(final CommandSource<CommandSender> source) {
+    if (requirements == null || requirements.size() == 0) {
+      return true;
+    }
+    for (final CommandRequirement<CommandSender> requirement : requirements) {
+      if (!requirement.check(source)) {
+        return false;
+      }
+    }
+    return true;
   }
 
   // Help
