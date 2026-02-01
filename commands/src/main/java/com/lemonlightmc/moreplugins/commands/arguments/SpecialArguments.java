@@ -129,11 +129,11 @@ public class SpecialArguments {
       super(name, CommandResult.class, ArgumentType.COMMAND);
       withSuggestions((final SuggestionInfo<CommandSender> info) -> {
         final String[] args = info.currentInput().split(" ");
-        if (args.length == 0) {
-          return List.of();
+        if (args.length <= 1) {
+          return CommandManager.getKnownCommandMap().keySet();
         }
-        final Command cmd = CommandManager.getCommandMap().getCommand(args[0]);
-        return cmd == null ? List.of() : cmd.tabComplete(info.source().sender(), cmd.getLabel(), args);
+        return CommandManager.getCommandMap().tabComplete(info.source().sender(), info.currentInput(),
+            info.source().location());
       });
     }
 
@@ -151,7 +151,7 @@ public class SpecialArguments {
         return null;
       }
       final Command cmd = Objects.requireNonNull(CommandManager.getCommandMap().getCommand(args[0]));
-      return new CommandResult(cmd, Arrays.copyOfRange(args, 1, args.length));
+      return new CommandResult(cmd, args.length == 1 ? new String[0] : Arrays.copyOfRange(args, 1, args.length));
     }
   }
 
@@ -199,7 +199,11 @@ public class SpecialArguments {
     @Override
     public String parseArgument(final CommandSource<CommandSender> source, final StringReader reader, final String key)
         throws CommandSyntaxException {
-      return literal;
+      final String value = reader.readString();
+      if (literal.equalsIgnoreCase(value)) {
+        return literal;
+      }
+      throw createError(reader, value);
     }
 
     @Override
@@ -264,7 +268,13 @@ public class SpecialArguments {
     @Override
     public String parseArgument(final CommandSource<CommandSender> source, final StringReader reader, final String key)
         throws CommandSyntaxException {
-      throw new UnsupportedOperationException("Cant parse MultiLiteral");
+      final String value = reader.readString();
+      for (final String literal : literals) {
+        if (literal.equalsIgnoreCase(value)) {
+          return literal;
+        }
+      }
+      throw createError(reader, value);
     }
 
     @Override
@@ -315,10 +325,18 @@ public class SpecialArguments {
       return this;
     }
 
+    public Function<CommandSource<CommandSender>, Collection<String>> getLiteralsFunction() {
+      return literals;
+    }
+
     @Override
     public String parseArgument(final CommandSource<CommandSender> source, final StringReader reader, final String key)
         throws CommandSyntaxException {
-      throw new UnsupportedOperationException("Cant parse MultiLiteral");
+      final String value = reader.readString();
+      if (literals.apply(source).contains(value)) {
+        return value;
+      }
+      throw createError(reader, value);
     }
 
     @Override

@@ -77,32 +77,22 @@ public class ScoreArguments {
     public Objective parseArgument(final CommandSource<CommandSender> source, final StringReader reader,
         final String key)
         throws CommandSyntaxException {
-      reader.point();
-      String value = null;
-      try {
-        value = reader.readString();
-        Objective objective = Bukkit.getScoreboardManager().getMainScoreboard().getObjective(value);
-        if (objective != null) {
-          return objective;
-        }
-        final ScoreboardSlot slot = ScoreboardSlot.of(value);
-        if (slot != null) {
-          final DisplaySlot slot2 = slot.getDisplaySlot();
-          if (slot2 != null) {
-            objective = Bukkit.getScoreboardManager().getMainScoreboard().getObjective(slot2);
-            if (objective != null) {
-              return objective;
-            }
+      final String value = reader.readString();
+      Objective objective = Bukkit.getScoreboardManager().getMainScoreboard().getObjective(value);
+      if (objective != null) {
+        return objective;
+      }
+      final ScoreboardSlot slot = ScoreboardSlot.of(value);
+      if (slot != null) {
+        final DisplaySlot slot2 = slot.getDisplaySlot();
+        if (slot2 != null) {
+          objective = Bukkit.getScoreboardManager().getMainScoreboard().getObjective(slot2);
+          if (objective != null) {
+            return objective;
           }
         }
-        throw createError(reader, value);
-      } catch (final CommandSyntaxException ex) {
-        reader.resetCursor();
-        throw ex;
-      } catch (final Exception e) {
-        reader.resetCursor();
-        throw createError(reader, value);
       }
+      throw createError(reader, value);
     }
   }
 

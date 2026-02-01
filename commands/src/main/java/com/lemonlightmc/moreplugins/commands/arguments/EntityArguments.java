@@ -50,7 +50,8 @@ public class EntityArguments {
     public PlayerProfile parseArgument(final CommandSource<CommandSender> source, final StringReader reader,
         final String key)
         throws CommandSyntaxException {
-      return Bukkit.getPlayerExact(reader.readString()).getPlayerProfile();
+      final Player player = Bukkit.getPlayerExact(reader.readString());
+      return player == null ? null : player.getPlayerProfile();
     }
   }
 
@@ -72,8 +73,8 @@ public class EntityArguments {
     public List<Entity> parseArgument(final CommandSource<CommandSender> source, final StringReader reader,
         final String key)
         throws CommandSyntaxException {
-      String str = reader.readString();
-      Player player = Bukkit.getPlayerExact(str);
+      final String str = reader.readString();
+      final Player player = Bukkit.getPlayerExact(str);
       if (player != null) {
         return List.of(player);
       }
