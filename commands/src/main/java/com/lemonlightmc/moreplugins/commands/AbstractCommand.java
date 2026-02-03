@@ -1,6 +1,5 @@
 package com.lemonlightmc.moreplugins.commands;
 
-import com.lemonlightmc.moreplugins.base.MorePlugins;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.Argument;
 import com.lemonlightmc.moreplugins.commands.exceptions.OptionalArgumentException;
 import com.lemonlightmc.moreplugins.commands.executors.Executable;
@@ -21,11 +20,8 @@ import java.util.function.Predicate;
 
 import org.bukkit.command.CommandException;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.PluginIdentifiableCommand;
-import org.bukkit.plugin.Plugin;
 
-public abstract class AbstractCommand<T extends AbstractCommand<T>> extends Executable<T>
-    implements PluginIdentifiableCommand {
+public abstract class AbstractCommand<T extends AbstractCommand<T>> extends Executable<T> {
 
   protected List<Argument<?, ?>> arguments = new ArrayList<>();
   protected List<SimpleSubCommand> subcommands = new ArrayList<>();
@@ -33,10 +29,6 @@ public abstract class AbstractCommand<T extends AbstractCommand<T>> extends Exec
 
   protected List<CommandRequirement<CommandSender>> requirements;
   private boolean hasOptional = false;
-
-  public Plugin getPlugin() {
-    return MorePlugins.getInstance();
-  }
 
   public abstract T getInstance();
 

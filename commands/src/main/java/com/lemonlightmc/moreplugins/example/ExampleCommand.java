@@ -9,6 +9,7 @@ import com.lemonlightmc.moreplugins.commands.suggestions.Suggestions;
 
 import java.util.List;
 
+import org.bukkit.NamespacedKey;
 import org.bukkit.command.CommandException;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
@@ -17,7 +18,7 @@ import org.bukkit.entity.Player;
 public class ExampleCommand extends SimpleCommand {
 
   public ExampleCommand() {
-    super("example");
+    super(NamespacedKey.fromString("moreplugins:example"));
     withAliases("example2");
     withShortDescription("An example command");
     withFullDescription("An example command that does random stuff!");

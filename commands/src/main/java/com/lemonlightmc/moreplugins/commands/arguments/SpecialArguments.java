@@ -12,7 +12,7 @@ import java.util.function.Function;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
-import com.lemonlightmc.moreplugins.commands.CommandManager;
+import com.lemonlightmc.moreplugins.commands.CommandAPI;
 import com.lemonlightmc.moreplugins.commands.CommandSource;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.Argument;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.ArgumentType;
@@ -130,9 +130,9 @@ public class SpecialArguments {
       withSuggestions((final SuggestionInfo<CommandSender> info) -> {
         final String[] args = info.currentInput().split(" ");
         if (args.length <= 1) {
-          return CommandManager.getKnownCommandMap().keySet();
+          return CommandAPI.getKnownCommandMap().keySet();
         }
-        return CommandManager.getCommandMap().tabComplete(info.source().sender(), info.currentInput(),
+        return CommandAPI.getCommandMap().tabComplete(info.source().sender(), info.currentInput(),
             info.source().location());
       });
     }
@@ -150,7 +150,7 @@ public class SpecialArguments {
       if (args.length == 0) {
         return null;
       }
-      final Command cmd = Objects.requireNonNull(CommandManager.getCommandMap().getCommand(args[0]));
+      final Command cmd = Objects.requireNonNull(CommandAPI.getCommandMap().getCommand(args[0]));
       return new CommandResult(cmd, args.length == 1 ? new String[0] : Arrays.copyOfRange(args, 1, args.length));
     }
   }

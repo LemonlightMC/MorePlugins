@@ -33,8 +33,24 @@ public class InternalExecutor extends Command {
   private final SimpleCommand cmd;
 
   public InternalExecutor(final SimpleCommand cmd) {
-    super(cmd.getName());
+    super(cmd.getKey());
     this.cmd = cmd;
+  }
+
+  public SimpleCommand getSimpleCommand() {
+    return cmd;
+  }
+
+  public String getLabel() {
+    return this.getName();
+  }
+
+  public boolean setLabel(final String label) {
+    if (super.setLabel(label)) {
+      cmd.setKey(label);
+      return true;
+    }
+    return false;
   }
 
   @Override
@@ -44,7 +60,7 @@ public class InternalExecutor extends Command {
           if (sender == null) {
             return;
           }
-          final String label = label0 == null || label0.length() == 0 ? cmd.getName() : label0;
+          final String label = label0 == null || label0.length() == 0 ? cmd.getKey() : label0;
           final String[] args = args0 == null ? new String[0] : args0;
           if (!MorePlugins.instance.isEnabled()) {
             throw new CommandException(
