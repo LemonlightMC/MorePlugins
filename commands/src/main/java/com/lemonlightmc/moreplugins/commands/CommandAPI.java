@@ -2,17 +2,21 @@ package com.lemonlightmc.moreplugins.commands;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InaccessibleObjectException;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandMap;
+import org.bukkit.command.CommandSender;
+import org.bukkit.command.PluginCommand;
 import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.plugin.SimplePluginManager;
 
 import com.lemonlightmc.moreplugins.commands.exceptions.MissingCommandExecutorException;
-import com.lemonlightmc.moreplugins.commands.executors.InternalExecutor;
+import com.lemonlightmc.moreplugins.commands.manage.InternalExecutor;
 import com.lemonlightmc.moreplugins.messages.Logger;
 
 public class CommandAPI {
@@ -88,20 +92,20 @@ public class CommandAPI {
     if (command == null) {
       throw new IllegalArgumentException("Command cannot be null");
     }
-    if (command.aliases.size() == 0) {
+    if (command.getAliases().size() == 0) {
       throw new IllegalArgumentException("At least one alias must be provided");
     }
-    if (!command.hasExecutors() && (!command.subcommands.isEmpty() || command.hasArguments())) {
+    if (!command.hasExecutors() && (!command.getSubcommands().isEmpty() || command.hasArguments())) {
       throw new MissingCommandExecutorException(command.getName().toString());
     }
     final InternalExecutor cmd = new InternalExecutor(command);
-    for (final String alias : command.aliases) {
+    for (final String alias : command.getAliases()) {
       try {
         cmd.setLabel(alias);
         if (getKnownCommandMap().containsKey(alias) && getKnownCommandMap().get(alias) != null) {
           Logger.warn("Overriding existing command: " + getKnownCommandMap().get(alias).getName());
         }
-        getCommandMap().register(command.getNamespace(), cmd);
+        getCommandMap().register(cmd.getName(), command.getNamespace(), cmd);
         getKnownCommandMap().put(command.getName().toString(), cmd);
         getKnownCommandMap().put(alias, cmd);
       } catch (final Exception e) {
@@ -115,7 +119,7 @@ public class CommandAPI {
     if (command == null) {
       return;
     }
-    for (final String alias : command.aliases) {
+    for (final String alias : command.getAliases()) {
       unregister(alias);
       unregister(command.getNamespace() + ":" + alias);
     }
@@ -147,4 +151,65 @@ public class CommandAPI {
       }
     }
   }
+
+  public static void unregisterAll() {
+    getKnownCommandMap().clear();
+    getCommandMap().clearCommands();
+  }
+
+  public static void dispatchCommand(final CommandSender sender, final String commandLine) {
+    if (commandLine == null || commandLine.isEmpty()) {
+      return;
+    }
+    if (sender == null) {
+      Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), commandLine);
+    } else {
+      Bukkit.getServer().dispatchCommand(sender, commandLine);
+    }
+  }
+
+  public static void dispatchCommand(final String commandLine) {
+    dispatchCommand(Bukkit.getConsoleSender(), commandLine);
+  }
+
+  public static void dispatchCommand(final CommandSender sender, final SimpleCommand command, final String[] args) {
+    if (command == null) {
+      return;
+    }
+    StringBuilder commandLine = new StringBuilder("/");
+    commandLine.append(command.getName().toString());
+    if (args != null && args.length > 0) {
+      for (String arg : args) {
+        commandLine.append(" ").append(arg);
+      }
+    }
+    if (sender == null) {
+      Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), commandLine.toString());
+    } else {
+      Bukkit.getServer().dispatchCommand(sender, commandLine.toString());
+    }
+  }
+
+  public static void dispatchCommand(final SimpleCommand command, final String[] args) {
+    dispatchCommand(Bukkit.getConsoleSender(), command, args);
+  }
+
+  public static PluginCommand getPluginCommand(final String name) {
+    if (name == null || name.isEmpty()) {
+      return null;
+    }
+    return Bukkit.getPluginCommand(name);
+  }
+
+  public static PluginCommand getPluginCommand(final NamespacedKey key) {
+    if (key == null) {
+      return null;
+    }
+    return Bukkit.getPluginCommand(key.toString());
+  }
+
+  public Collection<Command> getCommands() {
+    return Collections.unmodifiableCollection(getKnownCommandMap().values());
+  }
+
 }

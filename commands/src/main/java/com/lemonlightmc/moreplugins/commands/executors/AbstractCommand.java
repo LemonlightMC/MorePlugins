@@ -1,9 +1,11 @@
-package com.lemonlightmc.moreplugins.commands;
+package com.lemonlightmc.moreplugins.commands.executors;
 
+import com.lemonlightmc.moreplugins.commands.CommandRequirement;
+import com.lemonlightmc.moreplugins.commands.CommandSource;
+import com.lemonlightmc.moreplugins.commands.SimpleSubCommand;
+import com.lemonlightmc.moreplugins.commands.Utils;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.Argument;
 import com.lemonlightmc.moreplugins.commands.exceptions.OptionalArgumentException;
-import com.lemonlightmc.moreplugins.commands.executors.Executable;
-import com.lemonlightmc.moreplugins.commands.executors.ExecutionInfo;
 import com.lemonlightmc.moreplugins.commands.executors.Executors.*;
 import com.lemonlightmc.moreplugins.commands.suggestions.SuggestionInfo;
 import com.lemonlightmc.moreplugins.commands.suggestions.Suggestions;

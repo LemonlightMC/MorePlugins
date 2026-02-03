@@ -1,8 +1,7 @@
-package com.lemonlightmc.moreplugins.commands.executors;
+package com.lemonlightmc.moreplugins.commands.manage;
 
 import com.lemonlightmc.moreplugins.base.MorePlugins;
 import com.lemonlightmc.moreplugins.base.PluginBase;
-import com.lemonlightmc.moreplugins.commands.AbstractCommand;
 import com.lemonlightmc.moreplugins.commands.CommandSource;
 import com.lemonlightmc.moreplugins.commands.SimpleCommand;
 import com.lemonlightmc.moreplugins.commands.SimpleSubCommand;
@@ -12,6 +11,8 @@ import com.lemonlightmc.moreplugins.commands.argumentsbase.CommandArguments;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.ParsedArgument;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.StringReader;
 import com.lemonlightmc.moreplugins.commands.exceptions.CommandSyntaxException;
+import com.lemonlightmc.moreplugins.commands.executors.AbstractCommand;
+import com.lemonlightmc.moreplugins.commands.executors.ExecutionInfo;
 import com.lemonlightmc.moreplugins.commands.suggestions.SuggestionInfo;
 import com.lemonlightmc.moreplugins.commands.suggestions.Suggestions;
 import com.lemonlightmc.moreplugins.messages.StringTooltip;

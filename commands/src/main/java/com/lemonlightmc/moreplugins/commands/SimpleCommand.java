@@ -10,6 +10,7 @@ import org.bukkit.command.CommandSender;
 import com.lemonlightmc.moreplugins.apis.ChatAPI;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.Argument;
 import com.lemonlightmc.moreplugins.commands.exceptions.InvalidCommandNameException;
+import com.lemonlightmc.moreplugins.commands.executors.AbstractCommand;
 
 public class SimpleCommand extends AbstractCommand<SimpleCommand> {
 
@@ -161,7 +162,7 @@ public class SimpleCommand extends AbstractCommand<SimpleCommand> {
     for (final SimpleSubCommand subCmd : subcommands) {
       usageList.addAll(buildUsageString(str, subCmd));
     }
-    for (final Argument<?, ?> arg : command.arguments) {
+    for (final Argument<?, ?> arg : command.getArguments()) {
       str += " ";
       str += arg.getHelpString();
     }
