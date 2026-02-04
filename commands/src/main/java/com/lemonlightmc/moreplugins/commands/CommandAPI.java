@@ -101,6 +101,7 @@ public class CommandAPI {
       if (!command.hasExecutors() && (!command.getSubcommands().isEmpty() || command.hasArguments())) {
         throw new MissingCommandExecutorException(command.getName().toString());
       }
+      command.build();
       final InternalExecutor cmd = new InternalExecutor(command, true);
       return getCommandMap().register(cmd.getLabel(), cmd.getNamespace(), cmd);
     } catch (final Exception e) {

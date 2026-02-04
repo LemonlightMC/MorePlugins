@@ -5,8 +5,11 @@ import com.lemonlightmc.moreplugins.commands.CommandSource;
 import com.lemonlightmc.moreplugins.commands.SimpleSubCommand;
 import com.lemonlightmc.moreplugins.commands.Utils;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.Argument;
+import com.lemonlightmc.moreplugins.commands.exceptions.DuplicateArgumentException;
+import com.lemonlightmc.moreplugins.commands.exceptions.GreedyArgumentException;
 import com.lemonlightmc.moreplugins.commands.exceptions.OptionalArgumentException;
-import com.lemonlightmc.moreplugins.commands.executors.Executors.*;
+import com.lemonlightmc.moreplugins.commands.executors.Executors.ExecutorType;
+import com.lemonlightmc.moreplugins.commands.executors.Executors.NormalExecutor;
 import com.lemonlightmc.moreplugins.commands.suggestions.SuggestionInfo;
 import com.lemonlightmc.moreplugins.commands.suggestions.Suggestions;
 import com.lemonlightmc.moreplugins.messages.Logger;
@@ -70,9 +73,17 @@ public abstract class AbstractCommand<T extends AbstractCommand<T>> extends Exec
     return getInstance();
   }
 
-  public void addArgument(final Argument<?, ?> arg, final boolean optional) {
+  private void addArgument(final Argument<?, ?> arg, final boolean optional) {
     if (arg == null) {
       return;
+    }
+    if (arguments.getLast().getType().isGreedy()) {
+      throw new GreedyArgumentException(arg.getName(), arguments);
+    }
+    for (Argument<?, ?> tempArg : arguments) {
+      if (tempArg.getName().equals(arg.getName())) {
+        throw new DuplicateArgumentException(arg.getName());
+      }
     }
     arg.setOptional(optional);
     if (arg.isOptional()) {
@@ -305,6 +316,19 @@ public abstract class AbstractCommand<T extends AbstractCommand<T>> extends Exec
       }
     }
     return true;
+  }
+
+  // executors
+  public boolean hasAnyExecutors() {
+    if (hasExecutors()) {
+      return true;
+    }
+    for (final SimpleSubCommand sub : subcommands) {
+      if (sub.hasAnyExecutors()) {
+        return true;
+      }
+    }
+    return false;
   }
 
   // execution

@@ -85,12 +85,8 @@ public class CommandHandler {
       final StringBuilder message = new StringBuilder("Unhandled exception during tab completion for command '/");
       message
           .append(cmd.getName())
-          .append(' ');
-      for (final String arg : args) {
-        message.append(arg).append(' ');
-      }
-      message
-          .deleteCharAt(message.length() - 1)
+          .append(' ')
+          .append(String.join(" ", args))
           .append("' in plugin ")
           .append(PluginBase.getInstance().getFullName());
       throw new CommandException(message.toString(), ex);

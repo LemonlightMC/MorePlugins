@@ -10,6 +10,7 @@ import org.bukkit.command.CommandSender;
 import com.lemonlightmc.moreplugins.apis.ChatAPI;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.Argument;
 import com.lemonlightmc.moreplugins.commands.exceptions.InvalidCommandNameException;
+import com.lemonlightmc.moreplugins.commands.exceptions.MissingCommandExecutorException;
 import com.lemonlightmc.moreplugins.commands.executors.AbstractCommand;
 
 public class SimpleCommand extends AbstractCommand<SimpleCommand> {
@@ -133,7 +134,16 @@ public class SimpleCommand extends AbstractCommand<SimpleCommand> {
     ChatAPI.send(sender, helpMessage.orElse(null));
   }
 
-  protected void build() {
+  void build() {
+    if (!hasAnyExecutors()) {
+      throw new MissingCommandExecutorException(getName().toString());
+    }
+    if (fullDescription.isEmpty()) {
+      fullDescription = Optional.of("No full description available.");
+    }
+    if (shortDescription.isEmpty()) {
+      shortDescription = Optional.of("No short description available.");
+    }
     if (usageDescription.isEmpty()) {
       usageDescription = Optional.of(buildUsageString("/" + key.getKey(), this).toArray(new String[0]));
     }

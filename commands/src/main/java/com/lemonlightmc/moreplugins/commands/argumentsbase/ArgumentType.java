@@ -106,4 +106,8 @@ public enum ArgumentType {
   public boolean isLiteral() {
     return this == LITERAL || this == MULTI_LITERAL;
   }
+
+  public boolean isGreedy() {
+    return this == PRIMITIVE_GREEDY_STRING || this == LIST_GREEDY;
+  }
 }

@@ -24,10 +24,6 @@ public abstract class Executable<T> {
     return getInstance();
   }
 
-  public boolean hasExecutors(final NormalExecutor<?>... exes) {
-    return exes != null && exes.length != 0 && this.executors.containsAll(List.of(exes));
-  }
-
   public boolean hasExecutors() {
     return executors != null && !executors.isEmpty();
   }
