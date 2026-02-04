@@ -62,6 +62,16 @@ public class Utils {
     return false;
   }
 
+  public static String toNamespaced(final String namespace, final String key) {
+    if (key == null || key.isEmpty()) {
+      return null;
+    }
+    if (key.startsWith(namespace + ":")) {
+      return key;
+    }
+    return namespace + ":" + key;
+  }
+
   private static final Map<Class<?>, Class<?>> PRIMITIVE_TO_WRAPPER = new HashMap<>();
 
   static {

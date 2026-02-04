@@ -12,21 +12,28 @@ import org.bukkit.command.CommandSender;
 public class InternalExecutor extends Command {
 
   private final SimpleCommand cmd;
+  private final boolean runAsync;
 
-  public InternalExecutor(final SimpleCommand cmd) {
+  public InternalExecutor(final SimpleCommand cmd, final boolean runAsync) {
     super(cmd == null ? null : cmd.getKey());
     if (cmd == null) {
       throw new IllegalArgumentException("Command cannot be null");
     }
     this.cmd = cmd;
+    super.setAliases(List.copyOf(cmd.getAliases()));
+    this.runAsync = runAsync;
   }
 
   public SimpleCommand getSimpleCommand() {
     return cmd;
   }
 
+  public String getNamespace() {
+    return cmd.getNamespace();
+  }
+
   public String getLabel() {
-    return this.getName();
+    return super.getName();
   }
 
   public boolean setLabel(final String label) {
@@ -40,6 +47,10 @@ public class InternalExecutor extends Command {
   @Override
   public boolean execute(final CommandSender sender, final String label0, final String[] args) {
     if (!CommandHandler.shouldHandle(cmd, sender, label0)) {
+      return true;
+    }
+    if (!runAsync) {
+      CommandHandler.run(cmd, sender, args);
       return true;
     }
     PluginBase.getInstanceScheduler()

@@ -41,7 +41,7 @@ public class SimpleCommand extends AbstractCommand<SimpleCommand> {
   }
 
   public boolean isRegistered() {
-    return CommandAPI.isRegistered(this);
+    return CommandAPI.isRegistered(key.toString());
   }
 
   public String getNamespace() {
@@ -133,7 +133,7 @@ public class SimpleCommand extends AbstractCommand<SimpleCommand> {
     ChatAPI.send(sender, helpMessage.orElse(null));
   }
 
-  private void build() {
+  protected void build() {
     if (usageDescription.isEmpty()) {
       usageDescription = Optional.of(buildUsageString("/" + key.getKey(), this).toArray(new String[0]));
     }
