@@ -1,0 +1,184 @@
+package com.lemonlightmc.moreplugins.commands.manage;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Stream;
+
+import org.bukkit.command.CommandException;
+import org.bukkit.command.CommandSender;
+
+import com.lemonlightmc.moreplugins.base.PluginBase;
+import com.lemonlightmc.moreplugins.commands.CommandSource;
+import com.lemonlightmc.moreplugins.commands.SimpleCommand;
+import com.lemonlightmc.moreplugins.commands.SimpleSubCommand;
+import com.lemonlightmc.moreplugins.commands.arguments.SpecialArguments.LiteralArgument;
+import com.lemonlightmc.moreplugins.commands.argumentsbase.Argument;
+import com.lemonlightmc.moreplugins.commands.argumentsbase.CommandArguments;
+import com.lemonlightmc.moreplugins.commands.argumentsbase.ParsedArgument;
+import com.lemonlightmc.moreplugins.commands.argumentsbase.StringReader;
+import com.lemonlightmc.moreplugins.commands.exceptions.CommandSyntaxException;
+import com.lemonlightmc.moreplugins.commands.executors.AbstractCommand;
+import com.lemonlightmc.moreplugins.commands.executors.ExecutionInfo;
+import com.lemonlightmc.moreplugins.commands.suggestions.SuggestionInfo;
+import com.lemonlightmc.moreplugins.commands.suggestions.Suggestions;
+import com.lemonlightmc.moreplugins.messages.Logger;
+import com.lemonlightmc.moreplugins.messages.StringTooltip;
+import com.lemonlightmc.moreplugins.utils.StringUtils;
+
+public class CommandHandler {
+
+  public static void run(final SimpleCommand cmd, final CommandSender sender, final String[] args) {
+    try {
+      final CommandSource<CommandSender> source = CommandSource.from(sender);
+      final CommandArguments cmdArgs = parse(cmd, source, args == null ? new String[0] : args);
+      if (cmdArgs == null) {
+        return;
+      }
+      final ExecutionInfo<CommandSender> info = new ExecutionInfo<CommandSender>(source, cmdArgs);
+      cmd.run(info);
+    } catch (final Throwable ex) {
+      throw new CommandException(
+          "Exception while executing command '" +
+              cmd.getName() +
+              "' in plugin " +
+              PluginBase.getInstance().getFullName(),
+          ex);
+    }
+  }
+
+  public static List<String> tabComplete(
+      final SimpleCommand cmd,
+      final CommandSender sender,
+      String[] args) {
+    final List<String> tooltips = new ArrayList<>();
+    if (args == null) {
+      args = new String[0];
+    }
+    final String token = args.length > 0 ? args[args.length - 1] : null;
+
+    try {
+      final CommandSource<CommandSender> source = CommandSource.from(sender);
+      final CommandArguments cmdArgs = parse(cmd, source, args);
+      if (cmdArgs == null) {
+        return tooltips;
+      }
+      final SuggestionInfo<CommandSender> info = new SuggestionInfo<CommandSender>(source, cmdArgs,
+          cmdArgs.getLastRaw());
+
+      final List<Suggestions<CommandSender>> temp = cmd.tabComplete(info);
+      if (temp != null) {
+        tooltips.addAll(temp.parallelStream()
+            .map((final Suggestions<CommandSender> s) -> s == null ? null : s.suggest(info))
+            .flatMap(col -> col == null ? Stream.empty() : col.stream())
+            .map((final StringTooltip t) -> {
+              if (token == null) {
+                return t.resolve();
+              } else if (t.message().startsWith(token)) {
+                return t.resolve();
+              }
+              return null;
+            }).filter(v -> v != null && v.length() > 0).toList());
+      }
+    } catch (final Throwable ex) {
+      final StringBuilder message = new StringBuilder("Unhandled exception during tab completion for command '/");
+      message
+          .append(cmd.getName())
+          .append(' ');
+      for (final String arg : args) {
+        message.append(arg).append(' ');
+      }
+      message
+          .deleteCharAt(message.length() - 1)
+          .append("' in plugin ")
+          .append(PluginBase.getInstance().getFullName());
+      throw new CommandException(message.toString(), ex);
+    }
+    return tooltips;
+  }
+
+  private static CommandArguments parse(final SimpleCommand cmd, final CommandSource<CommandSender> source,
+      final String[] args) {
+    final StringReader reader = new StringReader(StringUtils.join(" ", args));
+    return _parseArguments(cmd, cmd, reader, source, args);
+  }
+
+  private static CommandArguments _parseArguments(final SimpleCommand cmd, AbstractCommand<?> thisCmd,
+      final StringReader reader,
+      final CommandSource<CommandSender> source, final String[] args) {
+    int i = 0;
+    boolean hadSubcommand = true;
+    while (hadSubcommand && args.length > i && thisCmd.hasSubcommands()) {
+      hadSubcommand = false;
+      for (final SimpleSubCommand sub : cmd.getSubcommands()) {
+        if (_isSubCommand(args[i], sub)) {
+          if (!sub.checkRequirements(source)) {
+            return null;
+          }
+          thisCmd = sub;
+          i++;
+          hadSubcommand = true;
+          break;
+        }
+      }
+    }
+
+    final Map<String, ParsedArgument> parsedArgs = new HashMap<>();
+    for (final Argument<?, ?> arg : cmd.getArguments()) {
+      if (!arg.checkRequirements(source)) {
+        return null;
+      }
+      final Object value = _parseArg(reader, source, arg);
+      if (!arg.isListed()) {
+        parsedArgs.put(arg.getName(), new ParsedArgument(arg.getName(), reader.getLastRead(), value));
+      }
+    }
+    return new CommandArguments(parsedArgs, reader.getString());
+  }
+
+  private static Object _parseArg(final StringReader reader, final CommandSource<CommandSender> source,
+      final Argument<?, ?> arg) {
+    reader.point();
+    try {
+      final Object value = arg.parseArgument(source, reader, arg.getName());
+      reader.revokePoint();
+      return value;
+    } catch (final CommandSyntaxException e) {
+      source.sendError(e);
+      reader.resetCursor();
+
+    } catch (final Exception e) {
+      source.sendError(arg.createError(reader, reader.getLastRead()));
+      reader.resetCursor();
+    }
+    return null;
+  }
+
+  private static boolean _isSubCommand(final String arg, final SimpleSubCommand sub) {
+    final Argument<?, ?> firstArg = sub.getArguments().getFirst();
+    if (!firstArg.getType().isLiteral()) {
+      return false;
+    }
+    return ((LiteralArgument) firstArg).getLiteral().equals(arg);
+  }
+
+  public static boolean shouldHandle(final SimpleCommand cmd, final CommandSender sender, final String label) {
+    if (sender == null) {
+      return false;
+    }
+    if (!PluginBase.getInstance().isEnabled()) {
+      Logger.warn(
+          "Cannot execute command '" +
+              cmd.getName() +
+              "' in plugin " +
+              PluginBase.getInstance().getDescription().getFullName() +
+              " - plugin is disabled.");
+      return false;
+    }
+    if (label == null || label.isBlank() || (!cmd.getKey().equals(label) || !cmd.getAliases().contains(label))) {
+      return false;
+    }
+    return true;
+  }
+}
