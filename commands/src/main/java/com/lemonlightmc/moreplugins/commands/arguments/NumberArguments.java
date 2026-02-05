@@ -29,7 +29,7 @@ public class NumberArguments {
   public static class BoolArgument extends Argument<Boolean, BoolArgument> {
 
     public BoolArgument(final String name) {
-      super(name, Boolean.class, ArgumentType.PRIMITIVE_BOOLEAN);
+      super(name, Boolean.class, ArgumentType.BOOLEAN);
       withSuggestions("true", "false");
     }
 
@@ -66,7 +66,7 @@ public class NumberArguments {
     }
 
     public IntegerArgument(final String name, final int min, final int max) {
-      super(name, Integer.class, ArgumentType.PRIMITIVE_INTEGER);
+      super(name, Integer.class, ArgumentType.INTEGER);
       this.range = new IntegerRange(min, max);
     }
 
@@ -120,7 +120,7 @@ public class NumberArguments {
     }
 
     public LongArgument(final String name, final long min, final long max) {
-      super(name, Long.class, ArgumentType.PRIMITIVE_LONG);
+      super(name, Long.class, ArgumentType.LONG);
       this.range = new LongRange(min, max);
     }
 
@@ -174,7 +174,7 @@ public class NumberArguments {
     }
 
     public FloatArgument(final String name, final float min, final float max) {
-      super(name, Float.class, ArgumentType.PRIMITIVE_FLOAT);
+      super(name, Float.class, ArgumentType.FLOAT);
       this.range = new FloatRange(min, max);
     }
 
@@ -228,7 +228,7 @@ public class NumberArguments {
     }
 
     public DoubleArgument(final String name, final double min, final double max) {
-      super(name, Double.class, ArgumentType.PRIMITIVE_DOUBLE);
+      super(name, Double.class, ArgumentType.DOUBLE);
       this.range = new DoubleRange(min, max);
     }
 

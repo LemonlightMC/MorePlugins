@@ -168,7 +168,7 @@ public class StringReader {
     return string.substring(cursor);
   }
 
-  public String getSubString(int start, int end) {
+  public String getSubString(final int start, final int end) {
     return string.substring(start, end);
   }
 

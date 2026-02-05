@@ -4,13 +4,13 @@ import com.lemonlightmc.moreplugins.commands.CommandSource;
 import com.lemonlightmc.moreplugins.commands.SimpleCommand;
 import com.lemonlightmc.moreplugins.commands.arguments.NumberArguments.*;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.CommandArguments;
+import com.lemonlightmc.moreplugins.commands.exceptions.CommandException;
 import com.lemonlightmc.moreplugins.commands.suggestions.SuggestionInfo;
 import com.lemonlightmc.moreplugins.commands.suggestions.Suggestions;
 
 import java.util.List;
 
 import org.bukkit.NamespacedKey;
-import org.bukkit.command.CommandException;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
@@ -25,7 +25,7 @@ public class ExampleCommand extends SimpleCommand {
     withUsage("&cUsage: /example <random|player>");
     withPermission("moreplugins.example");
     // withHelp(List.of("&e/example &7- &fAn example command"));
-    withArguments(new DoubleArgument("amount").withSuggestions((SuggestionInfo<CommandSender> _) -> {
+    withArguments(new DoubleArgument("amount").withSuggestions((final SuggestionInfo<CommandSender> _) -> {
       return List.of("64", "128");
     }));
     withArguments(new DoubleArgument("amount2").withSuggestions("1", "2", "3"));

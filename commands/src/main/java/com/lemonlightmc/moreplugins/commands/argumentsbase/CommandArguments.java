@@ -390,17 +390,10 @@ public class CommandArguments {
       return false;
     }
     final CommandArguments other = (CommandArguments) obj;
-    if (argsMap == null) {
-      if (other.argsMap != null)
-        return false;
-    } else if (!argsMap.equals(other.argsMap))
+    if (argsMap == null && other.argsMap != null || fullInput == null && other.fullInput != null) {
       return false;
-    if (fullInput == null) {
-      if (other.fullInput != null)
-        return false;
-    } else if (!fullInput.equals(other.fullInput))
-      return false;
-    return equalsArgs(args, other.args);
+    }
+    return argsMap.equals(other.argsMap) && fullInput.equals(other.fullInput) && equalsArgs(args, other.args);
   }
 
   @Override

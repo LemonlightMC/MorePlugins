@@ -5,9 +5,9 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.ArrayList;
 import java.util.function.Function;
-import org.bukkit.command.CommandException;
 import org.bukkit.command.CommandSender;
 
+import com.lemonlightmc.moreplugins.commands.exceptions.CommandException;
 import com.lemonlightmc.moreplugins.messages.StringTooltip;
 
 @FunctionalInterface

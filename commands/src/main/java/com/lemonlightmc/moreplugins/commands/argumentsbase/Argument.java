@@ -41,7 +41,8 @@ public abstract class Argument<Type, ArgType> {
   public abstract ArgType getInstance();
 
   public CommandSyntaxException createError(final StringReader reader, final String value) {
-    return new CommandSyntaxException(reader, "Invalid Value '" + value + "' for Argument '" + name + "'");
+    return new CommandSyntaxException(reader,
+        "Invalid Value '" + value + "' for " + rawType.getName() + " Argument '" + name + "'");
   }
 
   public abstract Type parseArgument(CommandSource<CommandSender> source, StringReader reader, String key)
@@ -192,17 +193,13 @@ public abstract class Argument<Type, ArgType> {
 
   @Override
   public String toString() {
-    return getInstance().getClass().getName() + " [name=" + name + ", rawType=" + rawType + ", primitiveType="
-        + primitiveType + ", isOptional="
-        + isOptional + ", isListed=" + isListed + ", requirements=" + requirements
-        + ", suggestions=" + suggestions + "]";
+    return toStringWithMore(null);
   }
 
   public String toStringWithMore(final String str) {
     return getInstance().getClass().getName() + " [name=" + name + ", rawType=" + rawType + ", primitiveType="
         + primitiveType + ", isOptional="
         + isOptional + ", isListed=" + isListed + ", requirements=" + requirements
-        + ", suggestions=" + suggestions + ", " + str + "]";
+        + ", suggestions=" + suggestions + (str == null || str.length() == 0 ? "]" : ", " + str + "]");
   }
-
 }

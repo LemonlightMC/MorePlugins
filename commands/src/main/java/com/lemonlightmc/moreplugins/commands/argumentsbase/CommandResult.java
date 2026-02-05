@@ -6,16 +6,17 @@ import org.bukkit.command.CommandSender;
 
 import com.lemonlightmc.moreplugins.commands.CommandSource;
 
-public record CommandResult(Command command, String[] args) {
+public record CommandResult<S extends CommandSender>(Command command, String[] args) {
 
-  public boolean execute(final CommandSender sender) {
+  public boolean execute(final S sender) {
     return command.execute(sender, command.getLabel(), args);
   }
 
-  public boolean execute(final CommandSource<CommandSender> source) {
+  public boolean execute(final CommandSource<S> source) {
     return command.execute(source.sender(), command.getLabel(), args);
   }
 
+  @SuppressWarnings("unchecked")
   @Override
   public boolean equals(final Object o) {
     if (this == o) {
@@ -24,7 +25,7 @@ public record CommandResult(Command command, String[] args) {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    final CommandResult that = (CommandResult) o;
+    final CommandResult<S> that = (CommandResult<S>) o;
     return command.equals(that.command) && Arrays.equals(args, that.args);
   }
 

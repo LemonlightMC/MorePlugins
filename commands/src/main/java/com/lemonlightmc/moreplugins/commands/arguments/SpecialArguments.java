@@ -123,6 +123,7 @@ public class SpecialArguments {
     }
   }
 
+  @SuppressWarnings("rawtypes")
   public static class CommandArgument extends Argument<CommandResult, CommandArgument> {
 
     public CommandArgument(final String name) {
@@ -143,7 +144,8 @@ public class SpecialArguments {
     }
 
     @Override
-    public CommandResult parseArgument(final CommandSource<CommandSender> source, final StringReader reader,
+    public CommandResult<CommandSender> parseArgument(final CommandSource<CommandSender> source,
+        final StringReader reader,
         final String key)
         throws CommandSyntaxException {
       final String[] args = reader.getRemaining().split(" ");
@@ -151,7 +153,8 @@ public class SpecialArguments {
         return null;
       }
       final Command cmd = Objects.requireNonNull(CommandAPI.getCommandMap().getCommand(args[0]));
-      return new CommandResult(cmd, args.length == 1 ? new String[0] : Arrays.copyOfRange(args, 1, args.length));
+      return new CommandResult<CommandSender>(cmd,
+          args.length == 1 ? new String[0] : Arrays.copyOfRange(args, 1, args.length));
     }
   }
 
