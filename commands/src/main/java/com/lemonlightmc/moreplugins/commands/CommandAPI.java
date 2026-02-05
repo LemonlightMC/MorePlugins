@@ -10,7 +10,6 @@ import java.util.Map;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandException;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandMap;
 import org.bukkit.command.CommandSender;
@@ -21,9 +20,10 @@ import org.bukkit.command.TabExecutor;
 import org.bukkit.plugin.SimplePluginManager;
 
 import com.lemonlightmc.moreplugins.base.PluginBase;
+import com.lemonlightmc.moreplugins.commands.exceptions.CommandException;
 import com.lemonlightmc.moreplugins.commands.exceptions.MissingCommandExecutorException;
-import com.lemonlightmc.moreplugins.commands.manage.CommandHandler;
-import com.lemonlightmc.moreplugins.commands.manage.InternalExecutor;
+import com.lemonlightmc.moreplugins.commands.executors.CommandHandler;
+import com.lemonlightmc.moreplugins.commands.executors.InternalExecutor;
 import com.lemonlightmc.moreplugins.messages.Logger;
 
 public class CommandAPI {

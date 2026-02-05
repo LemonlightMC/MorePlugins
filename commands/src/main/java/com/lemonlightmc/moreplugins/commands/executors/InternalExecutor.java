@@ -1,4 +1,4 @@
-package com.lemonlightmc.moreplugins.commands.manage;
+package com.lemonlightmc.moreplugins.commands.executors;
 
 import com.lemonlightmc.moreplugins.base.PluginBase;
 import com.lemonlightmc.moreplugins.commands.SimpleCommand;

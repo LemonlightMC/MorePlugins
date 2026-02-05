@@ -3,9 +3,9 @@ package com.lemonlightmc.moreplugins.commands.executors;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.bukkit.command.CommandException;
 import org.bukkit.command.CommandSender;
 
+import com.lemonlightmc.moreplugins.commands.exceptions.CommandException;
 import com.lemonlightmc.moreplugins.commands.executors.Executors.*;
 import com.lemonlightmc.moreplugins.exceptions.PlatformException;
 import com.lemonlightmc.moreplugins.version.ServerEnvironment;
@@ -18,11 +18,6 @@ public abstract class Executable<T> {
   }
 
   protected abstract T getInstance();
-
-  public T setExecutors(final List<NormalExecutor<?>> ex) {
-    executors = ex;
-    return getInstance();
-  }
 
   public boolean hasExecutors() {
     return executors != null && !executors.isEmpty();

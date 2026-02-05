@@ -5,6 +5,7 @@ import com.lemonlightmc.moreplugins.commands.CommandSource;
 import com.lemonlightmc.moreplugins.commands.SimpleSubCommand;
 import com.lemonlightmc.moreplugins.commands.Utils;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.Argument;
+import com.lemonlightmc.moreplugins.commands.exceptions.CommandException;
 import com.lemonlightmc.moreplugins.commands.exceptions.DuplicateArgumentException;
 import com.lemonlightmc.moreplugins.commands.exceptions.GreedyArgumentException;
 import com.lemonlightmc.moreplugins.commands.exceptions.OptionalArgumentException;
@@ -23,7 +24,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
 
-import org.bukkit.command.CommandException;
 import org.bukkit.command.CommandSender;
 
 public abstract class AbstractCommand<T extends AbstractCommand<T>> extends Executable<T> {
@@ -80,7 +80,7 @@ public abstract class AbstractCommand<T extends AbstractCommand<T>> extends Exec
     if (arguments.getLast().getType().isGreedy()) {
       throw new GreedyArgumentException(arg.getName(), arguments);
     }
-    for (Argument<?, ?> tempArg : arguments) {
+    for (final Argument<?, ?> tempArg : arguments) {
       if (tempArg.getName().equals(arg.getName())) {
         throw new DuplicateArgumentException(arg.getName());
       }
@@ -443,27 +443,12 @@ public abstract class AbstractCommand<T extends AbstractCommand<T>> extends Exec
       return false;
     }
     final T other = (T) obj;
-    if (arguments == null) {
-      if (other.arguments != null)
-        return false;
-    } else if (!arguments.equals(other.arguments))
+    if (arguments == null && other.arguments != null || subcommands == null && other.subcommands != null
+        || aliases == null && other.aliases != null || requirements == null && other.requirements != null) {
       return false;
-    if (subcommands == null) {
-      if (other.subcommands != null)
-        return false;
-    } else if (!subcommands.equals(other.subcommands))
-      return false;
-    if (aliases == null) {
-      if (other.aliases != null)
-        return false;
-    } else if (!aliases.equals(other.aliases))
-      return false;
-    if (requirements == null) {
-      if (other.requirements != null)
-        return false;
-    } else if (!requirements.equals(other.requirements))
-      return false;
-    return true;
+    }
+    return arguments.equals(other.arguments) && subcommands.equals(other.subcommands) && aliases.equals(other.aliases)
+        && requirements.equals(other.requirements);
   }
 
   @Override

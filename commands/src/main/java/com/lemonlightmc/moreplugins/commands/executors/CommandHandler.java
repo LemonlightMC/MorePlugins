@@ -1,4 +1,4 @@
-package com.lemonlightmc.moreplugins.commands.manage;
+package com.lemonlightmc.moreplugins.commands.executors;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
-import org.bukkit.command.CommandException;
 import org.bukkit.command.CommandSender;
 
 import com.lemonlightmc.moreplugins.base.PluginBase;
@@ -18,9 +17,8 @@ import com.lemonlightmc.moreplugins.commands.argumentsbase.Argument;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.CommandArguments;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.ParsedArgument;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.StringReader;
+import com.lemonlightmc.moreplugins.commands.exceptions.CommandException;
 import com.lemonlightmc.moreplugins.commands.exceptions.CommandSyntaxException;
-import com.lemonlightmc.moreplugins.commands.executors.AbstractCommand;
-import com.lemonlightmc.moreplugins.commands.executors.ExecutionInfo;
 import com.lemonlightmc.moreplugins.commands.suggestions.SuggestionInfo;
 import com.lemonlightmc.moreplugins.commands.suggestions.Suggestions;
 import com.lemonlightmc.moreplugins.messages.Logger;
