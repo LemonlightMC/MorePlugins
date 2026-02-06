@@ -5,6 +5,7 @@ import org.bukkit.World;
 import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
 
 import com.lemonlightmc.moreplugins.commands.exceptions.CommandSyntaxException;
 
@@ -55,7 +56,11 @@ public record CommandSource<S extends CommandSender>(S sender, Location location
   }
 
   public static Entity getEntity(final CommandSender sender) {
-    return sender instanceof final Entity entity ? entity : null;
+    return switch (sender) {
+      case final Player player -> player;
+      case final Entity entity -> entity;
+      default -> null;
+    };
   }
 
   public static World getWorld(final CommandSender sender) {

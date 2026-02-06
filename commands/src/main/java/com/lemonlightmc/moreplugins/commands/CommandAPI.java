@@ -194,7 +194,7 @@ public class CommandAPI {
       getKnownCommandMap().remove(command.getKey());
       for (final String alias : command.getAliases()) {
         getKnownCommandMap().remove(alias);
-        getKnownCommandMap().remove(Utils.toNamespaced(getNamespace(), alias));
+        getKnownCommandMap().remove(toNamespaced(getNamespace(), alias));
       }
       final Command cmd = getCommand(command.getName().toString());
       if (cmd == null) {
@@ -216,10 +216,10 @@ public class CommandAPI {
     namespace = namespace == null || namespace.isEmpty() ? getNamespace() : namespace;
     try {
       getKnownCommandMap().remove(command.getLabel());
-      getKnownCommandMap().remove(Utils.toNamespaced(namespace, command.getLabel()));
+      getKnownCommandMap().remove(toNamespaced(namespace, command.getLabel()));
       for (final String alias : command.getAliases()) {
         getKnownCommandMap().remove(alias);
-        getKnownCommandMap().remove(Utils.toNamespaced(namespace, alias));
+        getKnownCommandMap().remove(toNamespaced(namespace, alias));
       }
       command.unregister(getCommandMap());
       return true;
@@ -389,5 +389,15 @@ public class CommandAPI {
     PluginBase.getInstanceScheduler().runAsync(() -> {
       dispatch(Bukkit.getConsoleSender(), commandLine);
     });
+  }
+
+  private static String toNamespaced(final String namespace, final String key) {
+    if (key == null || key.isEmpty()) {
+      return null;
+    }
+    if (key.startsWith(namespace + ":")) {
+      return key;
+    }
+    return namespace + ":" + key;
   }
 }

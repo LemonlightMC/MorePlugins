@@ -61,8 +61,8 @@ public class SimpleCommand extends AbstractCommand<SimpleCommand> {
     if (this.key != null && this.key.equals(key)) {
       return this;
     }
-    if (key == null || key.getKey().length() == 0 || key.getKey().isBlank()
-        || Utils.isInvalidNamespace(key.getNamespace())) {
+    if (key == null || key.getKey().length() == 0 || key.getKey().isBlank() || key.getNamespace().length() == 0
+        || key.getNamespace().isBlank()) {
       throw new InvalidCommandNameException(key == null ? "null" : key.toString());
     }
     if (isRegistered()) {

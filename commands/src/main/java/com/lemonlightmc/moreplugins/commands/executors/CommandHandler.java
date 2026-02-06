@@ -6,7 +6,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
+import org.bukkit.Bukkit;
+import org.bukkit.GameRule;
+import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
+import org.bukkit.entity.minecart.CommandMinecart;
+import org.bukkit.permissions.Permissible;
 
 import com.lemonlightmc.moreplugins.base.PluginBase;
 import com.lemonlightmc.moreplugins.commands.CommandSource;
@@ -22,8 +28,8 @@ import com.lemonlightmc.moreplugins.commands.exceptions.CommandSyntaxException;
 import com.lemonlightmc.moreplugins.commands.suggestions.SuggestionInfo;
 import com.lemonlightmc.moreplugins.commands.suggestions.Suggestions;
 import com.lemonlightmc.moreplugins.messages.Logger;
+import com.lemonlightmc.moreplugins.messages.MessageFormatter;
 import com.lemonlightmc.moreplugins.messages.StringTooltip;
-import com.lemonlightmc.moreplugins.utils.StringUtils;
 
 public class CommandHandler {
 
@@ -71,12 +77,7 @@ public class CommandHandler {
             .map((final Suggestions<CommandSender> s) -> s == null ? null : s.suggest(info))
             .flatMap(col -> col == null ? Stream.empty() : col.stream())
             .map((final StringTooltip t) -> {
-              if (token == null) {
-                return t.resolve();
-              } else if (t.message().startsWith(token)) {
-                return t.resolve();
-              }
-              return null;
+              return token == null || startsWithIgnoreCase(t.message(), token) ? t.resolve() : null;
             }).filter(v -> v != null && v.length() > 0).toList());
       }
     } catch (final Throwable ex) {
@@ -94,7 +95,7 @@ public class CommandHandler {
 
   private static CommandArguments parse(final SimpleCommand cmd, final CommandSource<CommandSender> source,
       final String[] args) {
-    final StringReader reader = new StringReader(StringUtils.join(" ", args));
+    final StringReader reader = new StringReader(String.join(" ", args));
     return _parseArguments(cmd, cmd, reader, source, args);
   }
 
@@ -157,6 +158,19 @@ public class CommandHandler {
     return ((LiteralArgument) firstArg).getLiteral().equals(arg);
   }
 
+  private static boolean startsWithIgnoreCase(
+      final String string,
+      final String prefix) {
+    if (prefix == null || prefix.length() == 0)
+      return true;
+    if (string == null || string.length() == 0)
+      return false;
+    if (string.length() < prefix.length()) {
+      return false;
+    }
+    return string.regionMatches(true, 0, prefix, 0, prefix.length());
+  }
+
   public static boolean shouldHandle(final SimpleCommand cmd, final CommandSender sender, final String label) {
     if (sender == null) {
       return false;
@@ -174,5 +188,35 @@ public class CommandHandler {
       return false;
     }
     return true;
+  }
+
+  public static void broadcastCommandMessage(final CommandSender source, final String message,
+      final boolean sendToSource) {
+    final String colored = MessageFormatter.format("&7&o[" + source.getName() + ": " + message + "&7&o]");
+
+    if (source instanceof final BlockCommandSender blockSender) {
+      if (!blockSender.getBlock().getWorld().getGameRuleValue(GameRule.COMMAND_BLOCK_OUTPUT)) {
+        Logger.info(colored);
+        return;
+      }
+    } else if (source instanceof final CommandMinecart cartSender) {
+      if (!cartSender.getWorld().getGameRuleValue(GameRule.COMMAND_BLOCK_OUTPUT)) {
+        Logger.info(colored);
+        return;
+      }
+    }
+
+    if (sendToSource && !(source instanceof ConsoleCommandSender)) {
+      source.sendMessage(colored);
+    }
+    for (final Permissible user : Bukkit.getPluginManager().getPermissionSubscriptions("bukkit.broadcast.admin")) {
+      if (user instanceof CommandSender && user.hasPermission("bukkit.broadcast.admin")) {
+        final CommandSender target = (CommandSender) user;
+
+        if (target != source || user instanceof ConsoleCommandSender) {
+          target.sendMessage(colored);
+        }
+      }
+    }
   }
 }

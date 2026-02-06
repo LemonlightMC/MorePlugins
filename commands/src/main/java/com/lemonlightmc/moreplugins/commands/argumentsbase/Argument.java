@@ -14,7 +14,7 @@ import com.lemonlightmc.moreplugins.commands.exceptions.CommandSyntaxException;
 import com.lemonlightmc.moreplugins.commands.suggestions.SuggestionInfo;
 import com.lemonlightmc.moreplugins.commands.suggestions.Suggestions;
 
-public abstract class Argument<Type, ArgType> {
+public abstract class Argument<Type, ArgType extends Argument<Type, ArgType>> {
   protected String name;
   protected ArgumentType rawType;
   protected Class<Type> primitiveType;

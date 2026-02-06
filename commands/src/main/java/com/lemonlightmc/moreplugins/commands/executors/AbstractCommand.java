@@ -3,7 +3,6 @@ package com.lemonlightmc.moreplugins.commands.executors;
 import com.lemonlightmc.moreplugins.commands.CommandRequirement;
 import com.lemonlightmc.moreplugins.commands.CommandSource;
 import com.lemonlightmc.moreplugins.commands.SimpleSubCommand;
-import com.lemonlightmc.moreplugins.commands.Utils;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.Argument;
 import com.lemonlightmc.moreplugins.commands.exceptions.CommandException;
 import com.lemonlightmc.moreplugins.commands.exceptions.DuplicateArgumentException;
@@ -16,10 +15,8 @@ import com.lemonlightmc.moreplugins.commands.suggestions.Suggestions;
 import com.lemonlightmc.moreplugins.messages.Logger;
 
 import java.util.ArrayList;
-import java.util.EnumMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
@@ -334,22 +331,27 @@ public abstract class AbstractCommand<T extends AbstractCommand<T>> extends Exec
   // execution
   public void run(final ExecutionInfo<CommandSender> info) throws CommandException {
     try {
-      if (executors == null || executors.isEmpty()) {
-        return;
-      }
-
       final SimpleSubCommand sub = getSubcommand(info.args().getRaw(0));
       if (sub != null) {
         sub.run(info);
         return;
       }
-
-      final ExecutorType[] priorities = Utils.prioritiesForSender(info.source().sender());
-      if (priorities == null || priorities.length == 0) {
+      if (executors == null || executors.isEmpty()) {
         return;
       }
-      if (!_run(info, priorities)) {
+      List<NormalExecutor<?>> ex = getExecutors(info.executorType());
+      if (ex == null) {
+        ex = getExecutors(ExecutorType.NATIVE);
+      }
+      if (ex == null) {
+        ex = getExecutors(ExecutorType.ALL);
+      }
+      if (ex == null) {
         Logger.warn("No valid Executor for " + info.source().getClass().getSimpleName().toLowerCase());
+        return;
+      }
+      for (final NormalExecutor<?> normalExecutor : ex) {
+        normalExecutor.executeWith(info);
       }
     } catch (final CommandException e) {
       throw e;
@@ -392,35 +394,6 @@ public abstract class AbstractCommand<T extends AbstractCommand<T>> extends Exec
       }
       return null;
     }
-  }
-
-  private boolean _run(final ExecutionInfo<CommandSender> info, final ExecutorType... types)
-      throws CommandException {
-    final Map<ExecutorType, Integer> priorityIndex = new EnumMap<>(ExecutorType.class);
-    for (int i = 0; i < types.length; i++) {
-      priorityIndex.put(types[i], i);
-    }
-
-    NormalExecutor<?> best = null;
-    int bestPriority = Integer.MAX_VALUE;
-
-    for (final NormalExecutor<?> executor : executors) {
-      final ExecutorType t = executor.getType();
-      final Integer idx = priorityIndex.get(t);
-      if (idx != null && idx < bestPriority) {
-        bestPriority = idx;
-        best = executor;
-        if (bestPriority == 0) {
-          break;
-        }
-      }
-    }
-    if (best == null) {
-      return false;
-    }
-
-    best.executeWith(info);
-    return true;
   }
 
   @Override
