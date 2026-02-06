@@ -1,8 +1,7 @@
 package com.lemonlightmc.moreplugins.commands.executors;
 
-import java.util.ArrayList;
+import java.lang.reflect.Array;
 import java.util.EnumMap;
-import java.util.List;
 
 import org.bukkit.command.CommandSender;
 
@@ -12,7 +11,7 @@ import com.lemonlightmc.moreplugins.exceptions.PlatformException;
 import com.lemonlightmc.moreplugins.version.ServerEnvironment;
 
 public abstract class Executable<T> {
-  protected EnumMap<ExecutorType, List<NormalExecutor<?>>> executors;
+  protected EnumMap<ExecutorType, NormalExecutor<?>[]> executors;
 
   public Executable() {
     executors = new EnumMap<>(ExecutorType.class);
@@ -24,11 +23,11 @@ public abstract class Executable<T> {
     return executors != null && !executors.isEmpty();
   }
 
-  public List<NormalExecutor<?>> getExecutors(final ExecutorType type) {
+  public NormalExecutor<?>[] getExecutors(final ExecutorType type) {
     return executors.get(type);
   }
 
-  public EnumMap<ExecutorType, List<NormalExecutor<?>>> getExecutors() {
+  public EnumMap<ExecutorType, NormalExecutor<?>[]> getExecutors() {
     return executors;
   }
 
@@ -39,7 +38,16 @@ public abstract class Executable<T> {
   }
 
   private void add(final ExecutorType type, final NormalExecutor<?> executor) {
-    executors.computeIfAbsent(type, k -> new ArrayList<>()).add(executor);
+    final NormalExecutor<?>[] ex = executors.get(type);
+    if (ex == null || ex.length == 0) {
+      executors.put(type, new NormalExecutor<?>[] { executor });
+    } else {
+      final NormalExecutor<?>[] newEx = (NormalExecutor<?>[]) Array.newInstance(ex.getClass().getComponentType(),
+          ex.length + 1);
+      System.arraycopy(ex, 0, newEx, 0, ex.length);
+      newEx[ex.length] = executor;
+      executors.put(type, newEx);
+    }
   }
 
   public T executes(final CommandExecutor executor, final ExecutorType... types) {

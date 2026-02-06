@@ -316,7 +316,7 @@ public abstract class AbstractCommand<T extends AbstractCommand<T>> extends Exec
   }
 
   // executors
-  public boolean hasAnyExecutors() {
+  protected boolean hasAnyExecutors() {
     if (hasExecutors()) {
       return true;
     }
@@ -339,7 +339,7 @@ public abstract class AbstractCommand<T extends AbstractCommand<T>> extends Exec
       if (executors == null || executors.isEmpty()) {
         return;
       }
-      List<NormalExecutor<?>> ex = getExecutors(info.executorType());
+      NormalExecutor<?>[] ex = getExecutors(info.executorType());
       if (ex == null) {
         ex = getExecutors(ExecutorType.NATIVE);
       }
@@ -347,7 +347,6 @@ public abstract class AbstractCommand<T extends AbstractCommand<T>> extends Exec
         ex = getExecutors(ExecutorType.ALL);
       }
       if (ex == null) {
-        Logger.warn("No valid Executor for " + info.source().getClass().getSimpleName().toLowerCase());
         return;
       }
       for (final NormalExecutor<?> normalExecutor : ex) {
