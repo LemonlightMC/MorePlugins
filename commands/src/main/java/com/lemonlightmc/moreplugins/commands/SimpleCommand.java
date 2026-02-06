@@ -1,13 +1,11 @@
 package com.lemonlightmc.moreplugins.commands;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
 import org.bukkit.NamespacedKey;
-import org.bukkit.command.CommandSender;
 
-import com.lemonlightmc.moreplugins.apis.ChatAPI;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.Argument;
 import com.lemonlightmc.moreplugins.commands.exceptions.InvalidCommandNameException;
 import com.lemonlightmc.moreplugins.commands.exceptions.MissingCommandExecutorException;
@@ -16,10 +14,8 @@ import com.lemonlightmc.moreplugins.commands.executors.AbstractCommand;
 public class SimpleCommand extends AbstractCommand<SimpleCommand> {
 
   private NamespacedKey key = null;
-  private Optional<String> shortDescription = Optional.empty();
-  private Optional<String> fullDescription = Optional.empty();
-  private Optional<String[]> usageDescription = Optional.empty();
-  private Optional<String> helpMessage = Optional.empty();
+  private String[] usageDescription;
+  private String helpMessage;
 
   public SimpleCommand(final NamespacedKey key) {
     super();
@@ -28,6 +24,14 @@ public class SimpleCommand extends AbstractCommand<SimpleCommand> {
 
   public SimpleCommand getInstance() {
     return this;
+  }
+
+  public static SimpleCommand create(final NamespacedKey key) {
+    return new SimpleCommand(key);
+  }
+
+  public static SimpleSubCommand subCommand(final String... aliases) {
+    return new SimpleSubCommand(aliases);
   }
 
   public SimpleCommand register() {
@@ -86,107 +90,84 @@ public class SimpleCommand extends AbstractCommand<SimpleCommand> {
     return this;
   }
 
-  public String getShortDescription() {
-    return shortDescription.orElse(null);
-  }
-
-  public SimpleCommand withShortDescription(final String description) {
-    shortDescription = Optional.ofNullable(description);
-    return this;
-  }
-
-  public String getFullDescription() {
-    return fullDescription.orElse(null);
-  }
-
-  public SimpleCommand withFullDescription(final String description) {
-    fullDescription = Optional.ofNullable(description);
-    return this;
-  }
-
   public SimpleCommand withUsage(final String... usage) {
-    usageDescription = Optional.ofNullable(usage);
+    this.usageDescription = usage;
     return this;
   }
 
   public String[] getUsage() {
-    return usageDescription.orElse(null);
+    return usageDescription;
   }
 
   public SimpleCommand withHelp(
       final String shortDesc,
       final String fullDesc) {
-    shortDescription = Optional.ofNullable(shortDesc);
-    fullDescription = Optional.ofNullable(fullDesc);
+    this.shortDescription = shortDesc;
+    this.fullDescription = fullDesc;
     return this;
   }
 
   public SimpleCommand withHelp(final List<String> help) {
-    this.helpMessage = Optional.ofNullable(String.join("\n", help));
+    this.helpMessage = String.join("\n", help);
+    return this;
+  }
+
+  public SimpleCommand withHelp(final String help) {
+    this.helpMessage = help;
     return this;
   }
 
   public List<String> getHelp() {
-    return List.of(helpMessage.orElse("").split("\n"));
-  }
-
-  public void sendHelp(final CommandSender sender) {
-    ChatAPI.send(sender, helpMessage.orElse(null));
+    return helpMessage == null ? null : List.of(helpMessage.split("\n"));
   }
 
   void build() {
     if (!hasAnyExecutors()) {
       throw new MissingCommandExecutorException(getName().toString());
     }
-    if (fullDescription.isEmpty()) {
-      fullDescription = Optional.of("No full description available.");
+    if (fullDescription == null) {
+      fullDescription = "The " + getKey() + " Command from " + getNamespace() + " (No Description)";
     }
-    if (shortDescription.isEmpty()) {
-      shortDescription = Optional.of("No short description available.");
+    if (shortDescription == null) {
+      shortDescription = "The " + getKey() + " Command from " + getNamespace() + " (No Description)";
     }
-    if (usageDescription.isEmpty()) {
-      usageDescription = Optional.of(buildUsageString("/" + key.getKey(), this).toArray(new String[0]));
+    if (usageDescription == null) {
+      usageDescription = buildUsageString("/", this).toArray(new String[0]);
     }
-    if (helpMessage.isEmpty()) {
-      final StringBuilder builder = new StringBuilder();
-      final ArrayList<String> helpLines = new ArrayList<>();
-      if (fullDescription.isPresent()) {
-        builder.append(fullDescription.get());
-      } else {
-        builder.append("\nDescription not available!");
-      }
-      if (usageDescription.isPresent()) {
+    if (helpMessage == null) {
+      final StringBuilder builder = new StringBuilder(shortDescription);
+      builder.append("Description: ");
+      builder.append(fullDescription);
+      if (usageDescription != null) {
         builder.append("\nUsage:");
-        for (final String usageLine : usageDescription.get()) {
+        for (final String usageLine : usageDescription) {
           builder.append(" ");
           builder.append(usageLine);
         }
       }
       builder.append("\nAliases: " + String.join(", ", aliases));
-      helpMessage = Optional.of(helpLines.toString());
+      helpMessage = builder.toString();
     }
   }
 
-  private ArrayList<String> buildUsageString(String str, final AbstractCommand<?> command) {
+  private List<String> buildUsageString(final String str, final AbstractCommand<?> command) {
     final ArrayList<String> usageList = new ArrayList<>();
+    String str2 = str + " <" + String.join("|", aliases) + ">";
     for (final SimpleSubCommand subCmd : subcommands) {
-      usageList.addAll(buildUsageString(str, subCmd));
+      usageList.addAll(buildUsageString(str2, subCmd));
     }
     for (final Argument<?, ?> arg : command.getArguments()) {
-      str += " ";
-      str += arg.getHelpString();
+      str2 += " ";
+      str2 += arg.getHelpString();
     }
-    usageList.add(str);
+    usageList.add(str2);
     return usageList;
   }
 
   @Override
   public int hashCode() {
-    int result = super.hashCode();
-    result = 31 * result + key.hashCode();
-    result = 31 * result + ((shortDescription == null) ? 0 : shortDescription.hashCode());
-    result = 31 * result + ((fullDescription == null) ? 0 : fullDescription.hashCode());
-    result = 31 * result + ((usageDescription == null) ? 0 : usageDescription.hashCode());
+    int result = 31 * super.hashCode() + key.hashCode();
+    result = 31 * result + Arrays.hashCode(usageDescription);
     result = 31 * result + ((helpMessage == null) ? 0 : helpMessage.hashCode());
     return result;
   }
@@ -200,42 +181,11 @@ public class SimpleCommand extends AbstractCommand<SimpleCommand> {
       return false;
     }
     final SimpleCommand other = (SimpleCommand) obj;
-    if (key == null) {
-      if (other.key != null) {
-        return false;
-      }
-    } else if (!key.equals(other.key)) {
+    if (helpMessage == null && other.helpMessage != null) {
       return false;
     }
-    if (shortDescription == null) {
-      if (other.shortDescription != null) {
-        return false;
-      }
-    } else if (!shortDescription.equals(other.shortDescription)) {
-      return false;
-    }
-    if (fullDescription == null) {
-      if (other.fullDescription != null) {
-        return false;
-      }
-    } else if (!fullDescription.equals(other.fullDescription)) {
-      return false;
-    }
-    if (usageDescription == null) {
-      if (other.usageDescription != null) {
-        return false;
-      }
-    } else if (!usageDescription.equals(other.usageDescription)) {
-      return false;
-    }
-    if (helpMessage == null) {
-      if (other.helpMessage != null) {
-        return false;
-      }
-    } else if (!helpMessage.equals(other.helpMessage)) {
-      return false;
-    }
-    return true;
+    return key.equals(other.key) && Arrays.equals(usageDescription, other.usageDescription)
+        && helpMessage.equals(other.helpMessage);
   }
 
   @Override

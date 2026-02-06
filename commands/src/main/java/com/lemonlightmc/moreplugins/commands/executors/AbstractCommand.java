@@ -30,6 +30,8 @@ public abstract class AbstractCommand<T extends AbstractCommand<T>> extends Exec
   protected Set<String> aliases = new HashSet<String>();
 
   protected List<CommandRequirement<CommandSender>> requirements;
+  protected String shortDescription;
+  protected String fullDescription;
   private boolean hasOptional = false;
 
   public abstract T getInstance();
@@ -315,7 +317,25 @@ public abstract class AbstractCommand<T extends AbstractCommand<T>> extends Exec
     return true;
   }
 
-  // executors
+  // other
+  public String getShortDescription() {
+    return shortDescription;
+  }
+
+  public T withShortDescription(final String desc) {
+    this.shortDescription = desc;
+    return getInstance();
+  }
+
+  public String getFullDescription() {
+    return fullDescription;
+  }
+
+  public T withFullDescription(final String desc) {
+    this.fullDescription = desc;
+    return getInstance();
+  }
+
   protected boolean hasAnyExecutors() {
     if (hasExecutors()) {
       return true;

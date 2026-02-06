@@ -90,6 +90,14 @@ public class CommandAPI {
     return namespace;
   }
 
+  public static SimpleCommand command(final NamespacedKey key) {
+    return new SimpleCommand(key);
+  }
+
+  public static SimpleSubCommand subCommand(final String... aliases) {
+    return new SimpleSubCommand(aliases);
+  }
+
   public static boolean register(final SimpleCommand command) {
     try {
       if (command == null) {
