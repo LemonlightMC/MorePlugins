@@ -1,10 +1,10 @@
 package com.lemonlightmc.moreplugins.commands.executors;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Stream;
 
 import org.bukkit.Bukkit;
 import org.bukkit.GameRule;
@@ -29,9 +29,9 @@ import com.lemonlightmc.moreplugins.commands.suggestions.SuggestionInfo;
 import com.lemonlightmc.moreplugins.commands.suggestions.Suggestions;
 import com.lemonlightmc.moreplugins.messages.Logger;
 import com.lemonlightmc.moreplugins.messages.MessageFormatter;
-import com.lemonlightmc.moreplugins.messages.StringTooltip;
 
 public class CommandHandler {
+  public static final int MAX_TABCOMPLETIONS = 512;
 
   public static void run(final SimpleCommand cmd, final CommandSender sender, final String[] args) {
     try {
@@ -41,7 +41,7 @@ public class CommandHandler {
         return;
       }
       final ExecutionInfo<CommandSender> info = new ExecutionInfo<CommandSender>(source, cmdArgs);
-      cmd.run(info);
+      cmd.run(info, 0);
     } catch (final Throwable ex) {
       throw new CommandException(
           "Exception while executing command '" +
@@ -56,41 +56,48 @@ public class CommandHandler {
       final SimpleCommand cmd,
       final CommandSender sender,
       String[] args) {
-    final List<String> tooltips = new ArrayList<>();
     if (args == null) {
       args = new String[0];
     }
-    final String token = args.length > 0 ? args[args.length - 1] : null;
-
     try {
       final CommandSource<CommandSender> source = CommandSource.from(sender);
       final CommandArguments cmdArgs = parse(cmd, source, args);
       if (cmdArgs == null) {
-        return tooltips;
+        return List.of();
       }
       final SuggestionInfo<CommandSender> info = new SuggestionInfo<CommandSender>(source, cmdArgs,
           cmdArgs.getLastRaw());
 
-      final List<Suggestions<CommandSender>> temp = cmd.tabComplete(info);
-      if (temp != null) {
-        tooltips.addAll(temp.parallelStream()
-            .map((final Suggestions<CommandSender> s) -> s == null ? null : s.suggest(info))
-            .flatMap(col -> col == null ? Stream.empty() : col.stream())
-            .map((final StringTooltip t) -> {
-              return token == null || startsWithIgnoreCase(t.message(), token) ? t.resolve() : null;
-            }).filter(v -> v != null && v.length() > 0).toList());
+      final List<Suggestions<CommandSender>> temp = cmd.tabComplete(info, 0);
+      if (temp == null) {
+        return List.of();
+      }
+      final List<String> tabCompletions = new ArrayList<>();
+      for (final Suggestions<CommandSender> suggestion : temp) {
+        if (suggestion != null) {
+          final Collection<String> list = suggestion.suggest(info);
+          if (list != null && !list.isEmpty()) {
+            tabCompletions.addAll(list);
+          }
+        }
+      }
+      final String token = args.length > 0 ? args[args.length - 1] : null;
+      tabCompletions.removeIf(s -> s == null || s.length() == 0 || token != null && !startsWithIgnoreCase(s, token));
+      if (tabCompletions.size() > MAX_TABCOMPLETIONS) {
+        return tabCompletions.subList(0, MAX_TABCOMPLETIONS);
+      } else {
+        return tabCompletions;
       }
     } catch (final Throwable ex) {
       final StringBuilder message = new StringBuilder("Unhandled exception during tab completion for command '/");
       message
-          .append(cmd.getName())
+          .append(cmd.getName().toString())
           .append(' ')
           .append(String.join(" ", args))
           .append("' in plugin ")
           .append(PluginBase.getInstance().getFullName());
       throw new CommandException(message.toString(), ex);
     }
-    return tooltips;
   }
 
   private static CommandArguments parse(final SimpleCommand cmd, final CommandSource<CommandSender> source,

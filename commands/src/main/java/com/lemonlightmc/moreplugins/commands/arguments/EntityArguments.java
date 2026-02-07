@@ -12,7 +12,6 @@ import com.lemonlightmc.moreplugins.commands.CommandSource;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.Argument;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.ArgumentType;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.StringReader;
-import com.lemonlightmc.moreplugins.commands.suggestions.Suggestions;
 import com.lemonlightmc.moreplugins.commands.exceptions.CommandSyntaxException;
 
 public class EntityArguments {
@@ -20,7 +19,7 @@ public class EntityArguments {
 
     public PlayerArgument(final String name) {
       super(name, Player.class, ArgumentType.PLAYER);
-      withSuggestions(Suggestions.from((info) -> Bukkit.getOnlinePlayers().stream().map(p -> p.getName()).toList()));
+      withSuggestions((info) -> Bukkit.getOnlinePlayers().stream().map(p -> p.getName()).toList());
 
     }
 
@@ -39,7 +38,7 @@ public class EntityArguments {
   public static class PlayerProfileArgument extends Argument<PlayerProfile, PlayerProfileArgument> {
     public PlayerProfileArgument(final String name) {
       super(name, PlayerProfile.class, ArgumentType.PLAYERPROFILE);
-      withSuggestions(Suggestions.from((info) -> Bukkit.getOnlinePlayers().stream().map(p -> p.getName()).toList()));
+      withSuggestions((info) -> Bukkit.getOnlinePlayers().stream().map(p -> p.getName()).toList());
     }
 
     public PlayerProfileArgument getInstance() {
@@ -60,7 +59,7 @@ public class EntityArguments {
 
     public EntitySelectorArgument(final String name) {
       super(name, List.class, ArgumentType.ENTITY_SELECTOR);
-      withSuggestions(Suggestions.from((info) -> Bukkit.getOnlinePlayers().stream().map(p -> p.getName()).toList()));
+      withSuggestions((info) -> Bukkit.getOnlinePlayers().stream().map(p -> p.getName()).toList());
 
     }
 

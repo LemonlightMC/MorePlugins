@@ -13,7 +13,6 @@ import org.bukkit.command.CommandSender;
 import com.lemonlightmc.moreplugins.commands.CommandSource;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.Argument;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.ArgumentType;
-import com.lemonlightmc.moreplugins.commands.suggestions.Suggestions;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.StringReader;
 import com.lemonlightmc.moreplugins.commands.exceptions.CommandSyntaxException;
 import com.lemonlightmc.moreplugins.commands.exceptions.CommandSyntaxException.CommandSyntaxExceptionContainer;
@@ -48,9 +47,9 @@ public class CollectionsArguments {
       this.supplier = supplier;
       this.mapper = suggestionsMapper;
 
-      withSuggestions(Suggestions.from(info -> {
+      withSuggestions(info -> {
         return supplier.get().stream().map(v -> mapper.apply(v)).toList();
-      }));
+      });
     }
 
     @Override
@@ -147,9 +146,9 @@ public class CollectionsArguments {
       for (final T obj : values) {
         mapping.put(mapper.apply(obj), obj);
       }
-      withSuggestions(Suggestions.from(info -> {
+      withSuggestions(info -> {
         return mapping.keySet();
-      }));
+      });
     }
 
     @Override

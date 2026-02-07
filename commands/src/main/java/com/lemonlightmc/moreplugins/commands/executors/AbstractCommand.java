@@ -12,12 +12,10 @@ import com.lemonlightmc.moreplugins.commands.executors.Executors.ExecutorType;
 import com.lemonlightmc.moreplugins.commands.executors.Executors.NormalExecutor;
 import com.lemonlightmc.moreplugins.commands.suggestions.SuggestionInfo;
 import com.lemonlightmc.moreplugins.commands.suggestions.Suggestions;
-import com.lemonlightmc.moreplugins.messages.Logger;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
 
@@ -310,7 +308,7 @@ public abstract class AbstractCommand<T extends AbstractCommand<T>> extends Exec
       return true;
     }
     for (final CommandRequirement<CommandSender> requirement : requirements) {
-      if (!requirement.check(source)) {
+      if (!requirement.test(source)) {
         return false;
       }
     }
@@ -349,70 +347,56 @@ public abstract class AbstractCommand<T extends AbstractCommand<T>> extends Exec
   }
 
   // execution
-  public void run(final ExecutionInfo<CommandSender> info) throws CommandException {
-    try {
-      final SimpleSubCommand sub = getSubcommand(info.args().getRaw(0));
-      if (sub != null) {
-        sub.run(info);
-        return;
-      }
-      if (executors == null || executors.isEmpty()) {
-        return;
-      }
-      NormalExecutor<?>[] ex = getExecutors(info.executorType());
-      if (ex == null) {
-        ex = getExecutors(ExecutorType.NATIVE);
-      }
-      if (ex == null) {
-        ex = getExecutors(ExecutorType.ALL);
-      }
-      if (ex == null) {
-        return;
-      }
-      for (final NormalExecutor<?> normalExecutor : ex) {
-        normalExecutor.executeWith(info);
-      }
-    } catch (final CommandException e) {
-      throw e;
-    } catch (final Throwable ex) {
-      Logger.warn(
-          "Unhandled exception executing '" + info.args().getFullInput() + "'");
-      ex.printStackTrace();
-      if (ex instanceof Exception) {
-        throw ex;
-      }
+  protected void run(final ExecutionInfo<CommandSender> info, final int idx) throws CommandException {
+    final SimpleSubCommand sub = getSubcommand(info.args().getRaw(idx));
+    if (sub != null) {
+      sub.run(info, idx + 1);
+      return;
+    }
+    if (executors == null || executors.isEmpty()) {
+      return;
+    }
+    NormalExecutor<?>[] ex = getExecutors(info.executorType());
+    if (ex == null) {
+      ex = getExecutors(ExecutorType.NATIVE);
+    }
+    if (ex == null) {
+      ex = getExecutors(ExecutorType.ALL);
+    }
+    if (ex == null) {
+      return;
+    }
+    for (final NormalExecutor<?> normalExecutor : ex) {
+      normalExecutor.executeWith(info);
     }
   }
 
-  public List<Suggestions<CommandSender>> tabComplete(final SuggestionInfo<CommandSender> info) {
-    try {
-      if (!checkRequirements(info.source())) {
-        return List.of();
+  public List<Suggestions<CommandSender>> tabComplete(final SuggestionInfo<CommandSender> info, int idx) {
+    if (arguments.isEmpty()) {
+      if (subcommands.isEmpty()) {
+        return null;
       }
-      final String subStr = info.args().getRaw(0);
-      final SimpleSubCommand sub = getSubcommand(subStr);
-      if (sub != null) {
-        return sub.tabComplete(info);
-      }
-
-      for (final Argument<?, ?> arg : arguments) {
-        final Optional<?> opt = info.args().getByArgumentOptional(arg);
-        if (opt.isPresent()) {
-          return arg.getSuggestions();
+      final List<String> list = new ArrayList<>();
+      for (final SimpleSubCommand sub : subcommands) {
+        for (final String string : sub.aliases) {
+          list.add(string);
         }
       }
-      return null;
-    } catch (final CommandException e) {
-      throw e;
-    } catch (final Throwable ex) {
-      Logger.warn(
-          "Unhandled exception executing '" + info.args().getFullInput() + "'");
-      ex.printStackTrace();
-      if (ex instanceof Exception) {
-        throw ex;
+      return List.of(Suggestions.from(list));
+    }
+    if (idx >= 0) {
+      final String subStr = info.args().getRaw(idx);
+      final SimpleSubCommand sub = getSubcommand(subStr);
+      if (sub != null) {
+        return sub.tabComplete(info, idx + 1);
       }
+      idx = 0 - (info.args().count() - idx);
+    }
+    if (idx == 0) {
       return null;
     }
+    final Argument<?, ?> arg = arguments.get(Math.abs(idx + 1));
+    return arg == null ? null : arg.getSuggestions();
   }
 
   @Override

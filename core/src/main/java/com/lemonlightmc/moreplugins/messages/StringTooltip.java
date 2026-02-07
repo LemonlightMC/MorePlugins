@@ -11,10 +11,10 @@ import net.md_5.bungee.api.chat.hover.content.Text;
 
 public record StringTooltip(String message, String tooltip) {
 
-  public String resolve() {
+  public TextComponent resolve() {
     TextComponent component = new TextComponent(message);
     component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(tooltip)));
-    return component.toLegacyText();
+    return component;
   }
 
   public static StringTooltip none(final String suggestion) {

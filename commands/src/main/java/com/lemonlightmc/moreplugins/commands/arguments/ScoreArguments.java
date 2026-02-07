@@ -14,7 +14,6 @@ import com.lemonlightmc.moreplugins.commands.argumentsbase.Argument;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.ArgumentType;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.ScoreboardSlot;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.StringReader;
-import com.lemonlightmc.moreplugins.commands.suggestions.Suggestions;
 import com.lemonlightmc.moreplugins.commands.exceptions.CommandSyntaxException;
 
 public class ScoreArguments {
@@ -23,8 +22,8 @@ public class ScoreArguments {
 
     public TeamArgument(final String name) {
       super(name, Team.class, ArgumentType.TEAM);
-      withSuggestions(Suggestions.from((info) -> Bukkit.getScoreboardManager().getMainScoreboard().getTeams().stream()
-          .map((v) -> v.getName()).toList()));
+      withSuggestions((info) -> Bukkit.getScoreboardManager().getMainScoreboard().getTeams().stream()
+          .map((v) -> v.getName()).toList());
     }
 
     @Override
@@ -63,9 +62,8 @@ public class ScoreArguments {
 
     public ObjectiveArgument(final String name) {
       super(name, Objective.class, ArgumentType.OBJECTIVE);
-      withSuggestions(
-          Suggestions.from((info) -> Bukkit.getScoreboardManager().getMainScoreboard().getObjectives().stream()
-              .map((v) -> v.getName()).toList()));
+      withSuggestions((info) -> Bukkit.getScoreboardManager().getMainScoreboard().getObjectives().stream()
+          .map((v) -> v.getName()).toList());
     }
 
     @Override
@@ -100,9 +98,8 @@ public class ScoreArguments {
 
     public CriteriaArgument(final String name) {
       super(name, Criteria.class, ArgumentType.CRITERIA);
-      withSuggestions(
-          Suggestions.from((info) -> Bukkit.getScoreboardManager().getMainScoreboard().getObjectives().stream()
-              .map((v) -> v.getTrackedCriteria().getName()).toList()));
+      withSuggestions((info) -> Bukkit.getScoreboardManager().getMainScoreboard().getObjectives().stream()
+          .map((v) -> v.getTrackedCriteria().getName()).toList());
     }
 
     @Override

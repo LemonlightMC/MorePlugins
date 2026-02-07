@@ -21,6 +21,7 @@ import org.bukkit.plugin.SimplePluginManager;
 
 import com.lemonlightmc.moreplugins.base.PluginBase;
 import com.lemonlightmc.moreplugins.commands.exceptions.CommandException;
+import com.lemonlightmc.moreplugins.commands.exceptions.InvalidCommandNameException;
 import com.lemonlightmc.moreplugins.commands.exceptions.MissingCommandExecutorException;
 import com.lemonlightmc.moreplugins.commands.executors.CommandHandler;
 import com.lemonlightmc.moreplugins.commands.executors.InternalExecutor;
@@ -31,6 +32,7 @@ public class CommandAPI {
   private static final Field KNOWN_COMMANDS_FIELD;
   private volatile static CommandMap commandMap;
   private volatile static Map<String, Command> knownCommandMap;
+
   public volatile static String namespace;
 
   static {
@@ -88,6 +90,15 @@ public class CommandAPI {
   public static String setNamespace() {
     namespace = PluginBase.getInstance().getKey();
     return namespace;
+  }
+
+  public static SimpleCommand command(String key) {
+    if (key == null || key.length() == 0) {
+      throw new InvalidCommandNameException(key);
+    }
+    key = key.startsWith("/") ? key.substring(1) : key;
+    return new SimpleCommand(
+        new NamespacedKey(PluginBase.getInstance().getKey(), key));
   }
 
   public static SimpleCommand command(final NamespacedKey key) {

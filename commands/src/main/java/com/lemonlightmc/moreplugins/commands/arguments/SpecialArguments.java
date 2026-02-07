@@ -19,7 +19,6 @@ import com.lemonlightmc.moreplugins.commands.argumentsbase.ArgumentType;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.CommandResult;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.StringReader;
 import com.lemonlightmc.moreplugins.commands.exceptions.InvalidArgumentBranchException;
-import com.lemonlightmc.moreplugins.commands.suggestions.SuggestionInfo;
 import com.lemonlightmc.moreplugins.commands.exceptions.CommandSyntaxException;
 
 public class SpecialArguments {
@@ -128,7 +127,7 @@ public class SpecialArguments {
 
     public CommandArgument(final String name) {
       super(name, CommandResult.class, ArgumentType.COMMAND);
-      withSuggestions((final SuggestionInfo<CommandSender> info) -> {
+      withSuggestions((info) -> {
         final String[] args = info.currentInput().split(" ");
         if (args.length <= 1) {
           return CommandAPI.getKnownCommandMap().keySet();
@@ -313,7 +312,7 @@ public class SpecialArguments {
         throw new IllegalArgumentException("The literals Supplier cant be empty");
       }
       this.literals = literals;
-      withSuggestions((final SuggestionInfo<CommandSender> info) -> {
+      withSuggestions((info) -> {
         return literals.apply(info.source());
       });
     }
