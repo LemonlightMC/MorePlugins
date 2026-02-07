@@ -16,7 +16,6 @@ public record CommandResult<S extends CommandSender>(Command command, String[] a
     return command.execute(source.sender(), command.getLabel(), args);
   }
 
-  @SuppressWarnings("unchecked")
   @Override
   public boolean equals(final Object o) {
     if (this == o) {
@@ -25,7 +24,7 @@ public record CommandResult<S extends CommandSender>(Command command, String[] a
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    final CommandResult<S> that = (CommandResult<S>) o;
+    final CommandResult<?> that = (CommandResult<?>) o;
     return command.equals(that.command) && Arrays.equals(args, that.args);
   }
 

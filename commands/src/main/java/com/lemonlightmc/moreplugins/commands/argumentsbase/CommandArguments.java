@@ -271,19 +271,19 @@ public class CommandArguments {
   }
 
   // byArgument
-  public <T> T getByArgument(final Argument<T, ?> argumentType) {
+  public <T> T getByArgument(final Argument<T, ?, ?> argumentType) {
     return castArgument(
         get(argumentType.getName()),
         argumentType.getPrimitiveType(),
         argumentType.getName());
   }
 
-  public <T> Optional<T> getByArgumentOptional(final Argument<T, ?> argumentType) {
+  public <T> Optional<T> getByArgumentOptional(final Argument<T, ?, ?> argumentType) {
     return Optional.ofNullable(getByArgument(argumentType));
   }
 
   public <T> T getByArgumentOrDefault(
-      final Argument<T, ?> argumentType,
+      final Argument<T, ?, ?> argumentType,
       final T defaultValue) {
     final T argument = getByArgument(argumentType);
     return argument == null ? defaultValue : argument;

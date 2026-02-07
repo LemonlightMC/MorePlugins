@@ -19,15 +19,13 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Predicate;
 
-import org.bukkit.command.CommandSender;
+public abstract class AbstractCommand<T extends AbstractCommand<T, S>, S> extends Executable<T> {
 
-public abstract class AbstractCommand<T extends AbstractCommand<T>> extends Executable<T> {
-
-  protected List<Argument<?, ?>> arguments = new ArrayList<>();
-  protected List<SimpleSubCommand> subcommands = new ArrayList<>();
+  protected List<Argument<?, ?, S>> arguments = new ArrayList<>();
+  protected List<SimpleSubCommand<S>> subcommands = new ArrayList<>();
   protected Set<String> aliases = new HashSet<String>();
 
-  protected List<CommandRequirement<CommandSender>> requirements;
+  protected List<CommandRequirement<CommandSource<S>>> requirements;
   protected String shortDescription;
   protected String fullDescription;
   private boolean hasOptional = false;
@@ -70,14 +68,14 @@ public abstract class AbstractCommand<T extends AbstractCommand<T>> extends Exec
     return getInstance();
   }
 
-  private void addArgument(final Argument<?, ?> arg, final boolean optional) {
+  private void addArgument(final Argument<?, ?, S> arg, final boolean optional) {
     if (arg == null) {
       return;
     }
     if (arguments.getLast().getType().isGreedy()) {
-      throw new GreedyArgumentException(arg.getName(), arguments);
+      throw new GreedyArgumentException(arg.getName(), GreedyArgumentException.buildArgsStr(arguments));
     }
-    for (final Argument<?, ?> tempArg : arguments) {
+    for (final Argument<?, ?, S> tempArg : arguments) {
       if (tempArg.getName().equals(arg.getName())) {
         throw new DuplicateArgumentException(arg.getName());
       }
@@ -92,61 +90,63 @@ public abstract class AbstractCommand<T extends AbstractCommand<T>> extends Exec
   }
 
   // Arguments
-  public T withArguments(final List<Argument<?, ?>> args) {
+  public T withArguments(final List<Argument<?, ?, S>> args) {
     if (args == null || args.isEmpty()) {
       return getInstance();
     }
-    for (final Argument<?, ?> arg : args) {
+    for (final Argument<?, ?, S> arg : args) {
       addArgument(arg, false);
     }
     return getInstance();
   }
 
-  public T withArguments(final Argument<?, ?>... args) {
+  @SuppressWarnings("unchecked")
+  public T withArguments(final Argument<?, ?, S>... args) {
     if (args == null || args.length == 0) {
       return getInstance();
     }
-    for (final Argument<?, ?> arg : args) {
+    for (final Argument<?, ?, S> arg : args) {
       addArgument(arg, false);
     }
     return getInstance();
   }
 
-  public T withArguments(final List<Argument<?, ?>> args, final boolean optional) {
+  public T withArguments(final List<Argument<?, ?, S>> args, final boolean optional) {
     if (args == null || args.isEmpty()) {
       return getInstance();
     }
-    for (final Argument<?, ?> arg : args) {
+    for (final Argument<?, ?, S> arg : args) {
       addArgument(arg, optional);
     }
     return getInstance();
   }
 
-  public T withArguments(final Argument<?, ?>[] args, final boolean optional) {
+  public T withArguments(final Argument<?, ?, S>[] args, final boolean optional) {
     if (args == null || args.length == 0) {
       return getInstance();
     }
-    for (final Argument<?, ?> arg : args) {
+    for (final Argument<?, ?, S> arg : args) {
       addArgument(arg, optional);
     }
     return getInstance();
   }
 
-  public T withOptionalArguments(final List<Argument<?, ?>> args) {
+  public T withOptionalArguments(final List<Argument<?, ?, S>> args) {
     return withArguments(args, true);
   }
 
   @SafeVarargs
-  public final T withOptionalArguments(final Argument<?, ?>... args) {
+  public final T withOptionalArguments(final Argument<?, ?, S>... args) {
     return withArguments(args, true);
   }
 
-  public T setArguments(final List<Argument<?, ?>> args) {
+  public T setArguments(final List<Argument<?, ?, S>> args) {
     arguments = args;
     return getInstance();
   }
 
-  public boolean hasArguments(final Argument<?, ?>... args) {
+  @SuppressWarnings("unchecked")
+  public boolean hasArguments(final Argument<?, ?, S>... args) {
     return args != null && args.length != 0 && arguments.containsAll(List.of(args));
   }
 
@@ -154,20 +154,20 @@ public abstract class AbstractCommand<T extends AbstractCommand<T>> extends Exec
     return !arguments.isEmpty();
   }
 
-  public List<Argument<?, ?>> getArguments() {
+  public List<Argument<?, ?, S>> getArguments() {
     return arguments;
   }
 
-  public List<Argument<?, ?>> getOptionalArguments() {
+  public List<Argument<?, ?, S>> getOptionalArguments() {
     return arguments.stream().filter(a -> !a.isOptional()).toList();
   }
 
-  public T removeArguments(final Argument<?, ?> args) {
+  public T removeArguments(final Argument<?, ?, S> args) {
     arguments.remove(args);
     return getInstance();
   }
 
-  public T removeArguments(final Argument<?, ?>... args) {
+  public T removeArguments(@SuppressWarnings("unchecked") final Argument<?, ?, S>... args) {
     arguments.removeAll(List.of(args));
     return getInstance();
   }
@@ -178,7 +178,7 @@ public abstract class AbstractCommand<T extends AbstractCommand<T>> extends Exec
   }
 
   // Subcommands
-  public T withSubcommands(final List<SimpleSubCommand> subs) {
+  public T withSubcommands(final List<SimpleSubCommand<S>> subs) {
     if (subs != null) {
       subcommands.addAll(subs);
     }
@@ -186,14 +186,14 @@ public abstract class AbstractCommand<T extends AbstractCommand<T>> extends Exec
   }
 
   @SafeVarargs
-  public final T withSubcommands(final SimpleSubCommand... subs) {
+  public final T withSubcommands(final SimpleSubCommand<S>... subs) {
     if (subs != null) {
       subcommands.addAll(List.of(subs));
     }
     return getInstance();
   }
 
-  public T setSubcommands(final List<SimpleSubCommand> subs) {
+  public T setSubcommands(final List<SimpleSubCommand<S>> subs) {
     subcommands = subs;
     return getInstance();
   }
@@ -212,16 +212,16 @@ public abstract class AbstractCommand<T extends AbstractCommand<T>> extends Exec
         && subcommands.stream().anyMatch((s) -> s.getAliases().contains(sub));
   }
 
-  public SimpleSubCommand getSubcommand(final String sub) {
+  public SimpleSubCommand<S> getSubcommand(final String sub) {
     return sub == null || sub.length() == 0 || subcommands.isEmpty() ? null
         : subcommands.stream().filter((s) -> s.getAliases().contains(sub)).findFirst().orElse(null);
   }
 
-  public List<SimpleSubCommand> getSubcommands() {
+  public List<SimpleSubCommand<S>> getSubcommands() {
     return subcommands;
   }
 
-  public T removeSubcommands(final SimpleSubCommand sub) {
+  public T removeSubcommands(final SimpleSubCommand<S> sub) {
     if (sub != null) {
       subcommands.remove(sub);
     }
@@ -229,7 +229,7 @@ public abstract class AbstractCommand<T extends AbstractCommand<T>> extends Exec
   }
 
   @SafeVarargs
-  public final T removeSubcommands(final SimpleSubCommand... subs) {
+  public final T removeSubcommands(final SimpleSubCommand<S>... subs) {
     if (subs != null) {
       subcommands.removeAll(List.of(subs));
     }
@@ -242,7 +242,7 @@ public abstract class AbstractCommand<T extends AbstractCommand<T>> extends Exec
   }
 
   // requirements
-  public T withRequirement(final CommandRequirement<CommandSender> requirement) {
+  public T withRequirement(final CommandRequirement<CommandSource<S>> requirement) {
     if (requirements == null) {
       requirements = new ArrayList<>();
     }
@@ -250,24 +250,24 @@ public abstract class AbstractCommand<T extends AbstractCommand<T>> extends Exec
     return getInstance();
   }
 
-  public T withRequirement(final Predicate<CommandSource<CommandSender>> requirement, final String message,
+  public T withRequirement(final Predicate<CommandSource<S>> requirement, final String message,
       final boolean hide) {
     return withRequirement(CommandRequirement.from(requirement, message, hide));
   }
 
-  public T withRequirement(final Predicate<CommandSource<CommandSender>> requirement, final boolean hide) {
+  public T withRequirement(final Predicate<CommandSource<S>> requirement, final boolean hide) {
     return withRequirement(CommandRequirement.from(requirement, hide));
   }
 
-  public T withRequirement(final Predicate<CommandSource<CommandSender>> requirement, final String message) {
+  public T withRequirement(final Predicate<CommandSource<S>> requirement, final String message) {
     return withRequirement(CommandRequirement.from(requirement, message));
   }
 
-  public T withRequirement(final Predicate<CommandSource<CommandSender>> requirement) {
+  public T withRequirement(final Predicate<CommandSource<S>> requirement) {
     return withRequirement(CommandRequirement.from(requirement));
   }
 
-  public T setRequirements(final List<CommandRequirement<CommandSender>> requirements) {
+  public T setRequirements(final List<CommandRequirement<CommandSource<S>>> requirements) {
     this.requirements = requirements;
     return getInstance();
   }
@@ -299,15 +299,15 @@ public abstract class AbstractCommand<T extends AbstractCommand<T>> extends Exec
     return getInstance();
   }
 
-  public List<CommandRequirement<CommandSender>> getRequirements() {
+  public List<CommandRequirement<CommandSource<S>>> getRequirements() {
     return requirements;
   }
 
-  public boolean checkRequirements(final CommandSource<CommandSender> source) {
+  public boolean checkRequirements(final CommandSource<S> source) {
     if (requirements == null || requirements.size() == 0) {
       return true;
     }
-    for (final CommandRequirement<CommandSender> requirement : requirements) {
+    for (final CommandRequirement<CommandSource<S>> requirement : requirements) {
       if (!requirement.test(source)) {
         return false;
       }
@@ -338,7 +338,7 @@ public abstract class AbstractCommand<T extends AbstractCommand<T>> extends Exec
     if (hasExecutors()) {
       return true;
     }
-    for (final SimpleSubCommand sub : subcommands) {
+    for (final SimpleSubCommand<S> sub : subcommands) {
       if (sub.hasAnyExecutors()) {
         return true;
       }
@@ -347,8 +347,8 @@ public abstract class AbstractCommand<T extends AbstractCommand<T>> extends Exec
   }
 
   // execution
-  protected void run(final ExecutionInfo<CommandSender> info, final int idx) throws CommandException {
-    final SimpleSubCommand sub = getSubcommand(info.args().getRaw(idx));
+  protected void run(final ExecutionInfo<S> info, final int idx) throws CommandException {
+    final SimpleSubCommand<S> sub = getSubcommand(info.args().getRaw(idx));
     if (sub != null) {
       sub.run(info, idx + 1);
       return;
@@ -356,7 +356,7 @@ public abstract class AbstractCommand<T extends AbstractCommand<T>> extends Exec
     if (executors == null || executors.isEmpty()) {
       return;
     }
-    NormalExecutor<?>[] ex = getExecutors(info.executorType());
+    NormalExecutor<?>[] ex = getExecutors(info.source().executorType());
     if (ex == null) {
       ex = getExecutors(ExecutorType.NATIVE);
     }
@@ -371,13 +371,13 @@ public abstract class AbstractCommand<T extends AbstractCommand<T>> extends Exec
     }
   }
 
-  public List<Suggestions<CommandSender>> tabComplete(final SuggestionInfo<CommandSender> info, int idx) {
+  public List<Suggestions<S>> tabComplete(final SuggestionInfo<S> info, int idx) {
     if (arguments.isEmpty()) {
       if (subcommands.isEmpty()) {
         return null;
       }
       final List<String> list = new ArrayList<>();
-      for (final SimpleSubCommand sub : subcommands) {
+      for (final SimpleSubCommand<S> sub : subcommands) {
         for (final String string : sub.aliases) {
           list.add(string);
         }
@@ -386,7 +386,7 @@ public abstract class AbstractCommand<T extends AbstractCommand<T>> extends Exec
     }
     if (idx >= 0) {
       final String subStr = info.args().getRaw(idx);
-      final SimpleSubCommand sub = getSubcommand(subStr);
+      final SimpleSubCommand<S> sub = getSubcommand(subStr);
       if (sub != null) {
         return sub.tabComplete(info, idx + 1);
       }
@@ -395,7 +395,7 @@ public abstract class AbstractCommand<T extends AbstractCommand<T>> extends Exec
     if (idx == 0) {
       return null;
     }
-    final Argument<?, ?> arg = arguments.get(Math.abs(idx + 1));
+    final Argument<?, ?, S> arg = arguments.get(Math.abs(idx + 1));
     return arg == null ? null : arg.getSuggestions();
   }
 

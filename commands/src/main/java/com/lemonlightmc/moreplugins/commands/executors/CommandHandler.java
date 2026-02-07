@@ -15,6 +15,7 @@ import org.bukkit.entity.minecart.CommandMinecart;
 import org.bukkit.permissions.Permissible;
 
 import com.lemonlightmc.moreplugins.base.PluginBase;
+import com.lemonlightmc.moreplugins.commands.BukkitCommandSource;
 import com.lemonlightmc.moreplugins.commands.CommandSource;
 import com.lemonlightmc.moreplugins.commands.SimpleCommand;
 import com.lemonlightmc.moreplugins.commands.SimpleSubCommand;
@@ -35,7 +36,7 @@ public class CommandHandler {
 
   public static void run(final SimpleCommand cmd, final CommandSender sender, final String[] args) {
     try {
-      final CommandSource<CommandSender> source = CommandSource.from(sender);
+      final CommandSource<CommandSender> source = BukkitCommandSource.from(sender);
       final CommandArguments cmdArgs = parse(cmd, source, args == null ? new String[0] : args);
       if (cmdArgs == null) {
         return;
@@ -60,7 +61,7 @@ public class CommandHandler {
       args = new String[0];
     }
     try {
-      final CommandSource<CommandSender> source = CommandSource.from(sender);
+      final CommandSource<CommandSender> source = BukkitCommandSource.from(sender);
       final CommandArguments cmdArgs = parse(cmd, source, args);
       if (cmdArgs == null) {
         return List.of();
@@ -106,14 +107,14 @@ public class CommandHandler {
     return _parseArguments(cmd, cmd, reader, source, args);
   }
 
-  private static CommandArguments _parseArguments(final SimpleCommand cmd, AbstractCommand<?> thisCmd,
+  private static CommandArguments _parseArguments(final SimpleCommand cmd, AbstractCommand<?, ?> thisCmd,
       final StringReader reader,
       final CommandSource<CommandSender> source, final String[] args) {
     int i = 0;
     boolean hadSubcommand = true;
     while (hadSubcommand && args.length > i && thisCmd.hasSubcommands()) {
       hadSubcommand = false;
-      for (final SimpleSubCommand sub : cmd.getSubcommands()) {
+      for (final SimpleSubCommand<CommandSender> sub : cmd.getSubcommands()) {
         if (_isSubCommand(args[i], sub)) {
           if (!sub.checkRequirements(source)) {
             return null;
@@ -127,7 +128,7 @@ public class CommandHandler {
     }
 
     final Map<String, ParsedArgument> parsedArgs = new HashMap<>();
-    for (final Argument<?, ?> arg : cmd.getArguments()) {
+    for (final Argument<?, ?, CommandSender> arg : cmd.getArguments()) {
       if (!arg.checkRequirements(source)) {
         return null;
       }
@@ -140,7 +141,7 @@ public class CommandHandler {
   }
 
   private static Object _parseArg(final StringReader reader, final CommandSource<CommandSender> source,
-      final Argument<?, ?> arg) {
+      final Argument<?, ?, CommandSender> arg) {
     reader.point();
     try {
       final Object value = arg.parseArgument(source, reader, arg.getName());
@@ -157,8 +158,8 @@ public class CommandHandler {
     return null;
   }
 
-  private static boolean _isSubCommand(final String arg, final SimpleSubCommand sub) {
-    final Argument<?, ?> firstArg = sub.getArguments().getFirst();
+  private static boolean _isSubCommand(final String arg, final SimpleSubCommand<CommandSender> sub) {
+    final Argument<?, ?, CommandSender> firstArg = sub.getArguments().getFirst();
     if (!firstArg.getType().isLiteral()) {
       return false;
     }

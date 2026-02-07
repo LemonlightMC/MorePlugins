@@ -5,21 +5,19 @@ import java.util.Collection;
 import java.util.List;
 import java.util.function.Predicate;
 
-import org.bukkit.command.CommandSender;
-
 import com.lemonlightmc.moreplugins.commands.CommandRequirement;
 import com.lemonlightmc.moreplugins.commands.CommandSource;
 import com.lemonlightmc.moreplugins.commands.exceptions.CommandSyntaxException;
 import com.lemonlightmc.moreplugins.commands.suggestions.Suggestions;
 
-public abstract class Argument<Type, ArgType extends Argument<Type, ArgType>> {
+public abstract class Argument<Type, ArgType extends Argument<Type, ArgType, S>, S> {
   protected String name;
   protected ArgumentType rawType;
   protected Class<Type> primitiveType;
   protected boolean isOptional = false;
   protected boolean isListed = true;
-  protected List<CommandRequirement<CommandSender>> requirements;
-  protected List<Suggestions<CommandSender>> suggestions = new ArrayList<>(4);
+  protected List<CommandRequirement<CommandSource<S>>> requirements;
+  protected List<Suggestions<S>> suggestions = new ArrayList<>(4);
 
   protected Argument(final String name, final Class<Type> primitiveType, final ArgumentType rawType) {
     if (name == null || name.length() == 0) {
@@ -43,7 +41,7 @@ public abstract class Argument<Type, ArgType extends Argument<Type, ArgType>> {
         "Invalid Value '" + value + "' for " + rawType.getName() + " Argument '" + name + "'");
   }
 
-  public abstract Type parseArgument(CommandSource<CommandSender> source, StringReader reader, String key)
+  public abstract Type parseArgument(CommandSource<S> source, StringReader reader, String key)
       throws CommandSyntaxException;
 
   public String getName() {
@@ -84,7 +82,7 @@ public abstract class Argument<Type, ArgType extends Argument<Type, ArgType>> {
 
   // Suggestions
 
-  public ArgType withSuggestions(final Suggestions<CommandSender> func) {
+  public ArgType withSuggestions(final Suggestions<S> func) {
     this.suggestions.add(func);
     return getInstance();
   }
@@ -99,12 +97,12 @@ public abstract class Argument<Type, ArgType extends Argument<Type, ArgType>> {
     return getInstance();
   }
 
-  public List<Suggestions<CommandSender>> getSuggestions() {
+  public List<Suggestions<S>> getSuggestions() {
     return this.suggestions;
   }
   // requirements
 
-  public ArgType withRequirement(final CommandRequirement<CommandSender> requirement) {
+  public ArgType withRequirement(final CommandRequirement<CommandSource<S>> requirement) {
     if (requirements == null) {
       requirements = new ArrayList<>();
     }
@@ -112,7 +110,7 @@ public abstract class Argument<Type, ArgType extends Argument<Type, ArgType>> {
     return getInstance();
   }
 
-  public ArgType withRequirement(final Predicate<CommandSource<CommandSender>> requirement) {
+  public ArgType withRequirement(final Predicate<CommandSource<S>> requirement) {
     return withRequirement(CommandRequirement.from(requirement));
   }
 
@@ -131,15 +129,15 @@ public abstract class Argument<Type, ArgType extends Argument<Type, ArgType>> {
     return getInstance();
   }
 
-  public List<CommandRequirement<CommandSender>> getRequirements() {
+  public List<CommandRequirement<CommandSource<S>>> getRequirements() {
     return requirements;
   }
 
-  public boolean checkRequirements(final CommandSource<CommandSender> source) {
+  public boolean checkRequirements(final CommandSource<S> source) {
     if (requirements == null || requirements.size() == 0) {
       return true;
     }
-    for (final CommandRequirement<CommandSender> requirement : requirements) {
+    for (final CommandRequirement<CommandSource<S>> requirement : requirements) {
       if (!requirement.check(source)) {
         return false;
       }
@@ -175,7 +173,7 @@ public abstract class Argument<Type, ArgType extends Argument<Type, ArgType>> {
     if (obj == null || getInstance().getClass() != obj.getClass()) {
       return false;
     }
-    final Argument<?, ?> other = (Argument<?, ?>) obj;
+    final Argument<?, ?, ?> other = (Argument<?, ?, ?>) obj;
     return isListed == other.isListed && isOptional == other.isOptional && isOptional == other.isOptional
         && rawType == other.rawType
         && name.equals(other.name) && name.equals(other.name)

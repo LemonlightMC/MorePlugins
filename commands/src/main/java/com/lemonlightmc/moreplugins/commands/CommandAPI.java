@@ -105,8 +105,8 @@ public class CommandAPI {
     return new SimpleCommand(key);
   }
 
-  public static SimpleSubCommand subCommand(final String... aliases) {
-    return new SimpleSubCommand(aliases);
+  public static SimpleSubCommand<CommandSender> subCommand(final String... aliases) {
+    return new SimpleSubCommand<CommandSender>(aliases);
   }
 
   public static boolean register(final SimpleCommand command) {

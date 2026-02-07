@@ -5,13 +5,14 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.bukkit.NamespacedKey;
+import org.bukkit.command.CommandSender;
 
 import com.lemonlightmc.moreplugins.commands.argumentsbase.Argument;
 import com.lemonlightmc.moreplugins.commands.exceptions.InvalidCommandNameException;
 import com.lemonlightmc.moreplugins.commands.exceptions.MissingCommandExecutorException;
 import com.lemonlightmc.moreplugins.commands.executors.AbstractCommand;
 
-public class SimpleCommand extends AbstractCommand<SimpleCommand> {
+public class SimpleCommand extends AbstractCommand<SimpleCommand, CommandSender> {
 
   private NamespacedKey key = null;
   private String[] usageDescription;
@@ -30,8 +31,8 @@ public class SimpleCommand extends AbstractCommand<SimpleCommand> {
     return new SimpleCommand(key);
   }
 
-  public static SimpleSubCommand subCommand(final String... aliases) {
-    return new SimpleSubCommand(aliases);
+  public static SimpleSubCommand<CommandSender> subCommand(final String... aliases) {
+    return new SimpleSubCommand<CommandSender>(aliases);
   }
 
   public SimpleCommand register() {
@@ -150,13 +151,13 @@ public class SimpleCommand extends AbstractCommand<SimpleCommand> {
     }
   }
 
-  private List<String> buildUsageString(final String str, final AbstractCommand<?> command) {
+  private List<String> buildUsageString(final String str, final AbstractCommand<?, CommandSender> command) {
     final ArrayList<String> usageList = new ArrayList<>();
     String str2 = str + " <" + String.join("|", aliases) + ">";
-    for (final SimpleSubCommand subCmd : subcommands) {
+    for (final SimpleSubCommand<CommandSender> subCmd : subcommands) {
       usageList.addAll(buildUsageString(str2, subCmd));
     }
-    for (final Argument<?, ?> arg : command.getArguments()) {
+    for (final Argument<?, ?, CommandSender> arg : command.getArguments()) {
       str2 += " ";
       str2 += arg.getHelpString();
     }
