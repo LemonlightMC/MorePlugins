@@ -12,7 +12,6 @@ import org.bukkit.Sound;
 import org.bukkit.advancement.Advancement;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.block.Biome;
-import org.bukkit.block.data.BlockData;
 import org.bukkit.command.CommandSender;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.EntityType;
@@ -157,26 +156,6 @@ public class RegistryArguments {
     }
   }
 
-  public static class BlockDataArgument extends Argument<BlockData, BlockDataArgument> {
-    public static final String[] NAMES = _mapRegistry(Registry.MATERIAL);
-
-    public BlockDataArgument(final String name) {
-      super(name, BlockData.class, ArgumentType.BLOCKDATA);
-      withSuggestions(NAMES);
-    }
-
-    public BlockDataArgument getInstance() {
-      return this;
-    }
-
-    @Override
-    public BlockData parseArgument(final CommandSource<CommandSender> source, final StringReader reader,
-        final String key)
-        throws CommandSyntaxException {
-      return Bukkit.createBlockData(Objects.requireNonNull(Material.getMaterial(reader.readString())));
-    }
-  }
-
   public static class ItemStackArgument extends Argument<ItemStack, ItemStackArgument> {
 
     public static final String[] NAMES = _mapRegistry(Registry.ITEM);
@@ -194,23 +173,16 @@ public class RegistryArguments {
     public ItemStack parseArgument(final CommandSource<CommandSender> source, final StringReader reader,
         final String key)
         throws CommandSyntaxException {
-      final int start = reader.getCursor();
-      String[] value = null;
-      try {
-        value = reader.readList(':');
-        if (value.length == 0) {
-          throw new Exception();
-        }
-        final Material mat = Objects.requireNonNull(Material.getMaterial(value[0]));
-        if (value.length > 1) {
-          final int amount = Integer.parseInt(value[1]);
-          return new ItemStack(Material.getMaterial(value[0]), amount);
-        }
-        return new ItemStack(mat, 1);
-      } catch (final Exception e) {
-        reader.setCursor(start);
+      final String[] value = reader.readList(':');
+      if (value.length == 0) {
         throw createError(reader, Arrays.toString(value));
       }
+      final Material mat = Objects.requireNonNull(Material.getMaterial(value[0]));
+      if (value.length > 1) {
+        final int amount = Integer.parseInt(value[1]);
+        return new ItemStack(mat, amount);
+      }
+      return new ItemStack(mat, 1);
     }
   }
 
@@ -319,19 +291,11 @@ public class RegistryArguments {
         final StringReader reader,
         final String key)
         throws CommandSyntaxException {
-      reader.point();
-      String value = null;
-      try {
-        value = reader.readString();
-        return Objects.requireNonNull(EntityType.valueOf(value));
-      } catch (final Exception e) {
-        reader.resetCursor();
-        throw createError(reader, value);
-      }
+      return Objects.requireNonNull(EntityType.valueOf(reader.readString()));
     }
   }
 
-  public static <T extends Keyed> String[] _mapRegistry(final Registry<T> registry) {
+  public final static <T extends Keyed> String[] _mapRegistry(final Registry<T> registry) {
     return registry.stream().map((final T b) -> {
       final NamespacedKey key = b.getKey();
       return key == null ? null : key.toString();

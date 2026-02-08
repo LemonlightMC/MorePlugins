@@ -1,142 +1,174 @@
 package com.lemonlightmc.moreplugins.commands;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
+import org.bukkit.NamespacedKey;
 import org.bukkit.command.CommandSender;
 
-import com.lemonlightmc.moreplugins.apis.ChatAPI;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.Argument;
 import com.lemonlightmc.moreplugins.commands.exceptions.InvalidCommandNameException;
+import com.lemonlightmc.moreplugins.commands.exceptions.MissingCommandExecutorException;
+import com.lemonlightmc.moreplugins.commands.executors.AbstractCommand;
 
-public class SimpleCommand extends AbstractCommand<SimpleCommand> {
+public class SimpleCommand extends AbstractCommand<SimpleCommand, CommandSender> {
 
-  private final String name;
-  private Optional<String> shortDescription = Optional.empty();
-  private Optional<String> fullDescription = Optional.empty();
-  private Optional<String[]> usageDescription = Optional.empty();
-  private Optional<String> helpMessage = Optional.empty();
+  private NamespacedKey key = null;
+  private String[] usageDescription;
+  private String helpMessage;
 
-  public SimpleCommand(final String label) {
+  public SimpleCommand(final NamespacedKey key) {
     super();
-    if (label == null || label.length() == 0 || label.isBlank()) {
-      throw new InvalidCommandNameException(label);
-    }
-    this.name = label.toLowerCase();
-    withAliases(name);
+    setName(key);
   }
 
   public SimpleCommand getInstance() {
     return this;
   }
 
-  public void register(final String namespace) {
+  public static SimpleCommand create(final NamespacedKey key) {
+    return new SimpleCommand(key);
+  }
+
+  public static SimpleSubCommand<CommandSender> subCommand(final String... aliases) {
+    return new SimpleSubCommand<CommandSender>(aliases);
+  }
+
+  public SimpleCommand register() {
     build();
-    CommandManager.register(this, namespace);
-  }
-
-  public void register() {
-    build();
-    CommandManager.register(this);
-  }
-
-  public String getName() {
-    return name;
-  }
-
-  public String getShortDescription() {
-    return shortDescription.orElse(null);
-  }
-
-  public SimpleCommand withShortDescription(final String description) {
-    shortDescription = Optional.ofNullable(description);
+    CommandAPI.register(this);
     return this;
   }
 
-  public String getFullDescription() {
-    return fullDescription.orElse(null);
+  public SimpleCommand unregister() {
+    CommandAPI.unregister(this);
+    return this;
   }
 
-  public SimpleCommand withFullDescription(final String description) {
-    fullDescription = Optional.ofNullable(description);
+  public boolean isRegistered() {
+    return CommandAPI.isRegistered(key.toString());
+  }
+
+  public String getNamespace() {
+    return key.getNamespace();
+  }
+
+  public String getKey() {
+    return key.getKey();
+  }
+
+  public NamespacedKey getName() {
+    return key;
+  }
+
+  public SimpleCommand setName(final NamespacedKey key) {
+    if (this.key != null && this.key.equals(key)) {
+      return this;
+    }
+    if (key == null || key.getKey().length() == 0 || key.getKey().isBlank() || key.getNamespace().length() == 0
+        || key.getNamespace().isBlank()) {
+      throw new InvalidCommandNameException(key == null ? "null" : key.toString());
+    }
+    if (isRegistered()) {
+      throw new IllegalStateException("Cannot change the name of a registered command!");
+    }
+    if (this.key != null) {
+      removeAlias(this.key.getKey());
+    }
+    this.key = key;
+    withAliases(this.key.getKey());
+    return this;
+  }
+
+  public SimpleCommand setKey(final String key) {
+    setName(new NamespacedKey(getNamespace(), key));
+    return this;
+  }
+
+  public SimpleCommand setNamespacey(final String namespace) {
+    setName(new NamespacedKey(namespace, getKey()));
     return this;
   }
 
   public SimpleCommand withUsage(final String... usage) {
-    usageDescription = Optional.ofNullable(usage);
+    this.usageDescription = usage;
     return this;
   }
 
   public String[] getUsage() {
-    return usageDescription.orElse(null);
+    return usageDescription;
   }
 
   public SimpleCommand withHelp(
       final String shortDesc,
       final String fullDesc) {
-    shortDescription = Optional.ofNullable(shortDesc);
-    fullDescription = Optional.ofNullable(fullDesc);
+    this.shortDescription = shortDesc;
+    this.fullDescription = fullDesc;
     return this;
   }
 
   public SimpleCommand withHelp(final List<String> help) {
-    this.helpMessage = Optional.ofNullable(String.join("\n", help));
+    this.helpMessage = String.join("\n", help);
+    return this;
+  }
+
+  public SimpleCommand withHelp(final String help) {
+    this.helpMessage = help;
     return this;
   }
 
   public List<String> getHelp() {
-    return List.of(helpMessage.orElse("").split("\n"));
+    return helpMessage == null ? null : List.of(helpMessage.split("\n"));
   }
 
-  public void sendHelp(final CommandSender sender) {
-    ChatAPI.send(sender, helpMessage.orElse(null));
-  }
-
-  private void build() {
-    if (usageDescription.isEmpty()) {
-      usageDescription = Optional.of(buildUsageString("/" + name, this).toArray(new String[0]));
+  void build() {
+    if (!hasAnyExecutors()) {
+      throw new MissingCommandExecutorException(getName().toString());
     }
-    if (helpMessage.isEmpty()) {
-      final StringBuilder builder = new StringBuilder();
-      final ArrayList<String> helpLines = new ArrayList<>();
-      if (fullDescription.isPresent()) {
-        builder.append(fullDescription.get());
-      } else {
-        builder.append("\nDescription not available!");
-      }
-      if (usageDescription.isPresent()) {
+    if (fullDescription == null) {
+      fullDescription = "The " + getKey() + " Command from " + getNamespace() + " (No Description)";
+    }
+    if (shortDescription == null) {
+      shortDescription = "The " + getKey() + " Command from " + getNamespace() + " (No Description)";
+    }
+    if (usageDescription == null) {
+      usageDescription = buildUsageString("/", this).toArray(new String[0]);
+    }
+    if (helpMessage == null) {
+      final StringBuilder builder = new StringBuilder(shortDescription);
+      builder.append("Description: ");
+      builder.append(fullDescription);
+      if (usageDescription != null) {
         builder.append("\nUsage:");
-        for (String usageLine : usageDescription.get()) {
+        for (final String usageLine : usageDescription) {
           builder.append(" ");
           builder.append(usageLine);
         }
       }
       builder.append("\nAliases: " + String.join(", ", aliases));
-      helpMessage = Optional.of(helpLines.toString());
+      helpMessage = builder.toString();
     }
   }
 
-  private ArrayList<String> buildUsageString(String str, AbstractCommand<?> command) {
+  private List<String> buildUsageString(final String str, final AbstractCommand<?, CommandSender> command) {
     final ArrayList<String> usageList = new ArrayList<>();
-    for (SimpleSubCommand subCmd : subcommands) {
-      usageList.addAll(buildUsageString(str, subCmd));
+    String str2 = str + " <" + String.join("|", aliases) + ">";
+    for (final SimpleSubCommand<CommandSender> subCmd : subcommands) {
+      usageList.addAll(buildUsageString(str2, subCmd));
     }
-    for (Argument<?, ?> arg : command.arguments) {
-      str += " ";
-      str += arg.getHelpString();
+    for (final Argument<?, ?, CommandSender> arg : command.getArguments()) {
+      str2 += " ";
+      str2 += arg.getHelpString();
     }
-    usageList.add(str);
+    usageList.add(str2);
     return usageList;
   }
 
   @Override
   public int hashCode() {
-    int result = super.hashCode();
-    result = 31 * result + name.hashCode();
-    result = 31 * result + ((shortDescription == null) ? 0 : shortDescription.hashCode());
-    result = 31 * result + ((fullDescription == null) ? 0 : fullDescription.hashCode());
-    result = 31 * result + ((usageDescription == null) ? 0 : usageDescription.hashCode());
+    int result = 31 * super.hashCode() + key.hashCode();
+    result = 31 * result + Arrays.hashCode(usageDescription);
     result = 31 * result + ((helpMessage == null) ? 0 : helpMessage.hashCode());
     return result;
   }
@@ -150,47 +182,16 @@ public class SimpleCommand extends AbstractCommand<SimpleCommand> {
       return false;
     }
     final SimpleCommand other = (SimpleCommand) obj;
-    if (name == null) {
-      if (other.name != null) {
-        return false;
-      }
-    } else if (!name.equals(other.name)) {
+    if (helpMessage == null && other.helpMessage != null) {
       return false;
     }
-    if (shortDescription == null) {
-      if (other.shortDescription != null) {
-        return false;
-      }
-    } else if (!shortDescription.equals(other.shortDescription)) {
-      return false;
-    }
-    if (fullDescription == null) {
-      if (other.fullDescription != null) {
-        return false;
-      }
-    } else if (!fullDescription.equals(other.fullDescription)) {
-      return false;
-    }
-    if (usageDescription == null) {
-      if (other.usageDescription != null) {
-        return false;
-      }
-    } else if (!usageDescription.equals(other.usageDescription)) {
-      return false;
-    }
-    if (helpMessage == null) {
-      if (other.helpMessage != null) {
-        return false;
-      }
-    } else if (!helpMessage.equals(other.helpMessage)) {
-      return false;
-    }
-    return true;
+    return key.equals(other.key) && Arrays.equals(usageDescription, other.usageDescription)
+        && helpMessage.equals(other.helpMessage);
   }
 
   @Override
   public String toString() {
-    return "SimpleCommand [name=" + name + ", shortDescription=" + shortDescription + ", usageDescription="
+    return "SimpleCommand [key=" + key + ", shortDescription=" + shortDescription + ", usageDescription="
         + usageDescription + ", arguments=" + arguments + ", subcommands=" + subcommands + ", aliases=" + aliases
         + "]";
   }

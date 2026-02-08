@@ -13,7 +13,6 @@ import org.bukkit.command.CommandSender;
 import com.lemonlightmc.moreplugins.commands.CommandSource;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.Argument;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.ArgumentType;
-import com.lemonlightmc.moreplugins.commands.suggestions.Suggestions;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.StringReader;
 import com.lemonlightmc.moreplugins.commands.exceptions.CommandSyntaxException;
 import com.lemonlightmc.moreplugins.commands.exceptions.CommandSyntaxException.CommandSyntaxExceptionContainer;
@@ -48,9 +47,9 @@ public class CollectionsArguments {
       this.supplier = supplier;
       this.mapper = suggestionsMapper;
 
-      withSuggestions(Suggestions.from(info -> {
+      withSuggestions(info -> {
         return supplier.get().stream().map(v -> mapper.apply(v)).toList();
-      }));
+      });
     }
 
     @Override
@@ -65,7 +64,7 @@ public class CollectionsArguments {
 
     private Set<String> parseKeys(final StringReader reader) throws CommandSyntaxException {
       final Set<String> listKeys = new HashSet<>();
-      String[] strings = reader.readList(delimiter);
+      final String[] strings = reader.readList(delimiter);
       for (int i = 0; i < strings.length; i++) {
         final String str = strings[i];
         if (!allowDuplicates && listKeys.contains(str)) {
@@ -81,7 +80,7 @@ public class CollectionsArguments {
     @Override
     public List<T> parseArgument(final CommandSource<CommandSender> source, final StringReader reader, final String key)
         throws CommandSyntaxException {
-      Set<String> keys = parseKeys(reader);
+      final Set<String> keys = parseKeys(reader);
       final HashMap<String, T> mapping = new HashMap<>();
       for (final T obj : supplier.get()) {
         mapping.put(mapper.apply(obj), obj);
@@ -147,9 +146,9 @@ public class CollectionsArguments {
       for (final T obj : values) {
         mapping.put(mapper.apply(obj), obj);
       }
-      withSuggestions(Suggestions.from(info -> {
+      withSuggestions(info -> {
         return mapping.keySet();
-      }));
+      });
     }
 
     @Override
@@ -164,7 +163,7 @@ public class CollectionsArguments {
 
     private Set<String> parseKeys(final StringReader reader) throws CommandSyntaxException {
       final Set<String> listKeys = new HashSet<>();
-      String[] strings = reader.readList(delimiter);
+      final String[] strings = reader.readList(delimiter);
       for (int i = 0; i < strings.length; i++) {
         final String str = strings[i];
         if (!allowDuplicates && listKeys.contains(str)) {
@@ -179,7 +178,7 @@ public class CollectionsArguments {
     @Override
     public List<T> parseArgument(final CommandSource<CommandSender> source, final StringReader reader, final String key)
         throws CommandSyntaxException {
-      Set<String> keys = parseKeys(reader);
+      final Set<String> keys = parseKeys(reader);
       final List<T> values = new ArrayList<>();
       for (final String tempKey : keys) {
         final T v = mapping.get(tempKey);

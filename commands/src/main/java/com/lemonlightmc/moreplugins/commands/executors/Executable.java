@@ -1,38 +1,33 @@
 package com.lemonlightmc.moreplugins.commands.executors;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.lang.reflect.Array;
+import java.util.EnumMap;
 
-import org.bukkit.command.CommandException;
 import org.bukkit.command.CommandSender;
 
+import com.lemonlightmc.moreplugins.commands.exceptions.CommandException;
 import com.lemonlightmc.moreplugins.commands.executors.Executors.*;
 import com.lemonlightmc.moreplugins.exceptions.PlatformException;
 import com.lemonlightmc.moreplugins.version.ServerEnvironment;
 
 public abstract class Executable<T> {
-  protected List<NormalExecutor<?>> executors;
+  protected EnumMap<ExecutorType, NormalExecutor<?>[]> executors;
 
   public Executable() {
-    executors = new ArrayList<>();
+    executors = new EnumMap<>(ExecutorType.class);
   }
 
   protected abstract T getInstance();
-
-  public T setExecutors(final List<NormalExecutor<?>> ex) {
-    executors = ex;
-    return getInstance();
-  }
-
-  public boolean hasExecutors(final NormalExecutor<?>... exes) {
-    return exes != null && exes.length != 0 && this.executors.containsAll(List.of(exes));
-  }
 
   public boolean hasExecutors() {
     return executors != null && !executors.isEmpty();
   }
 
-  public List<NormalExecutor<?>> getExecutors() {
+  public NormalExecutor<?>[] getExecutors(final ExecutorType type) {
+    return executors.get(type);
+  }
+
+  public EnumMap<ExecutorType, NormalExecutor<?>[]> getExecutors() {
     return executors;
   }
 
@@ -42,12 +37,25 @@ public abstract class Executable<T> {
     }
   }
 
+  private void add(final ExecutorType type, final NormalExecutor<?> executor) {
+    final NormalExecutor<?>[] ex = executors.get(type);
+    if (ex == null || ex.length == 0) {
+      executors.put(type, new NormalExecutor<?>[] { executor });
+    } else {
+      final NormalExecutor<?>[] newEx = (NormalExecutor<?>[]) Array.newInstance(ex.getClass().getComponentType(),
+          ex.length + 1);
+      System.arraycopy(ex, 0, newEx, 0, ex.length);
+      newEx[ex.length] = executor;
+      executors.put(type, newEx);
+    }
+  }
+
   public T executes(final CommandExecutor executor, final ExecutorType... types) {
     if (types == null || types.length == 0) {
-      executors.add(executor);
+      add(ExecutorType.ALL, executor);
     } else {
       for (final ExecutorType type : types) {
-        executors.add(new CommandExecutionInfo() {
+        add(type, new CommandExecutionInfo() {
           @Override
           public ExecutorType getType() {
             return type;
@@ -65,10 +73,11 @@ public abstract class Executable<T> {
 
   public T executes(final CommandExecutionInfo executor, final ExecutorType... types) {
     if (types == null || types.length == 0) {
-      executors.add(executor);
+      add(ExecutorType.ALL, executor);
     } else {
       for (final ExecutorType type : types) {
-        executors.add(new CommandExecutionInfo() {
+        add(type, new CommandExecutionInfo() {
+
           @Override
           public ExecutorType getType() {
             return type;
@@ -86,78 +95,78 @@ public abstract class Executable<T> {
 
   // Player command executor
   public T executesPlayer(final PlayerCommandExecutor executor) {
-    executors.add(executor);
+    add(ExecutorType.PLAYER, executor);
     return getInstance();
   }
 
   public T executesPlayer(final PlayerExecutionInfo info) {
-    executors.add(info);
+    add(ExecutorType.PLAYER, info);
     return getInstance();
   }
 
   // Entity command executor
   public T executesEntity(final EntityCommandExecutor executor) {
-    executors.add(executor);
+    add(ExecutorType.ENTITY, executor);
     return getInstance();
   }
 
   public T executesEntity(final EntityExecutionInfo info) {
-    executors.add(info);
+    add(ExecutorType.ENTITY, info);
     return getInstance();
   }
 
   // Command block command executor
   public T executesCommandBlock(final CommandBlockExecutor executor) {
-    executors.add(executor);
+    add(ExecutorType.BLOCK, executor);
     return getInstance();
   }
 
   public T executesCommandBlock(final CommandBlockExecutionInfo info) {
-    executors.add(info);
+    add(ExecutorType.BLOCK, info);
     return getInstance();
   }
 
   // Console command executor
   public T executesConsole(final ConsoleCommandExecutor executor) {
-    executors.add(executor);
+    add(ExecutorType.CONSOLE, executor);
     return getInstance();
   }
 
   public T executesConsole(final ConsoleExecutionInfo info) {
-    executors.add(info);
+    add(ExecutorType.CONSOLE, info);
     return getInstance();
   }
 
   // RemoteConsole command executor
   public T executesRemoteConsole(final RemoteConsoleCommandExecutor executor) {
-    executors.add(executor);
+    add(ExecutorType.REMOTE, executor);
     return getInstance();
   }
 
   public T executesRemoteConsole(final RemoteConsoleExecutionInfo info) {
-    executors.add(info);
+    add(ExecutorType.REMOTE, info);
     return getInstance();
   }
 
   // Native command executor
   public T executesNative(final NativeCommandExecutor executor) {
-    executors.add(executor);
+    add(ExecutorType.NATIVE, executor);
     return getInstance();
   }
 
   public T executesNative(final NativeExecutionInfo info) {
-    executors.add(info);
+    add(ExecutorType.NATIVE, info);
     return getInstance();
   }
 
   // Proxy command executor
   public T executesNative(final ProxyCommandExecutor executor) {
-    executors.add(executor);
+    add(ExecutorType.PROXY, executor);
     return getInstance();
   }
 
   public T executesNative(final ProxyExecutionInfo info) {
-    executors.add(info);
+    add(ExecutorType.PROXY, info);
     return getInstance();
   }
 
@@ -168,7 +177,7 @@ public abstract class Executable<T> {
           "Attempted to use a FeedbackForwardingCommandExecutor on a non-paper platform ("
               + ServerEnvironment.current().name() + ")!");
     }
-    executors.add(executor);
+    add(ExecutorType.FEEDBACK_FORWARDING, executor);
     return getInstance();
   }
 
@@ -178,7 +187,7 @@ public abstract class Executable<T> {
           "Attempted to use a FeedbackForwardingExecutionInfo on a non-paper platform ("
               + ServerEnvironment.current().name() + ")!");
     }
-    executors.add(info);
+    add(ExecutorType.FEEDBACK_FORWARDING, info);
     return getInstance();
   }
 

@@ -2,9 +2,9 @@ package com.lemonlightmc.moreplugins.commands.executors;
 
 import com.lemonlightmc.moreplugins.commands.CommandSource;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.CommandArguments;
+import com.lemonlightmc.moreplugins.commands.exceptions.CommandException;
 
 import org.bukkit.command.BlockCommandSender;
-import org.bukkit.command.CommandException;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.command.ProxiedCommandSender;

@@ -3,25 +3,21 @@ package com.lemonlightmc.moreplugins.commands.argumentsbase;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.function.Function;
 import java.util.function.Predicate;
-
-import org.bukkit.command.CommandSender;
 
 import com.lemonlightmc.moreplugins.commands.CommandRequirement;
 import com.lemonlightmc.moreplugins.commands.CommandSource;
 import com.lemonlightmc.moreplugins.commands.exceptions.CommandSyntaxException;
-import com.lemonlightmc.moreplugins.commands.suggestions.SuggestionInfo;
 import com.lemonlightmc.moreplugins.commands.suggestions.Suggestions;
 
-public abstract class Argument<Type, ArgType> {
+public abstract class Argument<Type, ArgType extends Argument<Type, ArgType, S>, S> {
   protected String name;
   protected ArgumentType rawType;
   protected Class<Type> primitiveType;
   protected boolean isOptional = false;
   protected boolean isListed = true;
-  protected List<CommandRequirement<CommandSender>> requirements;
-  protected List<Suggestions<CommandSender>> suggestions = new ArrayList<>(4);
+  protected List<CommandRequirement<CommandSource<S>>> requirements;
+  protected List<Suggestions<S>> suggestions = new ArrayList<>(4);
 
   protected Argument(final String name, final Class<Type> primitiveType, final ArgumentType rawType) {
     if (name == null || name.length() == 0) {
@@ -41,10 +37,11 @@ public abstract class Argument<Type, ArgType> {
   public abstract ArgType getInstance();
 
   public CommandSyntaxException createError(final StringReader reader, final String value) {
-    return new CommandSyntaxException(reader, "Invalid Value '" + value + "' for Argument '" + name + "'");
+    return new CommandSyntaxException(reader,
+        "Invalid Value '" + value + "' for " + rawType.getName() + " Argument '" + name + "'");
   }
 
-  public abstract Type parseArgument(CommandSource<CommandSender> source, StringReader reader, String key)
+  public abstract Type parseArgument(CommandSource<S> source, StringReader reader, String key)
       throws CommandSyntaxException;
 
   public String getName() {
@@ -85,13 +82,8 @@ public abstract class Argument<Type, ArgType> {
 
   // Suggestions
 
-  public ArgType withSuggestions(final Suggestions<CommandSender> func) {
+  public ArgType withSuggestions(final Suggestions<S> func) {
     this.suggestions.add(func);
-    return getInstance();
-  }
-
-  public ArgType withSuggestions(final Function<SuggestionInfo<CommandSender>, Collection<String>> func) {
-    this.suggestions.add(Suggestions.from(func));
     return getInstance();
   }
 
@@ -105,16 +97,13 @@ public abstract class Argument<Type, ArgType> {
     return getInstance();
   }
 
-  public List<Suggestions<CommandSender>> getSuggestions() {
+  public List<Suggestions<S>> getSuggestions() {
     return this.suggestions;
   }
 
   // requirements
 
-  public ArgType withRequirement(final CommandRequirement<CommandSender> requirement) {
-    if (requirement == null) {
-      return getInstance();
-    }
+  public ArgType withRequirement(final CommandRequirement<CommandSource<S>> requirement) {
     if (requirements == null) {
       requirements = new ArrayList<>();
     }
@@ -122,17 +111,42 @@ public abstract class Argument<Type, ArgType> {
     return getInstance();
   }
 
-  public ArgType withRequirement(final Predicate<CommandSource<CommandSender>> requirement) {
-    return withRequirement(CommandRequirement.from(requirement));
+  public ArgType withRequirement(final Predicate<CommandSource<CommandSender>> requirement, final String message,
+      final boolean hide) {
+    return withRequirement(CommandRequirement.from(requirement, message, hide));
   }
 
-  public ArgType withPermissions(final String permission) {
-    return withRequirement(CommandRequirement.permission(permission));
+  public ArgType withRequirement(final Predicate<CommandSource<CommandSender>> requirement, final boolean hide) {
+    return withRequirement(CommandRequirement.from(requirement, hide));
+  }
+
+  public ArgType withRequirement(final Predicate<CommandSource<CommandSender>> requirement, final String message) {
+    return withRequirement(CommandRequirement.from(requirement, message));
+  }
+
+  public ArgType withRequirement(final Predicate<CommandSource<CommandSender>> requirement) {
+    return withRequirement(CommandRequirement.from(requirement));
   }
 
   public ArgType setRequirements(final List<CommandRequirement<CommandSender>> requirements) {
     this.requirements = requirements;
     return getInstance();
+  }
+
+  public ArgType withPermission(final String permission, final String message, final boolean hide) {
+    return withRequirement(CommandRequirement.permission(permission, message, hide));
+  }
+
+  public ArgType withPermission(final String permission, final boolean hide) {
+    return withRequirement(CommandRequirement.permission(permission, hide));
+  }
+
+  public ArgType withPermission(final String permission, final String message) {
+    return withRequirement(CommandRequirement.permission(permission, message));
+  }
+
+  public ArgType withPermission(final String permission) {
+    return withRequirement(CommandRequirement.permission(permission));
   }
 
   public boolean hasRequirements() {
@@ -146,20 +160,8 @@ public abstract class Argument<Type, ArgType> {
     return getInstance();
   }
 
-  public List<CommandRequirement<CommandSender>> getRequirements() {
+  public List<CommandRequirement<CommandSource<S>>> getRequirements() {
     return requirements;
-  }
-
-  public boolean checkRequirements(final CommandSource<CommandSender> source) {
-    if (requirements == null || requirements.size() == 0) {
-      return true;
-    }
-    for (final CommandRequirement<CommandSender> requirement : requirements) {
-      if (!requirement.check(source)) {
-        return false;
-      }
-    }
-    return true;
   }
 
   // Help
@@ -190,7 +192,7 @@ public abstract class Argument<Type, ArgType> {
     if (obj == null || getInstance().getClass() != obj.getClass()) {
       return false;
     }
-    final Argument<?, ?> other = (Argument<?, ?>) obj;
+    final Argument<?, ?, ?> other = (Argument<?, ?, ?>) obj;
     return isListed == other.isListed && isOptional == other.isOptional && isOptional == other.isOptional
         && rawType == other.rawType
         && name.equals(other.name) && name.equals(other.name)
@@ -201,17 +203,13 @@ public abstract class Argument<Type, ArgType> {
 
   @Override
   public String toString() {
-    return getInstance().getClass().getName() + " [name=" + name + ", rawType=" + rawType + ", primitiveType="
-        + primitiveType + ", isOptional="
-        + isOptional + ", isListed=" + isListed + ", requirements=" + requirements
-        + ", suggestions=" + suggestions + "]";
+    return toStringWithMore(null);
   }
 
   public String toStringWithMore(final String str) {
     return getInstance().getClass().getName() + " [name=" + name + ", rawType=" + rawType + ", primitiveType="
         + primitiveType + ", isOptional="
         + isOptional + ", isListed=" + isListed + ", requirements=" + requirements
-        + ", suggestions=" + suggestions + ", " + str + "]";
+        + ", suggestions=" + suggestions + (str == null || str.length() == 0 ? "]" : ", " + str + "]");
   }
-
 }

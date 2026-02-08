@@ -9,8 +9,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Supplier;
 
-import com.lemonlightmc.moreplugins.commands.Utils;
-
 public class CommandArguments {
   public ParsedArgument[] args;
   public Map<String, ParsedArgument> argsMap;
@@ -273,19 +271,19 @@ public class CommandArguments {
   }
 
   // byArgument
-  public <T> T getByArgument(final Argument<T, ?> argumentType) {
+  public <T> T getByArgument(final Argument<T, ?, ?> argumentType) {
     return castArgument(
         get(argumentType.getName()),
         argumentType.getPrimitiveType(),
         argumentType.getName());
   }
 
-  public <T> Optional<T> getByArgumentOptional(final Argument<T, ?> argumentType) {
+  public <T> Optional<T> getByArgumentOptional(final Argument<T, ?, ?> argumentType) {
     return Optional.ofNullable(getByArgument(argumentType));
   }
 
   public <T> T getByArgumentOrDefault(
-      final Argument<T, ?> argumentType,
+      final Argument<T, ?, ?> argumentType,
       final T defaultValue) {
     final T argument = getByArgument(argumentType);
     return argument == null ? defaultValue : argument;
@@ -331,48 +329,6 @@ public class CommandArguments {
     return argument == null ? defaultValue : argument;
   }
 
-  private <T> T castArgument(
-      final Object argument,
-      final Class<T> argumentType,
-      final Object argumentNameOrIndex) {
-    if (argument == null) {
-      return null;
-    }
-    try {
-      return Utils.primitive2wrapper(argument, argumentType);
-    } catch (final Exception e) {
-      throwExceptionMessage(
-          argumentNameOrIndex,
-          argument.getClass().getSimpleName(),
-          argumentType.getSimpleName());
-    }
-    return null;
-  }
-
-  private String throwExceptionMessage(
-      final Object argumentNameOrIndex,
-      final String expectedClass,
-      final String actualClass) {
-    if (argumentNameOrIndex instanceof final Integer i) {
-      throw new IllegalArgumentException("Argument at index '" +
-          i +
-          "' is defined as " +
-          expectedClass +
-          ", not " +
-          actualClass);
-    }
-    if (argumentNameOrIndex instanceof final String s) {
-      throw new IllegalArgumentException("Argument '" +
-          s +
-          "' is defined as " +
-          expectedClass +
-          ", not " +
-          actualClass);
-    }
-    throw new IllegalStateException(
-        "Unexpected behaviour detected while building exception message! This should never happen - if you're seeing this message, please contact the developers!");
-  }
-
   @Override
   public int hashCode() {
     int result = 31 + Arrays.deepHashCode(args);
@@ -390,17 +346,10 @@ public class CommandArguments {
       return false;
     }
     final CommandArguments other = (CommandArguments) obj;
-    if (argsMap == null) {
-      if (other.argsMap != null)
-        return false;
-    } else if (!argsMap.equals(other.argsMap))
+    if (argsMap == null && other.argsMap != null || fullInput == null && other.fullInput != null) {
       return false;
-    if (fullInput == null) {
-      if (other.fullInput != null)
-        return false;
-    } else if (!fullInput.equals(other.fullInput))
-      return false;
-    return equalsArgs(args, other.args);
+    }
+    return argsMap.equals(other.argsMap) && fullInput.equals(other.fullInput) && equalsArgs(args, other.args);
   }
 
   @Override
@@ -408,7 +357,7 @@ public class CommandArguments {
     return "CommandArguments [args=" + Arrays.toString(args) + ",fullInput=" + fullInput + "]";
   }
 
-  private boolean equalsArgs(
+  private static boolean equalsArgs(
       final ParsedArgument[] a1,
       final ParsedArgument[] a2) {
     if (a1 == a2)
@@ -431,5 +380,45 @@ public class CommandArguments {
         return false;
     }
     return true;
+  }
+
+  @SuppressWarnings("unchecked")
+  private static <T> T castArgument(
+      final Object argument,
+      final Class<T> argType,
+      final String argName) {
+    if (argument == null) {
+      return null;
+    }
+    try {
+      return (T) argument;
+    } catch (final Exception e) {
+      throw new IllegalArgumentException("Argument '" +
+          argName +
+          "' is defined as " +
+          argument.getClass().getSimpleName() +
+          ", not " +
+          argType.getSimpleName());
+    }
+  }
+
+  @SuppressWarnings("unchecked")
+  private static <T> T castArgument(
+      final Object argument,
+      final Class<T> argType,
+      final int argIndex) {
+    if (argument == null) {
+      return null;
+    }
+    try {
+      return (T) argument;
+    } catch (final Exception e) {
+      throw new IllegalArgumentException("Argument at index '" +
+          argIndex +
+          "' is defined as " +
+          argument.getClass().getSimpleName() +
+          ", not " +
+          argType.getSimpleName());
+    }
   }
 }

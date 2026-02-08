@@ -12,14 +12,13 @@ import java.util.function.Function;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
-import com.lemonlightmc.moreplugins.commands.CommandManager;
+import com.lemonlightmc.moreplugins.commands.CommandAPI;
 import com.lemonlightmc.moreplugins.commands.CommandSource;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.Argument;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.ArgumentType;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.CommandResult;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.StringReader;
 import com.lemonlightmc.moreplugins.commands.exceptions.InvalidArgumentBranchException;
-import com.lemonlightmc.moreplugins.commands.suggestions.SuggestionInfo;
 import com.lemonlightmc.moreplugins.commands.exceptions.CommandSyntaxException;
 
 public class SpecialArguments {
@@ -123,17 +122,18 @@ public class SpecialArguments {
     }
   }
 
+  @SuppressWarnings("rawtypes")
   public static class CommandArgument extends Argument<CommandResult, CommandArgument> {
 
     public CommandArgument(final String name) {
       super(name, CommandResult.class, ArgumentType.COMMAND);
-      withSuggestions((final SuggestionInfo<CommandSender> info) -> {
+      withSuggestions((info) -> {
         final String[] args = info.currentInput().split(" ");
-        if (args.length == 0) {
-          return List.of();
+        if (args.length <= 1) {
+          return CommandAPI.getKnownCommandMap().keySet();
         }
-        final Command cmd = CommandManager.getCommandMap().getCommand(args[0]);
-        return cmd == null ? List.of() : cmd.tabComplete(info.source().sender(), cmd.getLabel(), args);
+        return CommandAPI.getCommandMap().tabComplete(info.source().sender(), info.currentInput(),
+            info.source().location());
       });
     }
 
@@ -143,15 +143,17 @@ public class SpecialArguments {
     }
 
     @Override
-    public CommandResult parseArgument(final CommandSource<CommandSender> source, final StringReader reader,
+    public CommandResult<CommandSender> parseArgument(final CommandSource<CommandSender> source,
+        final StringReader reader,
         final String key)
         throws CommandSyntaxException {
       final String[] args = reader.getRemaining().split(" ");
       if (args.length == 0) {
         return null;
       }
-      final Command cmd = Objects.requireNonNull(CommandManager.getCommandMap().getCommand(args[0]));
-      return new CommandResult(cmd, Arrays.copyOfRange(args, 1, args.length));
+      final Command cmd = Objects.requireNonNull(CommandAPI.getCommandMap().getCommand(args[0]));
+      return new CommandResult<CommandSender>(cmd,
+          args.length == 1 ? new String[0] : Arrays.copyOfRange(args, 1, args.length));
     }
   }
 
@@ -199,7 +201,11 @@ public class SpecialArguments {
     @Override
     public String parseArgument(final CommandSource<CommandSender> source, final StringReader reader, final String key)
         throws CommandSyntaxException {
-      return literal;
+      final String value = reader.readString();
+      if (literal.equalsIgnoreCase(value)) {
+        return literal;
+      }
+      throw createError(reader, value);
     }
 
     @Override
@@ -264,7 +270,13 @@ public class SpecialArguments {
     @Override
     public String parseArgument(final CommandSource<CommandSender> source, final StringReader reader, final String key)
         throws CommandSyntaxException {
-      throw new UnsupportedOperationException("Cant parse MultiLiteral");
+      final String value = reader.readString();
+      for (final String literal : literals) {
+        if (literal.equalsIgnoreCase(value)) {
+          return literal;
+        }
+      }
+      throw createError(reader, value);
     }
 
     @Override
@@ -300,7 +312,7 @@ public class SpecialArguments {
         throw new IllegalArgumentException("The literals Supplier cant be empty");
       }
       this.literals = literals;
-      withSuggestions((final SuggestionInfo<CommandSender> info) -> {
+      withSuggestions((info) -> {
         return literals.apply(info.source());
       });
     }
@@ -315,10 +327,18 @@ public class SpecialArguments {
       return this;
     }
 
+    public Function<CommandSource<CommandSender>, Collection<String>> getLiteralsFunction() {
+      return literals;
+    }
+
     @Override
     public String parseArgument(final CommandSource<CommandSender> source, final StringReader reader, final String key)
         throws CommandSyntaxException {
-      throw new UnsupportedOperationException("Cant parse MultiLiteral");
+      final String value = reader.readString();
+      if (literals.apply(source).contains(value)) {
+        return value;
+      }
+      throw createError(reader, value);
     }
 
     @Override

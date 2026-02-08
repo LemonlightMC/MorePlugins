@@ -1,8 +1,8 @@
 package com.lemonlightmc.moreplugins.commands.suggestions;
 
-public interface SuggestionProvider {
+import java.util.List;
 
-  public String getSuggestion();
+public interface SuggestionProvider<S> {
 
-  public String getTooltip();
+  public List<String> getSuggestions(SuggestionInfo<S> info);
 }

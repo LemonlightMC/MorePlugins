@@ -14,7 +14,6 @@ import com.lemonlightmc.moreplugins.commands.argumentsbase.Argument;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.ArgumentType;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.ScoreboardSlot;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.StringReader;
-import com.lemonlightmc.moreplugins.commands.suggestions.Suggestions;
 import com.lemonlightmc.moreplugins.commands.exceptions.CommandSyntaxException;
 
 public class ScoreArguments {
@@ -23,8 +22,8 @@ public class ScoreArguments {
 
     public TeamArgument(final String name) {
       super(name, Team.class, ArgumentType.TEAM);
-      withSuggestions(Suggestions.from((info) -> Bukkit.getScoreboardManager().getMainScoreboard().getTeams().stream()
-          .map((v) -> v.getName()).toList()));
+      withSuggestions((info) -> Bukkit.getScoreboardManager().getMainScoreboard().getTeams().stream()
+          .map((v) -> v.getName()).toList());
     }
 
     @Override
@@ -63,9 +62,8 @@ public class ScoreArguments {
 
     public ObjectiveArgument(final String name) {
       super(name, Objective.class, ArgumentType.OBJECTIVE);
-      withSuggestions(
-          Suggestions.from((info) -> Bukkit.getScoreboardManager().getMainScoreboard().getObjectives().stream()
-              .map((v) -> v.getName()).toList()));
+      withSuggestions((info) -> Bukkit.getScoreboardManager().getMainScoreboard().getObjectives().stream()
+          .map((v) -> v.getName()).toList());
     }
 
     @Override
@@ -77,32 +75,22 @@ public class ScoreArguments {
     public Objective parseArgument(final CommandSource<CommandSender> source, final StringReader reader,
         final String key)
         throws CommandSyntaxException {
-      reader.point();
-      String value = null;
-      try {
-        value = reader.readString();
-        Objective objective = Bukkit.getScoreboardManager().getMainScoreboard().getObjective(value);
-        if (objective != null) {
-          return objective;
-        }
-        final ScoreboardSlot slot = ScoreboardSlot.of(value);
-        if (slot != null) {
-          final DisplaySlot slot2 = slot.getDisplaySlot();
-          if (slot2 != null) {
-            objective = Bukkit.getScoreboardManager().getMainScoreboard().getObjective(slot2);
-            if (objective != null) {
-              return objective;
-            }
+      final String value = reader.readString();
+      Objective objective = Bukkit.getScoreboardManager().getMainScoreboard().getObjective(value);
+      if (objective != null) {
+        return objective;
+      }
+      final ScoreboardSlot slot = ScoreboardSlot.of(value);
+      if (slot != null) {
+        final DisplaySlot slot2 = slot.getDisplaySlot();
+        if (slot2 != null) {
+          objective = Bukkit.getScoreboardManager().getMainScoreboard().getObjective(slot2);
+          if (objective != null) {
+            return objective;
           }
         }
-        throw createError(reader, value);
-      } catch (final CommandSyntaxException ex) {
-        reader.resetCursor();
-        throw ex;
-      } catch (final Exception e) {
-        reader.resetCursor();
-        throw createError(reader, value);
       }
+      throw createError(reader, value);
     }
   }
 
@@ -110,9 +98,8 @@ public class ScoreArguments {
 
     public CriteriaArgument(final String name) {
       super(name, Criteria.class, ArgumentType.CRITERIA);
-      withSuggestions(
-          Suggestions.from((info) -> Bukkit.getScoreboardManager().getMainScoreboard().getObjectives().stream()
-              .map((v) -> v.getTrackedCriteria().getName()).toList()));
+      withSuggestions((info) -> Bukkit.getScoreboardManager().getMainScoreboard().getObjectives().stream()
+          .map((v) -> v.getTrackedCriteria().getName()).toList());
     }
 
     @Override

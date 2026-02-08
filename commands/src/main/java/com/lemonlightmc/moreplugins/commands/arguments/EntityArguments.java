@@ -12,7 +12,6 @@ import com.lemonlightmc.moreplugins.commands.CommandSource;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.Argument;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.ArgumentType;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.StringReader;
-import com.lemonlightmc.moreplugins.commands.suggestions.Suggestions;
 import com.lemonlightmc.moreplugins.commands.exceptions.CommandSyntaxException;
 
 public class EntityArguments {
@@ -20,7 +19,7 @@ public class EntityArguments {
 
     public PlayerArgument(final String name) {
       super(name, Player.class, ArgumentType.PLAYER);
-      withSuggestions(Suggestions.from((info) -> Bukkit.getOnlinePlayers().stream().map(p -> p.getName()).toList()));
+      withSuggestions((info) -> Bukkit.getOnlinePlayers().stream().map(p -> p.getName()).toList());
 
     }
 
@@ -39,7 +38,7 @@ public class EntityArguments {
   public static class PlayerProfileArgument extends Argument<PlayerProfile, PlayerProfileArgument> {
     public PlayerProfileArgument(final String name) {
       super(name, PlayerProfile.class, ArgumentType.PLAYERPROFILE);
-      withSuggestions(Suggestions.from((info) -> Bukkit.getOnlinePlayers().stream().map(p -> p.getName()).toList()));
+      withSuggestions((info) -> Bukkit.getOnlinePlayers().stream().map(p -> p.getName()).toList());
     }
 
     public PlayerProfileArgument getInstance() {
@@ -50,7 +49,8 @@ public class EntityArguments {
     public PlayerProfile parseArgument(final CommandSource<CommandSender> source, final StringReader reader,
         final String key)
         throws CommandSyntaxException {
-      return Bukkit.getPlayerExact(reader.readString()).getPlayerProfile();
+      final Player player = Bukkit.getPlayerExact(reader.readString());
+      return player == null ? null : player.getPlayerProfile();
     }
   }
 
@@ -59,7 +59,7 @@ public class EntityArguments {
 
     public EntitySelectorArgument(final String name) {
       super(name, List.class, ArgumentType.ENTITY_SELECTOR);
-      withSuggestions(Suggestions.from((info) -> Bukkit.getOnlinePlayers().stream().map(p -> p.getName()).toList()));
+      withSuggestions((info) -> Bukkit.getOnlinePlayers().stream().map(p -> p.getName()).toList());
 
     }
 
@@ -72,8 +72,8 @@ public class EntityArguments {
     public List<Entity> parseArgument(final CommandSource<CommandSender> source, final StringReader reader,
         final String key)
         throws CommandSyntaxException {
-      String str = reader.readString();
-      Player player = Bukkit.getPlayerExact(str);
+      final String str = reader.readString();
+      final Player player = Bukkit.getPlayerExact(str);
       if (player != null) {
         return List.of(player);
       }

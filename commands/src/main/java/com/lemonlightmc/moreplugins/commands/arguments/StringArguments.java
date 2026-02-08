@@ -29,7 +29,7 @@ public class StringArguments {
     }
 
     public StringArgument(final String name, final StringType type) {
-      super(name, String.class, ArgumentType.PRIMITIVE_STRING);
+      super(name, String.class, ArgumentType.STRING);
       this.type = type;
       if (type == null) {
         throw new IllegalArgumentException("String Type cant be null");
@@ -116,7 +116,7 @@ public class StringArguments {
   public static class TextArgument extends Argument<String, TextArgument> {
 
     public TextArgument(final String name) {
-      super(name, String.class, ArgumentType.PRIMITIVE_TEXT);
+      super(name, String.class, ArgumentType.TEXT);
     }
 
     @Override
@@ -134,7 +134,7 @@ public class StringArguments {
   public static class GreedyStringArgument extends Argument<String, GreedyStringArgument> {
 
     public GreedyStringArgument(final String name) {
-      super(name, String.class, ArgumentType.PRIMITIVE_GREEDY_STRING);
+      super(name, String.class, ArgumentType.STRING_GREEDY);
     }
 
     @Override
