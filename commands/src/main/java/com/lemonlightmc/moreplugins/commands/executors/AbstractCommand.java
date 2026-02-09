@@ -14,6 +14,7 @@ import com.lemonlightmc.moreplugins.commands.suggestions.SuggestionInfo;
 import com.lemonlightmc.moreplugins.commands.suggestions.Suggestions;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -33,17 +34,28 @@ public abstract class AbstractCommand<T extends AbstractCommand<T, S>, S> extend
   public abstract T getInstance();
 
   // Aliases
+
+  public T withAliases(final Collection<String> aliases) {
+    if (aliases != null && !aliases.isEmpty()) {
+      for (final String alias : aliases) {
+        this.aliases.add(alias.toLowerCase());
+      }
+    }
+    return getInstance();
+  }
+
   public T withAliases(final String... aliases) {
-    for (final String alias : aliases) {
-      this.aliases.add(alias.toLowerCase());
+    if (aliases != null && aliases.length != 0) {
+      for (final String alias : aliases) {
+        this.aliases.add(alias.toLowerCase());
+      }
     }
     return getInstance();
   }
 
   public T setAliases(final Set<String> aliases) {
-    this.aliases.clear();
-    for (final String alias : aliases) {
-      this.aliases.add(alias.toLowerCase());
+    if (aliases != null && !aliases.isEmpty()) {
+      this.aliases = aliases;
     }
     return getInstance();
   }
@@ -53,12 +65,14 @@ public abstract class AbstractCommand<T extends AbstractCommand<T, S>, S> extend
   }
 
   public boolean hasAlias(final String alias) {
-    return this.aliases.contains(alias);
+    return alias == null || alias.length() == 0 ? false : this.aliases.contains(alias.toLowerCase());
   }
 
   public T removeAlias(final String... aliases) {
-    for (final String alias : aliases) {
-      this.aliases.remove(alias.toLowerCase());
+    if (aliases != null && aliases.length != 0) {
+      for (final String alias : aliases) {
+        this.aliases.remove(alias.toLowerCase());
+      }
     }
     return getInstance();
   }
@@ -68,9 +82,10 @@ public abstract class AbstractCommand<T extends AbstractCommand<T, S>, S> extend
     return getInstance();
   }
 
-  private void addArgument(final Argument<?, ?, S> arg, final boolean optional) {
+  // Arguments
+  public T withArguments(final Argument<?, ?, S> arg, final Boolean optional) {
     if (arg == null) {
-      return;
+      return getInstance();
     }
     if (arguments.getLast().getType().isGreedy()) {
       throw new GreedyArgumentException(arg.getName(), GreedyArgumentException.buildArgsStr(arguments));
@@ -80,43 +95,45 @@ public abstract class AbstractCommand<T extends AbstractCommand<T, S>, S> extend
         throw new DuplicateArgumentException(arg.getName());
       }
     }
-    arg.setOptional(optional);
+    if (optional != null) {
+      arg.setOptional(optional);
+    }
     if (arg.isOptional()) {
       hasOptional = true;
     } else if (!hasOptional) {
       throw new OptionalArgumentException(arg.getName(), arguments.getLast().getName());
     }
     arguments.add(arg);
-  }
-
-  // Arguments
-  public T withArguments(final List<Argument<?, ?, S>> args) {
-    if (args == null || args.isEmpty()) {
-      return getInstance();
-    }
-    for (final Argument<?, ?, S> arg : args) {
-      addArgument(arg, false);
-    }
     return getInstance();
   }
 
-  @SuppressWarnings("unchecked")
-  public T withArguments(final Argument<?, ?, S>... args) {
+  @SafeVarargs
+  public final T withArguments(final Argument<?, ?, S>... args) {
     if (args == null || args.length == 0) {
       return getInstance();
     }
     for (final Argument<?, ?, S> arg : args) {
-      addArgument(arg, false);
+      withArguments(arg, null);
     }
     return getInstance();
   }
 
-  public T withArguments(final List<Argument<?, ?, S>> args, final boolean optional) {
+  public T withArguments(final Collection<Argument<?, ?, S>> args) {
     if (args == null || args.isEmpty()) {
       return getInstance();
     }
     for (final Argument<?, ?, S> arg : args) {
-      addArgument(arg, optional);
+      withArguments(arg, null);
+    }
+    return getInstance();
+  }
+
+  public T withArguments(final Collection<Argument<?, ?, S>> args, final boolean optional) {
+    if (args == null || args.isEmpty()) {
+      return getInstance();
+    }
+    for (final Argument<?, ?, S> arg : args) {
+      withArguments(arg, optional);
     }
     return getInstance();
   }
@@ -126,12 +143,12 @@ public abstract class AbstractCommand<T extends AbstractCommand<T, S>, S> extend
       return getInstance();
     }
     for (final Argument<?, ?, S> arg : args) {
-      addArgument(arg, optional);
+      withArguments(arg, optional);
     }
     return getInstance();
   }
 
-  public T withOptionalArguments(final List<Argument<?, ?, S>> args) {
+  public T withOptionalArguments(final Collection<Argument<?, ?, S>> args) {
     return withArguments(args, true);
   }
 
@@ -159,16 +176,23 @@ public abstract class AbstractCommand<T extends AbstractCommand<T, S>, S> extend
   }
 
   public List<Argument<?, ?, S>> getOptionalArguments() {
-    return arguments.stream().filter(a -> !a.isOptional()).toList();
+    final List<Argument<?, ?, S>> list = List.copyOf(arguments);
+    list.removeIf(a -> !a.isOptional());
+    return list;
   }
 
-  public T removeArguments(final Argument<?, ?, S> args) {
-    arguments.remove(args);
+  public T removeArguments(final Collection<Argument<?, ?, S>> args) {
+    if (args != null && !args.isEmpty()) {
+      arguments.removeAll(args);
+    }
     return getInstance();
   }
 
-  public T removeArguments(@SuppressWarnings("unchecked") final Argument<?, ?, S>... args) {
-    arguments.removeAll(List.of(args));
+  @SafeVarargs
+  public final T removeArguments(final Argument<?, ?, S>... args) {
+    if (args != null && args.length != 0) {
+      arguments.removeAll(List.of(args));
+    }
     return getInstance();
   }
 
@@ -178,8 +202,8 @@ public abstract class AbstractCommand<T extends AbstractCommand<T, S>, S> extend
   }
 
   // Subcommands
-  public T withSubcommands(final List<SimpleSubCommand<S>> subs) {
-    if (subs != null) {
+  public T withSubcommands(final Collection<SimpleSubCommand<S>> subs) {
+    if (subs != null && !subs.isEmpty()) {
       subcommands.addAll(subs);
     }
     return getInstance();
@@ -187,7 +211,7 @@ public abstract class AbstractCommand<T extends AbstractCommand<T, S>, S> extend
 
   @SafeVarargs
   public final T withSubcommands(final SimpleSubCommand<S>... subs) {
-    if (subs != null) {
+    if (subs != null && subs.length != 0) {
       subcommands.addAll(List.of(subs));
     }
     return getInstance();
@@ -198,16 +222,15 @@ public abstract class AbstractCommand<T extends AbstractCommand<T, S>, S> extend
     return getInstance();
   }
 
-  @SafeVarargs
-  public final boolean hasSubcommands(final T... subs) {
-    return subs != null && subs.length != 0 && subcommands.containsAll(List.of(subs));
+  public boolean hasSubcommands(final Collection<T> subs) {
+    return subs != null && !subs.isEmpty() && subcommands.containsAll(subs);
   }
 
   public boolean hasSubcommands() {
     return !subcommands.isEmpty();
   }
 
-  public final boolean isSubcommand(final String sub) {
+  public boolean isSubcommand(final String sub) {
     return sub != null && sub.length() != 0
         && subcommands.stream().anyMatch((s) -> s.getAliases().contains(sub));
   }
@@ -221,17 +244,17 @@ public abstract class AbstractCommand<T extends AbstractCommand<T, S>, S> extend
     return subcommands;
   }
 
-  public T removeSubcommands(final SimpleSubCommand<S> sub) {
-    if (sub != null) {
-      subcommands.remove(sub);
+  @SafeVarargs
+  public final T removeSubcommands(final SimpleSubCommand<S>... subs) {
+    if (subs != null && subs.length > 0) {
+      subcommands.removeAll(List.of(subs));
     }
     return getInstance();
   }
 
-  @SafeVarargs
-  public final T removeSubcommands(final SimpleSubCommand<S>... subs) {
-    if (subs != null) {
-      subcommands.removeAll(List.of(subs));
+  public T removeSubcommands(final Collection<SimpleSubCommand<S>> subs) {
+    if (subs != null && !subs.isEmpty()) {
+      subcommands.removeAll(subs);
     }
     return getInstance();
   }
@@ -243,6 +266,9 @@ public abstract class AbstractCommand<T extends AbstractCommand<T, S>, S> extend
 
   // requirements
   public T withRequirement(final CommandRequirement<CommandSource<S>> requirement) {
+    if (requirement == null) {
+      return getInstance();
+    }
     if (requirements == null) {
       requirements = new ArrayList<>();
     }
@@ -250,42 +276,52 @@ public abstract class AbstractCommand<T extends AbstractCommand<T, S>, S> extend
     return getInstance();
   }
 
-  public T withRequirement(final Predicate<CommandSource<S>> requirement, final String message,
-      final boolean hide) {
-    return withRequirement(CommandRequirement.from(requirement, message, hide));
-  }
-
-  public T withRequirement(final Predicate<CommandSource<S>> requirement, final boolean hide) {
-    return withRequirement(CommandRequirement.from(requirement, hide));
-  }
-
-  public T withRequirement(final Predicate<CommandSource<S>> requirement, final String message) {
-    return withRequirement(CommandRequirement.from(requirement, message));
-  }
-
-  public T withRequirement(final Predicate<CommandSource<S>> requirement) {
-    return withRequirement(CommandRequirement.from(requirement));
-  }
-
-  public T setRequirements(final List<CommandRequirement<CommandSource<S>>> requirements) {
-    this.requirements = requirements;
+  @SafeVarargs
+  public final T withRequirement(final CommandRequirement<CommandSource<S>>... requirements) {
+    if (requirements != null && requirements.length != 0) {
+      for (final CommandRequirement<CommandSource<S>> requirement : requirements) {
+        withRequirement(requirement);
+      }
+    }
     return getInstance();
   }
 
-  public T withPermission(final String permission, final String message, final boolean hide) {
-    return withRequirement(CommandRequirement.permission(permission, message, hide));
+  public T withRequirement(final Collection<CommandRequirement<CommandSource<S>>> requirements) {
+    if (requirements != null && !requirements.isEmpty()) {
+      for (final CommandRequirement<CommandSource<S>> requirement : requirements) {
+        withRequirement(requirement);
+      }
+    }
+    return getInstance();
   }
 
-  public T withPermission(final String permission, final boolean hide) {
-    return withRequirement(CommandRequirement.permission(permission, hide));
+  public T withRequirement(final Predicate<CommandSource<S>> requirement) {
+    return withRequirement(requirement == null ? null : CommandRequirement.from(requirement));
   }
 
-  public T withPermission(final String permission, final String message) {
-    return withRequirement(CommandRequirement.permission(permission, message));
+  public T withPermissions(final String... permissions) {
+    if (permissions != null && permissions.length != 0) {
+      for (final String perm : permissions) {
+        withRequirement(CommandRequirement.permission(perm));
+      }
+    }
+    return getInstance();
   }
 
-  public T withPermission(final String permission) {
-    return withRequirement(CommandRequirement.permission(permission));
+  public T withPermissions(final Collection<String> permissions) {
+    if (permissions != null && !permissions.isEmpty()) {
+      for (final String perm : permissions) {
+        withRequirement(CommandRequirement.permission(perm));
+      }
+    }
+    return getInstance();
+  }
+
+  public T setRequirements(final List<CommandRequirement<CommandSource<S>>> requirements) {
+    if (requirements != null && !requirements.isEmpty()) {
+      this.requirements = requirements;
+    }
+    return getInstance();
   }
 
   public boolean hasRequirements() {
@@ -295,6 +331,7 @@ public abstract class AbstractCommand<T extends AbstractCommand<T, S>, S> extend
   public T clearRequirements() {
     if (requirements != null) {
       requirements.clear();
+      requirements = null;
     }
     return getInstance();
   }
@@ -304,7 +341,7 @@ public abstract class AbstractCommand<T extends AbstractCommand<T, S>, S> extend
   }
 
   public boolean checkRequirements(final CommandSource<S> source) {
-    if (requirements == null || requirements.size() == 0) {
+    if (requirements == null || requirements.isEmpty()) {
       return true;
     }
     for (final CommandRequirement<CommandSource<S>> requirement : requirements) {
@@ -400,37 +437,43 @@ public abstract class AbstractCommand<T extends AbstractCommand<T, S>, S> extend
   }
 
   @Override
-  public int hashCode() {
-    int result = super.hashCode();
-    result = 31 * result + ((arguments == null) ? 0 : arguments.hashCode());
-    result = 31 * result + ((subcommands == null) ? 0 : subcommands.hashCode());
-    result = 31 * result + ((aliases == null) ? 0 : aliases.hashCode());
-    result = 31 * result + ((requirements == null) ? 0 : requirements.hashCode());
-    return result;
-  }
-
-  @SuppressWarnings("unchecked")
-  @Override
-  public boolean equals(final Object obj) {
-    if (this == obj) {
-      return true;
-    }
-    if (!super.equals(obj) || getClass() != obj.getClass()) {
-      return false;
-    }
-    final T other = (T) obj;
-    if (arguments == null && other.arguments != null || subcommands == null && other.subcommands != null
-        || aliases == null && other.aliases != null || requirements == null && other.requirements != null) {
-      return false;
-    }
-    return arguments.equals(other.arguments) && subcommands.equals(other.subcommands) && aliases.equals(other.aliases)
-        && requirements.equals(other.requirements);
-  }
-
-  @Override
   public String toString() {
     return "AbstractCommand [arguments=" + arguments + ", subcommands=" + subcommands + ", aliases=" + aliases
         + ", executors=" + executors + ", requirements=" + requirements + "]";
   }
 
+  @Override
+  public int hashCode() {
+    int result = 31 * super.hashCode() + ((arguments == null) ? 0 : arguments.hashCode());
+    result = 31 * result + ((subcommands == null) ? 0 : subcommands.hashCode());
+    result = 31 * result + ((aliases == null) ? 0 : aliases.hashCode());
+    result = 31 * result + ((requirements == null) ? 0 : requirements.hashCode());
+    result = 31 * result + ((shortDescription == null) ? 0 : shortDescription.hashCode());
+    result = 31 * result + ((fullDescription == null) ? 0 : fullDescription.hashCode());
+    return 31 * result + (hasOptional ? 1231 : 1237);
+  }
+
+  @Override
+  public boolean equals(final Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
+      return false;
+    }
+    if (!super.equals(obj) || getClass() != obj.getClass()) {
+      return false;
+    }
+    final AbstractCommand<?, ?> other = (AbstractCommand<?, ?>) obj;
+    if (arguments == null && other.arguments != null || subcommands == null && other.subcommands != null
+        || aliases == null && other.aliases != null || requirements == null && other.requirements != null
+        || fullDescription == null && other.fullDescription != null
+        || shortDescription == null && other.shortDescription != null) {
+      return false;
+    }
+    return hasOptional == other.hasOptional && fullDescription.equals(other.fullDescription)
+        && shortDescription.equals(other.shortDescription)
+        && arguments.equals(other.arguments) && subcommands.equals(other.subcommands) && aliases.equals(other.aliases)
+        && requirements.equals(other.requirements);
+  }
 }

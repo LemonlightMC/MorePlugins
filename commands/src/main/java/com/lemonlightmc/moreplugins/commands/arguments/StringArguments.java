@@ -21,7 +21,7 @@ public class StringArguments {
     }
   }
 
-  public static class StringArgument extends Argument<String, StringArgument> {
+  public static class StringArgument extends Argument<String, StringArgument, CommandSender> {
     private final StringType type;
 
     public StringArgument(final String name) {
@@ -113,7 +113,7 @@ public class StringArguments {
     }
   }
 
-  public static class TextArgument extends Argument<String, TextArgument> {
+  public static class TextArgument extends Argument<String, TextArgument, CommandSender> {
 
     public TextArgument(final String name) {
       super(name, String.class, ArgumentType.TEXT);
@@ -131,7 +131,7 @@ public class StringArguments {
     }
   }
 
-  public static class GreedyStringArgument extends Argument<String, GreedyStringArgument> {
+  public static class GreedyStringArgument extends Argument<String, GreedyStringArgument, CommandSender> {
 
     public GreedyStringArgument(final String name) {
       super(name, String.class, ArgumentType.STRING_GREEDY);
@@ -151,7 +151,7 @@ public class StringArguments {
     }
   }
 
-  public static class ChatColorArgument extends Argument<ChatColor, ChatColorArgument> {
+  public static class ChatColorArgument extends Argument<ChatColor, ChatColorArgument, CommandSender> {
 
     public ChatColorArgument(final String name) {
       super(name, ChatColor.class, ArgumentType.CHATCOLOR);
@@ -175,7 +175,7 @@ public class StringArguments {
     }
   }
 
-  public static class ChatArgument extends Argument<String, ChatArgument> {
+  public static class ChatArgument extends Argument<String, ChatArgument, CommandSender> {
 
     public ChatArgument(final String name) {
       super(name, String.class, ArgumentType.CHAT);

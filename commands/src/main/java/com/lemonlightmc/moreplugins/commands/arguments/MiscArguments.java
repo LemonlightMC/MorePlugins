@@ -24,7 +24,7 @@ import com.lemonlightmc.moreplugins.time.DurationParser;
 
 public class MiscArguments {
 
-  public static class WorldArgument extends Argument<World, WorldArgument> {
+  public static class WorldArgument extends Argument<World, WorldArgument, CommandSender> {
 
     public static final String[] NAMES = Bukkit.getWorlds().stream().map((final World w) -> {
       return w == null ? null : w.getName();
@@ -47,7 +47,7 @@ public class MiscArguments {
     }
   }
 
-  public static class TimeArgument extends Argument<Duration, TimeArgument> {
+  public static class TimeArgument extends Argument<Duration, TimeArgument, CommandSender> {
     public TimeArgument(final String name) {
       super(name, Duration.class, ArgumentType.TIME);
       withSuggestions("true", "false");
@@ -66,7 +66,7 @@ public class MiscArguments {
     }
   }
 
-  public static class NamespacedKeyArgument extends Argument<NamespacedKey, NamespacedKeyArgument> {
+  public static class NamespacedKeyArgument extends Argument<NamespacedKey, NamespacedKeyArgument, CommandSender> {
 
     public NamespacedKeyArgument(final String name) {
       super(name, NamespacedKey.class, ArgumentType.NAMESPACED_KEY);
@@ -85,7 +85,7 @@ public class MiscArguments {
     }
   }
 
-  public static class BlockStateArgument extends Argument<BlockState, BlockStateArgument> {
+  public static class BlockStateArgument extends Argument<BlockState, BlockStateArgument, CommandSender> {
 
     public BlockStateArgument(final String name) {
       super(name, BlockState.class, ArgumentType.BLOCKSTATE);
@@ -105,7 +105,7 @@ public class MiscArguments {
     }
   }
 
-  public static class BlockDataArgument extends Argument<BlockData, BlockDataArgument> {
+  public static class BlockDataArgument extends Argument<BlockData, BlockDataArgument, CommandSender> {
 
     public BlockDataArgument(final String name) {
       super(name, BlockData.class, ArgumentType.BLOCKDATA);
@@ -124,7 +124,7 @@ public class MiscArguments {
     }
   }
 
-  public static class LootTableArgument extends Argument<LootTable, LootTableArgument> {
+  public static class LootTableArgument extends Argument<LootTable, LootTableArgument, CommandSender> {
 
     public static final String[] NAMES = _mapArray(LootTables.values());
 
@@ -146,7 +146,7 @@ public class MiscArguments {
     }
   }
 
-  public static class EnvironmentArgument extends Argument<Environment, EnvironmentArgument> {
+  public static class EnvironmentArgument extends Argument<Environment, EnvironmentArgument, CommandSender> {
 
     public static final String[] NAMES = _mapArray(Environment.values());
 
@@ -168,7 +168,7 @@ public class MiscArguments {
     }
   }
 
-  public static class GameModeArgument extends Argument<GameMode, GameModeArgument> {
+  public static class GameModeArgument extends Argument<GameMode, GameModeArgument, CommandSender> {
 
     public static final String[] NAMES = _mapArray(GameMode.values());
 
@@ -190,7 +190,7 @@ public class MiscArguments {
     }
   }
 
-  public static class LookAnchorArgument extends Argument<LookAnchor, LookAnchorArgument> {
+  public static class LookAnchorArgument extends Argument<LookAnchor, LookAnchorArgument, CommandSender> {
 
     public static final String[] NAMES = _mapArray(LookAnchor.values());
 
@@ -212,7 +212,7 @@ public class MiscArguments {
     }
   }
 
-  public static class MathOperationArgument extends Argument<MathOperation, MathOperationArgument> {
+  public static class MathOperationArgument extends Argument<MathOperation, MathOperationArgument, CommandSender> {
     public static final String[] NAMES = _mapArray(MathOperation.values());
 
     public MathOperationArgument(final String name) {

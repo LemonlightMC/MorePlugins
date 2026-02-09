@@ -91,8 +91,18 @@ public class SimpleCommand extends AbstractCommand<SimpleCommand, CommandSender>
     return this;
   }
 
+  public SimpleCommand withUsage(final String usage) {
+    this.usageDescription = usage.split("\n");
+    return this;
+  }
+
   public SimpleCommand withUsage(final String... usage) {
     this.usageDescription = usage;
+    return this;
+  }
+
+  public SimpleCommand withUsage(final List<String> usage) {
+    this.usageDescription = usage.toArray(String[]::new);
     return this;
   }
 
@@ -133,7 +143,7 @@ public class SimpleCommand extends AbstractCommand<SimpleCommand, CommandSender>
       shortDescription = "The " + getKey() + " Command from " + getNamespace() + " (No Description)";
     }
     if (usageDescription == null) {
-      usageDescription = buildUsageString("/", this).toArray(new String[0]);
+      usageDescription = buildUsageString("/", this).toArray(String[]::new);
     }
     if (helpMessage == null) {
       final StringBuilder builder = new StringBuilder(shortDescription);

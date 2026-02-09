@@ -18,7 +18,7 @@ import com.lemonlightmc.moreplugins.commands.exceptions.CommandSyntaxException;
 
 public class ScoreArguments {
 
-  public static class TeamArgument extends Argument<Team, TeamArgument> {
+  public static class TeamArgument extends Argument<Team, TeamArgument, CommandSender> {
 
     public TeamArgument(final String name) {
       super(name, Team.class, ArgumentType.TEAM);
@@ -38,7 +38,7 @@ public class ScoreArguments {
     }
   }
 
-  public static class ScoreboardSlotArgument extends Argument<ScoreboardSlot, ScoreboardSlotArgument> {
+  public static class ScoreboardSlotArgument extends Argument<ScoreboardSlot, ScoreboardSlotArgument, CommandSender> {
 
     public ScoreboardSlotArgument(final String name) {
       super(name, ScoreboardSlot.class, ArgumentType.SCOREBOARD_SLOT);
@@ -58,7 +58,7 @@ public class ScoreArguments {
     }
   }
 
-  public static class ObjectiveArgument extends Argument<Objective, ObjectiveArgument> {
+  public static class ObjectiveArgument extends Argument<Objective, ObjectiveArgument, CommandSender> {
 
     public ObjectiveArgument(final String name) {
       super(name, Objective.class, ArgumentType.OBJECTIVE);
@@ -94,7 +94,7 @@ public class ScoreArguments {
     }
   }
 
-  public static class CriteriaArgument extends Argument<Criteria, CriteriaArgument> {
+  public static class CriteriaArgument extends Argument<Criteria, CriteriaArgument, CommandSender> {
 
     public CriteriaArgument(final String name) {
       super(name, Criteria.class, ArgumentType.CRITERIA);

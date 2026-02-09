@@ -15,7 +15,7 @@ import com.lemonlightmc.moreplugins.commands.argumentsbase.StringReader;
 import com.lemonlightmc.moreplugins.commands.exceptions.CommandSyntaxException;
 
 public class EntityArguments {
-  public static class PlayerArgument extends Argument<Player, PlayerArgument> {
+  public static class PlayerArgument extends Argument<Player, PlayerArgument, CommandSender> {
 
     public PlayerArgument(final String name) {
       super(name, Player.class, ArgumentType.PLAYER);
@@ -35,7 +35,7 @@ public class EntityArguments {
     }
   }
 
-  public static class PlayerProfileArgument extends Argument<PlayerProfile, PlayerProfileArgument> {
+  public static class PlayerProfileArgument extends Argument<PlayerProfile, PlayerProfileArgument, CommandSender> {
     public PlayerProfileArgument(final String name) {
       super(name, PlayerProfile.class, ArgumentType.PLAYERPROFILE);
       withSuggestions((info) -> Bukkit.getOnlinePlayers().stream().map(p -> p.getName()).toList());
@@ -55,7 +55,7 @@ public class EntityArguments {
   }
 
   @SuppressWarnings("rawtypes")
-  public static class EntitySelectorArgument extends Argument<List, EntitySelectorArgument> {
+  public static class EntitySelectorArgument extends Argument<List, EntitySelectorArgument, CommandSender> {
 
     public EntitySelectorArgument(final String name) {
       super(name, List.class, ArgumentType.ENTITY_SELECTOR);

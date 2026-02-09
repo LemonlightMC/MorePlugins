@@ -28,7 +28,7 @@ import com.lemonlightmc.moreplugins.commands.argumentsbase.StringReader;
 import com.lemonlightmc.moreplugins.commands.exceptions.CommandSyntaxException;
 
 public class RegistryArguments {
-  public static class BiomeArgument extends Argument<Biome, BiomeArgument> {
+  public static class BiomeArgument extends Argument<Biome, BiomeArgument, CommandSender> {
 
     public static final String[] NAMES = _mapRegistry(Registry.BIOME);
 
@@ -49,7 +49,7 @@ public class RegistryArguments {
     }
   }
 
-  public static class SoundArgument extends Argument<Sound, SoundArgument> {
+  public static class SoundArgument extends Argument<Sound, SoundArgument, CommandSender> {
 
     public static final String[] NAMES = _mapRegistry(Registry.SOUNDS);
 
@@ -70,7 +70,7 @@ public class RegistryArguments {
   }
 
   @SuppressWarnings("rawtypes")
-  public static class ParticleArgument extends Argument<ParticleData, ParticleArgument> {
+  public static class ParticleArgument extends Argument<ParticleData, ParticleArgument, CommandSender> {
 
     public static final String[] NAMES = _mapRegistry(Registry.PARTICLE_TYPE);
 
@@ -91,7 +91,7 @@ public class RegistryArguments {
     }
   }
 
-  public static class PotionEffectArgument extends Argument<PotionEffectType, PotionEffectArgument> {
+  public static class PotionEffectArgument extends Argument<PotionEffectType, PotionEffectArgument, CommandSender> {
 
     public static final String[] NAMES = _mapRegistry(Registry.EFFECT);
 
@@ -112,7 +112,7 @@ public class RegistryArguments {
     }
   }
 
-  public static class EnchantmentArgument extends Argument<Enchantment, EnchantmentArgument> {
+  public static class EnchantmentArgument extends Argument<Enchantment, EnchantmentArgument, CommandSender> {
 
     public static final String[] NAMES = _mapRegistry(Registry.ENCHANTMENT);
 
@@ -133,7 +133,7 @@ public class RegistryArguments {
     }
   }
 
-  public static class AdvancementArgument extends Argument<Advancement, AdvancementArgument> {
+  public static class AdvancementArgument extends Argument<Advancement, AdvancementArgument, CommandSender> {
 
     @SuppressWarnings("deprecation")
     public static final String[] NAMES = _mapRegistry(Registry.ADVANCEMENT);
@@ -156,7 +156,7 @@ public class RegistryArguments {
     }
   }
 
-  public static class ItemStackArgument extends Argument<ItemStack, ItemStackArgument> {
+  public static class ItemStackArgument extends Argument<ItemStack, ItemStackArgument, CommandSender> {
 
     public static final String[] NAMES = _mapRegistry(Registry.ITEM);
 
@@ -186,7 +186,7 @@ public class RegistryArguments {
     }
   }
 
-  public static class MaterialArgument extends Argument<Material, MaterialArgument> {
+  public static class MaterialArgument extends Argument<Material, MaterialArgument, CommandSender> {
 
     public static final String[] NAMES = _mapRegistry(Registry.MATERIAL);
 
@@ -207,7 +207,7 @@ public class RegistryArguments {
     }
   }
 
-  public static class StructureArgument extends Argument<Structure, StructureArgument> {
+  public static class StructureArgument extends Argument<Structure, StructureArgument, CommandSender> {
 
     public static final String[] NAMES = _mapRegistry(Registry.STRUCTURE);
 
@@ -229,7 +229,7 @@ public class RegistryArguments {
     }
   }
 
-  public static class AttributeArgument extends Argument<Attribute, AttributeArgument> {
+  public static class AttributeArgument extends Argument<Attribute, AttributeArgument, CommandSender> {
 
     public static final String[] NAMES = _mapRegistry(Registry.ATTRIBUTE);
 
@@ -251,7 +251,7 @@ public class RegistryArguments {
     }
   }
 
-  public static class StructureTypeArgument extends Argument<StructureType, StructureTypeArgument> {
+  public static class StructureTypeArgument extends Argument<StructureType, StructureTypeArgument, CommandSender> {
 
     public static final String[] NAMES = _mapRegistry(Registry.STRUCTURE_TYPE);
 
@@ -273,7 +273,7 @@ public class RegistryArguments {
     }
   }
 
-  public static class EntityTypeArgument extends Argument<EntityType, EntityTypeArgument> {
+  public static class EntityTypeArgument extends Argument<EntityType, EntityTypeArgument, CommandSender> {
     public static final String[] NAMES = _mapRegistry(Registry.ENTITY_TYPE);
 
     public EntityTypeArgument(final String name) {

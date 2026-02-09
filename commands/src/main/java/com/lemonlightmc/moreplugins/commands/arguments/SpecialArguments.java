@@ -16,6 +16,7 @@ import com.lemonlightmc.moreplugins.commands.CommandAPI;
 import com.lemonlightmc.moreplugins.commands.CommandSource;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.Argument;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.ArgumentType;
+import com.lemonlightmc.moreplugins.commands.argumentsbase.BukkitCommandResult;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.CommandResult;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.StringReader;
 import com.lemonlightmc.moreplugins.commands.exceptions.InvalidArgumentBranchException;
@@ -23,7 +24,7 @@ import com.lemonlightmc.moreplugins.commands.exceptions.CommandSyntaxException;
 
 public class SpecialArguments {
 
-  public static record ArgumentBranch(List<Argument<?, ?>> args, ArgumentBranchType type) {
+  public static record ArgumentBranch(List<Argument<?, ?, CommandSender>> args, ArgumentBranchType type) {
   }
 
   public static enum ArgumentBranchType {
@@ -36,7 +37,7 @@ public class SpecialArguments {
 
   }
 
-  public class BranchArgument extends Argument<Boolean, BranchArgument> {
+  public class BranchArgument extends Argument<Boolean, BranchArgument, CommandSender> {
 
     private final List<ArgumentBranch> branches;
 
@@ -59,32 +60,37 @@ public class SpecialArguments {
       return this;
     }
 
-    public BranchArgument branch(final Argument<?, ?>... args) {
+    @SuppressWarnings("unchecked")
+    public BranchArgument branch(final Argument<?, ?, CommandSender>... args) {
       createBranch(args, ArgumentBranchType.LOOPING);
       return this;
     }
 
-    public BranchArgument branch(final ArgumentBranchType type, final Argument<?, ?>... args) {
+    @SuppressWarnings("unchecked")
+    public BranchArgument branch(final ArgumentBranchType type, final Argument<?, ?, CommandSender>... args) {
       createBranch(args, type);
       return this;
     }
 
-    public BranchArgument loopingBranch(final Argument<?, ?>... args) {
+    @SuppressWarnings("unchecked")
+    public BranchArgument loopingBranch(final Argument<?, ?, CommandSender>... args) {
       createBranch(args, ArgumentBranchType.LOOPING);
       return this;
     }
 
-    public BranchArgument onceBranch(final Argument<?, ?>... args) {
+    @SuppressWarnings("unchecked")
+    public BranchArgument onceBranch(final Argument<?, ?, CommandSender>... args) {
       createBranch(args, ArgumentBranchType.ONCE);
       return this;
     }
 
-    public BranchArgument endBranch(final Argument<?, ?>... args) {
+    @SuppressWarnings("unchecked")
+    public BranchArgument endBranch(final Argument<?, ?, CommandSender>... args) {
       createBranch(args, ArgumentBranchType.END);
       return this;
     }
 
-    private void createBranch(final Argument<?, ?>[] args, final ArgumentBranchType type) {
+    private void createBranch(final Argument<?, ?, CommandSender>[] args, final ArgumentBranchType type) {
       if (args == null || args.length == 0 || args[0] == null) {
         throw new IllegalArgumentException("Supplied Arguments to Branch cant be empty");
       }
@@ -123,7 +129,7 @@ public class SpecialArguments {
   }
 
   @SuppressWarnings("rawtypes")
-  public static class CommandArgument extends Argument<CommandResult, CommandArgument> {
+  public static class CommandArgument extends Argument<CommandResult, CommandArgument, CommandSender> {
 
     public CommandArgument(final String name) {
       super(name, CommandResult.class, ArgumentType.COMMAND);
@@ -143,7 +149,7 @@ public class SpecialArguments {
     }
 
     @Override
-    public CommandResult<CommandSender> parseArgument(final CommandSource<CommandSender> source,
+    public CommandResult<Command, CommandSender> parseArgument(final CommandSource<CommandSender> source,
         final StringReader reader,
         final String key)
         throws CommandSyntaxException {
@@ -152,12 +158,13 @@ public class SpecialArguments {
         return null;
       }
       final Command cmd = Objects.requireNonNull(CommandAPI.getCommandMap().getCommand(args[0]));
-      return new CommandResult<CommandSender>(cmd,
+      return new BukkitCommandResult<CommandSender>(cmd,
           args.length == 1 ? new String[0] : Arrays.copyOfRange(args, 1, args.length));
     }
   }
 
-  public static class LiteralArgument extends Argument<String, LiteralArgument> implements LiteralArgumentType {
+  public static class LiteralArgument extends Argument<String, LiteralArgument, CommandSender>
+      implements LiteralArgumentType {
 
     private final String literal;
 
@@ -231,7 +238,7 @@ public class SpecialArguments {
     }
   }
 
-  public static class MultiLiteralArgument extends Argument<String, MultiLiteralArgument>
+  public static class MultiLiteralArgument extends Argument<String, MultiLiteralArgument, CommandSender>
       implements LiteralArgumentType {
 
     private final String[] literals;
@@ -299,7 +306,7 @@ public class SpecialArguments {
     }
   }
 
-  public static class DynamicMultiLiteralArgument extends Argument<String, DynamicMultiLiteralArgument>
+  public static class DynamicMultiLiteralArgument extends Argument<String, DynamicMultiLiteralArgument, CommandSender>
       implements LiteralArgumentType {
 
     private final Function<CommandSource<CommandSender>, Collection<String>> literals;
@@ -362,7 +369,7 @@ public class SpecialArguments {
   }
 
   @SuppressWarnings("rawtypes")
-  public static class SwitchArgument extends Argument<List, SwitchArgument>
+  public static class SwitchArgument extends Argument<List, SwitchArgument, CommandSender>
       implements LiteralArgumentType {
 
     private final String[] switches;
@@ -444,7 +451,7 @@ public class SpecialArguments {
   }
 
   @SuppressWarnings("rawtypes")
-  public static class FlagArgument extends Argument<HashMap, FlagArgument>
+  public static class FlagArgument extends Argument<HashMap, FlagArgument, CommandSender>
       implements LiteralArgumentType {
 
     private final String[] flags;

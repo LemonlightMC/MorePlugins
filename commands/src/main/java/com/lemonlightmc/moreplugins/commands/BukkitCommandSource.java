@@ -10,7 +10,8 @@ import org.bukkit.command.RemoteConsoleCommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
-import com.lemonlightmc.moreplugins.commands.exceptions.CommandSyntaxException;
+import com.lemonlightmc.moreplugins.apis.ChatAPI;
+import com.lemonlightmc.moreplugins.commands.exceptions.CommandException;
 import com.lemonlightmc.moreplugins.commands.executors.Executors.ExecutorType;
 
 public record BukkitCommandSource<S extends CommandSender>(S sender, Location location, Entity entity)
@@ -36,13 +37,13 @@ public record BukkitCommandSource<S extends CommandSender>(S sender, Location lo
   }
 
   @Override
-  public void sendError(final CommandSyntaxException e) {
-    sender.sendMessage(e.getMessage());
+  public void sendError(final CommandException e) {
+    ChatAPI.send(sender, e.getMessage());
   }
 
   @Override
-  public void sendMessage(String str) {
-    sender.sendMessage(str);
+  public void sendMessage(final String str) {
+    ChatAPI.send(sender, str);
   }
 
   public World world() {

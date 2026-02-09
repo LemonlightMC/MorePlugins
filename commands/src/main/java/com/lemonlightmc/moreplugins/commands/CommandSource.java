@@ -4,7 +4,7 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
 
-import com.lemonlightmc.moreplugins.commands.exceptions.CommandSyntaxException;
+import com.lemonlightmc.moreplugins.commands.exceptions.CommandException;
 import com.lemonlightmc.moreplugins.commands.executors.Executors.ExecutorType;
 
 public interface CommandSource<S> {
@@ -25,7 +25,7 @@ public interface CommandSource<S> {
 
   public void sendMessage(final String str);
 
-  public void sendError(final CommandSyntaxException e);
+  public void sendError(final CommandException e);
 
   public boolean hasPermission(final String perm);
 }

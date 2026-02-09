@@ -1,40 +1,26 @@
 package com.lemonlightmc.moreplugins.commands.argumentsbase;
 
-import java.util.Arrays;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
-
 import com.lemonlightmc.moreplugins.commands.CommandSource;
 
-public record CommandResult<S extends CommandSender>(Command command, String[] args) {
+public interface CommandResult<C, S> {
+  public boolean execute(final S sender);
 
-  public boolean execute(final S sender) {
-    return command.execute(sender, command.getLabel(), args);
-  }
+  public boolean execute(final CommandSource<S> source);
 
-  public boolean execute(final CommandSource<S> source) {
-    return command.execute(source.sender(), command.getLabel(), args);
-  }
+  public C command();
 
-  @Override
-  public boolean equals(final Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-    final CommandResult<?> that = (CommandResult<?>) o;
-    return command.equals(that.command) && Arrays.equals(args, that.args);
-  }
+  public String[] args();
+
+  public int getArgumentCount();
+
+  public void modifyArguments(int idx, String value);
 
   @Override
-  public int hashCode() {
-    return 31 * command.hashCode() + Arrays.hashCode(args);
-  }
+  public boolean equals(final Object o);
 
   @Override
-  public String toString() {
-    return "CommandResult [command=" + command + ", args=" + Arrays.toString(args) + "]";
-  }
+  public int hashCode();
+
+  @Override
+  public String toString();
 }

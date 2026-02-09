@@ -104,6 +104,9 @@ public abstract class Argument<Type, ArgType extends Argument<Type, ArgType, S>,
   // requirements
 
   public ArgType withRequirement(final CommandRequirement<CommandSource<S>> requirement) {
+    if (requirement == null) {
+      return getInstance();
+    }
     if (requirements == null) {
       requirements = new ArrayList<>();
     }
@@ -111,42 +114,52 @@ public abstract class Argument<Type, ArgType extends Argument<Type, ArgType, S>,
     return getInstance();
   }
 
-  public ArgType withRequirement(final Predicate<CommandSource<CommandSender>> requirement, final String message,
-      final boolean hide) {
-    return withRequirement(CommandRequirement.from(requirement, message, hide));
-  }
-
-  public ArgType withRequirement(final Predicate<CommandSource<CommandSender>> requirement, final boolean hide) {
-    return withRequirement(CommandRequirement.from(requirement, hide));
-  }
-
-  public ArgType withRequirement(final Predicate<CommandSource<CommandSender>> requirement, final String message) {
-    return withRequirement(CommandRequirement.from(requirement, message));
-  }
-
-  public ArgType withRequirement(final Predicate<CommandSource<CommandSender>> requirement) {
-    return withRequirement(CommandRequirement.from(requirement));
-  }
-
-  public ArgType setRequirements(final List<CommandRequirement<CommandSender>> requirements) {
-    this.requirements = requirements;
+  @SafeVarargs
+  public final ArgType withRequirement(final CommandRequirement<CommandSource<S>>... requirements) {
+    if (requirements != null && requirements.length != 0) {
+      for (final CommandRequirement<CommandSource<S>> requirement : requirements) {
+        withRequirement(requirement);
+      }
+    }
     return getInstance();
   }
 
-  public ArgType withPermission(final String permission, final String message, final boolean hide) {
-    return withRequirement(CommandRequirement.permission(permission, message, hide));
+  public ArgType withRequirement(final Collection<CommandRequirement<CommandSource<S>>> requirements) {
+    if (requirements != null && !requirements.isEmpty()) {
+      for (final CommandRequirement<CommandSource<S>> requirement : requirements) {
+        withRequirement(requirement);
+      }
+    }
+    return getInstance();
   }
 
-  public ArgType withPermission(final String permission, final boolean hide) {
-    return withRequirement(CommandRequirement.permission(permission, hide));
+  public ArgType withRequirement(final Predicate<CommandSource<S>> requirement) {
+    return withRequirement(requirement == null ? null : CommandRequirement.from(requirement));
   }
 
-  public ArgType withPermission(final String permission, final String message) {
-    return withRequirement(CommandRequirement.permission(permission, message));
+  public ArgType withPermissions(final String... permissions) {
+    if (permissions != null && permissions.length != 0) {
+      for (final String perm : permissions) {
+        withRequirement(CommandRequirement.permission(perm));
+      }
+    }
+    return getInstance();
   }
 
-  public ArgType withPermission(final String permission) {
-    return withRequirement(CommandRequirement.permission(permission));
+  public ArgType withPermissions(final Collection<String> permissions) {
+    if (permissions != null && !permissions.isEmpty()) {
+      for (final String perm : permissions) {
+        withRequirement(CommandRequirement.permission(perm));
+      }
+    }
+    return getInstance();
+  }
+
+  public ArgType setRequirements(final List<CommandRequirement<CommandSource<S>>> requirements) {
+    if (requirements != null && !requirements.isEmpty()) {
+      this.requirements = requirements;
+    }
+    return getInstance();
   }
 
   public boolean hasRequirements() {
@@ -156,12 +169,25 @@ public abstract class Argument<Type, ArgType extends Argument<Type, ArgType, S>,
   public ArgType clearRequirements() {
     if (requirements != null) {
       requirements.clear();
+      requirements = null;
     }
     return getInstance();
   }
 
   public List<CommandRequirement<CommandSource<S>>> getRequirements() {
     return requirements;
+  }
+
+  public boolean checkRequirements(final CommandSource<S> source) {
+    if (requirements == null || requirements.isEmpty()) {
+      return true;
+    }
+    for (final CommandRequirement<CommandSource<S>> requirement : requirements) {
+      if (!requirement.test(source)) {
+        return false;
+      }
+    }
+    return true;
   }
 
   // Help
@@ -177,11 +203,10 @@ public abstract class Argument<Type, ArgType extends Argument<Type, ArgType, S>,
     int result = 31 + name.hashCode();
     result = 31 * result + rawType.hashCode();
     result = 31 * result + primitiveType.hashCode();
+    result = 31 * result + ((requirements == null) ? 0 : suggestions.hashCode());
+    result = 31 * result + ((suggestions == null) ? 0 : suggestions.hashCode());
     result = 31 * result + (isOptional ? 1231 : 1237);
-    result = 31 * result + (isListed ? 1231 : 1237);
-    result = 31 * result + requirements.hashCode();
-    result = 31 * result + suggestions.hashCode();
-    return result;
+    return 31 * result + (isListed ? 1231 : 1237);
   }
 
   @Override
@@ -193,7 +218,12 @@ public abstract class Argument<Type, ArgType extends Argument<Type, ArgType, S>,
       return false;
     }
     final Argument<?, ?, ?> other = (Argument<?, ?, ?>) obj;
-    return isListed == other.isListed && isOptional == other.isOptional && isOptional == other.isOptional
+    if (name == null && other.name != null || rawType == null && other.rawType != null
+        || primitiveType == null && other.primitiveType != null || requirements == null && other.requirements != null
+        || suggestions == null && other.suggestions != null) {
+      return false;
+    }
+    return isListed == other.isListed && isOptional == other.isOptional
         && rawType == other.rawType
         && name.equals(other.name) && name.equals(other.name)
         && primitiveType.equals(other.primitiveType)
@@ -210,6 +240,6 @@ public abstract class Argument<Type, ArgType extends Argument<Type, ArgType, S>,
     return getInstance().getClass().getName() + " [name=" + name + ", rawType=" + rawType + ", primitiveType="
         + primitiveType + ", isOptional="
         + isOptional + ", isListed=" + isListed + ", requirements=" + requirements
-        + ", suggestions=" + suggestions + (str == null || str.length() == 0 ? "]" : ", " + str + "]");
+        + ", suggestions=" + suggestions + (str == null || str.isEmpty() ? "]" : ", " + str + "]");
   }
 }

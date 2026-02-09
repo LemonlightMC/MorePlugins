@@ -19,7 +19,6 @@ import com.lemonlightmc.moreplugins.commands.BukkitCommandSource;
 import com.lemonlightmc.moreplugins.commands.CommandSource;
 import com.lemonlightmc.moreplugins.commands.SimpleCommand;
 import com.lemonlightmc.moreplugins.commands.SimpleSubCommand;
-import com.lemonlightmc.moreplugins.commands.arguments.SpecialArguments.LiteralArgument;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.Argument;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.CommandArguments;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.ParsedArgument;
@@ -107,7 +106,7 @@ public class CommandHandler {
     return _parseArguments(cmd, cmd, reader, source, args);
   }
 
-  private static CommandArguments _parseArguments(final SimpleCommand cmd, AbstractCommand<?, ?> thisCmd,
+  private static CommandArguments _parseArguments(final SimpleCommand cmd, AbstractCommand<?, CommandSender> thisCmd,
       final StringReader reader,
       final CommandSource<CommandSender> source, final String[] args) {
     int i = 0;
@@ -159,11 +158,7 @@ public class CommandHandler {
   }
 
   private static boolean _isSubCommand(final String arg, final SimpleSubCommand<CommandSender> sub) {
-    final Argument<?, ?, CommandSender> firstArg = sub.getArguments().getFirst();
-    if (!firstArg.getType().isLiteral()) {
-      return false;
-    }
-    return ((LiteralArgument) firstArg).getLiteral().equals(arg);
+    return sub.getAliases().contains(arg);
   }
 
   private static boolean startsWithIgnoreCase(

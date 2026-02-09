@@ -26,7 +26,7 @@ public class NumberArguments {
   private static final CommandSyntaxExceptionContainer VALUE_TOO_HIGH = new CommandSyntaxExceptionContainer(
       value -> "Value '" + value + "' is too high ");
 
-  public static class BoolArgument extends Argument<Boolean, BoolArgument> {
+  public static class BoolArgument extends Argument<Boolean, BoolArgument, CommandSender> {
 
     public BoolArgument(final String name) {
       super(name, Boolean.class, ArgumentType.BOOLEAN);
@@ -54,7 +54,7 @@ public class NumberArguments {
     }
   }
 
-  public static class IntegerArgument extends Argument<Integer, IntegerArgument> {
+  public static class IntegerArgument extends Argument<Integer, IntegerArgument, CommandSender> {
     private final IntegerRange range;
 
     public IntegerArgument(final String name) {
@@ -108,7 +108,7 @@ public class NumberArguments {
     }
   }
 
-  public static class LongArgument extends Argument<Long, LongArgument> {
+  public static class LongArgument extends Argument<Long, LongArgument, CommandSender> {
     private final LongRange range;
 
     public LongArgument(final String name) {
@@ -162,7 +162,7 @@ public class NumberArguments {
     }
   }
 
-  public static class FloatArgument extends Argument<Float, FloatArgument> {
+  public static class FloatArgument extends Argument<Float, FloatArgument, CommandSender> {
     private final FloatRange range;
 
     public FloatArgument(final String name) {
@@ -216,7 +216,7 @@ public class NumberArguments {
     }
   }
 
-  public static class DoubleArgument extends Argument<Double, DoubleArgument> {
+  public static class DoubleArgument extends Argument<Double, DoubleArgument, CommandSender> {
     private final DoubleRange range;
 
     public DoubleArgument(final String name) {
@@ -270,7 +270,7 @@ public class NumberArguments {
     }
   }
 
-  public static class IntegerRangeArgument extends Argument<IntegerRange, IntegerRangeArgument> {
+  public static class IntegerRangeArgument extends Argument<IntegerRange, IntegerRangeArgument, CommandSender> {
 
     public IntegerRangeArgument(final String name) {
       super(name, IntegerRange.class, ArgumentType.RANGE_INT);
@@ -294,7 +294,7 @@ public class NumberArguments {
     }
   }
 
-  public static class LongRangeArgument extends Argument<LongRange, LongRangeArgument> {
+  public static class LongRangeArgument extends Argument<LongRange, LongRangeArgument, CommandSender> {
 
     public LongRangeArgument(final String name) {
       super(name, LongRange.class, ArgumentType.RANGE_LONG);
@@ -318,7 +318,7 @@ public class NumberArguments {
     }
   }
 
-  public static class FloatRangeArgument extends Argument<FloatRange, FloatRangeArgument> {
+  public static class FloatRangeArgument extends Argument<FloatRange, FloatRangeArgument, CommandSender> {
 
     public FloatRangeArgument(final String name) {
       super(name, FloatRange.class, ArgumentType.RANGE_FLOAT);
@@ -342,7 +342,7 @@ public class NumberArguments {
     }
   }
 
-  public static class DoubleRangeArgument extends Argument<DoubleRange, DoubleRangeArgument> {
+  public static class DoubleRangeArgument extends Argument<DoubleRange, DoubleRangeArgument, CommandSender> {
 
     public DoubleRangeArgument(final String name) {
       super(name, DoubleRange.class, ArgumentType.RANGE_DOUBLE);
@@ -366,7 +366,7 @@ public class NumberArguments {
     }
   }
 
-  public static class LocationArgument extends Argument<Location, LocationArgument> {
+  public static class LocationArgument extends Argument<Location, LocationArgument, CommandSender> {
 
     public static final int MAX_COORDINATE = 30_000_000;
     private static final CommandSyntaxExceptionContainer OUTOFBOUNDS_LOCATION = new CommandSyntaxExceptionContainer(
@@ -449,7 +449,7 @@ public class NumberArguments {
     }
   }
 
-  public static class Location2DArgument extends Argument<Location2D, Location2DArgument> {
+  public static class Location2DArgument extends Argument<Location2D, Location2DArgument, CommandSender> {
 
     public static final int MAX_COORDINATE = 30_000_000;
     private static final CommandSyntaxExceptionContainer OUTOFBOUNDS_LOCATION = new CommandSyntaxExceptionContainer(
@@ -526,7 +526,7 @@ public class NumberArguments {
     }
   }
 
-  public static class AxisArgument extends Argument<Axis, AxisArgument> {
+  public static class AxisArgument extends Argument<Axis, AxisArgument, CommandSender> {
     public AxisArgument(final String name) {
       super(name, Axis.class, ArgumentType.AXIS);
       withSuggestions("x", "y", "z");
@@ -545,7 +545,7 @@ public class NumberArguments {
   }
 
   @SuppressWarnings("rawtypes")
-  public static class MultiAxisArgument extends Argument<EnumSet, MultiAxisArgument> {
+  public static class MultiAxisArgument extends Argument<EnumSet, MultiAxisArgument, CommandSender> {
 
     public MultiAxisArgument(final String name) {
       super(name, EnumSet.class, ArgumentType.AXIS);
@@ -570,7 +570,7 @@ public class NumberArguments {
     }
   }
 
-  public static class RotationArgument extends Argument<Rotation, RotationArgument> {
+  public static class RotationArgument extends Argument<Rotation, RotationArgument, CommandSender> {
 
     public RotationArgument(final String name) {
       super(name, Rotation.class, ArgumentType.ROTATION);

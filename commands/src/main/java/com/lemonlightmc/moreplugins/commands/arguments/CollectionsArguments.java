@@ -24,7 +24,7 @@ public class CollectionsArguments {
       (value) -> "Item '" + value + "'' is not allowed in list");
 
   @SuppressWarnings("rawtypes")
-  public static abstract class ListArgument<I extends ListArgument<I>> extends Argument<List, I> {
+  public static abstract class ListArgument<I extends ListArgument<I>> extends Argument<List, I, CommandSender> {
 
     protected ListArgument(final String name, final Class<List> primitiveType, final ArgumentType rawType) {
       super(name, primitiveType, rawType);
