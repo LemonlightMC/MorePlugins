@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.lemonlightmc.moreplugins.commands.argumentsbase.Argument;
 
-public class GreedyArgumentException extends RuntimeException {
+public class GreedyArgumentException extends CommandException {
 
   public GreedyArgumentException(final String argName, final String str) {
     super("Argument " + argName

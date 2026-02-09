@@ -1,6 +1,6 @@
 package com.lemonlightmc.moreplugins.commands.exceptions;
 
-public class OptionalArgumentException extends RuntimeException {
+public class OptionalArgumentException extends CommandException {
   public OptionalArgumentException(final String argName1, final String argName2) {
     super(
         "Failed to register required argument " + argName1

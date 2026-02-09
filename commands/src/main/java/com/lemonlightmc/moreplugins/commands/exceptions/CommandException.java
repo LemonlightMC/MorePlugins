@@ -13,4 +13,7 @@ public class CommandException extends RuntimeException {
     super(msg, cause);
   }
 
+  protected CommandException(String msg, Throwable cause, boolean enableStackTrace) {
+    super(msg, cause, enableStackTrace, enableStackTrace);
+  }
 }

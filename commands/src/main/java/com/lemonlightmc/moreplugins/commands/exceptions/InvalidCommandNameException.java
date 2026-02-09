@@ -1,6 +1,6 @@
 package com.lemonlightmc.moreplugins.commands.exceptions;
 
-public class InvalidCommandNameException extends RuntimeException {
+public class InvalidCommandNameException extends CommandException {
 
   public InvalidCommandNameException(final String commandName) {
     super(
