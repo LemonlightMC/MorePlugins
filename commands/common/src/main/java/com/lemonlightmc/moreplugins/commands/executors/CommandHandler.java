@@ -5,19 +5,10 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.bukkit.Bukkit;
-import org.bukkit.GameRule;
-import org.bukkit.command.BlockCommandSender;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.ConsoleCommandSender;
-import org.bukkit.entity.minecart.CommandMinecart;
-import org.bukkit.permissions.Permissible;
+import java.util.function.Function;
 
 import com.lemonlightmc.moreplugins.base.PluginBase;
-import com.lemonlightmc.moreplugins.commands.BukkitCommandSource;
 import com.lemonlightmc.moreplugins.commands.CommandSource;
-import com.lemonlightmc.moreplugins.commands.SimpleCommand;
 import com.lemonlightmc.moreplugins.commands.SimpleSubCommand;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.Argument;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.CommandArguments;
@@ -28,19 +19,32 @@ import com.lemonlightmc.moreplugins.commands.exceptions.CommandSyntaxException;
 import com.lemonlightmc.moreplugins.commands.suggestions.SuggestionInfo;
 import com.lemonlightmc.moreplugins.commands.suggestions.Suggestions;
 import com.lemonlightmc.moreplugins.messages.Logger;
-import com.lemonlightmc.moreplugins.messages.MessageFormatter;
 
-public class CommandHandler {
+public class CommandHandler<S, C extends CommandSource<S>> {
   public static final int MAX_TABCOMPLETIONS = 512;
 
-  public static void run(final SimpleCommand cmd, final CommandSender sender, final String[] args) {
+  private final Function<S, C> sourceFactory;
+
+  public CommandHandler(final Function<S, C> sourceFactory) {
+    this.sourceFactory = sourceFactory;
+  }
+
+  public C createCommandSource(final S sender) {
     try {
-      final CommandSource<CommandSender> source = BukkitCommandSource.from(sender);
+      return sourceFactory.apply(sender);
+    } catch (final Exception e) {
+      throw new CommandException("Failed to create CommandSource for Sender " + sender);
+    }
+  }
+
+  public void run(final RootCommand<?, S> cmd, final S sender, final String[] args) {
+    try {
+      final C source = createCommandSource(sender);
       final CommandArguments cmdArgs = parse(cmd, source, args == null ? new String[0] : args);
       if (cmdArgs == null) {
         return;
       }
-      final ExecutionInfo<CommandSender> info = new ExecutionInfo<CommandSender>(source, cmdArgs);
+      final ExecutionInfo<S> info = new ExecutionInfo<S>(source, cmdArgs);
       cmd.run(info, 0);
     } catch (final Throwable ex) {
       throw new CommandException(
@@ -52,28 +56,28 @@ public class CommandHandler {
     }
   }
 
-  public static List<String> tabComplete(
-      final SimpleCommand cmd,
-      final CommandSender sender,
+  public List<String> tabComplete(
+      final RootCommand<?, S> cmd,
+      final S sender,
       String[] args) {
     if (args == null) {
       args = new String[0];
     }
     try {
-      final CommandSource<CommandSender> source = BukkitCommandSource.from(sender);
+      final C source = createCommandSource(sender);
       final CommandArguments cmdArgs = parse(cmd, source, args);
       if (cmdArgs == null) {
         return List.of();
       }
-      final SuggestionInfo<CommandSender> info = new SuggestionInfo<CommandSender>(source, cmdArgs,
+      final SuggestionInfo<S> info = new SuggestionInfo<S>(source, cmdArgs,
           cmdArgs.getLastRaw());
 
-      final List<Suggestions<CommandSender>> temp = cmd.tabComplete(info, 0);
+      final List<Suggestions<S>> temp = cmd.tabComplete(info, 0);
       if (temp == null) {
         return List.of();
       }
       final List<String> tabCompletions = new ArrayList<>();
-      for (final Suggestions<CommandSender> suggestion : temp) {
+      for (final Suggestions<S> suggestion : temp) {
         if (suggestion != null) {
           final Collection<String> list = suggestion.suggest(info);
           if (list != null && !list.isEmpty()) {
@@ -100,20 +104,20 @@ public class CommandHandler {
     }
   }
 
-  private static CommandArguments parse(final SimpleCommand cmd, final CommandSource<CommandSender> source,
+  private CommandArguments parse(final RootCommand<?, S> cmd, final CommandSource<S> source,
       final String[] args) {
     final StringReader reader = new StringReader(String.join(" ", args));
-    return _parseArguments(cmd, cmd, reader, source, args);
+    return _parseArguments(cmd, reader, source, args);
   }
 
-  private static CommandArguments _parseArguments(final SimpleCommand cmd, AbstractCommand<?, CommandSender> thisCmd,
+  private CommandArguments _parseArguments(AbstractCommand<?, S> thisCmd,
       final StringReader reader,
-      final CommandSource<CommandSender> source, final String[] args) {
+      final CommandSource<S> source, final String[] args) {
     int i = 0;
     boolean hadSubcommand = true;
     while (hadSubcommand && args.length > i && thisCmd.hasSubcommands()) {
       hadSubcommand = false;
-      for (final SimpleSubCommand<CommandSender> sub : cmd.getSubcommands()) {
+      for (final SimpleSubCommand<S> sub : thisCmd.getSubcommands()) {
         if (_isSubCommand(args[i], sub)) {
           if (!sub.checkRequirements(source)) {
             return null;
@@ -127,7 +131,7 @@ public class CommandHandler {
     }
 
     final Map<String, ParsedArgument> parsedArgs = new HashMap<>();
-    for (final Argument<?, ?, CommandSender> arg : cmd.getArguments()) {
+    for (final Argument<?, ?, S> arg : thisCmd.getArguments()) {
       if (!arg.checkRequirements(source)) {
         return null;
       }
@@ -139,8 +143,8 @@ public class CommandHandler {
     return new CommandArguments(parsedArgs, reader.getString());
   }
 
-  private static Object _parseArg(final StringReader reader, final CommandSource<CommandSender> source,
-      final Argument<?, ?, CommandSender> arg) {
+  private Object _parseArg(final StringReader reader, final CommandSource<S> source,
+      final Argument<?, ?, S> arg) {
     reader.point();
     try {
       final Object value = arg.parseArgument(source, reader, arg.getName());
@@ -157,7 +161,7 @@ public class CommandHandler {
     return null;
   }
 
-  private static boolean _isSubCommand(final String arg, final SimpleSubCommand<CommandSender> sub) {
+  private boolean _isSubCommand(final String arg, final AbstractCommand<?, S> sub) {
     return sub.getAliases().contains(arg);
   }
 
@@ -174,7 +178,7 @@ public class CommandHandler {
     return string.regionMatches(true, 0, prefix, 0, prefix.length());
   }
 
-  public static boolean shouldHandle(final SimpleCommand cmd, final CommandSender sender, final String label) {
+  public boolean shouldHandle(final RootCommand<?, S> cmd, final S sender, final String label) {
     if (sender == null) {
       return false;
     }
@@ -193,33 +197,4 @@ public class CommandHandler {
     return true;
   }
 
-  public static void broadcastCommandMessage(final CommandSender source, final String message,
-      final boolean sendToSource) {
-    final String colored = MessageFormatter.format("&7&o[" + source.getName() + ": " + message + "&7&o]");
-
-    if (source instanceof final BlockCommandSender blockSender) {
-      if (!blockSender.getBlock().getWorld().getGameRuleValue(GameRule.COMMAND_BLOCK_OUTPUT)) {
-        Logger.info(colored);
-        return;
-      }
-    } else if (source instanceof final CommandMinecart cartSender) {
-      if (!cartSender.getWorld().getGameRuleValue(GameRule.COMMAND_BLOCK_OUTPUT)) {
-        Logger.info(colored);
-        return;
-      }
-    }
-
-    if (sendToSource && !(source instanceof ConsoleCommandSender)) {
-      source.sendMessage(colored);
-    }
-    for (final Permissible user : Bukkit.getPluginManager().getPermissionSubscriptions("bukkit.broadcast.admin")) {
-      if (user instanceof CommandSender && user.hasPermission("bukkit.broadcast.admin")) {
-        final CommandSender target = (CommandSender) user;
-
-        if (target != source || user instanceof ConsoleCommandSender) {
-          target.sendMessage(colored);
-        }
-      }
-    }
-  }
 }

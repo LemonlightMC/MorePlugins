@@ -31,7 +31,7 @@ public class ExampleCommand extends SimpleCommand {
     withArguments(new DoubleArgument("amount2").withSuggestions("1", "2", "3"));
     DoubleArgument amount3 = new DoubleArgument("amount3").withSuggestions(Suggestions.<CommandSender>from("1", "2"));
     withArguments(amount3);
-    executesPlayer(ExampleCommand::executes2);
+    executes(ExampleCommand::executes2);
     executesConsole(ExampleCommand::executesConsole2);
   }
 

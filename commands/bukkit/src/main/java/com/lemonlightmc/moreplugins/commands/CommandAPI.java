@@ -8,15 +8,20 @@ import java.util.Collections;
 import java.util.Map;
 
 import org.bukkit.Bukkit;
+import org.bukkit.GameRule;
 import org.bukkit.NamespacedKey;
+import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandMap;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.command.TabExecutor;
+import org.bukkit.entity.minecart.CommandMinecart;
+import org.bukkit.permissions.Permissible;
 import org.bukkit.plugin.SimplePluginManager;
 
 import com.lemonlightmc.moreplugins.base.PluginBase;
@@ -26,6 +31,7 @@ import com.lemonlightmc.moreplugins.commands.exceptions.MissingCommandExecutorEx
 import com.lemonlightmc.moreplugins.commands.executors.CommandHandler;
 import com.lemonlightmc.moreplugins.commands.executors.InternalExecutor;
 import com.lemonlightmc.moreplugins.messages.Logger;
+import com.lemonlightmc.moreplugins.messages.MessageFormatter;
 
 public class CommandAPI {
   private static final Field COMMAND_MAP_FIELD;
@@ -34,6 +40,7 @@ public class CommandAPI {
   private volatile static Map<String, Command> knownCommandMap;
 
   public volatile static String namespace;
+  public volatile static CommandHandler<CommandSender, BukkitCommandSource<CommandSender>> handler;
 
   static {
     try {
@@ -90,6 +97,13 @@ public class CommandAPI {
   public static String setNamespace() {
     namespace = PluginBase.getInstance().getKey();
     return namespace;
+  }
+
+  public static CommandHandler<CommandSender, BukkitCommandSource<CommandSender>> getHandler() {
+    if (handler == null) {
+      handler = new CommandHandler<CommandSender, BukkitCommandSource<CommandSender>>(s -> BukkitCommandSource.from(s));
+    }
+    return handler;
   }
 
   public static SimpleCommand command(String key) {
@@ -331,10 +345,10 @@ public class CommandAPI {
     if (sender == null) {
       sender = Bukkit.getConsoleSender();
     }
-    if (!CommandHandler.shouldHandle(command, sender, command.getKey())) {
+    if (!getHandler().shouldHandle(command, sender, command.getKey())) {
       return false;
     }
-    CommandHandler.run(command, sender, args);
+    getHandler().run(command, sender, args);
     return true;
   }
 
@@ -418,5 +432,35 @@ public class CommandAPI {
       return key;
     }
     return namespace + ":" + key;
+  }
+
+  public static void broadcastCommandMessage(final CommandSender source, final String message,
+      final boolean sendToSource) {
+    final String colored = MessageFormatter.format("&7&o[" + source.getName() + ": " + message + "&7&o]");
+
+    if (source instanceof final BlockCommandSender blockSender) {
+      if (!blockSender.getBlock().getWorld().getGameRuleValue(GameRule.COMMAND_BLOCK_OUTPUT)) {
+        Logger.info(colored);
+        return;
+      }
+    } else if (source instanceof final CommandMinecart cartSender) {
+      if (!cartSender.getWorld().getGameRuleValue(GameRule.COMMAND_BLOCK_OUTPUT)) {
+        Logger.info(colored);
+        return;
+      }
+    }
+
+    if (sendToSource && !(source instanceof ConsoleCommandSender)) {
+      source.sendMessage(colored);
+    }
+    for (final Permissible user : Bukkit.getPluginManager().getPermissionSubscriptions("bukkit.broadcast.admin")) {
+      if (user instanceof CommandSender && user.hasPermission("bukkit.broadcast.admin")) {
+        final CommandSender target = (CommandSender) user;
+
+        if (target != source || user instanceof ConsoleCommandSender) {
+          target.sendMessage(colored);
+        }
+      }
+    }
   }
 }

@@ -11,8 +11,28 @@ import com.lemonlightmc.moreplugins.commands.argumentsbase.Argument;
 import com.lemonlightmc.moreplugins.commands.exceptions.InvalidCommandNameException;
 import com.lemonlightmc.moreplugins.commands.exceptions.MissingCommandExecutorException;
 import com.lemonlightmc.moreplugins.commands.executors.AbstractCommand;
+import com.lemonlightmc.moreplugins.commands.executors.RootCommand;
+import com.lemonlightmc.moreplugins.commands.executors.BukkitExecutors.CommandBlockExecutionInfo;
+import com.lemonlightmc.moreplugins.commands.executors.BukkitExecutors.CommandBlockExecutor;
+import com.lemonlightmc.moreplugins.commands.executors.BukkitExecutors.ConsoleCommandExecutor;
+import com.lemonlightmc.moreplugins.commands.executors.BukkitExecutors.ConsoleExecutionInfo;
+import com.lemonlightmc.moreplugins.commands.executors.BukkitExecutors.EntityCommandExecutor;
+import com.lemonlightmc.moreplugins.commands.executors.BukkitExecutors.EntityExecutionInfo;
+import com.lemonlightmc.moreplugins.commands.executors.BukkitExecutors.FeedbackForwardingExecutionInfo;
+import com.lemonlightmc.moreplugins.commands.executors.BukkitExecutors.FeedbackForwardingExecutor;
+import com.lemonlightmc.moreplugins.commands.executors.BukkitExecutors.NativeCommandExecutor;
+import com.lemonlightmc.moreplugins.commands.executors.BukkitExecutors.NativeExecutionInfo;
+import com.lemonlightmc.moreplugins.commands.executors.BukkitExecutors.PlayerCommandExecutor;
+import com.lemonlightmc.moreplugins.commands.executors.BukkitExecutors.PlayerExecutionInfo;
+import com.lemonlightmc.moreplugins.commands.executors.BukkitExecutors.ProxyCommandExecutor;
+import com.lemonlightmc.moreplugins.commands.executors.BukkitExecutors.ProxyExecutionInfo;
+import com.lemonlightmc.moreplugins.commands.executors.BukkitExecutors.RemoteConsoleCommandExecutor;
+import com.lemonlightmc.moreplugins.commands.executors.BukkitExecutors.RemoteConsoleExecutionInfo;
+import com.lemonlightmc.moreplugins.commands.executors.Executors.ExecutorType;
+import com.lemonlightmc.moreplugins.exceptions.PlatformException;
+import com.lemonlightmc.moreplugins.version.ServerEnvironment;
 
-public class SimpleCommand extends AbstractCommand<SimpleCommand, CommandSender> {
+public class SimpleCommand extends RootCommand<SimpleCommand, CommandSender> {
 
   private NamespacedKey key = null;
   private String[] usageDescription;
@@ -130,6 +150,104 @@ public class SimpleCommand extends AbstractCommand<SimpleCommand, CommandSender>
 
   public List<String> getHelp() {
     return helpMessage == null ? null : List.of(helpMessage.split("\n"));
+  }
+
+  // Player command executor
+  public SimpleCommand executesPlayer(final PlayerCommandExecutor executor) {
+    addExecutor(ExecutorType.PLAYER, executor);
+    return getInstance();
+  }
+
+  public SimpleCommand executesPlayer(final PlayerExecutionInfo info) {
+    addExecutor(ExecutorType.PLAYER, info);
+    return getInstance();
+  }
+
+  // Entity command executor
+  public SimpleCommand executesEntity(final EntityCommandExecutor executor) {
+    addExecutor(ExecutorType.ENTITY, executor);
+    return getInstance();
+  }
+
+  public SimpleCommand executesEntity(final EntityExecutionInfo info) {
+    addExecutor(ExecutorType.ENTITY, info);
+    return getInstance();
+  }
+
+  // Command block command executor
+  public SimpleCommand executesCommandBlock(final CommandBlockExecutor executor) {
+    addExecutor(ExecutorType.BLOCK, executor);
+    return getInstance();
+  }
+
+  public SimpleCommand executesCommandBlock(final CommandBlockExecutionInfo info) {
+    addExecutor(ExecutorType.BLOCK, info);
+    return getInstance();
+  }
+
+  // Console command executor
+  public SimpleCommand executesConsole(final ConsoleCommandExecutor executor) {
+    addExecutor(ExecutorType.CONSOLE, executor);
+    return getInstance();
+  }
+
+  public SimpleCommand executesConsole(final ConsoleExecutionInfo info) {
+    addExecutor(ExecutorType.CONSOLE, info);
+    return getInstance();
+  }
+
+  // RemoteConsole command executor
+  public SimpleCommand executesRemoteConsole(final RemoteConsoleCommandExecutor executor) {
+    addExecutor(ExecutorType.REMOTE, executor);
+    return getInstance();
+  }
+
+  public SimpleCommand executesRemoteConsole(final RemoteConsoleExecutionInfo info) {
+    addExecutor(ExecutorType.REMOTE, info);
+    return getInstance();
+  }
+
+  // Native command executor
+  public SimpleCommand executesNative(final NativeCommandExecutor executor) {
+    addExecutor(ExecutorType.NATIVE, executor);
+    return getInstance();
+  }
+
+  public SimpleCommand executesNative(final NativeExecutionInfo info) {
+    addExecutor(ExecutorType.NATIVE, info);
+    return getInstance();
+  }
+
+  // Proxy command executor
+  public SimpleCommand executesNative(final ProxyCommandExecutor executor) {
+    addExecutor(ExecutorType.PROXY, executor);
+    return getInstance();
+  }
+
+  public SimpleCommand executesNative(final ProxyExecutionInfo info) {
+    addExecutor(ExecutorType.PROXY, info);
+    return getInstance();
+  }
+
+  // Feedback-forwarding command executor
+  public SimpleCommand executesFeedbackForwarding(final FeedbackForwardingExecutor executor) {
+    if (!ServerEnvironment.isPaper()) {
+      throw new PlatformException(
+          "Attempted to use a FeedbackForwardingCommandExecutor on a non-paper platform ("
+              + ServerEnvironment.current().name() + ")!");
+    }
+    addExecutor(ExecutorType.FEEDBACK_FORWARDING, executor);
+    return getInstance();
+  }
+
+  public SimpleCommand executesFeedbackForwarding(final FeedbackForwardingExecutionInfo info) {
+    if (!ServerEnvironment.isPaper()) {
+      throw new PlatformException(
+          "Attempted to use a FeedbackForwardingExecutionInfo on a non-paper platform ("
+              + ServerEnvironment.current().name() + ")!");
+    }
+    addExecutor(ExecutorType.FEEDBACK_FORWARDING, info);
+    return getInstance();
   }
 
   void build() {

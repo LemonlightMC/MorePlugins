@@ -1,6 +1,7 @@
 package com.lemonlightmc.moreplugins.commands.executors;
 
 import com.lemonlightmc.moreplugins.base.PluginBase;
+import com.lemonlightmc.moreplugins.commands.CommandAPI;
 import com.lemonlightmc.moreplugins.commands.SimpleCommand;
 
 import java.util.List;
@@ -46,16 +47,16 @@ public class InternalExecutor extends Command {
 
   @Override
   public boolean execute(final CommandSender sender, final String label0, final String[] args) {
-    if (!CommandHandler.shouldHandle(cmd, sender, label0)) {
+    if (!CommandAPI.getHandler().shouldHandle(cmd, sender, label0)) {
       return true;
     }
     if (!runAsync) {
-      CommandHandler.run(cmd, sender, args);
+      CommandAPI.getHandler().run(cmd, sender, args);
       return true;
     }
     PluginBase.getInstanceScheduler()
         .runAsync(() -> {
-          CommandHandler.run(cmd, sender, args);
+          CommandAPI.getHandler().run(cmd, sender, args);
         });
     return true;
   }
@@ -66,10 +67,10 @@ public class InternalExecutor extends Command {
       final String label,
       final String[] args,
       final Location location) {
-    if (!CommandHandler.shouldHandle(cmd, sender, label)) {
+    if (!CommandAPI.getHandler().shouldHandle(cmd, sender, label)) {
       return List.of();
     }
-    return CommandHandler.tabComplete(cmd, sender, args);
+    return CommandAPI.getHandler().tabComplete(cmd, sender, args);
   }
 
   @Override

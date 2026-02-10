@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Predicate;
 
-public abstract class AbstractCommand<T extends AbstractCommand<T, S>, S> extends Executable<T> {
+public abstract class AbstractCommand<T extends AbstractCommand<T, S>, S> extends Executable<T, S> {
 
   protected List<Argument<?, ?, S>> arguments = new ArrayList<>();
   protected List<SimpleSubCommand<S>> subcommands = new ArrayList<>();

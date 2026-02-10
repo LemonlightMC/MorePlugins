@@ -8,7 +8,6 @@ import com.lemonlightmc.moreplugins.commands.exceptions.CommandException;
 import com.lemonlightmc.moreplugins.commands.executors.Executors.ExecutorType;
 
 public interface CommandSource<S> {
-
   public <T extends S> CommandSource<T> copyFor(final T newSender);
 
   public CommandSource<S> copy();

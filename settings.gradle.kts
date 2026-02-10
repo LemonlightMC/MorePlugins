@@ -15,6 +15,7 @@ rootProject.name = "MorePlugins"
 include(":core")
 include(":commands")
 include(":commands:common")
+include(":commands:bukkit")
 include(":custom")
 include(":integrations")
 println(rootProject)
