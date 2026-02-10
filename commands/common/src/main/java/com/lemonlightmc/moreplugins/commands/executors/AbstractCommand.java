@@ -384,7 +384,7 @@ public abstract class AbstractCommand<T extends AbstractCommand<T, S>, S> extend
   }
 
   // execution
-  protected void run(final ExecutionInfo<S> info, final int idx) throws CommandException {
+  public void run(final ExecutionInfo<S> info, final int idx) throws CommandException {
     final SimpleSubCommand<S> sub = getSubcommand(info.args().getRaw(idx));
     if (sub != null) {
       sub.run(info, idx + 1);

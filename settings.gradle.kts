@@ -14,6 +14,7 @@ plugins {
 rootProject.name = "MorePlugins"
 include(":core")
 include(":commands")
+include(":commands:common")
 include(":custom")
 include(":integrations")
 println(rootProject)

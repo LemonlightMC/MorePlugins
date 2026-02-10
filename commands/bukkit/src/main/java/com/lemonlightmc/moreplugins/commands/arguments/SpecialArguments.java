@@ -12,11 +12,11 @@ import java.util.function.Function;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
+import com.lemonlightmc.moreplugins.commands.BukkitCommandResult;
 import com.lemonlightmc.moreplugins.commands.CommandAPI;
 import com.lemonlightmc.moreplugins.commands.CommandSource;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.Argument;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.ArgumentType;
-import com.lemonlightmc.moreplugins.commands.argumentsbase.BukkitCommandResult;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.CommandResult;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.StringReader;
 import com.lemonlightmc.moreplugins.commands.exceptions.InvalidArgumentBranchException;

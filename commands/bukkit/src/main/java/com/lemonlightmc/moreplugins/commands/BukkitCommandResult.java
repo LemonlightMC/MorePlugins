@@ -1,10 +1,10 @@
-package com.lemonlightmc.moreplugins.commands.argumentsbase;
+package com.lemonlightmc.moreplugins.commands;
 
 import java.util.Arrays;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
-import com.lemonlightmc.moreplugins.commands.CommandSource;
+import com.lemonlightmc.moreplugins.commands.argumentsbase.CommandResult;
 
 public record BukkitCommandResult<S extends CommandSender>(Command command, String[] args)
     implements CommandResult<Command, S> {
