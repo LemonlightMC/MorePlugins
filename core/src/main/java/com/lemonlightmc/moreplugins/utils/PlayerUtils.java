@@ -1,8 +1,11 @@
 package com.lemonlightmc.moreplugins.utils;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
+import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -11,57 +14,72 @@ import org.bukkit.entity.Player;
 
 public class PlayerUtils {
 
-  public static OfflinePlayer getOfflinePlayer(String name) {
-    if (name == null || name.length() == 0) {
-      return null;
-    }
-    return Bukkit.getOfflinePlayer(UUIDUtils.toUUID(name));
+  public static OfflinePlayer getOfflinePlayer(final String name) {
+    final UUID uuid = UUIDUtils.toUUID(name);
+    return uuid == null ? null : Bukkit.getOfflinePlayer(uuid);
   }
 
-  public static OfflinePlayer getOfflinePlayer(UUID uuid) {
+  public static OfflinePlayer getOfflinePlayer(final UUID uuid) {
     if (uuid == null) {
       return null;
     }
     return Bukkit.getOfflinePlayer(uuid);
   }
 
-  public static Player getPlayer(String name) {
+  public static Player getPlayer(final String name) {
     if (name == null || name.length() == 0) {
       return null;
     }
-    return Bukkit.getPlayerExact(name);
+    return Bukkit.getPlayerExact(UUIDUtils.toName(name));
   }
 
-  public static OfflinePlayer getPlayer(String name, boolean allowOffline) {
-    if (name == null || name.length() == 0) {
-      return null;
-    }
-    Player p = Bukkit.getPlayerExact(name);
+  public static OfflinePlayer getPlayer(final String name, final boolean allowOffline) {
+    final Player p = getPlayer(name);
     if (p != null || !allowOffline) {
       return p;
     }
-    return Bukkit.getOfflinePlayer(UUIDUtils.toUUID(name));
+    return getOfflinePlayer(name);
   }
 
   public static Player[] getOnlinePlayers() {
     return Bukkit.getOnlinePlayers().toArray(Player[]::new);
   }
 
-  public static Player[] getPlayersInRadius(Player player, int size) {
-    List<Entity> players = player.getNearbyEntities(size, size, size);
+  public static Stream<OfflinePlayer> streamOnline() {
+    return Arrays.stream(Bukkit.getOfflinePlayers());
+  }
+
+  public static void forEachOnline(final Consumer<Player> consumer) {
+    for (final Player player : Bukkit.getOnlinePlayers()) {
+      consumer.accept(player);
+    }
+  }
+
+  public static Player[] getPlayersInRadius(final Player player, final int size) {
+    final List<Entity> players = player.getNearbyEntities(size, size, size);
     players.removeIf(e -> !(e instanceof Player));
     return players.toArray(Player[]::new);
   }
 
   public static OfflinePlayer[] getOfflinePlayers() {
-    return Bukkit.getOfflinePlayers();
+    return Bukkit.getOfflinePlayers().clone();
+  }
+
+  public static Stream<OfflinePlayer> streamOffline() {
+    return Arrays.stream(Bukkit.getOfflinePlayers());
+  }
+
+  public static void forEachOffline(final Consumer<OfflinePlayer> consumer) {
+    for (final OfflinePlayer player : Bukkit.getOfflinePlayers()) {
+      consumer.accept(player);
+    }
   }
 
   public static boolean isValidPlayer(final OfflinePlayer player) {
     if (player == null || player.getName() == null || player.getName().length() == 0) {
       return false;
     }
-    final String name = UUIDUtils.fetchName(player.getUniqueId());
+    final String name = UUIDUtils.fetchName(player.getUniqueId().toString());
     return name != null && name.length() != 0 && name == player.getName();
   }
 

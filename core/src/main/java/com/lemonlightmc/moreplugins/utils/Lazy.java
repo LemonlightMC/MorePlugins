@@ -14,6 +14,10 @@ public class Lazy<T> implements Supplier<T> {
     this.supplier = supplier;
   }
 
+  public static <E> Lazy<E> from(final Supplier<E> supplier) {
+    return new Lazy<E>(supplier);
+  }
+
   @Override
   public T get() {
     T result = value;
@@ -30,7 +34,15 @@ public class Lazy<T> implements Supplier<T> {
   }
 
   public boolean isInitialized() {
+    return initialized == true;
+  }
+
+  public boolean isPresent() {
     return value != null;
+  }
+
+  public boolean isUnPresent() {
+    return value == null;
   }
 
   @Override

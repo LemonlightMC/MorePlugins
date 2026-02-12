@@ -4,14 +4,13 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Set;
 
-import org.checkerframework.checker.units.qual.K;
-
 import com.lemonlightmc.moreplugins.interfaces.Cloneable;
 import com.lemonlightmc.moreplugins.time.PolyTimeUnit;
 
 public class CooldownStore<T> implements Cloneable<CooldownStore<T>>, Iterable<T> {
   private final HashMap<T, CooldownHolder> cooldowns;
   public long defaultDuration;
+  private static Lazy<CooldownStore<?>> globalStore = Lazy.from(() -> new CooldownStore<>());
 
   public CooldownStore() {
     this(1000L);
@@ -27,46 +26,60 @@ public class CooldownStore<T> implements Cloneable<CooldownStore<T>>, Iterable<T
     this.defaultDuration = store.defaultDuration;
   }
 
-  public static <T> CooldownStore<T> of() {
+  public static CooldownStore<?> global() {
+    return globalStore.get();
+  }
+
+  public static <T> CooldownStore<T> from() {
     return new CooldownStore<T>();
   }
 
-  public static <T> CooldownStore<T> of(final long defaultDuration, final PolyTimeUnit unit) {
+  public static <T> CooldownStore<T> from(final CooldownStore<T> store) {
+    return new CooldownStore<T>(store);
+  }
+
+  public static <T> CooldownStore<T> from(final long defaultDuration, final PolyTimeUnit unit) {
     return new CooldownStore<T>(unit.toMillis(defaultDuration));
   }
 
-  public void setDefaultDuration(final long defaultDuration) {
+  public CooldownStore<T> setDefaultDuration(final long defaultDuration) {
     this.defaultDuration = defaultDuration;
+    return this;
   }
 
-  public void setDefaultDuration(final long defaultDuration, final PolyTimeUnit unit) {
+  public CooldownStore<T> setDefaultDuration(final long defaultDuration, final PolyTimeUnit unit) {
     this.defaultDuration = unit.toMillis(defaultDuration);
+    return this;
   }
 
   public long getDefaultDuration() {
     return this.defaultDuration;
   }
 
-  public void set(final T key, final long time) {
+  public CooldownStore<T> set(final T key, final long time) {
     if (time < 0) {
-      return;
+      return this;
     }
-    this.cooldowns.compute(key, (k, v) -> v == null ? new CooldownHolder(time) : v.set(time));
+    this.cooldowns.compute(key,
+        (k, v) -> v == null ? new CooldownHolder(System.currentTimeMillis(), time) : v.set(time));
+    return this;
   }
 
-  public void set(final T key) {
-    set(key, defaultDuration);
+  public CooldownStore<T> set(final T key) {
+    return set(key, defaultDuration);
   }
 
-  public void add(final T key, final long time) {
+  public CooldownStore<T> add(final T key, final long time) {
     if (time < 0) {
-      return;
+      return this;
     }
-    this.cooldowns.compute(key, (k, v) -> v == null ? new CooldownHolder(time) : v.add(time));
+    this.cooldowns.compute(key,
+        (k, v) -> v == null ? new CooldownHolder(System.currentTimeMillis(), time) : v.add(time));
+    return this;
   }
 
-  public void add(final T key) {
-    add(key, defaultDuration);
+  public CooldownStore<T> add(final T key) {
+    return add(key, defaultDuration);
   }
 
   public CooldownHolder get(final T key) {
@@ -77,16 +90,20 @@ public class CooldownStore<T> implements Cloneable<CooldownStore<T>>, Iterable<T
     return this.cooldowns.containsKey(key);
   }
 
-  public void reset(final T key) {
-    this.cooldowns.compute(key, (k, v) -> v == null ? new CooldownHolder(defaultDuration) : v.reset());
+  public CooldownStore<T> reset(final T key) {
+    this.cooldowns.compute(key,
+        (k, v) -> v == null ? new CooldownHolder(System.currentTimeMillis(), defaultDuration) : v.reset());
+    return this;
   }
 
-  public void remove(final T key) {
+  public CooldownStore<T> remove(final T key) {
     this.cooldowns.remove(key);
+    return this;
   }
 
-  public void clear() {
+  public CooldownStore<T> clear() {
     this.cooldowns.clear();
+    return this;
   }
 
   public HashMap<T, CooldownHolder> getEntries() {
@@ -122,12 +139,12 @@ public class CooldownStore<T> implements Cloneable<CooldownStore<T>>, Iterable<T
     return holder == null ? -1 : holder.getRemaining();
   }
 
-  public long getElapsed(final K key) {
+  public long getElapsed(final T key) {
     final CooldownHolder holder = this.cooldowns.get(key);
     return holder == null ? -1 : holder.getElapsed();
   }
 
-  public boolean stopIfFinished(final K key) {
+  public boolean stopIfFinished(final T key) {
     final CooldownHolder holder = this.cooldowns.get(key);
     if (holder == null) {
       return true;
@@ -138,7 +155,7 @@ public class CooldownStore<T> implements Cloneable<CooldownStore<T>>, Iterable<T
     return false;
   }
 
-  public boolean stopIfOnCooldown(final K key) {
+  public boolean stopIfOnCooldown(final T key) {
     final CooldownHolder holder = this.cooldowns.get(key);
     if (holder == null) {
       return false;

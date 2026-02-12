@@ -16,6 +16,14 @@ public class CooldownHolder implements Cloneable<CooldownHolder> {
     this(System.currentTimeMillis(), duration);
   }
 
+  public static CooldownHolder from(final long startTime, final long duration) {
+    return new CooldownHolder(startTime, duration);
+  }
+
+  public static CooldownHolder from(final long duration) {
+    return new CooldownHolder(System.currentTimeMillis(), duration);
+  }
+
   public CooldownHolder add(final long time) {
     duration += time;
     return this;
