@@ -1,17 +1,31 @@
 package com.lemonlightmc.moreplugins.utils;
 
+import java.util.Optional;
 import java.util.function.Supplier;
 
-public class Lazy<T> implements Supplier<T> {
-  private final Supplier<T> supplier;
-  private volatile boolean initialized = false;
-  private volatile T value;
+import com.lemonlightmc.moreplugins.time.PolyTimeUnit;
 
-  public Lazy(final Supplier<T> supplier) {
+public class Lazy<T> implements Supplier<T> {
+
+  private Supplier<T> supplier;
+  private volatile T value;
+  private volatile long expiryTime;
+  private final long duration;
+
+  public Lazy(final Supplier<T> supplier, final long duration, final PolyTimeUnit unit) {
     if (supplier == null) {
       throw new IllegalArgumentException("Supplier cant be null");
     }
     this.supplier = supplier;
+    this.duration = unit == null || duration < 0 ? -1L : unit.toNanos(duration);
+  }
+
+  public Lazy(final Supplier<T> supplier, final long duration) {
+    this(supplier, duration, PolyTimeUnit.NANOSSECONDS);
+  }
+
+  public Lazy(final Supplier<T> supplier) {
+    this(supplier, -1l, null);
   }
 
   public static <E> Lazy<E> from(final Supplier<E> supplier) {
@@ -21,20 +35,26 @@ public class Lazy<T> implements Supplier<T> {
   @Override
   public T get() {
     T result = value;
+    final long nanos = System.nanoTime();
 
-    if (!initialized) {
+    if (supplier != null || nanos > expiryTime) {
       synchronized (this) {
-        if (!initialized) {
-          value = result = supplier.get();
-          initialized = true;
+        if (supplier != null || nanos > expiryTime) {
+          this.value = result = supplier.get();
+          this.supplier = null;
+          this.expiryTime = nanos + duration;
         }
       }
     }
     return result;
   }
 
+  public Optional<T> getIfPresent() {
+    return Optional.ofNullable(this.value);
+  }
+
   public boolean isInitialized() {
-    return initialized == true;
+    return supplier == null;
   }
 
   public boolean isPresent() {
@@ -47,8 +67,10 @@ public class Lazy<T> implements Supplier<T> {
 
   @Override
   public int hashCode() {
-    final int result = 31 * supplier.hashCode() + 961 + (initialized ? 1231 : 1237);
-    return 31 * result + ((value == null) ? 0 : value.hashCode());
+    int result = 31 + ((supplier == null) ? 0 : supplier.hashCode());
+    result = 31 * result + ((value == null) ? 0 : value.hashCode());
+    result = 31 * result + (int) (duration ^ (duration >>> 32));
+    return 31 * result + (int) (expiryTime ^ (expiryTime >>> 32));
   }
 
   @Override
@@ -60,14 +82,16 @@ public class Lazy<T> implements Supplier<T> {
       return false;
     }
     final Lazy<?> other = (Lazy<?>) obj;
-    if (value == null && other.value != null) {
+    if (value == null && other.value != null || supplier == null && other.supplier != null) {
       return false;
     }
-    return supplier.equals(other.supplier) && initialized == other.initialized && value.equals(other.value);
+    return duration == other.duration && expiryTime == other.expiryTime && value.equals(other.value)
+        && supplier.equals(other.supplier);
   }
 
   @Override
   public String toString() {
-    return "Lazy [supplier=" + supplier + ", value=" + value + "]";
+    return "Lazy [supplier=" + supplier + ", value=" + value + ", duration=" + duration + ", expiryTime=" + expiryTime
+        + "]";
   }
 }
