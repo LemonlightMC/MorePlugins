@@ -34,7 +34,7 @@ public class ConfirmRequest {
 
   public void stop() {
     if (expiredTask != null) {
-      expiredTask.stop();
+      expiredTask.cancel();
       expiredTask = null;
     }
   }

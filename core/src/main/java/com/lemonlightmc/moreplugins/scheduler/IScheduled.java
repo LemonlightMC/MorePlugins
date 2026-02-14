@@ -5,16 +5,20 @@ import org.bukkit.scheduler.BukkitTask;
 
 import com.lemonlightmc.moreplugins.scheduler.Scheduler.ThreadContext;
 
-public interface IScheduled<T> extends BukkitTask {
+public interface IScheduled extends BukkitTask {
+  @Override
   public int getTaskId();
 
+  @Override
   public Plugin getOwner();
 
-  public T getBacking();
+  public BukkitTask getBacking();
 
-  public boolean isClosed();
+  @Override
+  public boolean isCancelled();
 
-  public boolean stop();
+  @Override
+  public void cancel();
 
   public boolean isRunning();
 
@@ -22,13 +26,10 @@ public interface IScheduled<T> extends BukkitTask {
 
   public ThreadContext getThreadContext();
 
+  @Override
   public boolean isSync();
 
   public boolean isAsync();
-
-  public boolean isRepeating();
-
-  public long getInterval();
 
   public boolean isDelayed();
 

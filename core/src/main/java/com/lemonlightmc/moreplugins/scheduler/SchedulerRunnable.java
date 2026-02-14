@@ -1,6 +1,7 @@
 package com.lemonlightmc.moreplugins.scheduler;
 
 import org.bukkit.Bukkit;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitTask;
 
 import com.lemonlightmc.moreplugins.base.MorePlugins;
@@ -10,63 +11,118 @@ public abstract class SchedulerRunnable implements Runnable {
 
   protected ScheduledTask task;
 
-  public synchronized boolean isCancelled() throws IllegalStateException {
-    checkScheduled();
-    return task.isCancelled();
+  public synchronized boolean isCancelled() {
+    return task != null && task.isCancelled();
   }
 
-  public synchronized void cancel() throws IllegalStateException {
-    if (task != null || task.getTaskId() != -1) {
-      Bukkit.getScheduler().cancelTask(task.getTaskId());
+  public synchronized void cancel() {
+    if (task != null) {
+      task.cancel();
+      task = null;
     }
   }
 
-  public synchronized ScheduledTask runTask() throws IllegalArgumentException, IllegalStateException {
-    checkNotYetScheduled();
-    return setupTask(
-        Bukkit.getScheduler().runTask(MorePlugins.instance, this), ThreadContext.SYNC, -1, -1);
+  public synchronized ScheduledTask getTask() {
+    return task;
   }
 
-  public synchronized ScheduledTask runTaskAsync() throws IllegalArgumentException, IllegalStateException {
-    checkNotYetScheduled();
-    return setupTask(
-        Bukkit.getScheduler().runTaskAsynchronously(MorePlugins.instance, this), ThreadContext.ASYNC, -1, -1);
+  public synchronized int getTaskId() {
+    return task == null ? -1 : task.getTaskId();
   }
 
-  public synchronized ScheduledTask runTaskLater(long delay) throws IllegalArgumentException, IllegalStateException {
+  public synchronized Plugin getOwner() throws IllegalStateException {
+    return task == null ? null : task.getOwner();
+  }
+
+  public synchronized ThreadContext getThreadContext() throws IllegalStateException {
+    return task == null ? null : task.getThreadContext();
+  }
+
+  public synchronized boolean isRunning() throws IllegalStateException {
+    checkScheduled();
+    return task.isRunning();
+  }
+
+  public synchronized boolean isQueued() throws IllegalStateException {
+    checkScheduled();
+    return task.isQueued();
+  }
+
+  public synchronized boolean isSync() throws IllegalStateException {
+    checkScheduled();
+    return task.isSync();
+  }
+
+  public synchronized boolean isAsync() throws IllegalStateException {
+    checkScheduled();
+    return task.isAsync();
+  }
+
+  public synchronized boolean isDelayed() throws IllegalStateException {
+    checkScheduled();
+    return task.isDelayed();
+  }
+
+  public synchronized long getDelay() {
+    return task == null ? 0 : task.getDelay();
+  }
+
+  public synchronized boolean isRepeating() throws IllegalStateException {
+    checkScheduled();
+    if (task instanceof final RepeatingScheduledTask repeatingTask) {
+      return repeatingTask.isRepeating();
+    }
+    return false;
+  }
+
+  public synchronized long getInterval() {
+    if (task != null && task instanceof final RepeatingScheduledTask repeatingTask) {
+      return repeatingTask.getInterval();
+    }
+    return -1;
+  }
+
+  public synchronized ScheduledTask runTask() throws IllegalStateException {
+    checkNotYetScheduled();
+    return setupTask(
+        Bukkit.getScheduler().runTask(MorePlugins.instance, this), ThreadContext.SYNC, 0, -1);
+  }
+
+  public synchronized ScheduledTask runTaskAsync() throws IllegalStateException {
+    checkNotYetScheduled();
+    return setupTask(
+        Bukkit.getScheduler().runTaskAsynchronously(MorePlugins.instance, this), ThreadContext.ASYNC, 0, -1);
+  }
+
+  public synchronized ScheduledTask runTaskLater(final long delay) throws IllegalStateException {
     checkNotYetScheduled();
     return setupTask(
         Bukkit.getScheduler().runTaskLater(MorePlugins.instance, this, delay), ThreadContext.SYNC, delay, -1);
   }
 
-  public synchronized ScheduledTask runTaskLaterAsync(long delay)
-      throws IllegalArgumentException, IllegalStateException {
+  public synchronized ScheduledTask runTaskLaterAsync(final long delay)
+      throws IllegalStateException {
     checkNotYetScheduled();
     return setupTask(
         Bukkit.getScheduler().runTaskLaterAsynchronously(MorePlugins.instance, this, delay),
         ThreadContext.ASYNC, delay, -1);
   }
 
-  public synchronized ScheduledTask runTaskTimer(long delay, long interval)
-      throws IllegalArgumentException, IllegalStateException {
+  public synchronized ScheduledTask runTaskRepeating(final long delay, final long interval)
+      throws IllegalStateException {
     checkNotYetScheduled();
     return setupTask(
         Bukkit.getScheduler().runTaskTimer(MorePlugins.instance, this, delay, interval),
         ThreadContext.SYNC, delay, interval);
   }
 
-  public synchronized ScheduledTask runTaskTimerAsync(long delay, long interval)
-      throws IllegalArgumentException, IllegalStateException {
+  public synchronized ScheduledTask runTaskRepeatingAsync(final long delay, final long interval)
+      throws IllegalStateException {
     checkNotYetScheduled();
     return setupTask(
         Bukkit.getScheduler().runTaskTimerAsynchronously(MorePlugins.instance, this, delay,
             interval),
         ThreadContext.ASYNC, delay, interval);
-  }
-
-  public synchronized int getTaskId() throws IllegalStateException {
-    checkScheduled();
-    return task.getTaskId();
   }
 
   private void checkScheduled() {
@@ -81,8 +137,38 @@ public abstract class SchedulerRunnable implements Runnable {
     }
   }
 
-  private ScheduledTask setupTask(final BukkitTask task, ThreadContext ctx, long delay, long interval) {
-    this.task = new ScheduledTask(task, task.getTaskId(), ctx, interval, delay);
+  private ScheduledTask setupTask(final BukkitTask task, final ThreadContext ctx, final long delay,
+      final long interval) {
+    if (interval > 0) {
+      this.task = new RepeatingScheduledTask(task, task.getTaskId(), ctx, delay, interval);
+    } else {
+      this.task = new ScheduledTask(task, task.getTaskId(), ctx, delay);
+    }
     return this.task;
+  }
+
+  @Override
+  public int hashCode() {
+    return 31 + ((task == null) ? 0 : task.hashCode());
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null || getClass() != obj.getClass()) {
+      return false;
+    }
+    SchedulerRunnable other = (SchedulerRunnable) obj;
+    if (task == null && other.task != null) {
+      return false;
+    }
+    return task.equals(other.task);
+  }
+
+  @Override
+  public String toString() {
+    return "SchedulerRunnable [task=" + task + "]";
   }
 }

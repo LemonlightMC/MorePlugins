@@ -1,14 +1,18 @@
 package com.lemonlightmc.moreplugins.scheduler;
 
 import org.bukkit.Bukkit;
-import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.scheduler.BukkitWorker;
 
 import com.lemonlightmc.moreplugins.base.MorePlugins;
 
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.Callable;
+import java.util.function.Consumer;
 
 public class Scheduler implements IScheduler {
 
@@ -20,26 +24,29 @@ public class Scheduler implements IScheduler {
       return Bukkit.getServer().isPrimaryThread() ? SYNC : ASYNC;
     }
 
-    public static ThreadContext forThread(Thread thread) {
+    public static ThreadContext forThread(final Thread thread) {
       return (Bukkit.getServer().isPrimaryThread() && thread == Thread.currentThread())
           ? SYNC
           : ASYNC;
     }
   }
 
-  @Override
-  public ScheduleBuilder builder() {
-    return new ScheduleBuilder();
+  private static long clamp(final long delay) {
+    return Math.round(Math.min(Math.max(delay, 0), Integer.MAX_VALUE));
   }
 
-  @Override
-  public IScheduler clone() {
-    return new Scheduler();
-  }
-
-  private ScheduledTask wrap(final BukkitTask task, final ThreadContext ctx, final long interval,
+  private static ScheduledTask wrap(final BukkitTask task, final ThreadContext ctx, final long interval,
       final long delay) {
-    return new ScheduledTask(task, task.getTaskId(), ctx, interval, delay);
+    if (interval > 0) {
+      return new RepeatingScheduledTask(task, task.getTaskId(), ctx, delay, interval);
+    } else {
+      return new ScheduledTask(task, task.getTaskId(), ctx, delay);
+    }
+  }
+
+  @Override
+  public ScheduledBuilder builder() {
+    return new ScheduledBuilder();
   }
 
   @Override
@@ -53,22 +60,22 @@ public class Scheduler implements IScheduler {
   }
 
   @Override
-  public void cancelTask(final List<Integer> taskIds) {
+  public void cancelTasks(final Collection<Integer> taskIds) {
     for (final int id : taskIds) {
       Bukkit.getScheduler().cancelTask(id);
     }
   }
 
   @Override
-  public void cancelTask(final int[] taskIds) {
+  public void cancelTasks(final int... taskIds) {
     for (final int id : taskIds) {
       Bukkit.getScheduler().cancelTask(id);
     }
   }
 
   @Override
-  public void cancelTask(final int taskId) {
-    Bukkit.getScheduler().cancelTask(taskId);
+  public void cancelTasks(final Plugin plugin) {
+    Bukkit.getScheduler().cancelTasks(plugin);
   }
 
   @Override
@@ -89,187 +96,288 @@ public class Scheduler implements IScheduler {
   // run
 
   @Override
-  public ScheduledTask run(final Runnable task) {
-    return wrap(Bukkit.getScheduler().runTask(MorePlugins.instance, task),
-        ThreadContext.SYNC, 0, 0);
-
+  public ScheduledTask run(final Runnable runnable) {
+    return run(runnable, 0, -1);
   }
 
   @Override
-  public ScheduledTask run(final Runnable[] tasks) {
-    return wrap(new BukkitRunnable() {
+  public ScheduledTask run(final Runnable runnable, final long delay) {
+    return run(runnable, delay, -1);
+  }
+
+  @Override
+  public ScheduledTask run(final Runnable runnable, long delay, long interval) {
+    if (runnable == null) {
+      return null;
+    }
+    delay = clamp(delay);
+    interval = clamp(interval);
+    if (interval > 0) {
+      if (delay == 0) {
+        return wrap(Bukkit.getScheduler().runTask(MorePlugins.instance, runnable),
+            ThreadContext.SYNC, delay, interval);
+      } else {
+        return wrap(Bukkit.getScheduler().runTaskLater(MorePlugins.instance, runnable, delay),
+            ThreadContext.SYNC, delay, interval);
+      }
+    } else {
+      return wrap(Bukkit.getScheduler().runTaskTimer(MorePlugins.instance, runnable, delay, interval),
+          ThreadContext.SYNC, delay, interval);
+    }
+  }
+
+  @Override
+  public void run(final Consumer<ScheduledTask> consumer) {
+    run(consumer, 0, 0);
+  }
+
+  @Override
+  public void run(final Consumer<ScheduledTask> consumer, final long delay) {
+    run(consumer, delay, 0);
+  }
+
+  @Override
+  public void run(final Consumer<ScheduledTask> consumer, final long delay, final long interval) {
+    if (consumer == null) {
+      return;
+    }
+    run(new SchedulerRunnable() {
       @Override
       public void run() {
-        for (final Runnable runnable : tasks) {
-          runnable.run();
-        }
-        this.cancel();
+        consumer.accept(this.task);
       }
-    }.runTask(MorePlugins.instance), ThreadContext.SYNC, 0, 0);
+    }, delay, interval);
+  }
+
+  @Override
+  public Set<ScheduledTask> run(final Set<Runnable> runnables) {
+    return run(runnables, 0, 0);
+  }
+
+  @Override
+  public Set<ScheduledTask> run(final Set<Runnable> runnables, final long delay) {
+    return run(runnables, delay, 0);
+  }
+
+  @Override
+  public Set<ScheduledTask> run(final Set<Runnable> runnables, final long delay, final long interval) {
+    if (runnables == null || runnables.isEmpty()) {
+      return Set.of();
+    }
+    final Set<ScheduledTask> scheduledTasks = new HashSet<>();
+    for (final Runnable runnable : runnables) {
+      scheduledTasks.add(run(runnable, delay, interval));
+    }
+    return scheduledTasks;
   }
 
   // runAsync
-
   @Override
-  public ScheduledTask runAsync(final Runnable task) {
-    return wrap(Bukkit.getScheduler().runTaskAsynchronously(MorePlugins.instance, task),
-        ThreadContext.SYNC, 0, 0);
+  public ScheduledTask runAsync(final Runnable runnable) {
+    return runAsync(runnable, 0, 0);
   }
 
   @Override
-  public ScheduledTask runAsync(final Runnable[] tasks) {
-    return wrap(new BukkitRunnable() {
+  public ScheduledTask runAsync(final Runnable runnable, final long delay) {
+    return runAsync(runnable, delay, 0);
+  }
 
+  @Override
+  public ScheduledTask runAsync(final Runnable runnable, long delay, long interval) {
+    if (runnable == null) {
+      return null;
+    }
+    delay = clamp(delay);
+    interval = clamp(interval);
+    if (interval > 0) {
+      if (delay == 0) {
+        return wrap(Bukkit.getScheduler().runTaskAsynchronously(MorePlugins.instance, runnable),
+            ThreadContext.SYNC, delay, interval);
+      } else {
+        return wrap(Bukkit.getScheduler().runTaskLaterAsynchronously(MorePlugins.instance, runnable, delay),
+            ThreadContext.SYNC, delay, interval);
+      }
+    } else {
+      return wrap(Bukkit.getScheduler().runTaskTimerAsynchronously(MorePlugins.instance, runnable, delay, interval),
+          ThreadContext.SYNC, delay, interval);
+    }
+  }
+
+  @Override
+  public void runAsync(final Consumer<ScheduledTask> consumer) {
+    runAsync(consumer, 0, 0);
+  }
+
+  @Override
+  public void runAsync(final Consumer<ScheduledTask> consumer, final long delay) {
+    runAsync(consumer, delay, 0);
+  }
+
+  @Override
+  public void runAsync(final Consumer<ScheduledTask> consumer, final long delay, final long interval) {
+    if (consumer == null) {
+      return;
+    }
+    runAsync(new SchedulerRunnable() {
       @Override
       public void run() {
-        for (final Runnable runnable : tasks) {
-          runnable.run();
-        }
-        this.cancel();
+        consumer.accept(this.task);
       }
-    }.runTaskAsynchronously(MorePlugins.instance), ThreadContext.SYNC, 0, 0);
+    }, delay, interval);
   }
 
+  @Override
+  public Set<ScheduledTask> runAsync(final Set<Runnable> runnables) {
+    return runAsync(runnables, 0, 0);
+  }
+
+  @Override
+  public Set<ScheduledTask> runAsync(final Set<Runnable> runnables, final long delay) {
+    return runAsync(runnables, delay, 0);
+  }
+
+  @Override
+  public Set<ScheduledTask> runAsync(final Set<Runnable> runnables, final long delay, final long interval) {
+    if (runnables == null || runnables.isEmpty()) {
+      return Set.of();
+    }
+    final Set<ScheduledTask> scheduledTasks = new HashSet<>();
+    for (final Runnable runnable : runnables) {
+      scheduledTasks.add(runAsync(runnable, delay, interval));
+    }
+    return scheduledTasks;
+  }
   // runLater
 
   @Override
-  public ScheduledTask runLater(final Runnable task, long delay) {
-    delay = Math.round(Math.min(Math.max(delay, 0), Integer.MAX_VALUE));
-    return wrap(Bukkit.getScheduler().runTaskLater(MorePlugins.instance, task, delay),
-        ThreadContext.SYNC, 0, delay);
-
+  public ScheduledTask runLater(final Runnable runnable, final long delay) {
+    return run(runnable, delay);
   }
 
   @Override
-  public ScheduledTask runLater(final Runnable[] tasks, long delay) {
-    delay = Math.round(Math.min(Math.max(delay, 0), Integer.MAX_VALUE));
-    return wrap(new BukkitRunnable() {
-      @Override
-      public void run() {
-        for (final Runnable runnable : tasks) {
-          runnable.run();
-        }
-        this.cancel();
-      }
-    }.runTaskLater(MorePlugins.instance, delay), ThreadContext.SYNC, 0, delay);
+  public void runLater(final Consumer<ScheduledTask> consumer, final long delay) {
+    run(consumer, delay, 0);
+  }
+
+  @Override
+  public Set<ScheduledTask> runLater(final Set<Runnable> runnables, final long delay) {
+    return run(runnables, delay);
   }
 
   // runLaterAsync
 
   @Override
-  public ScheduledTask runLaterAsync(final Runnable task, long delay) {
-    delay = Math.round(Math.min(Math.max(delay, 0), Integer.MAX_VALUE));
-    return wrap(Bukkit.getScheduler().runTaskLaterAsynchronously(MorePlugins.instance, task, delay),
-        ThreadContext.SYNC, 0, delay);
+  public ScheduledTask runLaterAsync(final Runnable runnable, final long delay) {
+    return runAsync(runnable, delay);
 
   }
 
   @Override
-  public ScheduledTask runLaterAsync(final Runnable[] tasks, long delay) {
-    delay = Math.round(Math.min(Math.max(delay, 0), Integer.MAX_VALUE));
-    return wrap(new BukkitRunnable() {
-      @Override
-      public void run() {
-        for (final Runnable runnable : tasks) {
-          runnable.run();
-        }
-        this.cancel();
-      }
-    }.runTaskLaterAsynchronously(MorePlugins.instance, delay), ThreadContext.SYNC, 0, delay);
+  public void runLaterAsync(final Consumer<ScheduledTask> consumer, final long delay) {
+    runAsync(consumer, delay, 0);
+  }
+
+  @Override
+  public Set<ScheduledTask> runLaterAsync(final Set<Runnable> runnables, final long delay) {
+    return runAsync(runnables, delay);
   }
 
   // runEvery
-
   @Override
-  public ScheduledTask runEvery(final Runnable task, final long interval) {
-    return runEvery(task, interval, 0L);
+  public ScheduledTask runEvery(final Runnable runnable, final long interval, final long delay) {
+    return run(runnable, interval, delay);
   }
 
   @Override
-  public ScheduledTask runEvery(final Runnable task, final long interval, long delay) {
-    delay = Math.round(Math.min(Math.max(delay, 0), Integer.MAX_VALUE));
-    return wrap(Bukkit.getScheduler().runTaskTimer(MorePlugins.instance, task, delay, interval), ThreadContext.SYNC,
-        interval, delay);
-
+  public ScheduledTask runEvery(final Runnable runnable, final long interval) {
+    return run(runnable, interval, 0);
   }
 
   @Override
-  public ScheduledTask runEvery(final Runnable[] tasks, final long interval) {
-    return runEvery(tasks, interval, 0L);
+  public void runEvery(final Consumer<ScheduledTask> consumer, final long interval) {
+    run(consumer, interval, 0);
   }
 
   @Override
-  public ScheduledTask runEvery(final Runnable[] tasks, long delay, final long interval) {
-    delay = Math.round(Math.min(Math.max(delay, 0), Integer.MAX_VALUE));
-    return wrap(new BukkitRunnable() {
-      @Override
-      public void run() {
-        for (final Runnable runnable : tasks) {
-          runnable.run();
-        }
-        this.cancel();
-      }
-    }.runTaskTimer(MorePlugins.instance, delay, interval), ThreadContext.SYNC, interval, delay);
+  public void runEvery(final Consumer<ScheduledTask> consumer, final long interval, final long delay) {
+    run(consumer, interval, delay);
+  }
+
+  @Override
+  public Set<ScheduledTask> runEvery(final Set<Runnable> runnables, final long interval) {
+    return run(runnables, interval, 0);
+  }
+
+  @Override
+  public Set<ScheduledTask> runEvery(final Set<Runnable> runnables, final long interval, final long delay) {
+    return run(runnables, delay, interval);
   }
 
   // runEveryAsync
 
   @Override
-  public ScheduledTask runEveryAsync(final Runnable task, final long interval) {
-    return runEveryAsync(task, interval, 0L);
+  public ScheduledTask runEveryAsync(final Runnable runnable, final long interval) {
+    return runAsync(runnable, 0, interval);
   }
 
   @Override
-  public ScheduledTask runEveryAsync(final Runnable task, final long interval, long delay) {
-    delay = Math.round(Math.min(Math.max(delay, 0), Integer.MAX_VALUE));
-    return wrap(Bukkit.getScheduler().runTaskTimerAsynchronously(MorePlugins.instance, task, delay, interval),
-        ThreadContext.ASYNC, interval, delay);
-
+  public ScheduledTask runEveryAsync(final Runnable runnable, final long interval, final long delay) {
+    return runAsync(runnable, delay, interval);
   }
 
   @Override
-  public ScheduledTask runEveryAsync(final Runnable[] tasks, final long interval) {
-    return runEveryAsync(tasks, interval, 0L);
+  public void runEveryAsync(final Consumer<ScheduledTask> consumer, final long interval) {
+    runAsync(consumer, interval, 0);
   }
 
   @Override
-  public ScheduledTask runEveryAsync(final Runnable[] tasks, long interval, long delay) {
-    delay = Math.round(Math.min(Math.max(delay, 0), Integer.MAX_VALUE));
-    interval = Math.round(Math.min(Math.max(interval, 0), Integer.MAX_VALUE));
-    return wrap(new BukkitRunnable() {
-      @Override
-      public void run() {
-        for (final Runnable runnable : tasks) {
-          runnable.run();
-        }
-        this.cancel();
-      }
-    }.runTaskTimerAsynchronously(MorePlugins.instance, delay, interval), ThreadContext.ASYNC, interval, delay);
+  public void runEveryAsync(final Consumer<ScheduledTask> consumer, final long interval, final long delay) {
+    runAsync(consumer, interval, delay);
+  }
+
+  @Override
+  public Set<ScheduledTask> runEveryAsync(final Set<Runnable> runnables, final long interval) {
+    return runAsync(runnables, 0, interval);
+  }
+
+  @Override
+  public Set<ScheduledTask> runEveryAsync(final Set<Runnable> runnables, final long interval, final long delay) {
+    return runAsync(runnables, interval, interval);
   }
 
   // repeat
 
   @Override
-  public ScheduledTask repeat(final Runnable task, final int repetitions) {
-    return repeat(task, repetitions, 1, null);
+  public ScheduledTask repeat(final Runnable runnable, final int repetitions) {
+    return repeat(runnable, repetitions, 0, 1, null);
   }
 
   @Override
-  public ScheduledTask repeat(final Runnable task, final int repetitions, final long interval) {
-    return repeat(task, repetitions, interval, null);
+  public ScheduledTask repeat(final Runnable runnable, final int repetitions, final long interval) {
+    return repeat(runnable, repetitions, 0, interval, null);
   }
 
   @Override
-  public ScheduledTask repeat(final Runnable task, final int repetitions, final Runnable onComplete) {
-    return repeat(task, repetitions, 1, onComplete);
+  public ScheduledTask repeat(final Runnable runnable, final int repetitions, final long interval, final long delay) {
+    return repeat(runnable, repetitions, delay, interval, null);
   }
 
   @Override
-  public ScheduledTask repeat(final Runnable task, final int repetitions, long interval,
+  public ScheduledTask repeat(final Runnable runnable, final int repetitions, final Runnable onComplete) {
+    return repeat(runnable, repetitions, 0, 1, onComplete);
+  }
+
+  @Override
+  public ScheduledTask repeat(final Runnable runnable, final int repetitions, final long interval,
       final Runnable onComplete) {
-    final int repetitions0 = Math.round(Math.min(Math.max(repetitions, 0), Integer.MAX_VALUE));
-    interval = Math.round(Math.min(Math.max(interval, 0), Integer.MAX_VALUE));
-    return wrap(new BukkitRunnable() {
+    return repeat(runnable, repetitions, 0, 1, onComplete);
+  }
+
+  @Override
+  public ScheduledTask repeat(final Runnable runnable, final int repetitions, final long interval, final long delay,
+      final Runnable onComplete) {
+    final long repetitions0 = clamp(repetitions);
+    return run(new SchedulerRunnable() {
       private int index = 0;
 
       @Override
@@ -282,34 +390,46 @@ public class Scheduler implements IScheduler {
           onComplete.run();
           return;
         }
-        task.run();
+        runnable.run();
       }
-    }.runTaskTimer(MorePlugins.instance, 0L, interval), ThreadContext.SYNC, interval, 0);
+    }, delay, interval);
   }
 
   // repeatAsync
 
   @Override
-  public ScheduledTask repeatAsync(final Runnable task, final int repetitions) {
-    return repeatAsync(task, repetitions, 1, null);
+  public ScheduledTask repeatAsync(final Runnable runnable, final int repetitions) {
+    return repeatAsync(runnable, repetitions, 0, 1, null);
   }
 
   @Override
-  public ScheduledTask repeatAsync(final Runnable task, final int repetitions, final long interval) {
-    return repeatAsync(task, repetitions, interval, null);
+  public ScheduledTask repeatAsync(final Runnable runnable, final int repetitions, final long interval) {
+    return repeatAsync(runnable, repetitions, 0, interval, null);
   }
 
   @Override
-  public ScheduledTask repeatAsync(final Runnable task, final int repetitions, final Runnable onComplete) {
-    return repeatAsync(task, repetitions, 1, onComplete);
+  public ScheduledTask repeatAsync(final Runnable runnable, final int repetitions, final long interval,
+      final long delay) {
+    return repeatAsync(runnable, repetitions, delay, interval, null);
   }
 
   @Override
-  public ScheduledTask repeatAsync(final Runnable task, final int repetitions, long interval,
+  public ScheduledTask repeatAsync(final Runnable runnable, final int repetitions, final Runnable onComplete) {
+    return repeatAsync(runnable, repetitions, 0, 1, onComplete);
+  }
+
+  @Override
+  public ScheduledTask repeatAsync(final Runnable runnable, final int repetitions, final long interval,
       final Runnable onComplete) {
-    final int repetitions0 = Math.round(Math.min(Math.max(repetitions, 0), Integer.MAX_VALUE));
-    interval = Math.round(Math.min(Math.max(interval, 0), Integer.MAX_VALUE));
-    return wrap(new BukkitRunnable() {
+    return repeatAsync(runnable, repetitions, 0, 1, onComplete);
+  }
+
+  @Override
+  public ScheduledTask repeatAsync(final Runnable runnable, final int repetitions, final long interval,
+      final long delay,
+      final Runnable onComplete) {
+    final long repetitions0 = clamp(repetitions);
+    return runAsync(new SchedulerRunnable() {
       private int index = 0;
 
       @Override
@@ -319,42 +439,37 @@ public class Scheduler implements IScheduler {
           if (onComplete == null) {
             return;
           }
-
           onComplete.run();
           return;
         }
-
-        task.run();
+        runnable.run();
       }
-    }.runTaskTimerAsynchronously(MorePlugins.instance, 0L, interval), ThreadContext.ASYNC, interval, 0);
+    }, delay, interval);
   }
 
   // repeatWhile
 
   @Override
-  public ScheduledTask repeatWhile(final Runnable task, final Callable<Boolean> predicate, final long interval) {
-    return repeatWhileAsync(task, predicate, interval, 0L, null);
+  public ScheduledTask repeatWhile(final Runnable runnable, final Callable<Boolean> predicate, final long delay) {
+    return repeatWhile(runnable, predicate, delay, 0, null);
   }
 
   @Override
-  public ScheduledTask repeatWhile(final Runnable task, final Callable<Boolean> predicate, final long interval,
-      final long delay) {
-    return repeatWhileAsync(task, predicate, interval, delay, null);
+  public ScheduledTask repeatWhile(final Runnable runnable, final Callable<Boolean> predicate, final long delay,
+      final long interval) {
+    return repeatWhile(runnable, predicate, interval, delay, null);
   }
 
   @Override
-  public ScheduledTask repeatWhile(final Runnable task, final Callable<Boolean> predicate, final long interval,
+  public ScheduledTask repeatWhile(final Runnable runnable, final Callable<Boolean> predicate, final long delay,
       final Runnable onComplete) {
-    return repeatWhileAsync(task, predicate, interval, 0L, onComplete);
+    return repeatWhile(runnable, predicate, delay, 0, onComplete);
   }
 
   @Override
-  public ScheduledTask repeatWhile(final Runnable task, final Callable<Boolean> predicate, long interval,
-      long delay,
-      final Runnable onComplete) {
-    delay = Math.round(Math.min(Math.max(delay, 0), Integer.MAX_VALUE));
-    interval = Math.round(Math.min(Math.max(interval, 0), Integer.MAX_VALUE));
-    return wrap(new BukkitRunnable() {
+  public ScheduledTask repeatWhile(final Runnable runnable, final Callable<Boolean> predicate, final long delay,
+      final long interval, final Runnable onComplete) {
+    return run(new SchedulerRunnable() {
       @Override
       public void run() {
         try {
@@ -368,43 +483,37 @@ public class Scheduler implements IScheduler {
             return;
           }
 
-          task.run();
+          runnable.run();
         } catch (final Exception e) {
           e.printStackTrace();
         }
       }
-    }.runTaskTimer(MorePlugins.instance, 0L, interval), ThreadContext.SYNC, interval, 0);
+    }, delay, interval);
   }
 
   // repeatWhileAsync
 
   @Override
-  public ScheduledTask repeatWhileAsync(final Runnable task, final Callable<Boolean> predicate,
+  public ScheduledTask repeatWhileAsync(final Runnable runnable, final Callable<Boolean> predicate, final long delay) {
+    return repeatWhile(runnable, predicate, delay, 0, null);
+  }
+
+  @Override
+  public ScheduledTask repeatWhileAsync(final Runnable runnable, final Callable<Boolean> predicate, final long delay,
       final long interval) {
-    return repeatWhileAsync(task, predicate, interval, 0L, null);
+    return repeatWhile(runnable, predicate, interval, delay, null);
   }
 
   @Override
-  public ScheduledTask repeatWhileAsync(final Runnable task, final Callable<Boolean> predicate,
-      final long interval,
+  public ScheduledTask repeatWhileAsync(final Runnable runnable, final Callable<Boolean> predicate, final long delay,
       final Runnable onComplete) {
-    return repeatWhileAsync(task, predicate, interval, 0L, onComplete);
+    return repeatWhile(runnable, predicate, delay, 0, onComplete);
   }
 
   @Override
-  public ScheduledTask repeatWhileAsync(final Runnable task, final Callable<Boolean> predicate,
-      final long interval, final long delay) {
-    return repeatWhileAsync(task, predicate, interval, delay, null);
-
-  }
-
-  @Override
-  public ScheduledTask repeatWhileAsync(final Runnable task, final Callable<Boolean> predicate, long interval,
-      long delay,
-      final Runnable onComplete) {
-    delay = Math.round(Math.min(Math.max(delay, 0), Integer.MAX_VALUE));
-    interval = Math.round(Math.min(Math.max(interval, 0), Integer.MAX_VALUE));
-    return wrap(new BukkitRunnable() {
+  public ScheduledTask repeatWhileAsync(final Runnable runnable, final Callable<Boolean> predicate, final long delay,
+      final long interval, final Runnable onComplete) {
+    return runAsync(new SchedulerRunnable() {
       @Override
       public void run() {
         try {
@@ -418,12 +527,16 @@ public class Scheduler implements IScheduler {
             return;
           }
 
-          task.run();
+          runnable.run();
         } catch (final Exception e) {
           e.printStackTrace();
         }
       }
-    }.runTaskTimerAsynchronously(MorePlugins.instance, delay, interval), ThreadContext.ASYNC, interval, delay);
+    }, delay, interval);
   }
 
+  @Override
+  public String toString() {
+    return "Scheduler []";
+  }
 }
