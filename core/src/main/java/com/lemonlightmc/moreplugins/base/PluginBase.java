@@ -1,6 +1,6 @@
 package com.lemonlightmc.moreplugins.base;
 
-import com.lemonlightmc.moreplugins.data.Config;
+import com.lemonlightmc.moreplugins.config.Config;
 import com.lemonlightmc.moreplugins.messages.Logger;
 import com.lemonlightmc.moreplugins.messages.MessageProvider;
 import com.lemonlightmc.moreplugins.scheduler.Scheduler;

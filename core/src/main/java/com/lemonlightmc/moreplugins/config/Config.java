@@ -1,4 +1,4 @@
-package com.lemonlightmc.moreplugins.data;
+package com.lemonlightmc.moreplugins.config;
 
 import com.lemonlightmc.moreplugins.base.MorePlugins;
 import com.lemonlightmc.moreplugins.messages.Logger;

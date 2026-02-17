@@ -1,4 +1,4 @@
-package com.lemonlightmc.moreplugins.data;
+package com.lemonlightmc.moreplugins.config;
 
 import java.util.List;
 import java.util.Map;
@@ -92,7 +92,7 @@ public interface IConfigSection {
 
   public boolean isSection(String path);
 
-  public String getSectionPath();
+  public String getCurrentPath();
 
   public String getParentPath();
 
@@ -106,7 +106,7 @@ public interface IConfigSection {
 
   public Map<String, Object> getValues(boolean deep);
 
-  public void addDefault(String path, Object value);
+  public void setDefaults(String path, Object value);
 
   public void setDefaults(Map<String, Object> defaults);
 
