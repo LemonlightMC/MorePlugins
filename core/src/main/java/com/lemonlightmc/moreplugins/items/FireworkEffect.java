@@ -13,7 +13,7 @@ import com.lemonlightmc.moreplugins.interfaces.Builder;
 import com.lemonlightmc.moreplugins.interfaces.Cloneable;
 
 public class FireworkEffect
-    implements ConfigurationSerializable, Cloneable<FireworkEffect> {
+    implements ConfigurationSerializable, Cloneable<FireworkEffect>, Builder<org.bukkit.FireworkEffect> {
   public enum FireworkEffectType {
     BALL(org.bukkit.FireworkEffect.Type.BALL),
     BALL_LARGE(org.bukkit.FireworkEffect.Type.BALL_LARGE),
@@ -47,17 +47,11 @@ public class FireworkEffect
   public FireworkEffect(final FireworkEffectType type, final boolean flicker, final boolean trail,
       final List<Color> colors,
       final List<Color> fadeColors) {
-    if (colors.isEmpty()) {
-      throw new IllegalStateException("Cannot make FireworkEffect without any color");
-    }
-    if (type == null) {
-      throw new IllegalArgumentException("Type cant be null");
-    }
     this.flicker = flicker;
     this.trail = trail;
-    this.colors = colors;
-    this.fadeColors = fadeColors;
-    this.type = type;
+    this.colors = colors == null ? new ArrayList<>() : colors;
+    this.fadeColors = fadeColors == null ? new ArrayList<>() : fadeColors;
+    this.type = type == null ? FireworkEffectType.BALL : type;
   }
 
   public FireworkEffect(final FireworkEffectType type, final boolean flicker, final boolean trail,
@@ -75,9 +69,9 @@ public class FireworkEffect
     }
     this.flicker = effect.flicker;
     this.trail = effect.trail;
-    this.colors = effect.colors;
-    this.fadeColors = effect.fadeColors;
-    this.type = effect.type;
+    this.colors = effect.colors == null ? new ArrayList<>() : effect.colors;
+    this.fadeColors = effect.fadeColors == null ? new ArrayList<>() : effect.fadeColors;
+    this.type = effect.type == null ? FireworkEffectType.BALL : effect.type;
   }
 
   public static FireworkEffect from(final FireworkEffectType type, final boolean flicker, final boolean trail,
@@ -95,24 +89,22 @@ public class FireworkEffect
     return new FireworkEffect(type, colors);
   }
 
-  public static FireworkEffectBuilder builder() {
-    return new FireworkEffectBuilder();
-  }
-
   public boolean hasFlicker() {
     return flicker;
   }
 
-  public void setFlicker(final boolean flicker) {
+  public FireworkEffect setFlicker(final boolean flicker) {
     this.flicker = flicker;
+    return this;
   }
 
   public boolean hasTrail() {
     return trail;
   }
 
-  public void setTrail(final boolean trail) {
+  public FireworkEffect setTrail(final boolean trail) {
     this.trail = trail;
+    return this;
   }
 
   public boolean hasColors() {
@@ -123,46 +115,42 @@ public class FireworkEffect
     return colors;
   }
 
-  public void setColors(final Color... colors) {
-    if (colors == null) {
-      return;
+  public FireworkEffect setColors(final Color... colors) {
+    if (colors != null) {
+      this.colors = List.of(colors);
     }
-    this.colors = List.of(colors);
+    return this;
   }
 
-  public void setColors(final Collection<Color> colors) {
-    if (colors == null) {
-      return;
+  public FireworkEffect setColors(final Collection<Color> colors) {
+    if (colors != null) {
+      this.colors = List.copyOf(colors);
     }
-    this.colors = List.copyOf(colors);
+    return this;
   }
 
-  public void addColors(final Color... colors) {
+  public FireworkEffect addColors(final Color... colors) {
     if (colors == null || colors.length == 0) {
-      return;
-    }
-    if (this.colors == null) {
-      this.colors = new ArrayList<>();
+      return this;
     }
     for (final Color color : colors) {
       if (color != null) {
         this.colors.add(color);
       }
     }
+    return this;
   }
 
-  public void addColors(final Collection<Color> colors) {
+  public FireworkEffect addColors(final Collection<Color> colors) {
     if (colors == null || colors.isEmpty()) {
-      return;
-    }
-    if (this.colors == null) {
-      this.colors = new ArrayList<>();
+      return this;
     }
     for (final Color color : colors) {
       if (color != null) {
         this.colors.add(color);
       }
     }
+    return this;
   }
 
   public List<Color> getFadeColors() {
@@ -173,68 +161,72 @@ public class FireworkEffect
     return fadeColors != null && !fadeColors.isEmpty();
   }
 
-  public void setFadeColors(final Color... colors) {
-    if (colors == null || colors.length == 0) {
-      return;
+  public FireworkEffect setFadeColors(final Color... colors) {
+    if (colors != null && colors.length != 0) {
+      this.fadeColors = List.of(colors);
     }
-    this.fadeColors = List.of(colors);
+    return this;
   }
 
-  public void setFadeColors(final Collection<Color> fadeColors) {
-    if (colors == null || colors.isEmpty()) {
-      return;
+  public FireworkEffect setFadeColors(final Collection<Color> fadeColors) {
+    if (colors != null && !colors.isEmpty()) {
+      this.fadeColors = List.copyOf(fadeColors);
     }
-    this.fadeColors = List.copyOf(fadeColors);
+    return this;
   }
 
-  public void addFadeColors(final Color... colors) {
+  public FireworkEffect addFadeColors(final Color... colors) {
     if (colors == null || colors.length == 0) {
-      return;
-    }
-    if (this.fadeColors == null) {
-      this.fadeColors = new ArrayList<>();
+      return this;
     }
     for (final Color color : colors) {
       if (color != null) {
         this.fadeColors.add(color);
       }
     }
+    return this;
   }
 
-  public void addFadeColors(final Collection<Color> colors) {
+  public FireworkEffect addFadeColors(final Collection<Color> colors) {
     if (colors == null || colors.isEmpty()) {
-      return;
-    }
-    if (this.fadeColors == null) {
-      this.fadeColors = new ArrayList<>();
+      return this;
     }
     for (final Color color : colors) {
       if (color != null) {
         this.fadeColors.add(color);
       }
     }
+    return this;
   }
 
   public FireworkEffectType getType() {
     return type;
   }
 
-  public void setType(final FireworkEffectType type) {
+  public FireworkEffect setType(final FireworkEffectType type) {
     if (type == null) {
       throw new IllegalArgumentException("Type cant be null");
     }
     this.type = type;
+    return this;
   }
 
   public static ConfigurationSerializable deserialize(final Map<String, Object> map) {
+    return new FireworkEffect(FireworkEffectType.valueOf((String) map.get(TYPE)), (boolean) map.get(FLICKER),
+        (boolean) map.get(TRAIL), deserializeColorList(map.get(COLORS)), deserializeColorList(map.get(FADE_COLORS)));
+  }
 
-    return builder()
-        .type(FireworkEffectType.valueOf((String) map.get(TYPE)))
-        .flicker((Boolean) map.get(FLICKER))
-        .trail((Boolean) map.get(TRAIL))
-        .colors((Iterable<?>) map.get(COLORS))
-        .fade((Iterable<?>) map.get(FADE_COLORS))
-        .build();
+  private static List<Color> deserializeColorList(final Object values) throws IllegalArgumentException {
+    if (values == null || !(values instanceof final Iterable<?> iterable)) {
+      return null;
+    }
+    final List<Color> colors = new ArrayList<>();
+    for (final Object obj : iterable) {
+      if (obj != null && obj instanceof final Color color) {
+        colors.add(color);
+      }
+    }
+    return colors;
   }
 
   @Override
@@ -253,6 +245,9 @@ public class FireworkEffect
 
   @SuppressWarnings("null")
   public org.bukkit.FireworkEffect toBukkit() {
+    if (colors == null || colors.isEmpty()) {
+      throw new IllegalStateException("Cannot make FireworkEffect without any color");
+    }
     try {
       return org.bukkit.FireworkEffect.class.getConstructor().newInstance(flicker, trail,
           ImmutableList.copyOf(colors == null ? List.of() : colors),
@@ -261,6 +256,11 @@ public class FireworkEffect
     } catch (final Exception e) {
       return null;
     }
+  }
+
+  @Override
+  public org.bukkit.FireworkEffect build() {
+    return toBukkit();
   }
 
   @Override
@@ -281,17 +281,7 @@ public class FireworkEffect
       return false;
     }
     final FireworkEffect other = (FireworkEffect) obj;
-    if (colors == null) {
-      if (other.colors != null) {
-        return false;
-      }
-    }
-    if (fadeColors == null) {
-      if (other.fadeColors != null) {
-        return false;
-      }
-    }
-    if (type != other.type) {
+    if (colors == null && other.colors != null || fadeColors == null && other.fadeColors != null) {
       return false;
     }
     return this.flicker == other.flicker
@@ -305,151 +295,5 @@ public class FireworkEffect
   public String toString() {
     return "FireworkEffect [flicker=" + flicker + ", trail=" + trail + ", colors=" + colors + ", fadeColors="
         + fadeColors + ", type=" + type + "]";
-  }
-
-  public static class FireworkEffectBuilder implements Builder<FireworkEffect>, Cloneable<FireworkEffectBuilder> {
-    private boolean flicker = false;
-    private boolean trail = false;
-    private List<Color> colors;
-    private List<Color> fadeColors;
-    private FireworkEffectType type = FireworkEffectType.BALL;
-
-    FireworkEffectBuilder() {
-    }
-
-    FireworkEffectBuilder(final FireworkEffectBuilder builder) {
-      if (builder == null) {
-        return;
-      }
-      this.colors = builder.colors;
-      this.fadeColors = builder.fadeColors;
-      this.flicker = builder.flicker;
-      this.trail = builder.trail;
-      this.type = builder.type;
-    }
-
-    @Override
-    public FireworkEffectBuilder clone() {
-      return new FireworkEffectBuilder(this);
-    }
-
-    public FireworkEffectBuilder type(final FireworkEffectType type) throws IllegalArgumentException {
-      if (type == null) {
-        throw new IllegalArgumentException("Type cant be null");
-      }
-      this.type = type;
-      return this;
-    }
-
-    public FireworkEffectBuilder flicker() {
-      flicker = true;
-      return this;
-    }
-
-    public FireworkEffectBuilder flicker(final boolean flicker) {
-      this.flicker = flicker;
-      return this;
-    }
-
-    public FireworkEffectBuilder trail() {
-      trail = true;
-      return this;
-    }
-
-    public FireworkEffectBuilder trail(final boolean trail) {
-      this.trail = trail;
-      return this;
-    }
-
-    public FireworkEffectBuilder colors(final Color color) throws IllegalArgumentException {
-      if (color != null) {
-        if (this.colors == null) {
-          this.colors = new ArrayList<>();
-        }
-        this.colors.add(color);
-      }
-      return this;
-    }
-
-    public FireworkEffectBuilder colors(final Color... colors) throws IllegalArgumentException {
-      if (colors == null || colors.length == 0) {
-        return this;
-      }
-      if (this.colors == null) {
-        this.colors = new ArrayList<>();
-      }
-      for (final Color color : colors) {
-        if (color != null) {
-          this.colors.add(color);
-        }
-      }
-      return this;
-    }
-
-    public FireworkEffectBuilder colors(final Iterable<?> colors) throws IllegalArgumentException {
-      if (colors == null) {
-        return this;
-      }
-      if (this.colors == null) {
-        this.colors = new ArrayList<>();
-      }
-      for (final Object color : colors) {
-        if (color != null && color instanceof final Color fadeColor) {
-          this.colors.add(fadeColor);
-        }
-      }
-      return this;
-    }
-
-    public FireworkEffectBuilder fade(final Color color) throws IllegalArgumentException {
-      if (color == null) {
-        return this;
-      }
-      if (fadeColors == null) {
-        fadeColors = new ArrayList<>();
-      }
-      fadeColors.add(color);
-      return this;
-    }
-
-    public FireworkEffectBuilder fade(final Color... colors) throws IllegalArgumentException {
-      if (colors == null || colors.length == 0) {
-        return this;
-      }
-      if (fadeColors == null) {
-        fadeColors = new ArrayList<>();
-      }
-
-      for (final Color color : colors) {
-        if (color != null) {
-          fadeColors.add(color);
-        }
-      }
-      return this;
-    }
-
-    public FireworkEffectBuilder fade(final Iterable<?> colors) throws IllegalArgumentException {
-      if (colors == null) {
-        return this;
-      }
-      if (fadeColors == null) {
-        fadeColors = new ArrayList<>();
-      }
-
-      for (final Object color : colors) {
-        if (color != null && color instanceof final Color fadeColor) {
-          fadeColors.add(fadeColor);
-        }
-      }
-      return this;
-    }
-
-    public FireworkEffect build() {
-      return new FireworkEffect(type,
-          flicker,
-          trail,
-          colors,
-          fadeColors == null ? List.of() : fadeColors);
-    }
   }
 }

@@ -1,7 +1,6 @@
 package com.lemonlightmc.moreplugins.items;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import org.bukkit.Location;
@@ -14,23 +13,28 @@ public class Firework implements Cloneable<Firework> {
   private int power;
 
   public Firework(final List<FireworkEffect> effects, final int power) {
-    this.effects = effects;
-    this.power = power;
+    this.effects = effects == null ? new ArrayList<>() : effects;
+    this.power = power < 0 ? 1 : power;
   }
 
   public Firework(final List<FireworkEffect> effects) {
-    this.effects = effects;
+    this(effects, 1);
   }
 
   public Firework(final Firework firework) {
     if (firework == null) {
+      this.effects = new ArrayList<>();
+      this.power = 1;
       return;
     }
-    this.effects = firework.effects;
-    this.power = firework.power;
+    this.effects = firework.effects == null ? new ArrayList<>() : firework.effects;
+    this.power = firework.power < 0 ? 1 : power;
   }
 
   public org.bukkit.entity.Firework toEntity(final Location loc) {
+    if (loc == null) {
+      return null;
+    }
     final org.bukkit.entity.Firework entity = loc.getWorld().createEntity(loc, org.bukkit.entity.Firework.class);
     final FireworkMeta meta = entity.getFireworkMeta();
     for (final FireworkEffect fireworkEffect : effects) {
@@ -41,10 +45,13 @@ public class Firework implements Cloneable<Firework> {
   }
 
   public org.bukkit.entity.Firework spawn(final Location loc) {
+    if (loc == null) {
+      return null;
+    }
     return loc.getWorld().addEntity(toEntity(loc));
   }
 
-  public List<FireworkEffect> effects() {
+  public List<FireworkEffect> getEffects() {
     return effects;
   }
 
@@ -66,7 +73,7 @@ public class Firework implements Cloneable<Firework> {
     return removeEffects(List.of(effects));
   }
 
-  public Firework removeEffects(final Collection<FireworkEffect> effects) {
+  public Firework removeEffects(final List<FireworkEffect> effects) {
     if (effects == null || effects.isEmpty() || this.effects == null || this.effects.isEmpty()) {
       return this;
     }
@@ -78,19 +85,16 @@ public class Firework implements Cloneable<Firework> {
     return this;
   }
 
-  public Firework effects(final FireworkEffect... effects) {
+  public Firework addEffects(final FireworkEffect... effects) {
     if (effects == null || effects.length == 0) {
       return this;
     }
-    return effects(List.of(effects));
+    return addEffects(List.of(effects));
   }
 
-  public Firework effects(final Collection<FireworkEffect> effects) {
+  public Firework addEffects(final List<FireworkEffect> effects) {
     if (effects == null || effects.isEmpty()) {
       return this;
-    }
-    if (this.effects == null) {
-      this.effects = new ArrayList<>();
     }
     for (final FireworkEffect fireworkEffect : effects) {
       if (fireworkEffect != null) {
@@ -100,15 +104,32 @@ public class Firework implements Cloneable<Firework> {
     return this;
   }
 
+  public Firework setEffects(final FireworkEffect... effects) {
+    if (effects == null || effects.length == 0) {
+      return this;
+    }
+    return setEffects(List.of(effects));
+  }
+
+  public Firework setEffects(final List<FireworkEffect> effects) {
+    if (effects == null || effects.isEmpty()) {
+      return this;
+    }
+    if (effects != null) {
+      this.effects = effects;
+    }
+    return this;
+  }
+
   public int effectCount() {
     return this.effects.size();
   }
 
-  public int power() {
+  public int getPower() {
     return this.power;
   }
 
-  public Firework power(final int power) {
+  public Firework setPower(final int power) {
     this.power = power;
     return this;
   }
@@ -120,8 +141,7 @@ public class Firework implements Cloneable<Firework> {
 
   @Override
   public int hashCode() {
-    final int result = 31 + ((effects == null) ? 0 : effects.hashCode());
-    return 31 * result + power;
+    return 31 * (31 + effects.hashCode()) + power;
   }
 
   @Override
