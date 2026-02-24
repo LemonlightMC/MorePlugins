@@ -18,6 +18,7 @@ include(":commands:common")
 include(":commands:bukkit")
 include(":custom")
 include(":integrations")
+include(":items")
 println(rootProject)
 
 dependencyResolutionManagement {

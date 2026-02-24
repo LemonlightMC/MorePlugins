@@ -4,7 +4,8 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 
-import com.lemonlightmc.moreplugins.utils.Numerals;
+import com.lemonlightmc.moreplugins.math.Numerals;
+
 import java.util.List;
 
 public class Enchantment extends org.bukkit.enchantments.Enchantment {

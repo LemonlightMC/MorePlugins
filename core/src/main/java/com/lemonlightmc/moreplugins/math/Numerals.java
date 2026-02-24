@@ -1,4 +1,4 @@
-package com.lemonlightmc.moreplugins.utils;
+package com.lemonlightmc.moreplugins.math;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
