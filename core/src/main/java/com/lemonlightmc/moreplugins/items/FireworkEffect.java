@@ -9,11 +9,10 @@ import org.bukkit.Color;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 
 import com.google.common.collect.ImmutableList;
-import com.lemonlightmc.moreplugins.interfaces.Builder;
 import com.lemonlightmc.moreplugins.interfaces.Cloneable;
 
 public class FireworkEffect
-    implements ConfigurationSerializable, Cloneable<FireworkEffect>, Builder<org.bukkit.FireworkEffect> {
+    implements ConfigurationSerializable, Cloneable<FireworkEffect> {
   public enum FireworkEffectType {
     BALL(org.bukkit.FireworkEffect.Type.BALL),
     BALL_LARGE(org.bukkit.FireworkEffect.Type.BALL_LARGE),
@@ -211,7 +210,7 @@ public class FireworkEffect
     return this;
   }
 
-  public static ConfigurationSerializable deserialize(final Map<String, Object> map) {
+  public static FireworkEffect deserialize(final Map<String, Object> map) {
     return new FireworkEffect(FireworkEffectType.valueOf((String) map.get(TYPE)), (boolean) map.get(FLICKER),
         (boolean) map.get(TRAIL), deserializeColorList(map.get(COLORS)), deserializeColorList(map.get(FADE_COLORS)));
   }
@@ -256,11 +255,6 @@ public class FireworkEffect
     } catch (final Exception e) {
       return null;
     }
-  }
-
-  @Override
-  public org.bukkit.FireworkEffect build() {
-    return toBukkit();
   }
 
   @Override

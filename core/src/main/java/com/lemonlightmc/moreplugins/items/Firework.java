@@ -2,13 +2,15 @@ package com.lemonlightmc.moreplugins.items;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.bukkit.Location;
+import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.inventory.meta.FireworkMeta;
 
 import com.lemonlightmc.moreplugins.interfaces.Cloneable;
 
-public class Firework implements Cloneable<Firework> {
+public class Firework implements Cloneable<Firework>, ConfigurationSerializable {
   private List<FireworkEffect> effects;
   private int power;
 
@@ -105,19 +107,17 @@ public class Firework implements Cloneable<Firework> {
   }
 
   public Firework setEffects(final FireworkEffect... effects) {
-    if (effects == null || effects.length == 0) {
-      return this;
+    if (effects != null && effects.length != 0) {
+      this.effects = List.of(effects);
     }
-    return setEffects(List.of(effects));
+    return this;
   }
 
   public Firework setEffects(final List<FireworkEffect> effects) {
     if (effects == null || effects.isEmpty()) {
       return this;
     }
-    if (effects != null) {
-      this.effects = effects;
-    }
+    this.effects = effects;
     return this;
   }
 
@@ -132,6 +132,29 @@ public class Firework implements Cloneable<Firework> {
   public Firework setPower(final int power) {
     this.power = power;
     return this;
+  }
+
+  public static Firework deserialize(final Map<String, Object> map) {
+    return new Firework(deserializeEffectList(map.get("effects")), (int) map.get("power"));
+  }
+
+  @SuppressWarnings("unchecked")
+  private static List<FireworkEffect> deserializeEffectList(final Object values) {
+    if (values == null || !(values instanceof final List list)) {
+      return List.of();
+    }
+    final List<FireworkEffect> effects = new ArrayList<>();
+    for (final Object value : list) {
+      if (value instanceof Map) {
+        effects.add(FireworkEffect.deserialize((Map<String, Object>) value));
+      }
+    }
+    return effects;
+  }
+
+  @Override
+  public Map<String, Object> serialize() {
+    return Map.<String, Object>of("effects", effects, "power", power);
   }
 
   @Override
