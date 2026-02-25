@@ -6,4 +6,4 @@ dependencies {
     implementation(project(":core"))
 }
 
-extensions.extraProperties["moduleName"] = "items"
+extensions.extraProperties["moduleName"] = "Items"

@@ -2,7 +2,6 @@ package com.lemonlightmc.moreplugins.math;
 
 import java.util.function.BinaryOperator;
 
-@SuppressWarnings("null")
 public enum MathOperation {
   ADD("+=", (val1, val2) -> val1 + val2),
   SUBTRACT("-=", (val1, val2) -> val1 - val2),
