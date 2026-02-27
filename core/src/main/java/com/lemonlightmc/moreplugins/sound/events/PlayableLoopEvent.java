@@ -2,7 +2,7 @@ package com.lemonlightmc.moreplugins.sound.events;
 
 import org.bukkit.event.HandlerList;
 
-import com.lemonlightmc.moreplugins.base.BaseEvent;
+import com.lemonlightmc.moreplugins.events.BaseEvent;
 import com.lemonlightmc.moreplugins.sound.player.SoundPlayer;
 
 public class PlayableLoopEvent extends BaseEvent {

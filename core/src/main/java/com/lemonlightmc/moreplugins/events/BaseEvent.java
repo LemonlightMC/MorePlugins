@@ -1,4 +1,4 @@
-package com.lemonlightmc.moreplugins.base;
+package com.lemonlightmc.moreplugins.events;
 
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;

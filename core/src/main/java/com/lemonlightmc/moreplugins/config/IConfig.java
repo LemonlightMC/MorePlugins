@@ -1,4 +1,4 @@
-package com.lemonlightmc.moreplugins.data;
+package com.lemonlightmc.moreplugins.config;
 
 import java.io.File;
 import java.io.InputStream;
@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.bukkit.configuration.file.YamlConfiguration;
+
 import com.lemonlightmc.moreplugins.interfaces.Reloadable;
 
 public interface IConfig extends IConfigSection, Reloadable {

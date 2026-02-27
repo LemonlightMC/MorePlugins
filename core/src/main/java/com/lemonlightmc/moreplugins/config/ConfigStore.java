@@ -1,4 +1,4 @@
-package com.lemonlightmc.moreplugins.data;
+package com.lemonlightmc.moreplugins.config;
 
 import java.util.Collection;
 import java.util.Map;
