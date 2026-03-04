@@ -19,7 +19,10 @@ include(":commands:bukkit")
 include(":custom")
 include(":integrations")
 include(":items")
+include(":database")
 println(rootProject)
+
+// project(":social-api").projectDir = file("api")
 
 dependencyResolutionManagement {
     repositories {

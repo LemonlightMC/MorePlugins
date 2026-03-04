@@ -8,7 +8,9 @@ public enum MathOperation {
   MULTIPLY("*=", (val1, val2) -> val1 * val2),
   DIVIDE("/=", (val1, val2) -> val1 / val2),
   MOD("%=", (val1, val2) -> val1 % val2),
+  @SuppressWarnings("null")
   MIN("<", Math::min),
+  @SuppressWarnings("null")
   MAX(">", Math::max),
   SWAP("><", (val1, val2) -> val2),
   ASSIGN("=", (val1, val2) -> val2);
