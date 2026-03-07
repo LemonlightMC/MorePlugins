@@ -1,5 +1,6 @@
 package com.lemonlightmc.moreplugins.events;
 
+import org.bukkit.Bukkit;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
@@ -36,5 +37,10 @@ public class BaseEvent extends Event implements Cancellable {
   @Override
   public HandlerList getHandlers() {
     return HANDLERS;
+  }
+
+  public boolean call() {
+    Bukkit.getPluginManager().callEvent(this);
+    return this.isCancelled;
   }
 }
