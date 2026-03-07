@@ -5,6 +5,7 @@ dependencies {
     //compileOnly("com.github.MilkBowl:VaultAPI:1.7")
     compileOnly("net.milkbowl.vault:VaultUnlockedAPI:2.15")
     compileOnly("net.luckperms:api:5.4")
+    compileOnly("com.github.NEZNAMY", "TAB-API", "5.5.0")
     implementation(project(":core"))
 }
 
