@@ -1,5 +1,6 @@
 package com.lemonlightmc.moreplugins.utils;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
@@ -41,6 +42,14 @@ public class PlayerUtils {
     return getOfflinePlayer(name);
   }
 
+  public static List<String> getOnlinePlayerNames() {
+    final List<String> names = new ArrayList<>(Bukkit.getOnlinePlayers().size());
+    for (final Player player : Bukkit.getOnlinePlayers()) {
+      names.add(player.getName());
+    }
+    return names;
+  }
+
   public static Player[] getOnlinePlayers() {
     return Bukkit.getOnlinePlayers().toArray(Player[]::new);
   }
@@ -55,12 +64,6 @@ public class PlayerUtils {
     }
   }
 
-  public static Player[] getPlayersInRadius(final Player player, final int size) {
-    final List<Entity> players = player.getNearbyEntities(size, size, size);
-    players.removeIf(e -> !(e instanceof Player));
-    return players.toArray(Player[]::new);
-  }
-
   public static OfflinePlayer[] getOfflinePlayers() {
     return Bukkit.getOfflinePlayers().clone();
   }
@@ -73,6 +76,12 @@ public class PlayerUtils {
     for (final OfflinePlayer player : Bukkit.getOfflinePlayers()) {
       consumer.accept(player);
     }
+  }
+
+  public static Player[] getPlayersInRadius(final Player player, final int size) {
+    final List<Entity> players = player.getNearbyEntities(size, size, size);
+    players.removeIf(e -> !(e instanceof Player));
+    return players.toArray(Player[]::new);
   }
 
   public static boolean isValidPlayer(final OfflinePlayer player) {

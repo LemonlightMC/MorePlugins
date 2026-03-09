@@ -179,6 +179,7 @@ public class UUIDUtils {
       connection.addRequestProperty("User-Agent", "Mozilla/5.0");
       connection.addRequestProperty("Cache-Control", "no-cache, no-store, must-revalidate");
       connection.addRequestProperty("Pragma", "no-cache");
+      connection.setConnectTimeout(5000);
       connection.setReadTimeout(5000);
 
       // These connection parameters need to be set or the API won't accept the
