@@ -1,0 +1,36 @@
+package com.lemonlightmc.moreplugins.interfaces;
+
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+/**
+ * An element annotated with NotNull claims {@code null} value is
+ * <em>forbidden</em>
+ * to return (for methods), pass to (parameters) and hold (local variables and
+ * fields).
+ */
+@Documented
+@Retention(RetentionPolicy.CLASS)
+@Target({ ElementType.METHOD, ElementType.FIELD, ElementType.PARAMETER, ElementType.LOCAL_VARIABLE,
+    ElementType.TYPE_USE })
+public @interface NotNull {
+  /**
+   * @return Custom exception message
+   */
+  String value() default "";
+
+  /**
+   * @return Custom exception type that should be thrown when not-nullity contract
+   *         is violated.
+   *         The exception class should have a constructor with one String
+   *         argument (message).
+   *
+   *         By default, {@link IllegalArgumentException} is thrown on null method
+   *         arguments and
+   *         {@link IllegalStateException} &mdash; on null return value.
+   */
+  Class<? extends Exception> exception() default Exception.class;
+}
