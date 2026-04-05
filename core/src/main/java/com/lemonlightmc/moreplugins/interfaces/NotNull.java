@@ -11,26 +11,24 @@ import java.lang.annotation.Target;
  * <em>forbidden</em>
  * to return (for methods), pass to (parameters) and hold (local variables and
  * fields).
+ * 
+ * The annotated element must not be null.
+ * <p>
+ * Annotated fields must not be null after construction has completed.
+ * <p>
+ * When this annotation is applied to a method it applies to the method return
+ * value.
  */
+
 @Documented
 @Retention(RetentionPolicy.CLASS)
-@Target({ ElementType.METHOD, ElementType.FIELD, ElementType.PARAMETER, ElementType.LOCAL_VARIABLE,
-    ElementType.TYPE_USE })
+@Target({ ElementType.METHOD, ElementType.FIELD, ElementType.PARAMETER,
+    ElementType.LOCAL_VARIABLE, ElementType.TYPE_USE })
+
 public @interface NotNull {
-  /**
-   * @return Custom exception message
-   */
   String value() default "";
 
-  /**
-   * @return Custom exception type that should be thrown when not-nullity contract
-   *         is violated.
-   *         The exception class should have a constructor with one String
-   *         argument (message).
-   *
-   *         By default, {@link IllegalArgumentException} is thrown on null method
-   *         arguments and
-   *         {@link IllegalStateException} &mdash; on null return value.
-   */
   Class<? extends Exception> exception() default Exception.class;
+
+  Class<?> applicableTo() default Object.class;
 }

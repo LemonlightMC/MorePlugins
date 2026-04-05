@@ -49,7 +49,7 @@ public class Lazy<T> implements Supplier<T> {
     return result;
   }
 
-  public Optional<T> getIfPresent() {
+  public Optional<T> asOptional() {
     return Optional.ofNullable(this.value);
   }
 
@@ -61,7 +61,7 @@ public class Lazy<T> implements Supplier<T> {
     return value != null;
   }
 
-  public boolean isUnPresent() {
+  public boolean isEmpty() {
     return value == null;
   }
 

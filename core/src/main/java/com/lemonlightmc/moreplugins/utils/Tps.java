@@ -47,7 +47,7 @@ public class Tps {
   }
 
   public static Optional<Tps> read() {
-    if (SUPPLIER.isUnPresent()) {
+    if (SUPPLIER.isEmpty()) {
       return Optional.empty();
     }
     return Optional.of(new Tps(SUPPLIER.get().get()));
