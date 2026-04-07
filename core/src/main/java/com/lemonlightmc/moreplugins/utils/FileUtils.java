@@ -374,7 +374,7 @@ public class FileUtils {
       return listFiles(directory, (Predicate<File>) null, recursive);
     }
     final List<String> ext = List.of(extensions);
-    return listFiles(directory, (f) -> ext.contains(FileNameUtils.getExtension(f.getName())), recursive);
+    return listFiles(directory, (f) -> ext.contains(FilenameUtils.getExtension(f.getName())), recursive);
   }
 
   public static List<File> listFiles(final File directory, final Predicate<File> filter, final boolean recursive) {
@@ -436,8 +436,8 @@ public class FileUtils {
     if (dest == null) {
       return FileResult.failed("Destination File must not be null");
     }
-    final String destCanonicalPath = FileNameUtils.getCanonicalPath(src);
-    final String srcCanonicalPath = FileNameUtils.getCanonicalPath(dest);
+    final String destCanonicalPath = getCanonical(src);
+    final String srcCanonicalPath = getCanonical(dest);
     if (srcCanonicalPath != null && srcCanonicalPath.equals(destCanonicalPath)) {
       return FileResult.failed("Source '" + src + "' and destination '" + dest + "' are the same");
     }
@@ -481,7 +481,7 @@ public class FileUtils {
     }
     final List<String> exclusionList = new ArrayList<>(srcFiles.size());
     for (final File srcFile : srcFiles) {
-      exclusionList.add(FileNameUtils.getCanonicalPath(new File(destDir, srcFile.getName())));
+      exclusionList.add(getCanonical(new File(destDir, srcFile.getName())));
     }
     return exclusionList;
   }
@@ -490,7 +490,7 @@ public class FileUtils {
       final List<String> exclusionList, final CopyOption... copyOptions) throws IOException {
     for (final File srcFile : listFiles(srcDir)) {
       final File destFile = new File(destDir, srcFile.getName());
-      if (exclusionList != null && exclusionList.contains(FileNameUtils.getCanonicalPath(srcDir))) {
+      if (exclusionList != null && exclusionList.contains(getCanonical(srcDir))) {
         continue;
       }
       if (srcFile.isDirectory()) {
@@ -498,6 +498,14 @@ public class FileUtils {
       } else {
         Files.copy(srcFile.toPath(), destFile.toPath(), copyOptions);
       }
+    }
+  }
+
+  private static String getCanonical(final File file) {
+    try {
+      return file.getCanonicalPath();
+    } catch (final Exception e) {
+      return null;
     }
   }
 
