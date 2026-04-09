@@ -5,7 +5,7 @@ import java.util.Properties;
 import java.util.ResourceBundle;
 
 import com.lemonlightmc.moreplugins.messages.IMessageSource.IMessageMeta;
-import com.lemonlightmc.moreplugins.utils.FileUtils;
+import com.lemonlightmc.moreplugins.utils.RessourceUtils;
 import com.lemonlightmc.moreplugins.utils.StringUtils;
 import com.lemonlightmc.moreplugins.version.Version;
 
@@ -62,16 +62,16 @@ public class MessageMeta implements IMessageMeta {
   @Override
   public void modify(final ResourceBundle bundle) {
     if (bundle.containsKey("meta.locale")) {
-      this.locale = StringUtils.parseLocale(FileUtils.getResourceBundleString(bundle, "meta.locale", "en"));
+      this.locale = StringUtils.parseLocale(RessourceUtils.getResourceBundleString(bundle, "meta.locale", "en"));
     }
     if (bundle.containsKey("meta.version")) {
-      this.version = new Version(FileUtils.getResourceBundleString(bundle, "meta.version", "1.0.0"));
+      this.version = new Version(RessourceUtils.getResourceBundleString(bundle, "meta.version", "1.0.0"));
     }
     if (bundle.containsKey("meta.author")) {
-      this.author = FileUtils.getResourceBundleString(bundle, "meta.author", "Unknown");
+      this.author = RessourceUtils.getResourceBundleString(bundle, "meta.author", "Unknown");
     }
     if (bundle.containsKey("meta.description")) {
-      this.description = FileUtils.getResourceBundleString(bundle, "meta.description", "No description");
+      this.description = RessourceUtils.getResourceBundleString(bundle, "meta.description", "No description");
     }
   }
 

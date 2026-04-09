@@ -1,8 +1,13 @@
 package com.lemonlightmc.moreplugins.utils;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.CopyOption;
 import java.nio.file.Files;
@@ -14,19 +19,78 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
 
+import com.lemonlightmc.moreplugins.exceptions.FileException;
+import com.lemonlightmc.moreplugins.messages.Logger;
+
 public class FileUtils {
 
-  public static record FileResult(boolean success, String execption, Object data) {
+  public static record FileResult(boolean success, boolean invalid, boolean failed, String message, Object data) {
     public static FileResult successful(final Object data) {
-      return new FileResult(true, null, data);
+      return new FileResult(true, false, false, null, data);
     }
 
     public static FileResult successful() {
-      return new FileResult(true, null, null);
+      return new FileResult(true, false, false, null, null);
     }
 
-    public static FileResult failed(final String exception) {
-      return new FileResult(false, exception, null);
+    public static FileResult invalid(final String message) {
+      return new FileResult(false, true, false, message, null);
+    }
+
+    public static FileResult failed(final String message) {
+      return new FileResult(false, false, true, message, null);
+    }
+
+    public static FileResult failed(final Exception ex) {
+      return new FileResult(false, false, true, ex.getMessage(), null);
+    }
+
+    public FileResult throwIfFailed() {
+      if (failed) {
+        throw new FileException(message);
+      }
+      return this;
+    }
+
+    public FileResult throwIfFailed(final String message) {
+      if (failed) {
+        throw new FileException(message);
+      }
+      return this;
+    }
+
+    public <E extends RuntimeException> FileResult throwIfFailed(final E exception) {
+      if (failed) {
+        throw exception;
+      }
+      return this;
+    }
+
+    public <E extends RuntimeException> FileResult throwIfFailed(final Class<E> exceptionType) {
+      if (!failed) {
+        return this;
+      }
+      final E ex;
+      try {
+        ex = exceptionType.getConstructor(String.class).newInstance(message);
+      } catch (final Exception e) {
+        throw new FileException(message);
+      }
+      throw ex;
+    }
+
+    public <E extends RuntimeException> FileResult throwIfFailedWith(final Class<E> exceptionType,
+        final String message2) {
+      if (!failed) {
+        return this;
+      }
+      final E ex;
+      try {
+        ex = exceptionType.getConstructor(String.class).newInstance(message2 + " " + message);
+      } catch (final Exception e) {
+        throw new FileException(message);
+      }
+      throw ex;
     }
   }
 
@@ -191,46 +255,89 @@ public class FileUtils {
   }
 
   public static String readString(final Path path) {
+    if (path == null) {
+      return null;
+    }
     try {
       return Files.readString(path, StandardCharsets.UTF_8);
     } catch (final Exception ex) {
+      return null;
     }
-    return null;
   }
 
   public static String readString(final File file) {
+    if (file == null) {
+      return null;
+    }
     try {
       return Files.readString(file.toPath(), StandardCharsets.UTF_8);
     } catch (final Exception ex) {
+      return null;
     }
-    return null;
   }
 
   public static List<String> readLines(final Path path) {
+    if (path == null) {
+      return null;
+    }
     try {
       return Files.readAllLines(path, StandardCharsets.UTF_8);
     } catch (final Exception ex) {
+      return null;
     }
-    return null;
   }
 
   public static List<String> readLines(final File file) {
+    if (file == null) {
+      return null;
+    }
     try {
       return Files.readAllLines(file.toPath(), StandardCharsets.UTF_8);
     } catch (final Exception ex) {
+      return null;
     }
-    return null;
   }
 
   public static byte[] readBytes(final Path path) {
+    if (path == null) {
+      return null;
+    }
     try {
       return Files.readAllBytes(path);
     } catch (final Exception ex) {
+      return null;
     }
-    return null;
+  }
+
+  public static String readFile(final Path path) {
+    return readFile(path, StandardCharsets.UTF_8);
+  }
+
+  public static String readFile(final Path path, final Charset charset) {
+    try (BufferedReader input = new BufferedReader(
+        new InputStreamReader(new FileInputStream(path.toFile()), charset))) {
+
+      final StringBuilder builder = new StringBuilder();
+      String line;
+      while ((line = input.readLine()) != null) {
+        builder.append(line);
+        builder.append('\n');
+      }
+      input.close();
+      return builder.toString();
+    } catch (Exception e) {
+      Logger.warn("Failed to read File: " + path.toString());
+      return null;
+    }
   }
 
   public static FileResult write(final Path path, final byte[] text) {
+    if (path == null) {
+      return FileResult.invalid("Path must not be null");
+    }
+    if (text == null) {
+      return FileResult.invalid("Text must not be null");
+    }
     try {
       mkdirs(path.toFile());
       Files.write(path, text, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE);
@@ -241,6 +348,12 @@ public class FileUtils {
   }
 
   public static FileResult write(final Path path, final Iterable<? extends CharSequence> text) {
+    if (path == null) {
+      return FileResult.invalid("Path must not be null");
+    }
+    if (text == null) {
+      return FileResult.invalid("Text must not be null");
+    }
     try {
       mkdirs(path.toFile());
       Files.write(path, text, StandardCharsets.UTF_8, StandardOpenOption.TRUNCATE_EXISTING,
@@ -252,6 +365,12 @@ public class FileUtils {
   }
 
   public static FileResult write(final Path path, final String text) {
+    if (path == null) {
+      return FileResult.invalid("Path must not be null");
+    }
+    if (text == null) {
+      return FileResult.invalid("Text must not be null");
+    }
     try {
       mkdirs(path.toFile());
       Files.writeString(path, text, StandardCharsets.UTF_8, StandardOpenOption.TRUNCATE_EXISTING,
@@ -263,6 +382,12 @@ public class FileUtils {
   }
 
   public static FileResult append(final Path path, final byte[] text) {
+    if (path == null) {
+      return FileResult.invalid("Path must not be null");
+    }
+    if (text == null) {
+      return FileResult.invalid("Text must not be null");
+    }
     try {
       mkdirs(path.toFile());
       Files.write(path, text, StandardOpenOption.APPEND, StandardOpenOption.CREATE);
@@ -273,6 +398,12 @@ public class FileUtils {
   }
 
   public static FileResult append(final Path path, final Iterable<? extends CharSequence> text) {
+    if (path == null) {
+      return FileResult.invalid("Path must not be null");
+    }
+    if (text == null) {
+      return FileResult.invalid("Text must not be null");
+    }
     try {
       mkdirs(path.toFile());
       Files.write(path, text, StandardCharsets.UTF_8, StandardOpenOption.APPEND, StandardOpenOption.CREATE);
@@ -283,6 +414,12 @@ public class FileUtils {
   }
 
   public static FileResult append(final Path path, final String text) {
+    if (path == null) {
+      return FileResult.invalid("Path must not be null");
+    }
+    if (text == null) {
+      return FileResult.invalid("Text must not be null");
+    }
     try {
       mkdirs(path.toFile());
       Files.writeString(path, text, StandardCharsets.UTF_8, StandardOpenOption.APPEND, StandardOpenOption.CREATE);
@@ -313,21 +450,21 @@ public class FileUtils {
 
   public static FileResult mkdirs(final String file) {
     if (file == null || file.isEmpty()) {
-      return FileResult.failed("File path must not be null or empty");
+      return FileResult.invalid("File path must not be null or empty");
     }
     return mkdirs(new File(file));
   }
 
   public static FileResult mkdirs(final Path file) {
     if (file == null) {
-      return FileResult.failed("File path must not be null");
+      return FileResult.invalid("File path must not be null");
     }
     return mkdirs(file.toFile());
   }
 
   public static FileResult mkdirs(final File file) {
     if (file == null) {
-      return FileResult.failed("File path must not be null");
+      return FileResult.invalid("File path must not be null");
     }
     try {
       if (file.exists()) {
@@ -349,13 +486,20 @@ public class FileUtils {
     return directory == null ? List.of() : listFiles(directory.toFile());
   }
 
-  public static List<File> listFiles(final File directory) {
-    final File[] listFiles = directory.listFiles();
-    return listFiles == null ? List.of() : List.of(listFiles);
+  public static List<File> listFiles(final Path directory, final Predicate<File> filter) {
+    return directory == null ? List.of() : listFiles(directory.toFile());
   }
 
-  public static List<File> listFiles(final Path directory, final Predicate<File> filter, final boolean recursive) {
+  public static List<File> listFiles(final Path directory, final String[] extensions) {
     return directory == null ? List.of() : listFiles(directory.toFile());
+  }
+
+  public static List<File> listFiles(final File directory) {
+    if (directory == null || !directory.isDirectory() || !directory.exists()) {
+      return List.of();
+    }
+    final File[] listFiles = directory.listFiles();
+    return listFiles == null ? List.of() : List.of(listFiles);
   }
 
   public static List<File> listFiles(final File directory, final boolean recursive, final FilenameFilter filter) {
@@ -363,10 +507,6 @@ public class FileUtils {
       return listFiles(directory, (Predicate<File>) null, recursive);
     }
     return listFiles(directory, (f) -> filter.accept(f, f.getName()), recursive);
-  }
-
-  public static List<File> listFiles(final Path directory, final String[] extensions, final boolean recursive) {
-    return directory == null ? List.of() : listFiles(directory.toFile());
   }
 
   public static List<File> listFiles(final File directory, final String[] extensions, final boolean recursive) {
@@ -404,10 +544,10 @@ public class FileUtils {
 
   public static FileResult moveFile(final File srcFile, final File destFile, final CopyOption... copyOptions) {
     if (srcFile == null || !srcFile.exists()) {
-      return FileResult.failed("Source File must exist and not be null");
+      return FileResult.invalid("Source File must exist and not be null");
     }
     if (destFile == null) {
-      return FileResult.failed("Destination File must not be null");
+      return FileResult.invalid("Destination File must not be null");
     }
     if (destFile.exists()) {
       delete(destFile.toPath());
@@ -426,20 +566,24 @@ public class FileUtils {
     return copy(src, dest, StandardCopyOption.REPLACE_EXISTING);
   }
 
+  public static FileResult copy(final InputStream src, final File dest) {
+    return copy(src, dest, StandardCopyOption.REPLACE_EXISTING);
+  }
+
   public static FileResult copy(final File src, final File dest, final CopyOption... copyOptions) {
     if (src == null) {
-      return FileResult.failed("Source File must not be null");
+      return FileResult.invalid("Source File must not be null");
     }
     if (!src.exists()) {
-      return FileResult.failed("Source File must exist");
+      return FileResult.invalid("Source File must exist");
     }
     if (dest == null) {
-      return FileResult.failed("Destination File must not be null");
+      return FileResult.invalid("Destination File must not be null");
     }
     final String destCanonicalPath = getCanonical(src);
     final String srcCanonicalPath = getCanonical(dest);
     if (srcCanonicalPath != null && srcCanonicalPath.equals(destCanonicalPath)) {
-      return FileResult.failed("Source '" + src + "' and destination '" + dest + "' are the same");
+      return FileResult.invalid("Source '" + src + "' and destination '" + dest + "' are the same");
     }
     final FileResult result = mkdirs(dest);
     if (!result.success)
@@ -448,7 +592,7 @@ public class FileUtils {
     if (src.isFile()) {
       try {
         if (dest.exists() && dest.isDirectory()) {
-          return FileResult.failed("Destination '" + dest + "' exists but is a directory");
+          return FileResult.invalid("Destination '" + dest + "' exists but is a directory");
         }
         Files.copy(src.toPath(), dest.toPath(), copyOptions);
         return FileResult.successful();
@@ -457,7 +601,7 @@ public class FileUtils {
       }
     } else if (src.isDirectory()) {
       if (dest.exists() && !dest.isDirectory()) {
-        return FileResult.failed("Destination '" + dest + "' exists but is not a directory");
+        return FileResult.invalid("Destination '" + dest + "' exists but is not a directory");
       }
       try {
         final List<String> exclusionList = destCanonicalPath != null && srcCanonicalPath != null
@@ -470,7 +614,26 @@ public class FileUtils {
         return FileResult.failed("Failed to copy directory: " + e.getMessage());
       }
     } else {
-      return FileResult.failed("Source is neither a file nor a directory");
+      return FileResult.invalid("Source is neither a file nor a directory");
+    }
+  }
+
+  public static FileResult copy(final InputStream in, final File dest, final CopyOption... copyOptions) {
+    if (in == null) {
+      return FileResult.invalid("InputStream must not be null");
+    }
+    if (dest == null) {
+      return FileResult.invalid("Destination File must not be null");
+    }
+    final FileResult result = mkdirs(dest);
+    if (!result.success)
+      return result;
+
+    try {
+      Files.copy(in, dest.toPath(), copyOptions);
+      return FileResult.successful();
+    } catch (final Exception e) {
+      return FileResult.failed("Failed to copy file: " + e.getMessage());
     }
   }
 

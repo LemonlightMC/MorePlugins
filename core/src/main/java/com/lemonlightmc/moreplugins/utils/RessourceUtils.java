@@ -10,7 +10,6 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -19,67 +18,44 @@ import java.util.ResourceBundle;
 
 import com.lemonlightmc.moreplugins.base.MorePlugins;
 import com.lemonlightmc.moreplugins.messages.Logger;
+import com.lemonlightmc.moreplugins.utils.FileUtils.FileResult;
 
 public class RessourceUtils {
 
-  public static List<String> getResourcesList(final String path) {
-    try {
-      final URL url = MorePlugins.instance.getClass().getClassLoader().getResource(path);
-      final File file = url == null ? null : new File(url.toURI());
-      if (file == null || !file.isDirectory()) {
-        return List.of();
-      }
-      return List.of(file.list());
-    } catch (final Exception e) {
-      Logger.warn("Failed to get List of Resources for: " + path);
-      e.printStackTrace();
-      return null;
-    }
-  }
-
   public static File getResource(final String path) {
     try {
-      final URL url = MorePlugins.instance.getClass().getClassLoader().getResource(path);
-      if (url == null)
-        return null;
-      return new File(url.toURI());
+      final URL url = getResourceURL(path);
+      return url == null ? null : new File(url.toURI());
     } catch (final Exception e) {
-      Logger.warn("Failed to read Resource: " + path);
-      e.printStackTrace();
       return null;
     }
   }
 
-  public static boolean saveResource(final File inFile, final File target) {
+  public static URL getResourceURL(final String path) {
+    if (path == null || path.isEmpty()) {
+      return null;
+    }
     try {
-      if (target.exists()) {
-        return false;
-      }
-      Files.copy(inFile.toPath(), target.toPath());
-      return true;
+      return MorePlugins.instance.getClass().getClassLoader().getResource(path);
     } catch (final Exception e) {
-      Logger.warn("Failed to save resource to: " + target.getPath());
-      e.printStackTrace();
-      return false;
+      return null;
     }
   }
 
-  public static boolean saveResource(final InputStream in, final File target) {
-    try {
-      if (target.exists()) {
-        return false;
-      }
-      Files.copy(in, target.toPath());
-      return true;
-    } catch (final Exception e) {
-      e.printStackTrace();
-      return false;
-    }
+  public static FileResult saveResource(final File inFile, final File target) {
+    return FileUtils.copy(inFile, target);
+  }
+
+  public static FileResult saveResource(final InputStream in, final File target) {
+    return FileUtils.copy(in, target);
   }
 
   public static boolean hasResource(final String path) {
-    final URL url = MorePlugins.instance.getClass().getClassLoader().getResource(path);
-    return url != null;
+    return getResourceURL(path) != null;
+  }
+
+  public static List<File> getResourceList(final String path) {
+    return FileUtils.listFiles(getResource(path));
   }
 
   public static Properties loadPropertiesFromJar(final String resourcePath) {
@@ -127,23 +103,6 @@ public class RessourceUtils {
       Logger.warn("Failed to save properties to: " + file.getPath());
       e.printStackTrace();
     }
-  }
-
-  public static String getFileExtension(final File file) {
-    final String name = file.getName();
-    final int lastIndex = name.lastIndexOf('.');
-    if (lastIndex == -1) {
-      return "";
-    }
-    return name.substring(lastIndex + 1);
-  }
-
-  public static String getFileExtension(final String filename) {
-    final int lastIndex = filename.lastIndexOf('.');
-    if (lastIndex == -1) {
-      return "";
-    }
-    return filename.substring(lastIndex + 1);
   }
 
   public static String getResourceBundleString(final ResourceBundle bundle, final String key) {
