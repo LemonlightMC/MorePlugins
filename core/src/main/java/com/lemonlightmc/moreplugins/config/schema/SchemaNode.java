@@ -5,6 +5,9 @@ public abstract class SchemaNode {
   protected String comment;
 
   public SchemaNode(final String path, final String commet) {
+    if (path == null) {
+      throw new IllegalArgumentException("SchemaSection Path cannot be null");
+    }
     this.path = path;
     this.comment = commet;
   }

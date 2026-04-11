@@ -43,14 +43,14 @@ public class YamlHandler extends FileHandler {
   }
 
   @Override
-  protected String saveToString(final Map<String, SchemaPair<?>> data) {
+  public String saveToString(final Map<String, SchemaPair<?>> data) {
     final Map<String, Object> nested = createNestedMap(data);
     return yaml.dump(nested);
   }
 
   @SuppressWarnings("unchecked")
   @Override
-  protected Map<String, Object> loadFromString(final String raw) {
+  public Map<String, Object> loadFromString(final String raw) {
     if (raw == null || raw.isBlank()) {
       return Map.of();
     }

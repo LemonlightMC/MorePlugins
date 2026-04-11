@@ -1,29 +1,40 @@
 package com.lemonlightmc.moreplugins.config.schema;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import com.lemonlightmc.moreplugins.exceptions.ConfigParsingException;
 
 public class SchemaSection extends SchemaNode {
 
-  private List<SchemaNode> nodes = new ArrayList<>();
+  private Collection<SchemaNode> nodes = new ArrayList<>();
+
+  protected Collection<SchemaNode> getNodes() {
+    return nodes;
+  }
 
   public SchemaSection(final String path, final String commet, final SchemaNode... nodes) {
     super(path, commet);
-    if (path == null || path.isEmpty()) {
-      throw new IllegalArgumentException("SchemaSection Path cannot be null or empty");
-    }
+    addNodes(nodes);
+  }
+
+  public SchemaSection(final String path, final String commet, final Collection<SchemaNode> nodes) {
+    super(path, commet);
     addNodes(nodes);
   }
 
   public SchemaSection(final String path, final String commet) {
     super(path);
-    if (path == null || path.isEmpty()) {
-      throw new IllegalArgumentException("SchemaSection Path cannot be null or empty");
-    }
+  }
+
+  public static SchemaSection create(final String name, final String comment, final SchemaNode... nodes) {
+    return new SchemaSection(name, comment, nodes);
+  }
+
+  public static SchemaSection create(final String name, final String comment, final Collection<SchemaNode> nodes) {
+    return new SchemaSection(name, comment, nodes);
   }
 
   public static SchemaSection create(final String name, final String comment) {
@@ -67,7 +78,16 @@ public class SchemaSection extends SchemaNode {
     return this;
   }
 
-  public SchemaSection removeNodes(final List<String> paths) {
+  public SchemaSection addNodes(final Collection<SchemaNode> nodes) {
+    if (nodes == null || nodes.isEmpty()) {
+      return this;
+    }
+    nodes.removeIf(n -> n == null);
+    nodes.addAll(nodes);
+    return this;
+  }
+
+  public SchemaSection removeNodes(final Collection<String> paths) {
     if (paths == null || paths.isEmpty()) {
       return this;
     }
@@ -87,7 +107,7 @@ public class SchemaSection extends SchemaNode {
     return this;
   }
 
-  public SchemaSection setNodes(final List<SchemaNode> nodes) {
+  public SchemaSection setNodes(final Collection<SchemaNode> nodes) {
     this.nodes = nodes;
     return this;
   }

@@ -20,6 +20,7 @@ public class SchemaPair<T> extends SchemaNode {
     if (type == null) {
       throw new IllegalArgumentException("Schema Pair Type cannot be null");
     }
+    this.type = type;
     this.def = def;
     this.validator = validator;
   }
@@ -140,5 +141,4 @@ public class SchemaPair<T> extends SchemaNode {
   public String toString() {
     return "SchemaPair [value=" + value + ", def=" + def + ", validator=" + validator + "]";
   }
-
 }

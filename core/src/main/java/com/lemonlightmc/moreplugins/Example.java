@@ -1,4 +1,4 @@
-package com.lemonlightmc.moreplugins.config;
+package com.lemonlightmc.moreplugins;
 
 import java.nio.file.Path;
 
@@ -9,14 +9,15 @@ public class Example {
 
   public static void main(String[] args) {
     Schema schema = Schema.create().addNodes(
-        Schema.section("exampe", "desc").addNodes(
+        Schema.section("example", "desc").addNodes(
             Schema.pair("string", SchemaType.STRING),
             Schema.pair("int", SchemaType.INT),
             Schema.pair("bool", SchemaType.BOOL)),
         Schema.pair("test", SchemaType.BOOL));
 
-    ConfigData data = Configurate.yaml(Path.of("config.yml"), schema);
+    schema.save(Path.of("./testSchema.txt"));
+    // ConfigData data = Configurate.yaml(Path.of("config.yml"), schema);
 
-    String str = data.getString("example.string");
+    // String str = data.getString("example.string");
   }
 }

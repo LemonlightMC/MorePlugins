@@ -21,9 +21,9 @@ public abstract class FileHandler {
     this.options = options;
   }
 
-  protected abstract String saveToString(final Map<String, SchemaPair<?>> data);
+  public abstract String saveToString(final Map<String, SchemaPair<?>> data);
 
-  protected abstract Map<String, Object> loadFromString(final String raw);
+  public abstract Map<String, Object> loadFromString(final String raw);
 
   public FileHandlerOptions options() {
     if (options == null) {

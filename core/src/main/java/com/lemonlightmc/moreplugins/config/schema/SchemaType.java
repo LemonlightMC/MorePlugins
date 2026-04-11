@@ -140,7 +140,7 @@ public class SchemaType<T> {
     return obj instanceof final Map<?, ?> map ? map : null;
   });
 
-  public static final SchemaType<List<SchemaNode>> SECTION = new SchemaType<>("section", null);
+  public static final SchemaType<List<SchemaNode>> SECTION = new SchemaType<>("section", obj -> List.of());
 
   public static final SchemaType<?> CUSTOM = new SchemaType<>("custom", obj -> obj);
 
