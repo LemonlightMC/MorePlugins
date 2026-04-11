@@ -11,7 +11,7 @@ public class ExceptionContainer<T> {
 
   public ExceptionContainer(final Class<T> cls, final String message) {
     this.cls = cls;
-    this.function = (_) -> message;
+    this.function = e -> message;
   }
 
   public static <T> ExceptionContainer<T> from(final Class<T> cls, final ExceptionContainerFunction function) {
@@ -19,11 +19,11 @@ public class ExceptionContainer<T> {
   }
 
   public static <T> ExceptionContainer<T> from(final Class<T> cls, final String message) {
-    return new ExceptionContainer<T>(cls, (_) -> message);
+    return new ExceptionContainer<T>(cls, e -> message);
   }
 
   public static <T> ExceptionContainer<T> from(final Class<T> cls) {
-    return new ExceptionContainer<T>(cls, (_) -> null);
+    return new ExceptionContainer<T>(cls, e -> null);
   }
 
   private T _create(Object... args) {

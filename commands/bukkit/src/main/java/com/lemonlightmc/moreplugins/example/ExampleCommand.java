@@ -25,7 +25,7 @@ public class ExampleCommand extends SimpleCommand {
     withUsage("&cUsage: /example <random|player>");
     withPermissions("moreplugins.example");
     // withHelp(List.of("&e/example &7- &fAn example command"));
-    withArguments(new DoubleArgument("amount").withSuggestions((final SuggestionInfo<CommandSender> _) -> {
+    withArguments(new DoubleArgument("amount").withSuggestions((final SuggestionInfo<CommandSender> info) -> {
       return List.of("64", "128");
     }));
     withArguments(new DoubleArgument("amount2").withSuggestions("1", "2", "3"));
