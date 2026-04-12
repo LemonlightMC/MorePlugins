@@ -1,16 +1,10 @@
 package com.lemonlightmc.moreplugins.config.schema;
 
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Predicate;
-
-import com.lemonlightmc.moreplugins.config.FileHandler;
-import com.lemonlightmc.moreplugins.config.handlers.ConfigHandlerType;
-import com.lemonlightmc.moreplugins.utils.FileUtils;
+import com.lemonlightmc.moreplugins.config.schema.BuildSchema.BuildSchemaSection;
 
 public class Schema extends SchemaSection {
   public Schema(final String header, final SchemaNode... nodes) {
@@ -84,7 +78,7 @@ public class Schema extends SchemaSection {
     return this;
   }
 
-  public Schema removeNodes(final List<String> paths) {
+  public Schema removeNodes(final Collection<String> paths) {
     super.removeNodes(paths);
     return this;
   }
@@ -94,7 +88,7 @@ public class Schema extends SchemaSection {
     return this;
   }
 
-  public Schema setNodes(final List<SchemaNode> nodes) {
+  public Schema setNodes(final Collection<SchemaNode> nodes) {
     super.setNodes(nodes);
     return this;
   }
@@ -109,59 +103,22 @@ public class Schema extends SchemaSection {
     return this;
   }
 
-  public void save(final Path path) {
-    if (path == null) {
-      throw new IllegalArgumentException("Path cannot be null");
-    }
-    try {
-      if (path.getParent() != null) {
-        Files.createDirectories(path.getParent());
-      }
-      Files.writeString(path, SchemaFactory.saveToString(this), StandardCharsets.UTF_8);
-    } catch (final Exception e) {
-      throw new IllegalArgumentException("Failed to save Schema to " + path, e);
-    }
+  public BuildSchema build() {
+    final List<SchemaNode> buildNodes = new ArrayList<>();
+    buildSection(buildNodes, this);
+    return BuildSchema.from(buildNodes, comment, null);
   }
 
-  public static Schema load(final Path path) {
-    if (path == null) {
-      throw new IllegalArgumentException("Path cannot be null");
-    }
-    final String raw = FileUtils.readString(path);
-    return SchemaFactory.loadFromString(raw);
-  }
-
-  public static Schema generate(final Path path) {
-    if (path == null) {
-      throw new IllegalArgumentException("Path cannot be null");
-    }
-    if (!FileUtils.isReadable(path)) {
-      throw new IllegalArgumentException("Path must point to an existing readable file: " + path);
-    }
-
-    final FileHandler handler = ConfigHandlerType.create(path.toFile());
-    if (handler == null) {
-      throw new IllegalArgumentException("Unsupported config file type: " + path);
-    }
-
-    final String raw = FileUtils.readString(path);
-    if (raw == null || raw.isBlank()) {
-      return Schema.create();
-    }
-
-    final Map<String, Object> root = handler.loadFromString(raw);
-    if (root == null || root.isEmpty()) {
-      return Schema.create();
-    }
-
-    final Schema schema = Schema.create();
-    for (final Map.Entry<String, Object> entry : root.entrySet()) {
-      final SchemaNode node = SchemaFactory.createSchemaNode(entry.getKey(), entry.getValue());
-      if (node != null) {
-        schema.addNodes(node);
+  private void buildSection(final List<SchemaNode> buildNodes, final SchemaSection section) {
+    final int marker = buildNodes.size();
+    buildNodes.add(null);
+    for (final SchemaNode schemaNode : section.nodes) {
+      if (schemaNode instanceof final SchemaPair<?> pair) {
+        buildNodes.add(pair);
+      } else if (schemaNode instanceof final SchemaSection section2) {
+        buildSection(buildNodes, section2);
       }
     }
-    return schema;
+    buildNodes.set(marker, new BuildSchemaSection(section.path, section.comment, marker - buildNodes.size()));
   }
-
 }

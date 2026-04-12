@@ -13,7 +13,7 @@ import java.util.function.Function;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 
 import com.lemonlightmc.moreplugins.config.handlers.ConfigHandlerType;
-import com.lemonlightmc.moreplugins.config.schema.Schema;
+import com.lemonlightmc.moreplugins.config.schema.BuildSchema;
 import com.lemonlightmc.moreplugins.config.schema.SchemaPair;
 import com.lemonlightmc.moreplugins.config.schema.SchemaType;
 
@@ -22,9 +22,9 @@ public abstract class AbstractConfigData {
   protected ConfigHandlerType type;
   protected Path filePath;
   protected String fileName;
-  protected Schema schema;
+  protected BuildSchema schema;
 
-  public AbstractConfigData(final Schema schema, final ConfigHandlerType type, final Path filePath) {
+  public AbstractConfigData(final BuildSchema schema, final ConfigHandlerType type, final Path filePath) {
     this.type = type;
     this.filePath = filePath;
     final Path fileName = filePath == null ? null : filePath.getFileName();
@@ -32,7 +32,7 @@ public abstract class AbstractConfigData {
     this.schema = schema;
   }
 
-  public AbstractConfigData(final Schema schema, final ConfigHandlerType type) {
+  public AbstractConfigData(final BuildSchema schema, final ConfigHandlerType type) {
     this(schema, type, null);
   }
 
@@ -48,7 +48,7 @@ public abstract class AbstractConfigData {
     return fileName;
   }
 
-  public Schema getSchema() {
+  public BuildSchema getSchema() {
     return schema;
   }
 

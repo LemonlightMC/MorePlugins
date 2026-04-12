@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.lemonlightmc.moreplugins.config.handlers.ConfigHandlerType;
-import com.lemonlightmc.moreplugins.config.schema.Schema;
+import com.lemonlightmc.moreplugins.config.schema.BuildSchema;
 import com.lemonlightmc.moreplugins.config.schema.SchemaPair;
 
 //import org.bukkit.configuration.MemorySection;
@@ -17,11 +17,11 @@ public class ConfigData extends AbstractConfigData implements IConfigData {
 
   private Map<String, SchemaPair<?>> data;
 
-  public ConfigData(final Schema schema, final Path filePath) {
+  public ConfigData(final BuildSchema schema, final Path filePath) {
     super(schema, ConfigHandlerType.YAML, filePath);
   }
 
-  public ConfigData(final Schema schema, final Path filePath, final Map<String, SchemaPair<?>> data) {
+  public ConfigData(final BuildSchema schema, final Path filePath, final Map<String, SchemaPair<?>> data) {
     super(schema, ConfigHandlerType.YAML, filePath);
     this.data = data;
   }

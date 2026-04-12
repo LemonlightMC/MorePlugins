@@ -2,14 +2,10 @@ package com.lemonlightmc.moreplugins.config.schema;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-
-import com.lemonlightmc.moreplugins.exceptions.ConfigParsingException;
 
 public class SchemaSection extends SchemaNode {
 
-  private Collection<SchemaNode> nodes = new ArrayList<>();
+  protected Collection<SchemaNode> nodes = new ArrayList<>();
 
   protected Collection<SchemaNode> getNodes() {
     return nodes;
@@ -43,27 +39,6 @@ public class SchemaSection extends SchemaNode {
 
   public static SchemaSection create(final String name) {
     return new SchemaSection(name, null);
-  }
-
-  @SuppressWarnings("unchecked")
-  public Map<String, SchemaPair<?>> parse(final Map<String, Object> data) {
-    if (data == null || data.isEmpty()) {
-      return Map.of();
-    }
-    final Map<String, SchemaPair<?>> schemaPairs = new HashMap<>();
-    for (final SchemaNode schemaNode : nodes) {
-      final Object obj = data.get(schemaNode.path);
-      if (schemaNode instanceof final SchemaPair<?> pair) {
-        pair.fillValue(obj);
-        schemaPairs.put(pair.path, pair);
-      } else if (schemaNode instanceof final SchemaSection section) {
-        if (!(obj instanceof final Map<?, ?> map)) {
-          throw new ConfigParsingException("Invalid Config! Object at '" + section.path + "' is not a Config Section!");
-        }
-        schemaPairs.putAll(section.parse((Map<String, Object>) map));
-      }
-    }
-    return schemaPairs;
   }
 
   public SchemaSection addNodes(final SchemaNode... nodes) {

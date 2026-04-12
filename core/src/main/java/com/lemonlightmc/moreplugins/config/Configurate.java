@@ -10,7 +10,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import com.lemonlightmc.moreplugins.config.handlers.ConfigHandlerType;
 import com.lemonlightmc.moreplugins.config.handlers.FileHandlerOptions;
 import com.lemonlightmc.moreplugins.config.handlers.YamlHandler;
-import com.lemonlightmc.moreplugins.config.schema.Schema;
+import com.lemonlightmc.moreplugins.config.schema.BuildSchema;
 import com.lemonlightmc.moreplugins.exceptions.ConfigHandlingException;
 import com.lemonlightmc.moreplugins.messages.Logger;
 import com.lemonlightmc.moreplugins.utils.FileUtils;
@@ -55,18 +55,18 @@ public class Configurate {
     return name == null || name.isEmpty() ? false : configs.containsKey(name);
   }
 
-  public static ConfigData yaml(final String name, final Schema schema, final FileHandlerOptions options) {
+  public static ConfigData yaml(final String name, final BuildSchema schema, final FileHandlerOptions options) {
     if (name == null || name.isEmpty()) {
       throw new IllegalArgumentException("Config name cannot be null or empty");
     }
     return yaml(Path.of(name), schema, options);
   }
 
-  public static ConfigData yaml(final Path path, final Schema schema) {
+  public static ConfigData yaml(final Path path, final BuildSchema schema) {
     return yaml(path, schema, null);
   }
 
-  public static ConfigData yaml(final Path path, final Schema schema, final FileHandlerOptions options) {
+  public static ConfigData yaml(final Path path, final BuildSchema schema, final FileHandlerOptions options) {
     if (path == null) {
       throw new IllegalArgumentException("Config path cannot be null");
     }

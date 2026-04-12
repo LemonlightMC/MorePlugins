@@ -225,4 +225,47 @@ public class SchemaType<T> {
         || input instanceof Short || input instanceof Double
         || input instanceof Long || input instanceof Float;
   }
+
+  public static SchemaType<?> valueOf(String name) {
+    if (name == null || name.isEmpty()) {
+      return SchemaType.CUSTOM;
+    }
+    if (SchemaType.BOOL.getName().equals(name)) {
+      return SchemaType.BOOL;
+    }
+    if (SchemaType.INT.getName().equals(name)) {
+      return SchemaType.INT;
+    }
+    if (SchemaType.LONG.getName().equals(name)) {
+      return SchemaType.LONG;
+    }
+    if (SchemaType.FLOAT.getName().equals(name)) {
+      return SchemaType.FLOAT;
+    }
+    if (SchemaType.DOUBLE.getName().equals(name)) {
+      return SchemaType.DOUBLE;
+    }
+    if (SchemaType.BYTE.getName().equals(name)) {
+      return SchemaType.BYTE;
+    }
+    if (SchemaType.CHAR.getName().equals(name)) {
+      return SchemaType.CHAR;
+    }
+    if (SchemaType.SHORT.getName().equals(name)) {
+      return SchemaType.SHORT;
+    }
+    if (SchemaType.STRING.getName().equals(name)) {
+      return SchemaType.STRING;
+    }
+    if (SchemaType.LIST.getName().equals(name)) {
+      return SchemaType.LIST;
+    }
+    if (SchemaType.MAP.getName().equals(name)) {
+      return SchemaType.MAP;
+    }
+    if (SchemaType.SECTION.getName().equals(name)) {
+      return SchemaType.SECTION;
+    }
+    return SchemaType.CUSTOM;
+  }
 }
