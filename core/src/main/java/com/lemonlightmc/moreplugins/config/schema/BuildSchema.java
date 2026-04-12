@@ -96,17 +96,7 @@ public record BuildSchema(SchemaNode[] nodes, int len, String header, String foo
     }
     try {
       FileUtils.mkdirs(path.getParent());
-      final StringBuilder builder = new StringBuilder();
-      if (header != null) {
-        builder.append('#').append(StringUtils.escape(header)).append('\n');
-      }
-      for (final SchemaNode node : nodes) {
-        writeNode(node, builder);
-      }
-      if (footer != null) {
-        builder.append('#').append(StringUtils.escape(footer)).append('\n');
-      }
-      FileUtils.write(path, builder.toString());
+      FileUtils.write(path, saveToString());
     } catch (final Exception e) {
       throw new IllegalArgumentException("Failed to save Schema to " + path, e);
     }
@@ -155,6 +145,20 @@ public record BuildSchema(SchemaNode[] nodes, int len, String header, String foo
   private static final char SECTION_CHAR = 'S';
   private static final char PAIR_CHAR = 'P';
 
+  public String saveToString() {
+    final StringBuilder builder = new StringBuilder();
+    if (header != null) {
+      builder.append('#').append(StringUtils.escape(header)).append('\n');
+    }
+    for (final SchemaNode node : nodes) {
+      writeNode(node, builder);
+    }
+    if (footer != null) {
+      builder.append('#').append(StringUtils.escape(footer)).append('\n');
+    }
+    return builder.toString();
+  }
+
   @SuppressWarnings("unchecked")
   public static <T> BuildSchema loadFromString(final String raw) {
     if (raw == null || raw.isBlank()) {
@@ -202,8 +206,6 @@ public record BuildSchema(SchemaNode[] nodes, int len, String header, String foo
 
   private static void writeNode(final SchemaNode node, final StringBuilder builder) {
     if (node instanceof final BuildSchemaSection childSection) {
-      // final String path = parentPath.isEmpty() ? childSection.getPath()
-      // : parentPath + '.' + childSection.getPath();
       builder.append(SECTION_CHAR)
           .append(SEPERATOR_CHAR)
           .append(childSection.path)
@@ -212,10 +214,7 @@ public record BuildSchema(SchemaNode[] nodes, int len, String header, String foo
           .append(SEPERATOR_CHAR)
           .append(StringUtils.escape(childSection.getComment()))
           .append(NEWLINE_CHAR);
-
     } else if (node instanceof final SchemaPair<?> pair) {
-      // final String path = parentPath.isEmpty() ? pair.getPath() : parentPath + '.'
-      // + pair.getPath();
       builder.append(PAIR_CHAR)
           .append(SEPERATOR_CHAR)
           .append(pair.path)

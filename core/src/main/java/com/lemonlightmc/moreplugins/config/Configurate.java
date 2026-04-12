@@ -13,7 +13,7 @@ import com.lemonlightmc.moreplugins.config.handlers.YamlHandler;
 import com.lemonlightmc.moreplugins.config.schema.BuildSchema;
 import com.lemonlightmc.moreplugins.exceptions.ConfigHandlingException;
 import com.lemonlightmc.moreplugins.messages.Logger;
-import com.lemonlightmc.moreplugins.utils.FileUtils;
+import com.lemonlightmc.moreplugins.utils.RessourceUtils;
 
 public class Configurate {
 
@@ -29,13 +29,12 @@ public class Configurate {
     return folder;
   }
 
-  public static List<File> getDefaultConfigs() {
-    return null;
+  public List<File> getDefaultConfigs() {
+    return RessourceUtils.getResourceList(folder.getPath());
   }
 
-  public void createDefault() {
+  public static void createDefault() {
     try {
-      FileUtils.mkdirs(folder).throwIfFailed(ConfigHandlingException.class);
       for (final ConfigData data : configs.values()) {
         getHandler(data).createIfNotExists(data.filePath);
       }

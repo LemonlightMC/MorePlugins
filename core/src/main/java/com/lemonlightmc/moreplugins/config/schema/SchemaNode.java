@@ -6,10 +6,10 @@ public abstract class SchemaNode {
 
   public SchemaNode(final String path, final String commet) {
     if (path == null) {
-      throw new IllegalArgumentException("SchemaSection Path cannot be null");
+      throw new IllegalArgumentException("SchemaNode Path cannot be null");
     }
     this.path = path;
-    this.comment = commet;
+    this.comment = commet != null && commet.isEmpty() ? null : commet;
   }
 
   public SchemaNode(final String path) {

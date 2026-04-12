@@ -105,20 +105,23 @@ public class Schema extends SchemaSection {
 
   public BuildSchema build() {
     final List<SchemaNode> buildNodes = new ArrayList<>();
-    buildSection(buildNodes, this);
+    buildSection(buildNodes, this, "");
     return BuildSchema.from(buildNodes, comment, null);
   }
 
-  private void buildSection(final List<SchemaNode> buildNodes, final SchemaSection section) {
+  private void buildSection(final List<SchemaNode> buildNodes, final SchemaSection section, final String currentPath) {
     final int marker = buildNodes.size();
     buildNodes.add(null);
     for (final SchemaNode schemaNode : section.nodes) {
       if (schemaNode instanceof final SchemaPair<?> pair) {
+        if (!currentPath.isEmpty()) {
+          pair.path = currentPath + '.' + pair.path;
+        }
         buildNodes.add(pair);
       } else if (schemaNode instanceof final SchemaSection section2) {
-        buildSection(buildNodes, section2);
+        buildSection(buildNodes, section2, currentPath.isEmpty() ? section2.path : currentPath + '.' + section2.path);
       }
     }
-    buildNodes.set(marker, new BuildSchemaSection(section.path, section.comment, marker - buildNodes.size()));
+    buildNodes.set(marker, new BuildSchemaSection(currentPath, section.comment, marker - buildNodes.size()));
   }
 }
