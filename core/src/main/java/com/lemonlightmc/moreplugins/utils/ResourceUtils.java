@@ -21,7 +21,7 @@ import com.lemonlightmc.moreplugins.base.MorePlugins;
 import com.lemonlightmc.moreplugins.messages.Logger;
 import com.lemonlightmc.moreplugins.utils.FileUtils.FileResult;
 
-public class RessourceUtils {
+public class ResourceUtils {
   public static URL getResourceURL(final String path) {
     if (path == null || path.isEmpty()) {
       return null;
