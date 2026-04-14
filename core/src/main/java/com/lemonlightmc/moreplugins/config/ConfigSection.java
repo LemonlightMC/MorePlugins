@@ -1,434 +1,44 @@
 package com.lemonlightmc.moreplugins.config;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
-import java.util.function.Function;
 
-import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.serialization.ConfigurationSerializable;
 
-public class ConfigSection implements IConfigSection {
-  protected HashMap<String, Object> cache;
-  protected ConfigurationSection config;
+import com.lemonlightmc.moreplugins.config.handlers.ConfigHandlerType;
+import com.lemonlightmc.moreplugins.config.schema.SchemaPair;
 
-  public ConfigSection(final ConfigurationSection section) {
-    config = section;
+public class ConfigSection implements IConfigData {
+  private final String sectionPath;
+  private final ConfigData data;
+
+  public ConfigSection(final String path, final ConfigData data) {
+    this.sectionPath = path == null ? "" : path;
+    this.data = data;
   }
 
-  @Override
-  public Object get(final String path) {
-    Object v = cache.get(path);
-    if (v != null) {
-      return v;
-    }
-    v = config.get(path);
-    cache.put(path, v);
-    return v;
+  public String getPath() {
+    return sectionPath;
   }
 
-  @Override
-  public Object get(final String path, final Object def) {
-    Object v = cache.get(path);
-    if (v != null) {
-      return v;
-    }
-    v = config.get(path, def);
-    cache.put(path, v);
-    return v;
+  public String getSectionName() {
+    return sectionPath.isEmpty() ? sectionPath : sectionPath.substring(sectionPath.lastIndexOf('.') + 1);
   }
 
-  @Override
-  public String getString(final String path) {
-    final Object v = get(ConfigValueType.STRING.toKey(path));
-    return v != null ? (String) v : null;
-  }
-
-  @Override
-  public String getString(final String path, final String def) {
-    final Object v = get(ConfigValueType.STRING.toKey(path), def);
-    return v != null ? (String) v : null;
-  }
-
-  @Override
-  public int getInt(final String path) {
-    return (int) get(ConfigValueType.INT.toKey(path));
-  }
-
-  @Override
-  public int getInt(final String path, final int def) {
-    return (int) get(ConfigValueType.INT.toKey(path), def);
-  }
-
-  @Override
-  public boolean getBoolean(final String path) {
-    return (boolean) get(ConfigValueType.BOOL.toKey(path));
-  }
-
-  @Override
-  public boolean getBoolean(final String path, final boolean def) {
-    return (boolean) get(ConfigValueType.BOOL.toKey(path), def);
-  }
-
-  @Override
-  public double getDouble(final String path) {
-    return (double) get(ConfigValueType.DOUBLE.toKey(path));
-  }
-
-  @Override
-  public double getDouble(final String path, final double def) {
-    return (double) get(ConfigValueType.DOUBLE.toKey(path), def);
-  }
-
-  @Override
-  public long getLong(final String path) {
-    return (long) get(ConfigValueType.LONG.toKey(path));
-  }
-
-  @Override
-  public long getLong(final String path, final long def) {
-    return (long) get(ConfigValueType.LONG.toKey(path), def);
-  }
-
-  @Override
-  public List<?> getList(final String path) {
-    final Object obj = get(ConfigValueType.LIST.toKey(path));
-    return obj != null && obj instanceof List<?> ? (List<?>) obj : null;
-  }
-
-  @Override
-  public List<?> getList(final String path, final List<?> def) {
-    final Object obj = get(ConfigValueType.LIST.toKey(path), def);
-    return obj != null && obj instanceof List<?> ? (List<?>) obj : null;
-  }
-
-  @Override
-  public List<String> getStringList(final String path) {
-    return getTypedList(path, null,
-        obj -> (obj instanceof String) || isPrimitiveWrapper(obj) ? String.valueOf(obj) : null);
-  }
-
-  @Override
-  public List<Integer> getIntegerList(final String path) {
-    return getTypedList(path, null,
-        obj -> {
-          if (obj instanceof Integer) {
-            return (Integer) obj;
-          } else if (obj instanceof String) {
-            try {
-              return Integer.valueOf((String) obj);
-            } catch (final Exception ex) {
-            }
-          } else if (obj instanceof Character) {
-            return (int) ((Character) obj).charValue();
-          } else if (obj instanceof Number) {
-            return ((Number) obj).intValue();
-          }
-          return null;
-        });
-  }
-
-  @Override
-  public List<Boolean> getBooleanList(final String path) {
-    return getTypedList(path, null,
-        obj -> {
-          if (obj instanceof Boolean) {
-            return (Boolean) obj;
-          } else if (obj instanceof String) {
-            if (Boolean.TRUE.toString().equals(obj)) {
-              return true;
-            } else if (Boolean.FALSE.toString().equals(obj)) {
-              return false;
-            }
-          }
-          return null;
-        });
-  }
-
-  @Override
-  public List<Double> getDoubleList(final String path) {
-    return getTypedList(path, null,
-        obj -> {
-          if (obj instanceof Double) {
-            return (Double) obj;
-          } else if (obj instanceof String) {
-            try {
-              return Double.valueOf((String) obj);
-            } catch (final Exception ex) {
-            }
-          } else if (obj instanceof Character) {
-            return (double) ((Character) obj).charValue();
-          } else if (obj instanceof Number) {
-            return ((Number) obj).doubleValue();
-          }
-          return null;
-        });
-  }
-
-  @Override
-  public List<Float> getFloatList(final String path) {
-    return getTypedList(path, null,
-        obj -> {
-          if (obj instanceof Float) {
-            return (Float) obj;
-          } else if (obj instanceof String) {
-            try {
-              return Float.valueOf((String) obj);
-            } catch (final Exception ex) {
-            }
-          } else if (obj instanceof Character) {
-            return (float) ((Character) obj).charValue();
-          } else if (obj instanceof Number) {
-            return ((Number) obj).floatValue();
-          }
-          return null;
-        });
-  }
-
-  @Override
-  public List<Long> getLongList(final String path) {
-    return getTypedList(path, null,
-        obj -> {
-          if (obj instanceof Long) {
-            return (Long) obj;
-          } else if (obj instanceof String) {
-            try {
-              return Long.valueOf((String) obj);
-            } catch (final Exception ex) {
-            }
-          } else if (obj instanceof Character) {
-            return (long) ((Character) obj).charValue();
-          } else if (obj instanceof Number) {
-            return ((Number) obj).longValue();
-          }
-          return null;
-        });
-  }
-
-  @Override
-  public List<Byte> getByteList(final String path) {
-    return getTypedList(path, null,
-        obj -> {
-          if (obj instanceof Byte) {
-            return (Byte) obj;
-          } else if (obj instanceof String) {
-            try {
-              return Byte.valueOf((String) obj);
-            } catch (final Exception ex) {
-            }
-          } else if (obj instanceof Character) {
-            return (byte) ((Character) obj).charValue();
-          } else if (obj instanceof Number) {
-            return ((Number) obj).byteValue();
-          }
-          return null;
-        });
-  }
-
-  @Override
-  public List<Character> getCharacterList(final String path) {
-    return getTypedList(path, null,
-        obj -> {
-          if (obj instanceof Character) {
-            return (Character) obj;
-          } else if (obj instanceof String) {
-            final String str = (String) obj;
-
-            if (str.length() == 1) {
-              return str.charAt(0);
-            }
-          } else if (obj instanceof Number) {
-            return (char) ((Number) obj).intValue();
-          }
-          return null;
-        });
-  }
-
-  @Override
-  public List<Short> getShortList(final String path) {
-    return getTypedList(path, null,
-        obj -> {
-          if (obj instanceof Short) {
-            return (Short) obj;
-          } else if (obj instanceof String) {
-            try {
-              return Short.valueOf((String) obj);
-            } catch (final Exception ex) {
-            }
-          } else if (obj instanceof Character) {
-            return (short) ((Character) obj).charValue();
-          } else if (obj instanceof Number) {
-            return ((Number) obj).shortValue();
-          }
-          return null;
-        });
-  }
-
-  @Override
-  public List<Map<?, ?>> getMapList(final String path) {
-    final List<?> list = getList(path);
-    if (list == null) {
-      return List.of();
-    }
-    final List<Map<?, ?>> result = new ArrayList<Map<?, ?>>();
-    for (final Object obj : list) {
-      if (obj instanceof Map) {
-        result.add((Map<?, ?>) obj);
-      }
-    }
-    return result;
-  }
-
-  @Override
-  public Map<?, ?> getMap(final String path) {
-    final Object obj = get(ConfigValueType.MAP.toKey(path));
-    return obj != null && obj instanceof Map<?, ?> ? (Map<?, ?>) obj : null;
-  }
-
-  @Override
-  public Map<?, ?> getMap(final String path, final Map<?, ?> def) {
-    final Object obj = get(ConfigValueType.MAP.toKey(path), def);
-    return obj != null && obj instanceof Map<?, ?> ? (Map<?, ?>) obj : null;
-  }
-
-  @Override
-  public void set(final String path, final Object value) {
-    config.set(path, value);
-  }
-
-  @Override
-  public boolean contains(final String path) {
-    return get(path) != null;
-  }
-
-  @Override
-  public boolean contains(final String path, final boolean ignoreDefault) {
-    return (ignoreDefault ? get(path, null) : get(path)) != null;
-  }
-
-  @Override
-  public void remove(final String path) {
-    config.set(path, null);
-  }
-
-  @Override
-  public void setComments(final String path, final String comment) {
-    config.setComments(path, List.of(comment));
-  }
-
-  @Override
-  public void setComments(final String path, final List<String> comments) {
-    config.setComments(path, comments);
-  }
-
-  @Override
-  public List<String> getComments(final String path) {
-    return config.getComments(path);
-  }
-
-  @Override
-  public List<String> getComments(final String path, final String def) {
-    final List<String> list = config.getComments(path);
-    return list == null ? List.of(def) : list;
-  }
-
-  @Override
-  public List<String> getComments(final String path, final List<String> def) {
-    final List<String> list = config.getComments(path);
-    return list == null ? def : list;
-  }
-
-  @Override
-  public ConfigSection getSection(final String path) {
-    final ConfigurationSection section = config.getConfigurationSection(path);
-    if (section == null) {
-      return null;
-    }
-    return new ConfigSection(section);
-  }
-
-  @Override
-  public void createSection(final String path) {
-    config.createSection(path);
-  }
-
-  @Override
-  public void setSection(final String path) {
-    config.createSection(path);
-  }
-
-  @Override
-  public void setSection(final String path, final Map<String, Object> values) {
-    config.createSection(path, values);
-  }
-
-  @Override
-  public void setSection(final String path, final ConfigSection section) {
-    final Map<String, Object> values = config.getValues(false);
-    if (values == null) {
-      return;
-    }
-    config.createSection(path, values);
-  }
-
-  @Override
-  public void removeSection(final String path) {
-    config.set(path, null);
-  }
-
-  @Override
-  public boolean isSection(final String path) {
-    final Object o = config.get(path);
-    return o != null && o instanceof ConfigurationSection;
-  }
-
-  @Override
-  public String getCurrentPath() {
-    return config.getCurrentPath();
-  }
-
-  @Override
   public String getParentPath() {
-    final String path = getCurrentPath();
-    return path.contains(".") ? path.substring(0, path.lastIndexOf('.')) : "";
+    return sectionPath.isEmpty() ? null : sectionPath.substring(0, sectionPath.lastIndexOf('.'));
   }
 
-  @Override
-  public Set<String> getKeys(final boolean deep) {
-    return config.getKeys(deep);
-  }
-
-  @Override
-  public Map<String, Object> getValues(final boolean deep) {
-    return config.getValues(deep);
-  }
-
-  @Override
-  public Set<String> getKeys() {
-    return config.getKeys(false);
-  }
-
-  @Override
-  public Map<String, Object> getValues() {
-    return config.getValues(false);
-  }
-
-  @Override
-  public void setDefaults(final String path, final Object value) {
-    config.addDefault(path, value);
-  }
-
-  @Override
-  public void setDefaults(final Map<String, Object> defaults) {
-    for (final Map.Entry<String, Object> entry : defaults.entrySet()) {
-      config.addDefault(entry.getKey(), entry.getValue());
-    }
+  public String getChildPath(final String child) {
+    return sectionPath.isEmpty() ? child : sectionPath + "." + child;
   }
 
   @Override
   public int hashCode() {
-    return 31 + ((config == null) ? 0 : config.hashCode());
+    return 31 * (31 + sectionPath.hashCode()) + data.hashCode();
   }
 
   @Override
@@ -440,36 +50,241 @@ public class ConfigSection implements IConfigSection {
       return false;
     }
     final ConfigSection other = (ConfigSection) obj;
-    return (config == null && other.config == null || config != null && other.config != null)
-        || config.equals(other.config);
+    return sectionPath.equals(other.sectionPath) && data.equals(other.data);
   }
 
   @Override
   public String toString() {
-    return "ConfigSection [config=" + config + "]";
+    return "ConfigSection [sectionPath=" + sectionPath + ", data=" + data + "]";
   }
 
-  private boolean isPrimitiveWrapper(final Object input) {
-    return input instanceof Integer || input instanceof Boolean
-        || input instanceof Character || input instanceof Byte
-        || input instanceof Short || input instanceof Double
-        || input instanceof Long || input instanceof Float;
+  @Override
+  public ConfigHandlerType getType() {
+    return data.type;
   }
 
-  private <T> List<T> getTypedList(final String path, final List<T> def, final Function<Object, T> mapper) {
-    final Object obj = get(ConfigValueType.LIST.toKey(path), def);
-    if (obj == null || !(obj instanceof final List<?> list)) {
-      return List.<T>of();
-    }
-    final List<T> result = new ArrayList<T>();
-    T v;
-    for (final Object tempObj : list) {
-      v = mapper.apply(tempObj);
-      if (v != null) {
-        result.add(v);
-      }
-    }
-    return result;
+  @Override
+  public Path getFilePath() {
+    return data.filePath;
+  }
+
+  public String getFileName() {
+    return data.fileName;
+  }
+
+  @Override
+  public boolean isEmpty() {
+    return data.isEmpty();
+  }
+
+  @Override
+  public int size() {
+    return data.size();
+  }
+
+  @Override
+  public boolean containsKey(final String path) {
+    return data.containsKey(path);
+  }
+
+  @Override
+  public boolean containsValue(final SchemaPair<?> value) {
+    return data.containsValue(value);
+  }
+
+  @Override
+  public void set(final String path, final SchemaPair<?> value) {
+    data.set(path, value);
+  }
+
+  @Override
+  public void remove(final String path) {
+    data.remove(path);
+  }
+
+  @Override
+  public void clear() {
+    data.clear();
+  }
+
+  @Override
+  public Set<String> keySet() {
+    return data.keySet();
+  }
+
+  @Override
+  public Set<String> keySetDeep() {
+    return data.keySetDeep();
+  }
+
+  @Override
+  public Set<Entry<String, SchemaPair<?>>> entrySetDeep() {
+    return data.entrySetDeep();
+  }
+
+  @Override
+  public Set<Entry<String, SchemaPair<?>>> entrySet() {
+    return data.entrySet();
+  }
+
+  @Override
+  public boolean isString(final String path) {
+    return data.isString(path);
+  }
+
+  @Override
+  public boolean isInt(final String path) {
+    return data.isInt(path);
+  }
+
+  @Override
+  public boolean isBoolean(final String path) {
+    return data.isBoolean(path);
+  }
+
+  @Override
+  public boolean isDouble(final String path) {
+    return data.isDouble(path);
+  }
+
+  @Override
+  public boolean isLong(final String path) {
+    return data.isLong(path);
+  }
+
+  @Override
+  public boolean isFloat(final String path) {
+    return data.isFloat(path);
+  }
+
+  @Override
+  public boolean isList(final String path) {
+    return data.isList(path);
+  }
+
+  @Override
+  public boolean isMap(final String path) {
+    return data.isMap(path);
+  }
+
+  @Override
+  public boolean isSection(final String path) {
+    return data.isSection(path);
+  }
+
+  @Override
+  public ConfigSection getSection(final String path) {
+    return data.getSection(path);
+  }
+
+  @Override
+  public SchemaPair<?> get(final String path) {
+    return data.get(path);
+  }
+
+  @Override
+  public String getString(final String path) {
+    return data.getString(path);
+  }
+
+  @Override
+  public Integer getInt(final String path) {
+    return data.getInt(path);
+  }
+
+  @Override
+  public Boolean getBoolean(final String path) {
+    return data.getBoolean(path);
+  }
+
+  @Override
+  public Double getDouble(final String path) {
+    return data.getDouble(path);
+  }
+
+  @Override
+  public Long getLong(final String path) {
+    return data.getLong(path);
+  }
+
+  @Override
+  public Float getFloat(final String path) {
+    return data.getFloat(path);
+  }
+
+  @Override
+  public List<?> getList(final String path) {
+    return data.getList(path);
+  }
+
+  @Override
+  public List<String> getStringList(final String path) {
+    return data.getStringList(path);
+  }
+
+  @Override
+  public List<Integer> getIntegerList(final String path) {
+    return data.getIntegerList(path);
+  }
+
+  @Override
+  public List<Boolean> getBooleanList(final String path) {
+    return data.getBooleanList(path);
+  }
+
+  @Override
+  public List<Double> getDoubleList(final String path) {
+    return data.getDoubleList(path);
+  }
+
+  @Override
+  public List<Float> getFloatList(final String path) {
+    return data.getFloatList(path);
+  }
+
+  @Override
+  public List<Long> getLongList(final String path) {
+    return data.getLongList(path);
+  }
+
+  @Override
+  public List<Byte> getByteList(final String path) {
+    return data.getByteList(path);
+  }
+
+  @Override
+  public List<Character> getCharacterList(final String path) {
+    return data.getCharacterList(path);
+  }
+
+  @Override
+  public List<Short> getShortList(final String path) {
+    return data.getShortList(path);
+  }
+
+  @Override
+  public List<Map<?, ?>> getMapList(final String path) {
+    return data.getMapList(path);
+  }
+
+  @Override
+  public Map<?, ?> getMap(final String path) {
+    return data.getMap(path);
+  }
+
+  @Override
+  public Map<String, Object> getObjectMap(final String path) {
+    return data.getObjectMap(path);
+  }
+
+  @Override
+  public <T> T getObject(final String path, final Class<T> clazz) {
+    return data.getObject(path, clazz);
+  }
+
+  @Override
+  public <T extends ConfigurationSerializable> T getSerializable(final String path, final Class<T> clazz) {
+    return data.getSerializable(path, clazz);
   }
 
 }

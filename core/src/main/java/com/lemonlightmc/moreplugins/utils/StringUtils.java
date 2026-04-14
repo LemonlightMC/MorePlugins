@@ -150,4 +150,70 @@ public class StringUtils {
     }
     return string.regionMatches(true, 0, prefix, 0, prefix.length());
   }
+
+  public static String[] fastSplit(final String str, final char ch) {
+    int off = 0;
+    int next;
+    final ArrayList<String> list = new ArrayList<>();
+    while ((next = str.indexOf(ch, off)) != -1) {
+      list.add(str.substring(off, next));
+      off = next + 1;
+    }
+
+    if (off == 0) {
+      return new String[] { str };
+    }
+    // Add remaining segment
+    if (off < str.length()) {
+      list.add(str.substring(off, str.length()));
+    }
+    return list.toArray(new String[list.size()]);
+  }
+
+  public static String escape(final String input) {
+    if (input == null || input.isEmpty()) {
+      return "";
+    }
+    final StringBuilder builder = new StringBuilder(input.length());
+    for (int i = 0; i < input.length(); i++) {
+      final char c = input.charAt(i);
+      switch (c) {
+        case '\\' -> builder.append("\\\\");
+        case '\n' -> builder.append("\\n");
+        case '\r' -> builder.append("\\r");
+        case '\t' -> builder.append("\\t");
+        default -> builder.append(c);
+      }
+    }
+    return builder.toString();
+  }
+
+  public static String unescape(final String input) {
+    if (input == null || input.isEmpty()) {
+      return input;
+    }
+    final StringBuilder builder = new StringBuilder(input.length());
+    boolean escaping = false;
+    for (int i = 0; i < input.length(); i++) {
+      final char c = input.charAt(i);
+      if (escaping) {
+        escaping = false;
+        switch (c) {
+          case 'n' -> builder.append('\n');
+          case 'r' -> builder.append('\r');
+          case 't' -> builder.append('\t');
+          case '\\' -> builder.append('\\');
+          default -> builder.append(c);
+        }
+      } else if (c == '\\') {
+        escaping = true;
+      } else {
+        builder.append(c);
+      }
+    }
+    if (escaping) {
+      builder.append('\\');
+    }
+    return builder.toString();
+  }
 }

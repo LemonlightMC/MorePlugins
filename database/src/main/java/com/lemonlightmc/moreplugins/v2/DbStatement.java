@@ -38,7 +38,7 @@ public class DbStatement implements AutoCloseable {
 
   @SuppressWarnings("unused")
   public void startTransaction() throws SQLException {
-    try (DatabaseTiming _ = db.timings("startTransaction")) {
+    try (DatabaseTiming timing = db.timings("startTransaction")) {
       dbConn.setAutoCommit(false);
       isDirty = true;
     }
@@ -49,7 +49,7 @@ public class DbStatement implements AutoCloseable {
     if (!isDirty) {
       return;
     }
-    try (DatabaseTiming _ = db.timings("commit")) {
+    try (DatabaseTiming timing = db.timings("commit")) {
       isDirty = false;
       dbConn.commit();
       dbConn.setAutoCommit(true);
@@ -74,7 +74,7 @@ public class DbStatement implements AutoCloseable {
     if (!isDirty) {
       return;
     }
-    try (DatabaseTiming _ = db.timings("rollback")) {
+    try (DatabaseTiming timing = db.timings("rollback")) {
       isDirty = false;
       dbConn.rollback();
       dbConn.setAutoCommit(true);
@@ -101,7 +101,7 @@ public class DbStatement implements AutoCloseable {
   @SuppressWarnings("unused")
   public DbStatement query(String query) throws SQLException {
     this.query = query;
-    try (DatabaseTiming _ = db.timings("query: " + query)) {
+    try (DatabaseTiming timing = db.timings("query: " + query)) {
       closeStatement();
       try {
         preparedStatement = dbConn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
@@ -151,7 +151,7 @@ public class DbStatement implements AutoCloseable {
 
   @SuppressWarnings("unused")
   private void prepareExecute(Object... params) throws SQLException {
-    try (DatabaseTiming _ = db.timings("prepareExecute: " + query)) {
+    try (DatabaseTiming timing = db.timings("prepareExecute: " + query)) {
       closeResult();
       if (preparedStatement == null) {
         throw new IllegalStateException("Run Query first on statement before executing!");
@@ -165,7 +165,7 @@ public class DbStatement implements AutoCloseable {
 
   @SuppressWarnings("unused")
   public int executeUpdate(Object... params) throws SQLException {
-    try (DatabaseTiming _ = db.timings("executeUpdate: " + query)) {
+    try (DatabaseTiming timing = db.timings("executeUpdate: " + query)) {
       try {
         prepareExecute(params);
         int result = preparedStatement.executeUpdate();
@@ -185,7 +185,7 @@ public class DbStatement implements AutoCloseable {
 
   @SuppressWarnings("unused")
   public DbStatement execute(Object... params) throws SQLException {
-    try (DatabaseTiming _ = db.timings("execute: " + query)) {
+    try (DatabaseTiming timing = db.timings("execute: " + query)) {
       try {
         prepareExecute(params);
         resultSet = preparedStatement.executeQuery();
@@ -207,7 +207,7 @@ public class DbStatement implements AutoCloseable {
 
   @SuppressWarnings("unused")
   public Long getLastInsertId() throws SQLException {
-    try (DatabaseTiming _ = db.timings("getLastInsertId")) {
+    try (DatabaseTiming timing = db.timings("getLastInsertId")) {
       try (ResultSet genKeys = preparedStatement.getGeneratedKeys()) {
         if (genKeys == null) {
           return null;
@@ -226,7 +226,7 @@ public class DbStatement implements AutoCloseable {
     if (resultSet == null) {
       return null;
     }
-    try (DatabaseTiming _ = db.timings("getResults")) {
+    try (DatabaseTiming timing = db.timings("getResults")) {
       ArrayList<DbRow> result = new ArrayList<>();
       DbRow row;
       while ((row = getNextRow()) != null) {
@@ -287,7 +287,7 @@ public class DbStatement implements AutoCloseable {
 
   @SuppressWarnings("unused")
   public void close() {
-    try (DatabaseTiming _ = db.timings("close")) {
+    try (DatabaseTiming timing = db.timings("close")) {
 
       try {
         closeStatement();

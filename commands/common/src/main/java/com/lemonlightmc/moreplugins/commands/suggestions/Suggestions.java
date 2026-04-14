@@ -15,7 +15,7 @@ public interface Suggestions<S> {
   abstract Collection<String> suggest(SuggestionInfo<S> info) throws CommandException;
 
   public static <T> Suggestions<T> empty() {
-    return _ -> List.of();
+    return info -> List.of();
   }
 
   public static <T> Suggestions<T> from(final String... strings) {

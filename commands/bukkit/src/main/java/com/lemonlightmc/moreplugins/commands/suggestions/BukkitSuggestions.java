@@ -14,7 +14,7 @@ import com.lemonlightmc.moreplugins.commands.exceptions.CommandException;
 public abstract class BukkitSuggestions implements Suggestions<CommandSender> {
 
   public static Suggestions<CommandSender> empty() {
-    return _ -> List.of();
+    return info -> List.of();
   }
 
   public static Suggestions<CommandSender> from(final String... strings) {

@@ -22,8 +22,6 @@ include(":items")
 include(":database")
 println(rootProject)
 
-// project(":social-api").projectDir = file("api")
-
 dependencyResolutionManagement {
     repositories {
         mavenCentral()

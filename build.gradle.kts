@@ -12,7 +12,7 @@ subprojects {
   // configure Java toolchain and artifact jars
   extensions.configure<org.gradle.api.plugins.JavaPluginExtension> {
       toolchain {
-          languageVersion.set(org.gradle.jvm.toolchain.JavaLanguageVersion.of(24))
+          languageVersion.set(org.gradle.jvm.toolchain.JavaLanguageVersion.of(21))
       }
       withSourcesJar()
       //withJavadocJar()
