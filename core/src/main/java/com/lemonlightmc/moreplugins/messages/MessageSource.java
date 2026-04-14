@@ -223,7 +223,7 @@ public class MessageSource implements IMessageSource {
     @Override
     public void createDefault() {
       final String resourcePath = "translations/" + file + ".properties";
-      final File resource = RessourceUtils.getResource(resourcePath);
+      final File resource = RessourceUtils.getResourceFile(resourcePath);
       if (resource == null || !resource.exists()) {
         Logger.warn("No default message resource found for: " + file);
         return;

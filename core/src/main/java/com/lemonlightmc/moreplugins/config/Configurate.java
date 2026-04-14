@@ -30,7 +30,7 @@ public class Configurate {
   }
 
   public List<File> getDefaultConfigs() {
-    return RessourceUtils.getResourceList(folder.getPath());
+    return RessourceUtils.getResourcesFiles(folder.getPath());
   }
 
   public static void createDefault() {

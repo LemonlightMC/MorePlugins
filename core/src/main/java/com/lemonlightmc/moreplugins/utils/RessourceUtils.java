@@ -8,21 +8,32 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.io.Reader;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 import java.util.ResourceBundle;
-
 import com.lemonlightmc.moreplugins.base.MorePlugins;
 import com.lemonlightmc.moreplugins.messages.Logger;
 import com.lemonlightmc.moreplugins.utils.FileUtils.FileResult;
 
 public class RessourceUtils {
+  public static URL getResourceURL(final String path) {
+    if (path == null || path.isEmpty()) {
+      return null;
+    }
+    try {
+      return MorePlugins.instance.getClass().getClassLoader().getResource(path);
+    } catch (final Exception e) {
+      return null;
+    }
+  }
 
-  public static File getResource(final String path) {
+  public static File getResourceFile(final String path) {
     try {
       final URL url = getResourceURL(path);
       return url == null ? null : new File(url.toURI());
@@ -31,12 +42,22 @@ public class RessourceUtils {
     }
   }
 
-  public static URL getResourceURL(final String path) {
-    if (path == null || path.isEmpty()) {
+  public static InputStream getResourceStream(final String path) {
+    try {
+      final URL url = getResourceURL(path);
+      return url == null ? null : url.openStream();
+    } catch (final Exception e) {
       return null;
     }
+  }
+
+  public static Reader getResourceReader(final String path) {
     try {
-      return MorePlugins.instance.getClass().getClassLoader().getResource(path);
+      final URL url = getResourceURL(path);
+      if (url == null) {
+        return null;
+      }
+      return new InputStreamReader(url.openStream(), StandardCharsets.UTF_8);
     } catch (final Exception e) {
       return null;
     }
@@ -54,8 +75,30 @@ public class RessourceUtils {
     return getResourceURL(path) != null;
   }
 
-  public static List<File> getResourceList(final String path) {
-    return FileUtils.listFiles(getResource(path));
+  public static List<URL> getResourcesURLs(final String path) {
+    final Iterator<URL> urls = getResourcesIterator(path);
+    if (urls == null) {
+      return List.of();
+    }
+    final ArrayList<URL> l = new ArrayList<>();
+    while (urls.hasNext())
+      l.add(urls.next());
+    return l;
+  }
+
+  public static Iterator<URL> getResourcesIterator(final String path) {
+    if (path == null || path.isEmpty()) {
+      return Collections.emptyListIterator();
+    }
+    try {
+      return MorePlugins.instance.getClass().getClassLoader().getResources(path).asIterator();
+    } catch (final Exception e) {
+      return Collections.emptyListIterator();
+    }
+  }
+
+  public static List<File> getResourcesFiles(final String path) {
+    return FileUtils.listFiles(getResourceFile(path));
   }
 
   public static Properties loadPropertiesFromJar(final String resourcePath) {

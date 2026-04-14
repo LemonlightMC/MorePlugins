@@ -40,7 +40,7 @@ public abstract class FileHandler {
     if (FileUtils.exists(path)) {
       return;
     }
-    final File ressource = RessourceUtils.getResource(path.toString());
+    final File ressource = RessourceUtils.getResourceFile(path.toString());
     if (ressource == null) {
       return;
     }
