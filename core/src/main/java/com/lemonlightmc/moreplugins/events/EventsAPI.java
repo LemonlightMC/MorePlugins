@@ -29,18 +29,19 @@ public class EventsAPI {
   }
 
   public static <T extends Event> T call(final T event) {
-    MorePlugins.getInstancePluginManager().callEvent(event);
+    MorePlugins.getInstance().getPluginManager().callEvent(event);
     return event;
   }
 
   public static <T extends Event> T callAsync(final T event) {
-    MorePlugins.getInstanceScheduler().runAsync(() -> MorePlugins.getInstancePluginManager().callEvent(event));
+    MorePlugins.getInstance().getScheduler()
+        .runAsync(() -> MorePlugins.getInstance().getPluginManager().callEvent(event));
     return event;
 
   }
 
   public static <T extends Event> T callSync(final T event) {
-    MorePlugins.getInstanceScheduler().run(() -> MorePlugins.getInstancePluginManager().callEvent(event));
+    MorePlugins.getInstance().getScheduler().run(() -> MorePlugins.getInstance().getPluginManager().callEvent(event));
     return event;
   }
 
@@ -65,7 +66,7 @@ public class EventsAPI {
 
   public static void register(final Listener listener) {
     if (listener != null) {
-      MorePlugins.getInstancePluginManager().registerEvents(listener, MorePlugins.instance);
+      MorePlugins.getInstance().getPluginManager().registerEvents(listener, MorePlugins.instance);
     }
   }
 
@@ -73,7 +74,7 @@ public class EventsAPI {
     if (listener == null || listener.isRegistered) {
       return;
     }
-    MorePlugins.getInstancePluginManager().registerEvents(listener, MorePlugins.instance);
+    MorePlugins.getInstance().getPluginManager().registerEvents(listener, MorePlugins.instance);
     listener.isRegistered = true;
     listener.onRegister();
   }
@@ -83,7 +84,7 @@ public class EventsAPI {
     if (listener == null || event == null || executor == null) {
       return;
     }
-    MorePlugins.getInstancePluginManager().registerEvent(event, listener,
+    MorePlugins.getInstance().getPluginManager().registerEvent(event, listener,
         priority == null ? EventPriority.NORMAL : priority, executor, MorePlugins.instance);
   }
 
@@ -92,7 +93,7 @@ public class EventsAPI {
     if (listener == null || event == null || executor == null) {
       return;
     }
-    MorePlugins.getInstancePluginManager().registerEvent(event, listener,
+    MorePlugins.getInstance().getPluginManager().registerEvent(event, listener,
         priority == null ? EventPriority.NORMAL : priority, executor, MorePlugins.instance,
         ignoreCancelled);
   }

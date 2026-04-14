@@ -102,7 +102,7 @@ public class Countdown {
     this.durationTime = duration.get();
     this.startTime = System.currentTimeMillis();
     start.accept(CountdownInfo.from(this));
-    task = PluginBase.getInstanceScheduler().runEveryAsync(() -> {
+    task = PluginBase.getInstance().getScheduler().runEveryAsync(() -> {
       final CountdownInfo info = CountdownInfo.from(this);
       count.accept(info);
       if (hasEnded()) {

@@ -1,7 +1,7 @@
 package com.lemonlightmc.moreplugins.base;
 
 import java.util.List;
-import java.util.Objects;
+import java.util.Locale;
 import java.util.Set;
 
 import org.bukkit.permissions.Permission;
@@ -35,17 +35,21 @@ public class PluginInfo implements IPluginBase.IPluginDescription {
 
   @Override
   public String getKey() {
-    return descriptionFile.getName().toLowerCase();
+    return descriptionFile.getName().toLowerCase(Locale.ROOT);
   }
 
   @Override
   public String getFullName() {
-    return descriptionFile.getFullName();
+    return descriptionFile.getName() + " v" + version.formatted(true);
   }
 
   @Override
   public Version getVersion() {
     return version;
+  }
+
+  public String getFormattedVersion() {
+    return version.formatted(true);
   }
 
   @Override
@@ -135,14 +139,18 @@ public class PluginInfo implements IPluginBase.IPluginDescription {
 
   @Override
   public String toString() {
-    return "PluginDescription [getName()=" + getName() + ", getFullName()=" + getFullName() + ", getVersion()="
-        + getVersion() + ", getPrefix()=" + getPrefix() + ", getDescription()=" + getDescription()
-        + ", getApiVersion()=" + getApiVersion() + ", getMain()=" + getMain() + ", getAuthors()=" + getAuthors()
-        + ", getContributors()=" + getContributors() + ", getWebsite()=" + getWebsite() + ", getDepend()=" + getDepend()
-        + ", getSoftDepend()=" + getSoftDepend() + ", getLoadOrder()=" + getLoadOrder() + ", getLoadBefore()="
-        + getLoadBefore() + ", getProvides()=" + getProvides() + ", getLibraries()=" + getLibraries()
-        + ", getCommands()=" + getCommands() + ", getAwareness()=" + getAwareness() + ", getPermissions()="
-        + getPermissions() + ", getPermissionDefault()=" + getPermissionDefault() + "]";
+    return "PluginDescription [getFullName()=" + getFullName() + ", getMain()=" + getMain() + ", getPrefix()="
+        + getPrefix() + ", getDescription()=" + getDescription() + ", getApiVersion()=" + getApiVersion()
+        + ", getAuthors()=" + getAuthors() + ", getDepend()=" + getDepend() + ", getSoftDepend()=" + getSoftDepend()
+        + ", getProvides()=" + getProvides() + "]";
+  }
+
+  @Override
+  public int hashCode() {
+    int result = 31 + getFullName().hashCode();
+    result = 31 * result + getMain().hashCode();
+    result = 31 * result + getClass().hashCode();
+    return 31 * result + ((apiVersion == null) ? 0 : apiVersion.hashCode());
   }
 
   @Override
@@ -154,17 +162,11 @@ public class PluginInfo implements IPluginBase.IPluginDescription {
       return false;
     }
     final PluginInfo other = (PluginInfo) obj;
-    return Objects.equals(descriptionFile.getName(), other.getName())
-        && Objects.equals(version, other.version)
-        && Objects.equals(apiVersion, other.apiVersion)
-        && Objects.equals(descriptionFile.getMain(), other.getMain())
-        && Objects.equals(descriptionFile.getFullName(), other.getFullName())
-        && Objects.equals(descriptionFile.getPrefix(), other.getPrefix());
+    if (apiVersion == null || other.apiVersion != null) {
+      return false;
+    }
+    return descriptionFile.equals(other.descriptionFile) && version.equals(other.version)
+        && apiVersion.equals(other.apiVersion);
   }
 
-  @Override
-  public int hashCode() {
-    return Objects.hash(descriptionFile.getName(), version, apiVersion, descriptionFile.getMain(),
-        descriptionFile.getFullName(), descriptionFile.getPrefix());
-  }
 }

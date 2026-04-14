@@ -1,22 +1,13 @@
 package com.lemonlightmc.moreplugins.base;
 
-import com.lemonlightmc.moreplugins.config.Config;
-import com.lemonlightmc.moreplugins.messages.Logger;
 import com.lemonlightmc.moreplugins.messages.MessageProvider;
 import com.lemonlightmc.moreplugins.scheduler.Scheduler;
+import com.lemonlightmc.moreplugins.utils.ResourceUtils;
 import com.lemonlightmc.moreplugins.utils.StringUtils;
 import com.lemonlightmc.moreplugins.version.Version;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.Reader;
-import java.net.URL;
-import java.net.URLConnection;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import org.bukkit.Bukkit;
@@ -33,7 +24,7 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.ServicesManager;
 import org.bukkit.plugin.java.JavaPluginLoader;
 
-public class PluginBase extends org.bukkit.plugin.PluginBase implements IPluginBase {
+public abstract class PluginBase extends org.bukkit.plugin.PluginBase implements IPluginBase {
 
   private boolean isEnabled = false;
   private PluginLoader loader = null;
@@ -45,12 +36,12 @@ public class PluginBase extends org.bukkit.plugin.PluginBase implements IPluginB
   private final File dataFolder = null;
   private ClassLoader classLoader = null;
   private boolean naggable = true;
-  private Config config = null;
   private MessageProvider messageProvider = null;
 
   private static PluginBase instance = null;
 
   public PluginBase() {
+    super();
     classLoader = this.getClass().getClassLoader();
     this.server = Bukkit.getServer();
     this.scheduler = new Scheduler();
@@ -67,7 +58,6 @@ public class PluginBase extends org.bukkit.plugin.PluginBase implements IPluginB
     this.loader = loader;
     this.file = file;
     this.info = new PluginInfo(info);
-    this.config = Config.from(dataFolder.toPath().resolve("config.yml"));
   }
 
   public static boolean hasInstance() {
@@ -83,33 +73,9 @@ public class PluginBase extends org.bukkit.plugin.PluginBase implements IPluginB
     return (I) instance;
   }
 
-  public static PluginLoader getInstancePluginLoader() {
-    return getInstance().loader;
-  }
-
-  public static PluginManager getInstancePluginManager() {
-    return getInstance().server.getPluginManager();
-  }
-
-  public static Server getInstanceServer() {
-    return getInstance().server;
-  }
-
-  public static ServicesManager getInstanceServicesManager() {
-    return getInstance().server.getServicesManager();
-  }
-
-  public static Scheduler getInstanceScheduler() {
-    return getInstance().scheduler;
-  }
-
-  public static MessageProvider getInstanceMessageProvider() {
-    return getInstance().messageProvider;
-  }
-
   @Override
-  public String getFullName() {
-    return info.getFullName();
+  public PluginInfo getInfo() {
+    return info;
   }
 
   @Override
@@ -118,8 +84,8 @@ public class PluginBase extends org.bukkit.plugin.PluginBase implements IPluginB
   }
 
   @Override
-  public PluginDescriptionFile getDescription() {
-    return info.descriptionFile;
+  public String getFullName() {
+    return info.getFullName();
   }
 
   @Override
@@ -130,6 +96,15 @@ public class PluginBase extends org.bukkit.plugin.PluginBase implements IPluginB
   @Override
   public Version getVersion() {
     return info.getVersion();
+  }
+
+  @Override
+  public PluginDescriptionFile getDescription() {
+    return info.descriptionFile;
+  }
+
+  protected File getFile() {
+    return file;
   }
 
   @Override
@@ -145,18 +120,39 @@ public class PluginBase extends org.bukkit.plugin.PluginBase implements IPluginB
   }
 
   @Override
-  public PluginLoader getPluginLoader() {
-    return loader;
+  public boolean isEnabled() {
+    return isEnabled;
   }
 
-  @Override
-  public PluginManager getPluginManager() {
-    return server.getPluginManager();
+  public void setEnabled(final boolean enabled) {
+    if (isEnabled != enabled) {
+      isEnabled = enabled;
+
+      if (isEnabled) {
+        onEnable();
+      } else {
+        onDisable();
+      }
+    }
   }
 
   @Override
   public Server getServer() {
     return server;
+  }
+
+  @Override
+  public PluginLoader getPluginLoader() {
+    return loader;
+  }
+
+  public ClassLoader getClassLoader() {
+    return classLoader;
+  }
+
+  @Override
+  public PluginManager getPluginManager() {
+    return server.getPluginManager();
   }
 
   @Override
@@ -170,144 +166,61 @@ public class PluginBase extends org.bukkit.plugin.PluginBase implements IPluginB
   }
 
   @Override
+  public java.util.logging.Logger getLogger() {
+    return server.getLogger();
+  }
+
+  @Override
   public MessageProvider getMessageProvider() {
     return messageProvider;
   }
 
-  @Override
-  public boolean isEnabled() {
-    return isEnabled;
-  }
-
-  protected File getFile() {
-    return file;
-  }
-
+  @Deprecated
   @Override
   public FileConfiguration getConfig() {
-    return config.getConfig();
+    throw new UnsupportedOperationException(
+        "FileConfiguration is not supported in PluginBase. Use Configurate instead.");
   }
 
   @Override
   public void reloadConfig() {
-    config.reload();
+    // Configurate.reloadAll();
   }
 
   @Override
   public void saveConfig() {
-    config.save();
+    // Configurate.saveAll();
   }
 
   @Override
   public void loadConfig() {
-    config.load();
+    // Configurate.loadAll();
   }
 
   @Override
   public void loadConfig(final File file) {
-    config.load(file);
+    // Configurate.load(file.getName());
   }
 
   @Override
   public void saveDefaultConfig() {
-    config.createDefault();
+    // Configurate.createDefault();
   }
 
-  protected Reader getTextResource(final String file) {
-    final InputStream in = getResource(file);
-
-    return in == null
-        ? null
-        : new InputStreamReader(in, StandardCharsets.UTF_8);
-  }
-
-  @Override
-  public void saveResource(String resourcePath, final boolean replace) {
-    if (resourcePath == null || resourcePath.equals("")) {
-      throw new IllegalArgumentException(
-          "ResourcePath cannot be null or empty");
-    }
-
-    resourcePath = resourcePath.replace('\\', '/');
-    final InputStream in = getResource(resourcePath);
-    if (in == null) {
-      throw new IllegalArgumentException(
-          "The embedded resource '" +
-              resourcePath +
-              "' cannot be found in " +
-              file);
-    }
-
-    final File outFile = new File(dataFolder, resourcePath);
-    final int lastIndex = resourcePath.lastIndexOf('/');
-    final File outDir = new File(
-        dataFolder,
-        resourcePath.substring(0, lastIndex >= 0 ? lastIndex : 0));
-
-    if (!outDir.exists()) {
-      outDir.mkdirs();
-    }
-
-    try {
-      if (!outFile.exists() || replace) {
-        final OutputStream out = new FileOutputStream(outFile);
-        final byte[] buf = new byte[1024];
-        int len;
-        while ((len = in.read(buf)) > 0) {
-          out.write(buf, 0, len);
-        }
-        out.close();
-        in.close();
-      } else {
-        Logger.warn(
-            "Could not save " +
-                outFile.getName() +
-                " to " +
-                outFile +
-                " because " +
-                outFile.getName() +
-                " already exists.");
-      }
-    } catch (final IOException ex) {
-      Logger.warn("Could not save " + outFile.getName() + " to " + outFile);
-      ex.printStackTrace();
-    }
-  }
-
+  @Deprecated
   @Override
   public InputStream getResource(final String filename) {
-    if (filename == null) {
-      throw new IllegalArgumentException("Filename cannot be null");
-    }
-
-    try {
-      final URL url = getClassLoader().getResource(filename);
-      if (url == null) {
-        return null;
-      }
-
-      final URLConnection connection = url.openConnection();
-      connection.setUseCaches(false);
-      return connection.getInputStream();
-    } catch (final IOException ex) {
-      return null;
-    }
+    return ResourceUtils.getResourceStream(filename);
   }
 
-  public ClassLoader getClassLoader() {
-    return classLoader;
-  }
-
-  public void setEnabled(final boolean enabled) {
-    if (isEnabled != enabled) {
-      isEnabled = enabled;
-
-      if (isEnabled) {
-        onEnable();
-      } else {
-        onDisable();
-      }
+  @Deprecated
+  @Override
+  public void saveResource(final String path, final boolean replace) {
+    final File file = ResourceUtils.getResourceFile(path);
+    if (file == null) {
+      return;
     }
+    ResourceUtils.saveResource(file, new File(dataFolder, path));
   }
 
   @Deprecated
@@ -358,28 +271,27 @@ public class PluginBase extends org.bukkit.plugin.PluginBase implements IPluginB
   }
 
   @Override
-  public java.util.logging.Logger getLogger() {
-    return server.getLogger();
-  }
-
-  @Override
   @Deprecated
   public List<String> onTabComplete(final CommandSender sender, final Command command, final String label,
       final String[] args) {
-    throw new UnsupportedOperationException("Unimplemented method 'onTabComplete'");
+    throw new UnsupportedOperationException(
+        "onTabComplete is not supported in Main Plugin. Create Command with CommandAPI instead!");
   }
 
   @Override
   @Deprecated
   public boolean onCommand(final CommandSender sender, final Command command, final String label, final String[] args) {
-    throw new UnsupportedOperationException("Unimplemented method 'onCommand'");
+    throw new UnsupportedOperationException(
+        "onCommand is not supported in Main Plugin. Create Command with CommandAPI instead!");
   }
 
+  @Deprecated
   @Override
   public ChunkGenerator getDefaultWorldGenerator(final String worldName, final String id) {
     return null;
   }
 
+  @Deprecated
   @Override
   public BiomeProvider getDefaultBiomeProvider(final String worldName, final String id) {
     return null;

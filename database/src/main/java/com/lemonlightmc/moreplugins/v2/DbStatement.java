@@ -36,6 +36,7 @@ public class DbStatement implements AutoCloseable {
     }
   }
 
+  @SuppressWarnings("unused")
   public void startTransaction() throws SQLException {
     try (DatabaseTiming _ = db.timings("startTransaction")) {
       dbConn.setAutoCommit(false);
@@ -43,6 +44,7 @@ public class DbStatement implements AutoCloseable {
     }
   }
 
+  @SuppressWarnings("unused")
   public void commit() throws SQLException {
     if (!isDirty) {
       return;
@@ -67,6 +69,7 @@ public class DbStatement implements AutoCloseable {
     this.onRollback.clear();
   }
 
+  @SuppressWarnings("unused")
   public synchronized void rollback() throws SQLException {
     if (!isDirty) {
       return;
@@ -95,6 +98,7 @@ public class DbStatement implements AutoCloseable {
     }
   }
 
+  @SuppressWarnings("unused")
   public DbStatement query(String query) throws SQLException {
     this.query = query;
     try (DatabaseTiming _ = db.timings("query: " + query)) {
@@ -145,6 +149,7 @@ public class DbStatement implements AutoCloseable {
     return dbRows;
   }
 
+  @SuppressWarnings("unused")
   private void prepareExecute(Object... params) throws SQLException {
     try (DatabaseTiming _ = db.timings("prepareExecute: " + query)) {
       closeResult();
@@ -158,6 +163,7 @@ public class DbStatement implements AutoCloseable {
     }
   }
 
+  @SuppressWarnings("unused")
   public int executeUpdate(Object... params) throws SQLException {
     try (DatabaseTiming _ = db.timings("executeUpdate: " + query)) {
       try {
@@ -177,6 +183,7 @@ public class DbStatement implements AutoCloseable {
     }
   }
 
+  @SuppressWarnings("unused")
   public DbStatement execute(Object... params) throws SQLException {
     try (DatabaseTiming _ = db.timings("execute: " + query)) {
       try {
@@ -198,6 +205,7 @@ public class DbStatement implements AutoCloseable {
     return this;
   }
 
+  @SuppressWarnings("unused")
   public Long getLastInsertId() throws SQLException {
     try (DatabaseTiming _ = db.timings("getLastInsertId")) {
       try (ResultSet genKeys = preparedStatement.getGeneratedKeys()) {
@@ -213,6 +221,7 @@ public class DbStatement implements AutoCloseable {
     }
   }
 
+  @SuppressWarnings("unused")
   public ArrayList<DbRow> getResults() throws SQLException {
     if (resultSet == null) {
       return null;
@@ -276,6 +285,7 @@ public class DbStatement implements AutoCloseable {
     }
   }
 
+  @SuppressWarnings("unused")
   public void close() {
     try (DatabaseTiming _ = db.timings("close")) {
 

@@ -15,7 +15,6 @@ import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginAwareness;
-import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginLoadOrder;
 import org.bukkit.plugin.PluginLoader;
 import org.bukkit.plugin.PluginManager;
@@ -79,13 +78,13 @@ public interface IPluginBase extends Plugin {
 
   public void onEnable();
 
-  public String getName();
+  public PluginInfo getInfo();
 
   public String getKey();
 
-  public String getFullName();
+  public String getName();
 
-  public PluginDescriptionFile getDescription();
+  public String getFullName();
 
   public String getPrefix();
 
@@ -140,4 +139,5 @@ public interface IPluginBase extends Plugin {
 
   @Deprecated
   public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args);
+
 }
