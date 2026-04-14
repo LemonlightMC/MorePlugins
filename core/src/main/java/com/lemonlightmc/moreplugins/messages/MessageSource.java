@@ -17,7 +17,7 @@ import java.util.Properties;
 import java.util.ResourceBundle;
 import java.util.function.Supplier;
 
-import com.lemonlightmc.moreplugins.utils.RessourceUtils;
+import com.lemonlightmc.moreplugins.utils.ResourceUtils;
 
 public class MessageSource implements IMessageSource {
 
@@ -151,7 +151,7 @@ public class MessageSource implements IMessageSource {
     public FileMessageSource(final File file) {
       super();
       this.file = file;
-      hasDefault = RessourceUtils.hasResource("translations/" + file.getName() + ".properties");
+      hasDefault = ResourceUtils.hasResource("translations/" + file.getName() + ".properties");
     }
 
     public File getFile() {
@@ -223,13 +223,13 @@ public class MessageSource implements IMessageSource {
     @Override
     public void createDefault() {
       final String resourcePath = "translations/" + file + ".properties";
-      final File resource = RessourceUtils.getResource(resourcePath);
+      final File resource = ResourceUtils.getResourceFile(resourcePath);
       if (resource == null || !resource.exists()) {
         Logger.warn("No default message resource found for: " + file);
         return;
       }
       try {
-        RessourceUtils.saveResource(file, resource);
+        ResourceUtils.saveResource(file, resource);
       } catch (final Exception e) {
       }
     }
@@ -292,7 +292,7 @@ public class MessageSource implements IMessageSource {
         if (key.startsWith("meta.")) {
           continue;
         }
-        messages.put(key, RessourceUtils.getResourceBundleString(bundle, key, key));
+        messages.put(key, ResourceUtils.getResourceBundleString(bundle, key, key));
       }
     }
   }
