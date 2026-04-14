@@ -1,5 +1,6 @@
 package com.lemonlightmc.moreplugins.base;
 
+import com.lemonlightmc.moreplugins.config.Configurate;
 import com.lemonlightmc.moreplugins.messages.MessageProvider;
 import com.lemonlightmc.moreplugins.scheduler.Scheduler;
 import com.lemonlightmc.moreplugins.utils.ResourceUtils;
@@ -184,27 +185,27 @@ public abstract class PluginBase extends org.bukkit.plugin.PluginBase implements
 
   @Override
   public void reloadConfig() {
-    // Configurate.reloadAll();
+    Configurate.reloadAll();
   }
 
   @Override
   public void saveConfig() {
-    // Configurate.saveAll();
+    Configurate.saveAll();
   }
 
   @Override
   public void loadConfig() {
-    // Configurate.loadAll();
+    Configurate.loadAll();
   }
 
   @Override
   public void loadConfig(final File file) {
-    // Configurate.load(file.getName());
+    Configurate.load(file.getName());
   }
 
   @Override
   public void saveDefaultConfig() {
-    // Configurate.createDefault();
+    Configurate.createDefault();
   }
 
   @Deprecated

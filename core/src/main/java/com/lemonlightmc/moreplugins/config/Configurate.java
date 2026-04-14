@@ -13,7 +13,7 @@ import com.lemonlightmc.moreplugins.config.handlers.YamlHandler;
 import com.lemonlightmc.moreplugins.config.schema.BuildSchema;
 import com.lemonlightmc.moreplugins.exceptions.ConfigHandlingException;
 import com.lemonlightmc.moreplugins.messages.Logger;
-import com.lemonlightmc.moreplugins.utils.RessourceUtils;
+import com.lemonlightmc.moreplugins.utils.ResourceUtils;
 
 public class Configurate {
 
@@ -30,7 +30,7 @@ public class Configurate {
   }
 
   public List<File> getDefaultConfigs() {
-    return RessourceUtils.getResourcesFiles(folder.getPath());
+    return ResourceUtils.getResourcesFiles(folder.getPath());
   }
 
   public static void createDefault() {

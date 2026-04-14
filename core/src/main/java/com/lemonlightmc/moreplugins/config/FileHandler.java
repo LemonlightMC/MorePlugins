@@ -12,7 +12,7 @@ import com.lemonlightmc.moreplugins.config.handlers.FileHandlerOptions;
 import com.lemonlightmc.moreplugins.config.schema.SchemaPair;
 import com.lemonlightmc.moreplugins.exceptions.ConfigHandlingException;
 import com.lemonlightmc.moreplugins.utils.FileUtils;
-import com.lemonlightmc.moreplugins.utils.RessourceUtils;
+import com.lemonlightmc.moreplugins.utils.ResourceUtils;
 
 public abstract class FileHandler {
   private FileHandlerOptions options;
@@ -40,11 +40,11 @@ public abstract class FileHandler {
     if (FileUtils.exists(path)) {
       return;
     }
-    final File ressource = RessourceUtils.getResourceFile(path.toString());
+    final File ressource = ResourceUtils.getResourceFile(path.toString());
     if (ressource == null) {
       return;
     }
-    RessourceUtils.saveResource(ressource, path.toFile());
+    ResourceUtils.saveResource(ressource, path.toFile());
   }
 
   public ConfigData reload(final ConfigData data) {
