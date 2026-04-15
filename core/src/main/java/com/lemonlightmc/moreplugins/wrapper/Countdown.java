@@ -2,9 +2,8 @@ package com.lemonlightmc.moreplugins.wrapper;
 
 import java.util.function.Consumer;
 import java.util.function.Supplier;
-
-import com.lemonlightmc.moreplugins.base.PluginBase;
 import com.lemonlightmc.moreplugins.interfaces.Builder;
+import com.lemonlightmc.moreplugins.scheduler.GlobalScheduler;
 import com.lemonlightmc.moreplugins.scheduler.ScheduledTask;
 import com.lemonlightmc.moreplugins.time.IPolyTimeUnit;
 
@@ -102,7 +101,7 @@ public class Countdown {
     this.durationTime = duration.get();
     this.startTime = System.currentTimeMillis();
     start.accept(CountdownInfo.from(this));
-    task = PluginBase.getInstance().getScheduler().runEveryAsync(() -> {
+    task = GlobalScheduler.runEveryAsync(() -> {
       final CountdownInfo info = CountdownInfo.from(this);
       count.accept(info);
       if (hasEnded()) {

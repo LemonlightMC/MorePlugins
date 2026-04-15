@@ -24,7 +24,7 @@ import org.bukkit.entity.minecart.CommandMinecart;
 import org.bukkit.permissions.Permissible;
 import org.bukkit.plugin.SimplePluginManager;
 
-import com.lemonlightmc.moreplugins.base.PluginBase;
+import com.lemonlightmc.moreplugins.base.MorePlugins;
 import com.lemonlightmc.moreplugins.commands.exceptions.CommandException;
 import com.lemonlightmc.moreplugins.commands.exceptions.InvalidCommandNameException;
 import com.lemonlightmc.moreplugins.commands.exceptions.MissingCommandExecutorException;
@@ -32,6 +32,7 @@ import com.lemonlightmc.moreplugins.commands.executors.CommandHandler;
 import com.lemonlightmc.moreplugins.commands.executors.InternalExecutor;
 import com.lemonlightmc.moreplugins.messages.Logger;
 import com.lemonlightmc.moreplugins.messages.MessageFormatter;
+import com.lemonlightmc.moreplugins.scheduler.GlobalScheduler;
 
 public class CommandAPI {
   private static final Field COMMAND_MAP_FIELD;
@@ -95,7 +96,7 @@ public class CommandAPI {
   }
 
   public static String setNamespace() {
-    namespace = PluginBase.getInstance().getKey();
+    namespace = MorePlugins.getInstance().getKey();
     return namespace;
   }
 
@@ -112,7 +113,7 @@ public class CommandAPI {
     }
     key = key.startsWith("/") ? key.substring(1) : key;
     return new SimpleCommand(
-        new NamespacedKey(PluginBase.getInstance().getKey(), key));
+        new NamespacedKey(MorePlugins.getInstance().getKey(), key));
   }
 
   public static SimpleCommand command(final NamespacedKey key) {
@@ -389,37 +390,37 @@ public class CommandAPI {
   }
 
   public static void dispatchAsync(final CommandSender sender, final SimpleCommand command, final String[] args) {
-    PluginBase.getInstanceScheduler().runAsync(() -> {
+    GlobalScheduler.runAsync(() -> {
       dispatch(sender, command, args);
     });
   }
 
   public static void dispatchAsync(final SimpleCommand command, final String[] args) {
-    PluginBase.getInstanceScheduler().runAsync(() -> {
+    GlobalScheduler.runAsync(() -> {
       dispatch(Bukkit.getConsoleSender(), command, args);
     });
   }
 
   public static void dispatchAsync(final CommandSender sender, final String label, final String[] args) {
-    PluginBase.getInstanceScheduler().runAsync(() -> {
+    GlobalScheduler.runAsync(() -> {
       dispatch(sender, label, args);
     });
   }
 
   public static void dispatchAsync(final String label, final String[] args) {
-    PluginBase.getInstanceScheduler().runAsync(() -> {
+    GlobalScheduler.runAsync(() -> {
       dispatch(Bukkit.getConsoleSender(), label, args);
     });
   }
 
   public static void dispatchAsync(final CommandSender sender, final String commandLine) {
-    PluginBase.getInstanceScheduler().runAsync(() -> {
+    GlobalScheduler.runAsync(() -> {
       dispatch(sender, commandLine);
     });
   }
 
   public static void dispatchAsync(final String commandLine) {
-    PluginBase.getInstanceScheduler().runAsync(() -> {
+    GlobalScheduler.runAsync(() -> {
       dispatch(Bukkit.getConsoleSender(), commandLine);
     });
   }

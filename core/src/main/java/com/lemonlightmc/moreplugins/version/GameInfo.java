@@ -2,13 +2,13 @@ package com.lemonlightmc.moreplugins.version;
 
 import org.bukkit.entity.Player;
 
-import com.lemonlightmc.moreplugins.base.PluginBase;
+import com.lemonlightmc.moreplugins.base.MorePlugins;
 
 public interface GameInfo {
   public static boolean hasViaVersionSupport = false;
 
   static GameInfo SERVER = new GameInfo() {
-    private final Version version = PluginBase.getInstance().getVersion();
+    private final Version version = MorePlugins.getInstance().getVersion();
 
     @Override
     public String getVersion() {
@@ -16,7 +16,7 @@ public interface GameInfo {
     }
   };
   static GameInfo VIA = new GameInfo() {
-    private final Version version = PluginBase.getInstance().getVersion();
+    private final Version version = MorePlugins.getInstance().getVersion();
 
     @Override
     public String getVersion() {

@@ -11,7 +11,6 @@ import java.io.File;
 import java.io.InputStream;
 import java.util.List;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Server;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -19,46 +18,26 @@ import org.bukkit.command.PluginCommand;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.generator.BiomeProvider;
 import org.bukkit.generator.ChunkGenerator;
-import org.bukkit.plugin.PluginDescriptionFile;
-import org.bukkit.plugin.PluginLoader;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.ServicesManager;
-import org.bukkit.plugin.java.JavaPluginLoader;
 
-public abstract class PluginBase implements IPluginBase {
+public abstract class JavaPluginBase extends org.bukkit.plugin.java.JavaPlugin implements IPluginBase {
 
-  private boolean isEnabled = false;
-  private PluginLoader loader = null;
-  private Server server = null;
+  private final Server server = null;
   private Scheduler scheduler = null;
 
-  private File file = null;
+  private final File file = null;
   private PluginInfo info = null;
-  private final File dataFolder = null;
-  private ClassLoader classLoader = null;
-  private boolean naggable = true;
   private MessageProvider messageProvider = null;
 
-  private static PluginBase instance = null;
+  private static JavaPluginBase instance = null;
 
-  public PluginBase() {
+  public JavaPluginBase() {
     super();
-    classLoader = this.getClass().getClassLoader();
-    this.server = Bukkit.getServer();
+    this.info = new PluginInfo(getDescription());
     this.scheduler = new Scheduler();
     messageProvider = new MessageProvider();
-    PluginBase.instance = this;
-  }
-
-  protected PluginBase(
-      final JavaPluginLoader loader,
-      final PluginDescriptionFile info,
-      final File dataFolder,
-      final File file) {
-    this();
-    this.loader = loader;
-    this.file = file;
-    this.info = new PluginInfo(info);
+    JavaPluginBase.instance = this;
   }
 
   public static boolean hasInstance() {
@@ -66,7 +45,7 @@ public abstract class PluginBase implements IPluginBase {
   }
 
   @SuppressWarnings("unchecked")
-  public static <I extends PluginBase> I getInstance() {
+  public static <I extends JavaPluginBase> I getInstance() {
     if (instance == null) {
       throw new RuntimeException(
           "Plugin is not enabled - Plugin Instance can not be obtained!");
@@ -85,11 +64,6 @@ public abstract class PluginBase implements IPluginBase {
   }
 
   @Override
-  public String getName() {
-    return info.getName();
-  }
-
-  @Override
   public String getFullName() {
     return info.getFullName();
   }
@@ -104,18 +78,8 @@ public abstract class PluginBase implements IPluginBase {
     return info.getVersion();
   }
 
-  @Override
-  public PluginDescriptionFile getDescription() {
-    return info.descriptionFile;
-  }
-
   protected File getFile() {
     return file;
-  }
-
-  @Override
-  public File getDataFolder() {
-    return dataFolder;
   }
 
   public File getDataFile(final String... path) {
@@ -123,37 +87,6 @@ public abstract class PluginBase implements IPluginBase {
       return this.getDataFolder();
     }
     return new File(this.getDataFolder(), StringUtils.join(File.separator, path));
-  }
-
-  @Override
-  public boolean isEnabled() {
-    return isEnabled;
-  }
-
-  public void setEnabled(final boolean enabled) {
-    if (isEnabled != enabled) {
-      isEnabled = enabled;
-
-      if (isEnabled) {
-        onEnable();
-      } else {
-        onDisable();
-      }
-    }
-  }
-
-  @Override
-  public Server getServer() {
-    return server;
-  }
-
-  @Override
-  public PluginLoader getPluginLoader() {
-    return loader;
-  }
-
-  public ClassLoader getClassLoader() {
-    return classLoader;
   }
 
   @Override
@@ -226,7 +159,7 @@ public abstract class PluginBase implements IPluginBase {
     if (file == null) {
       return;
     }
-    ResourceUtils.saveResource(file, new File(dataFolder, path));
+    ResourceUtils.saveResource(file, new File(getDataFolder(), path));
   }
 
   @Deprecated
@@ -262,35 +195,8 @@ public abstract class PluginBase implements IPluginBase {
   }
 
   @Override
-  public boolean isNaggable() {
-    return naggable;
-  }
-
-  @Override
-  public void setNaggable(final boolean canNag) {
-    this.naggable = canNag;
-  }
-
-  @Override
   public String toString() {
     return info.getFullName();
-  }
-
-  @Override
-  public int hashCode() {
-    return 31 * (31 + file.hashCode()) + info.hashCode();
-  }
-
-  @Override
-  public boolean equals(final Object obj) {
-    if (this == obj) {
-      return true;
-    }
-    if (obj == null || getClass() != obj.getClass()) {
-      return false;
-    }
-    final PluginBase other = (PluginBase) obj;
-    return info.equals(other.info) && file.equals(other.file);
   }
 
   @Override

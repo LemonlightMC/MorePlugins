@@ -3,7 +3,7 @@ package com.lemonlightmc.moreplugins.wrapper;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.lemonlightmc.moreplugins.base.PluginBase;
+import com.lemonlightmc.moreplugins.scheduler.GlobalScheduler;
 import com.lemonlightmc.moreplugins.wrapper.Actions.*;
 
 public class ActionManager<T> {
@@ -14,7 +14,7 @@ public class ActionManager<T> {
   }
 
   public void execute(final T player) {
-    PluginBase.getInstance().getScheduler().runAsync(() -> {
+    GlobalScheduler.runAsync(() -> {
       for (final Action<T> action : actions) {
         action.execute(player);
       }

@@ -1,8 +1,9 @@
 package com.lemonlightmc.moreplugins.commands.executors;
 
-import com.lemonlightmc.moreplugins.base.PluginBase;
+import com.lemonlightmc.moreplugins.base.MorePlugins;
 import com.lemonlightmc.moreplugins.commands.CommandAPI;
 import com.lemonlightmc.moreplugins.commands.SimpleCommand;
+import com.lemonlightmc.moreplugins.scheduler.GlobalScheduler;
 
 import java.util.List;
 
@@ -54,7 +55,7 @@ public class InternalExecutor extends Command {
       CommandAPI.getHandler().run(cmd, sender, args);
       return true;
     }
-    PluginBase.getInstanceScheduler()
+    GlobalScheduler
         .runAsync(() -> {
           CommandAPI.getHandler().run(cmd, sender, args);
         });
@@ -75,7 +76,7 @@ public class InternalExecutor extends Command {
 
   @Override
   public String toString() {
-    return cmd.getName().toString() + "(" + PluginBase.getInstance().getDescription().getFullName() + ")";
+    return cmd.getName().toString() + "(" + MorePlugins.getInstance().getDescription().getFullName() + ")";
   }
 
   @Override

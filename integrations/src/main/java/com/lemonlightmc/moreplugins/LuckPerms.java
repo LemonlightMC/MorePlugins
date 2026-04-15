@@ -11,8 +11,7 @@ import java.util.function.Function;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import com.lemonlightmc.moreplugins.base.PluginBase;
-
+import com.lemonlightmc.moreplugins.base.MorePlugins;
 import net.luckperms.api.LuckPermsProvider;
 import net.luckperms.api.cacheddata.CachedMetaData;
 import net.luckperms.api.cacheddata.CachedPermissionData;
@@ -52,7 +51,7 @@ public class LuckPerms {
   }
 
   public static boolean isEnabled() {
-    return PluginBase.getInstance().getPluginManager().isPluginEnabled("LuckPerms");
+    return MorePlugins.getInstance().getPluginManager().isPluginEnabled("LuckPerms");
   }
 
   // Permissions

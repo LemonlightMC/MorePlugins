@@ -7,7 +7,7 @@ import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.scheduler.BukkitTask;
 
-import com.lemonlightmc.moreplugins.base.PluginBase;
+import com.lemonlightmc.moreplugins.scheduler.GlobalScheduler;
 import com.lemonlightmc.moreplugins.sound.Song;
 import com.lemonlightmc.moreplugins.sound.Playlist;
 import com.lemonlightmc.moreplugins.sound.RepeatMode;
@@ -119,7 +119,7 @@ public abstract class SoundPlayer {
 
   public void destroy() {
     final PlayableStoppedEvent event = new PlayableStoppedEvent(this);
-    PluginBase.getInstance().getScheduler().run(() -> Bukkit.getPluginManager().callEvent(event));
+    GlobalScheduler.run(() -> Bukkit.getPluginManager().callEvent(event));
     if (event.isCancelled()) {
       return;
     }
@@ -145,7 +145,7 @@ public abstract class SoundPlayer {
         run();
       } else {
         final PlayableStoppedEvent event = new PlayableStoppedEvent(this);
-        PluginBase.getInstance().getScheduler().run(() -> Bukkit.getPluginManager().callEvent(event));
+        GlobalScheduler.run(() -> Bukkit.getPluginManager().callEvent(event));
       }
     } finally {
       lock.unlock();
@@ -198,7 +198,7 @@ public abstract class SoundPlayer {
       playerList.remove(uuid);
       if (playerList.isEmpty()) {
         final PlayableEndEvent event = new PlayableEndEvent(this);
-        PluginBase.getInstance().getScheduler().run(() -> Bukkit.getPluginManager().callEvent(event));
+        GlobalScheduler.run(() -> Bukkit.getPluginManager().callEvent(event));
         setPlaying(false);
       }
     } finally {
@@ -289,7 +289,7 @@ public abstract class SoundPlayer {
         && Bukkit.getScheduler().isQueued(backgroundTask.getTaskId()))
       return;
 
-    backgroundTask = PluginBase.getInstance().getScheduler().runAsync(() -> {
+    backgroundTask = GlobalScheduler.runAsync(() -> {
       while (playing || fading) {
         final long startTime = System.currentTimeMillis();
 
@@ -418,7 +418,7 @@ public abstract class SoundPlayer {
     lock.lock();
     final Condition condition = lock.newCondition();
     try {
-      PluginBase.getInstance().getScheduler().run(() -> {
+      GlobalScheduler.run(() -> {
         lock.lock();
         try {
           Bukkit.getPluginManager().callEvent(event);

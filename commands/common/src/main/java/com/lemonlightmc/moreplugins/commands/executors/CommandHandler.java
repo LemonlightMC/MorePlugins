@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
-import com.lemonlightmc.moreplugins.base.PluginBase;
+import com.lemonlightmc.moreplugins.base.MorePlugins;
 import com.lemonlightmc.moreplugins.commands.CommandSource;
 import com.lemonlightmc.moreplugins.commands.SimpleSubCommand;
 import com.lemonlightmc.moreplugins.commands.argumentsbase.Argument;
@@ -51,7 +51,7 @@ public class CommandHandler<S, C extends CommandSource<S>> {
           "Exception while executing command '" +
               cmd.getName() +
               "' in plugin " +
-              PluginBase.getInstance().getFullName(),
+              MorePlugins.getInstance().getFullName(),
           ex);
     }
   }
@@ -99,7 +99,7 @@ public class CommandHandler<S, C extends CommandSource<S>> {
           .append(' ')
           .append(String.join(" ", args))
           .append("' in plugin ")
-          .append(PluginBase.getInstance().getFullName());
+          .append(MorePlugins.getInstance().getFullName());
       throw new CommandException(message.toString(), ex);
     }
   }
@@ -182,12 +182,12 @@ public class CommandHandler<S, C extends CommandSource<S>> {
     if (sender == null) {
       return false;
     }
-    if (!PluginBase.getInstance().isEnabled()) {
+    if (!MorePlugins.getInstance().isEnabled()) {
       Logger.warn(
           "Cannot execute command '" +
               cmd.getName() +
               "' in plugin " +
-              PluginBase.getInstance().getDescription().getFullName() +
+              MorePlugins.getInstance().getDescription().getFullName() +
               " - plugin is disabled.");
       return false;
     }
