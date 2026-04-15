@@ -11,7 +11,7 @@ plugins {
     id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
 }
 
-rootProject.name = "MorePlugins"
+rootProject.name = "Zenith"
 include(":core")
 include(":commands")
 include(":commands:common")
