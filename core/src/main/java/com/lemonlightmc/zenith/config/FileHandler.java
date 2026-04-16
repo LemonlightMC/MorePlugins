@@ -1,9 +1,7 @@
 package com.lemonlightmc.zenith.config;
 
+import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.OutputStreamWriter;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.Map;
 
@@ -67,21 +65,11 @@ public abstract class FileHandler {
 
   public void save(final Path path, final ConfigData data) {
     FileUtils.mkdirs(path).throwIfFailed(ConfigHandlingException.class);
-    OutputStreamWriter writer = null;
-    try {
+    try (BufferedWriter writer = FileUtils.createWriter(path.toFile())) {
       final String str = saveToString(data.getRawData());
-      writer = new OutputStreamWriter(new FileOutputStream(path.toFile()), StandardCharsets.UTF_8);
       writer.write(str);
     } catch (final Exception e) {
       throw new ConfigHandlingException("Failed to save Config to " + path, e);
-    } finally {
-      if (writer == null) {
-        return;
-      }
-      try {
-        writer.close();
-      } catch (final Exception e) {
-      }
     }
   }
 

@@ -1,7 +1,6 @@
 package com.lemonlightmc.zenith.utils;
 
 import java.io.BufferedReader;
-import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
@@ -83,7 +82,7 @@ public class JsonUtil {
       if (connection.getResponseCode() != 200) {
         return null;
       }
-      final BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+      final BufferedReader reader = FileUtils.createReader((connection.getInputStream()));
       final StringBuilder response = new StringBuilder();
 
       String line;

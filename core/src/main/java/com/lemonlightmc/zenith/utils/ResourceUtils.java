@@ -1,16 +1,13 @@
 package com.lemonlightmc.zenith.utils;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -34,6 +31,10 @@ public class ResourceUtils {
     }
   }
 
+  public static URL getResourceURL(final Path path) {
+    return path == null ? null : getResourceURL(path.toString());
+  }
+
   public static File getResourceFile(final String path) {
     try {
       final URL url = getResourceURL(path);
@@ -43,10 +44,14 @@ public class ResourceUtils {
     }
   }
 
-  public static InputStream getResourceStream(final String path) {
+  public static File getResourceFile(final Path path) {
+    return path == null ? null : getResourceFile(path.toString());
+  }
+
+  public static BufferedInputStream getResourceStream(final String path) {
     try {
       final URL url = getResourceURL(path);
-      return url == null ? null : url.openStream();
+      return url == null ? null : FileUtils.createInputStream(url.openStream());
     } catch (final Exception e) {
       return null;
     }
@@ -58,7 +63,7 @@ public class ResourceUtils {
       if (url == null) {
         return null;
       }
-      return new InputStreamReader(url.openStream(), StandardCharsets.UTF_8);
+      return FileUtils.createReader(url.openStream());
     } catch (final Exception e) {
       return null;
     }
@@ -74,6 +79,10 @@ public class ResourceUtils {
 
   public static boolean hasResource(final String path) {
     return getResourceURL(path) != null;
+  }
+
+  public static boolean hasResource(final Path path) {
+    return path != null && getResourceURL(path.toString()) != null;
   }
 
   public static List<URL> getResourcesURLs(final String path) {
@@ -107,7 +116,7 @@ public class ResourceUtils {
     try (InputStream in = MorePlugins.instance.getClass().getResourceAsStream(resourcePath)) {
       if (in == null)
         return null;
-      props.load(new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8)));
+      props.load(FileUtils.createReader(in));
       return props;
     } catch (final Exception e) {
       e.printStackTrace();
@@ -120,8 +129,7 @@ public class ResourceUtils {
       return null;
     }
     final Properties props = new Properties();
-    try (BufferedReader reader = new BufferedReader(
-        new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8))) {
+    try (BufferedReader reader = FileUtils.createReader(file)) {
       props.load(reader);
       return props;
     } catch (final Exception e) {
@@ -135,8 +143,7 @@ public class ResourceUtils {
     if (!file.exists() || !file.isFile() || !file.getAbsolutePath().endsWith(".properties")) {
       return;
     }
-    try (BufferedWriter writer = new BufferedWriter(
-        new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8))) {
+    try (BufferedWriter writer = FileUtils.createWriter(file)) {
       final List<String> keys = new ArrayList<>(props.stringPropertyNames());
       Collections.sort(keys);
       for (final String key : keys) {

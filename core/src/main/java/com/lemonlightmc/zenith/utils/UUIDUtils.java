@@ -1,7 +1,6 @@
 package com.lemonlightmc.zenith.utils;
 
 import java.io.BufferedReader;
-import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.util.HashMap;
@@ -185,7 +184,7 @@ public class UUIDUtils {
       // These connection parameters need to be set or the API won't accept the
       // connection.
 
-      try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
+      try (BufferedReader bufferedReader = FileUtils.createReader(connection.getInputStream())) {
         final StringBuilder response = new StringBuilder();
         String line;
 
