@@ -1,13 +1,12 @@
 package com.lemonlightmc.zenith.messages;
 
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.Spliterator;
-import java.util.Spliterators;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -27,12 +26,7 @@ public class Audience implements IAudience<CommandSender> {
     this.viewers = Collections.newSetFromMap(new ConcurrentHashMap<>());
   }
 
-  public Audience(final List<CommandSender> viewers) {
-    this.viewers = Collections.newSetFromMap(new ConcurrentHashMap<>());
-    this.viewers.addAll(viewers);
-  }
-
-  public Audience(final Set<CommandSender> viewers) {
+  public Audience(final Collection<CommandSender> viewers) {
     this.viewers = Collections.newSetFromMap(new ConcurrentHashMap<>());
     this.viewers.addAll(viewers);
   }
@@ -114,7 +108,7 @@ public class Audience implements IAudience<CommandSender> {
     if (!isFiltered) {
       applyGlobalFilter();
     }
-    return Spliterators.spliterator(viewers, 1);
+    return viewers.spliterator();
   }
 
   @Override
@@ -130,7 +124,7 @@ public class Audience implements IAudience<CommandSender> {
     if (!isFiltered) {
       applyGlobalFilter();
     }
-    return new ArrayList<>(viewers);
+    return List.copyOf(viewers);
 
   }
 
@@ -139,7 +133,7 @@ public class Audience implements IAudience<CommandSender> {
     if (!isFiltered) {
       applyGlobalFilter();
     }
-    return viewers.toArray(CommandSender[]::new);
+    return viewers.toArray(new CommandSender[viewers.size()]);
   }
 
   @Override
@@ -155,7 +149,7 @@ public class Audience implements IAudience<CommandSender> {
     if (!isFiltered) {
       applyGlobalFilter();
     }
-    return ((viewers == null) ? 0 : viewers.hashCode());
+    return 31 + viewers.hashCode();
   }
 
   @Override
@@ -178,6 +172,9 @@ public class Audience implements IAudience<CommandSender> {
     if (!isFiltered) {
       applyGlobalFilter();
     }
+    if (o == null) {
+      return viewers.size();
+    }
     return viewers.size() - o.toSet().size();
   }
 
@@ -192,21 +189,14 @@ public class Audience implements IAudience<CommandSender> {
   }
 
   @Override
-  public Audience addViewers(final CommandSender[] viewer) {
+  public Audience addViewers(final CommandSender... viewer) {
     viewers.addAll(List.of(viewer));
     isFiltered = false;
     return this;
   }
 
   @Override
-  public Audience addViewers(final List<CommandSender> viewer) {
-    viewers.addAll(viewer);
-    isFiltered = false;
-    return this;
-  }
-
-  @Override
-  public Audience addViewers(final Set<CommandSender> viewer) {
+  public Audience addViewers(final Collection<CommandSender> viewer) {
     viewers.addAll(viewer);
     isFiltered = false;
     return this;
@@ -219,19 +209,13 @@ public class Audience implements IAudience<CommandSender> {
   }
 
   @Override
-  public Audience removeViewers(final CommandSender[] viewer) {
+  public Audience removeViewers(final CommandSender... viewer) {
     viewers.removeAll(viewers);
     return this;
   }
 
   @Override
-  public Audience removeViewers(final List<CommandSender> viewer) {
-    viewers.removeAll(viewers);
-    return this;
-  }
-
-  @Override
-  public Audience removeViewers(final Set<CommandSender> viewer) {
+  public Audience removeViewers(final Collection<CommandSender> viewer) {
     viewers.removeAll(viewers);
     return this;
   }

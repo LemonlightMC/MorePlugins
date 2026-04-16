@@ -1,26 +1,25 @@
 package com.lemonlightmc.zenith.messages;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Predicate;
 
-public interface IAudience<V> extends Iterable<V>, Comparable<IAudience<V>>, Cloneable {
+import com.lemonlightmc.zenith.interfaces.Cloneable;
+
+public interface IAudience<V> extends Iterable<V>, Comparable<IAudience<V>>, Cloneable<IAudience<V>> {
 
   public IAudience<V> addViewers(V viewer);
 
-  public IAudience<V> addViewers(V[] viewer);
+  public IAudience<V> addViewers(V... viewer);
 
-  public IAudience<V> addViewers(List<V> viewer);
-
-  public IAudience<V> addViewers(Set<V> viewer);
+  public IAudience<V> addViewers(Collection<V> viewer);
 
   public IAudience<V> removeViewers(V viewer);
 
-  public IAudience<V> removeViewers(V[] viewer);
+  public IAudience<V> removeViewers(V... viewer);
 
-  public IAudience<V> removeViewers(List<V> viewer);
-
-  public IAudience<V> removeViewers(Set<V> viewer);
+  public IAudience<V> removeViewers(Collection<V> viewer);
 
   public boolean hasViewer(V viewer);
 
