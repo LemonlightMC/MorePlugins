@@ -93,7 +93,7 @@ public class MessageFormatter {
       return null;
     }
     if (msg.startsWith("messages.")) {
-      msg = MorePlugins.instance.getMessageProvider().getMessage(msg.substring(9), locale);
+      msg = MorePlugins.instance.getMessageStore().getMessage(msg.substring(9), locale);
     }
     return msg == null || msg.length() == 0 ? null : msg;
   }

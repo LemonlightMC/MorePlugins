@@ -19,7 +19,7 @@ import org.bukkit.plugin.ServicesManager;
 import org.bukkit.plugin.java.JavaPluginLoader;
 
 import com.lemonlightmc.zenith.config.Configurate;
-import com.lemonlightmc.zenith.messages.MessageProvider;
+import com.lemonlightmc.zenith.messages.MessageStore;
 import com.lemonlightmc.zenith.scheduler.Scheduler;
 import com.lemonlightmc.zenith.utils.ResourceUtils;
 import com.lemonlightmc.zenith.utils.StringUtils;
@@ -37,7 +37,7 @@ public abstract class PluginBase implements IPluginBase {
   private final File dataFolder = null;
   private ClassLoader classLoader = null;
   private boolean naggable = true;
-  private MessageProvider messageProvider = null;
+  private MessageStore messageStore = null;
 
   private static PluginBase instance = null;
 
@@ -46,7 +46,7 @@ public abstract class PluginBase implements IPluginBase {
     classLoader = this.getClass().getClassLoader();
     this.server = Bukkit.getServer();
     this.scheduler = new Scheduler();
-    messageProvider = new MessageProvider();
+    messageStore = new MessageStore();
     PluginBase.instance = this;
   }
 
@@ -177,8 +177,8 @@ public abstract class PluginBase implements IPluginBase {
   }
 
   @Override
-  public MessageProvider getMessageProvider() {
-    return messageProvider;
+  public MessageStore getMessageStore() {
+    return messageStore;
   }
 
   @Deprecated

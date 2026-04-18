@@ -6,9 +6,19 @@ import java.util.Locale;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 
+import com.lemonlightmc.zenith.version.Version;
+
 public interface ITranslator {
 
   public NamespacedKey name();
+
+  public Locale getLocale();
+
+  public Version getVersion();
+
+  public String getAuthor();
+
+  public String getDescription();
 
   public Locale providesLocale();
 

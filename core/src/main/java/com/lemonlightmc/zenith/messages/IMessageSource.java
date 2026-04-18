@@ -6,61 +6,49 @@ import java.util.Properties;
 import java.util.ResourceBundle;
 
 import com.lemonlightmc.zenith.version.Version;
+import com.lemonlightmc.zenith.interfaces.Cloneable;
 
-public interface IMessageSource {
-  public static interface IMessageMeta {
+public interface IMessageSource<T extends IMessageSource<T>> extends Cloneable<T> {
 
-    public void modify(final Properties props);
+  public T setLocale(final Locale locale);
 
-    public void modify(final ResourceBundle bundle);
-
-    public void load(final Properties props);
-
-    public void store(final Properties props);
-
-    public Locale getLocale();
-
-    public void setLocale(final Locale locale);
-
-    public void setLocale(final String locale);
-
-    public Version getVersion();
-
-    public void setVersion(final Version version);
-
-    public void setVersion(final String version);
-
-    public String getAuthor();
-
-    public void setAuthor(final String author);
-
-    public String getDescription();
-
-    public void setDescription(final String description);
-  }
-
-  public Map<String, String> getMessages();
+  public T setLocale(final String locale);
 
   public Locale getLocale();
 
-  public void setLocale(final Locale locale);
+  public Version getVersion();
 
-  public MessageMeta getMeta();
+  public T setVersion(final Version version);
 
-  public void setMeta(final MessageMeta meta);
+  public T setVersion(final String version);
 
-  public void load();
+  public String getAuthor();
 
-  public void save(final Map<String, String> data);
+  public T setAuthor(final String author);
 
-  public void createDefault();
+  public String getDescription();
+
+  public T setDescription(final String description);
+
+  public Map<String, String> load(Properties props);
+
+  public Map<String, String> load(ResourceBundle props);
+
+  public Map<String, String> load();
+
+  public T save(Properties props);
+
+  public T save();
+
+  public T createDefault();
 
   public boolean hasDefault();
+
+  public T clone();
 
   public int hashCode();
 
   public boolean equals(final Object obj);
 
   public String toString();
-
 }

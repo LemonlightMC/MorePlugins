@@ -20,7 +20,7 @@ import org.bukkit.plugin.PluginLoader;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.ServicesManager;
 
-import com.lemonlightmc.zenith.messages.MessageProvider;
+import com.lemonlightmc.zenith.messages.MessageStore;
 import com.lemonlightmc.zenith.scheduler.Scheduler;
 import com.lemonlightmc.zenith.version.Version;
 
@@ -128,7 +128,7 @@ public interface IPluginBase extends Plugin {
 
   public java.util.logging.Logger getLogger();
 
-  public MessageProvider getMessageProvider();
+  public MessageStore getMessageStore();
 
   public ChunkGenerator getDefaultWorldGenerator(String worldName, String id);
 

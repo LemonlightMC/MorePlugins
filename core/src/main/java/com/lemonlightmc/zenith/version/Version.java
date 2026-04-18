@@ -5,6 +5,7 @@ import java.util.List;
 
 public class Version implements IVersion {
 
+  public static final Version FIRST_VERSION = new Version(1, 0, 0, 0, null);
   private final int major;
   private final int minor;
   private final int patch;

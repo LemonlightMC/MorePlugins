@@ -15,7 +15,7 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.ServicesManager;
 
 import com.lemonlightmc.zenith.config.Configurate;
-import com.lemonlightmc.zenith.messages.MessageProvider;
+import com.lemonlightmc.zenith.messages.MessageStore;
 import com.lemonlightmc.zenith.scheduler.Scheduler;
 import com.lemonlightmc.zenith.utils.ResourceUtils;
 import com.lemonlightmc.zenith.utils.StringUtils;
@@ -28,7 +28,7 @@ public abstract class ZenithPlugin extends org.bukkit.plugin.java.JavaPlugin imp
 
   private final File file = null;
   private PluginInfo info = null;
-  private MessageProvider messageProvider = null;
+  private MessageStore messageStore = null;
 
   private static ZenithPlugin instance = null;
 
@@ -36,7 +36,7 @@ public abstract class ZenithPlugin extends org.bukkit.plugin.java.JavaPlugin imp
     super();
     this.info = new PluginInfo(getDescription());
     this.scheduler = new Scheduler();
-    messageProvider = new MessageProvider();
+    messageStore = new MessageStore();
     ZenithPlugin.instance = this;
   }
 
@@ -110,8 +110,8 @@ public abstract class ZenithPlugin extends org.bukkit.plugin.java.JavaPlugin imp
   }
 
   @Override
-  public MessageProvider getMessageProvider() {
-    return messageProvider;
+  public MessageStore getMessageStore() {
+    return messageStore;
   }
 
   @Deprecated
