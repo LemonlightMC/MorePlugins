@@ -2,20 +2,22 @@ package com.lemonlightmc.zenith.messages;
 
 import me.clip.placeholderapi.PlaceholderAPI;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
-import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import com.lemonlightmc.zenith.base.MorePlugins;
-import com.lemonlightmc.zenith.utils.StringUtils;
 import com.lemonlightmc.zenith.utils.StringUtils.Replaceable;
 
 public class MessageFormatter {
 
-  public static String prefix;
-  public static boolean hasPlaceholderAPI = false;
+  private static String prefix;
+  private static String suffix;
+  private static boolean hasPlaceholderAPI = false;
+  private static List<Replaceable> globalPlaceholders = new ArrayList<>();
 
   public static enum MessageTypes {
     CHAT,
@@ -29,48 +31,36 @@ public class MessageFormatter {
     if (msg == null) {
       return null;
     }
-    return TextStyling.convert(msg);
-  }
-
-  public static String format(String msg, final Player p) {
-    msg = getMessage(msg, null);
-    if (msg == null) {
-      return null;
+    if (!globalPlaceholders.isEmpty()) {
+      for (final Replaceable replaceable : globalPlaceholders) {
+        msg = replaceable.apply(msg);
+      }
     }
     return TextStyling.convert(msg);
   }
 
   public static String format(
-      String msg,
+      final String msg,
       final Replaceable... replaceables) {
-    msg = getMessage(msg, null);
-    if (msg == null) {
-      return null;
-    }
-
-    msg = StringUtils.applyReplacements(msg, replaceables);
-    return TextStyling.convert(msg);
+    return format(null, msg, false, true, replaceables);
   }
 
   public static String format(
-      String msg,
+      final String msg,
       final boolean withPrefix,
       final Replaceable... replaceables) {
-    msg = getMessage(msg, null);
-    if (msg == null) {
-      return null;
-    }
-
-    msg = StringUtils.applyReplacements(msg, replaceables);
-    if (withPrefix) {
-      msg = (prefix + " " + msg).replace("\n", "\n" + prefix + " ");
-    }
-    return TextStyling.convert(msg);
+    return format(null, msg, withPrefix, true, replaceables);
   }
 
   public static String format(
-      String msg,
+      final String msg,
       final boolean withPrefix,
+      final boolean withColor,
+      final Replaceable... replaceables) {
+    return format(null, msg, withPrefix, withColor, replaceables);
+  }
+
+  public static String format(final Player p, String msg, final boolean withPrefix,
       final boolean withColor,
       final Replaceable... replaceables) {
     msg = getMessage(msg, null);
@@ -78,10 +68,10 @@ public class MessageFormatter {
       return null;
     }
 
-    for (final Replaceable replaceable : replaceables) {
-      msg = msg.replaceAll(replaceable.placeholder(), replaceable.value());
+    if (p != null) {
+      msg = parsePlaceholder(p, msg);
     }
-
+    msg = applyReplacements(msg, replaceables);
     if (withPrefix) {
       msg = (prefix + " " + msg).replace("\n", "\n" + prefix + " ");
     }
@@ -98,6 +88,45 @@ public class MessageFormatter {
     return msg == null || msg.length() == 0 ? null : msg;
   }
 
+  public static void setPrefix(String prefix) {
+    if (!prefix.endsWith("&r")) {
+      prefix += "&r";
+    }
+    MessageFormatter.prefix = prefix;
+  }
+
+  public static String getPrefix() {
+    return prefix;
+  }
+
+  public static void setSuffix(String suffix) {
+    if (!prefix.endsWith("&r")) {
+      suffix += "&r";
+    }
+    MessageFormatter.suffix = suffix;
+  }
+
+  public static String getSuffix() {
+    return suffix;
+  }
+
+  public static String applyReplacements(String message, final Replaceable... replacements) {
+    if (message == null || message.length() == 0) {
+      return message;
+    }
+    if (replacements != null && replacements.length > 0) {
+      for (final Replaceable replaceable : replacements) {
+        message = replaceable.apply(message);
+      }
+    }
+    if (!globalPlaceholders.isEmpty()) {
+      for (final Replaceable replaceable : globalPlaceholders) {
+        message = replaceable.apply(message);
+      }
+    }
+    return message;
+  }
+
   public static String parsePlaceholder(final CommandSender sender, final String str) {
     if (sender instanceof Player && hasPlaceholderAPI) {
       return PlaceholderAPI.setPlaceholders((Player) sender, str);
@@ -112,18 +141,7 @@ public class MessageFormatter {
     return str;
   }
 
-  public static void setPrefix(String newPrefix) {
-    if (!prefix.endsWith("&r"))
-      newPrefix += "&r";
-    prefix = newPrefix;
-  }
-
-  public static String getPrefix() {
-    return prefix;
-  }
-
-  public static void reload() {
-    prefix = MorePlugins.instance.getConfig().getString("prefix") + "&r";
-    hasPlaceholderAPI = Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI");
+  public static void setPlaceholdersSupport(final boolean value) {
+    hasPlaceholderAPI = value;
   }
 }

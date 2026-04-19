@@ -12,7 +12,7 @@ import org.bukkit.plugin.PluginLoadOrder;
 
 import com.lemonlightmc.zenith.version.Version;
 
-public class PluginInfo implements IPluginBase.IPluginDescription {
+public class PluginInfo {
 
   public final PluginDescriptionFile descriptionFile;
   private final Version version;
@@ -28,22 +28,18 @@ public class PluginInfo implements IPluginBase.IPluginDescription {
     return descriptionFile;
   }
 
-  @Override
   public String getName() {
     return descriptionFile.getName();
   }
 
-  @Override
   public String getKey() {
     return descriptionFile.getName().toLowerCase(Locale.ROOT);
   }
 
-  @Override
   public String getFullName() {
     return descriptionFile.getName() + " v" + version.formatted(true);
   }
 
-  @Override
   public Version getVersion() {
     return version;
   }
@@ -52,92 +48,74 @@ public class PluginInfo implements IPluginBase.IPluginDescription {
     return version.formatted(true);
   }
 
-  @Override
   public String getPrefix() {
     return descriptionFile.getPrefix();
   }
 
-  @Override
   public String getDescription() {
     return descriptionFile.getDescription();
   }
 
-  @Override
   public Version getApiVersion() {
     return apiVersion;
   }
 
-  @Override
   public String getMain() {
     return descriptionFile.getMain();
   }
 
-  @Override
   public List<String> getAuthors() {
     return descriptionFile.getAuthors();
   }
 
-  @Override
   public List<String> getContributors() {
     return descriptionFile.getContributors();
   }
 
-  @Override
   public String getWebsite() {
     return descriptionFile.getWebsite();
   }
 
-  @Override
   public List<String> getDepend() {
     return descriptionFile.getDepend();
   }
 
-  @Override
   public List<String> getSoftDepend() {
     return descriptionFile.getSoftDepend();
   }
 
-  @Override
   public PluginLoadOrder getLoadOrder() {
     return descriptionFile.getLoad();
   }
 
-  @Override
   public List<String> getLoadBefore() {
     return descriptionFile.getLoadBefore();
   }
 
-  @Override
   public List<String> getProvides() {
     return descriptionFile.getProvides();
   }
 
-  @Override
   public List<String> getLibraries() {
     return descriptionFile.getLibraries();
   }
 
-  @Override
   public Set<String> getCommands() {
     return descriptionFile.getCommands().keySet();
   }
 
-  @Override
   public Set<PluginAwareness> getAwareness() {
     return descriptionFile.getAwareness();
   }
 
-  @Override
   public List<Permission> getPermissions() {
     return descriptionFile.getPermissions();
   }
 
-  @Override
   public PermissionDefault getPermissionDefault() {
     return descriptionFile.getPermissionDefault();
   }
 
-  @Override
   public String toString() {
     return "PluginDescription [getFullName()=" + getFullName() + ", getMain()=" + getMain() + ", getPrefix()="
         + getPrefix() + ", getDescription()=" + getDescription() + ", getApiVersion()=" + getApiVersion()
@@ -145,7 +123,6 @@ public class PluginInfo implements IPluginBase.IPluginDescription {
         + ", getProvides()=" + getProvides() + "]";
   }
 
-  @Override
   public int hashCode() {
     int result = 31 + getFullName().hashCode();
     result = 31 * result + getMain().hashCode();
@@ -153,7 +130,6 @@ public class PluginInfo implements IPluginBase.IPluginDescription {
     return 31 * result + ((apiVersion == null) ? 0 : apiVersion.hashCode());
   }
 
-  @Override
   public boolean equals(final Object obj) {
     if (this == obj) {
       return true;

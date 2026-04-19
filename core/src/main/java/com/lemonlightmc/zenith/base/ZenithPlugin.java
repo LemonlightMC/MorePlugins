@@ -15,13 +15,14 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.ServicesManager;
 
 import com.lemonlightmc.zenith.config.Configurate;
+import com.lemonlightmc.zenith.messages.MessageFormatter;
 import com.lemonlightmc.zenith.messages.MessageStore;
 import com.lemonlightmc.zenith.scheduler.Scheduler;
 import com.lemonlightmc.zenith.utils.ResourceUtils;
 import com.lemonlightmc.zenith.utils.StringUtils;
 import com.lemonlightmc.zenith.version.Version;
 
-public abstract class ZenithPlugin extends org.bukkit.plugin.java.JavaPlugin implements IPluginBase {
+public abstract class ZenithPlugin extends org.bukkit.plugin.java.JavaPlugin {
 
   private final Server server = null;
   private Scheduler scheduler = null;
@@ -53,27 +54,22 @@ public abstract class ZenithPlugin extends org.bukkit.plugin.java.JavaPlugin imp
     return (I) instance;
   }
 
-  @Override
   public PluginInfo getInfo() {
     return info;
   }
 
-  @Override
   public String getKey() {
     return info.getKey();
   }
 
-  @Override
   public String getFullName() {
     return info.getFullName();
   }
 
-  @Override
   public String getPrefix() {
     return info.getPrefix();
   }
 
-  @Override
   public Version getVersion() {
     return info.getVersion();
   }
@@ -89,17 +85,14 @@ public abstract class ZenithPlugin extends org.bukkit.plugin.java.JavaPlugin imp
     return new File(this.getDataFolder(), StringUtils.join(File.separator, path));
   }
 
-  @Override
   public PluginManager getPluginManager() {
     return server.getPluginManager();
   }
 
-  @Override
   public ServicesManager getServicesManager() {
     return server.getServicesManager();
   }
 
-  @Override
   public Scheduler getScheduler() {
     return scheduler;
   }
@@ -109,7 +102,6 @@ public abstract class ZenithPlugin extends org.bukkit.plugin.java.JavaPlugin imp
     return server.getLogger();
   }
 
-  @Override
   public MessageStore getMessageStore() {
     return messageStore;
   }
@@ -131,12 +123,10 @@ public abstract class ZenithPlugin extends org.bukkit.plugin.java.JavaPlugin imp
     Configurate.saveAll();
   }
 
-  @Override
   public void loadConfig() {
     Configurate.loadAll();
   }
 
-  @Override
   public void loadConfig(final File file) {
     Configurate.load(file.getName());
   }
@@ -187,11 +177,17 @@ public abstract class ZenithPlugin extends org.bukkit.plugin.java.JavaPlugin imp
   }
 
   @Override
-  public void onDisable() {
+  public void onEnable() {
+  }
+
+  public void onReload() {
+    MessageFormatter.setPlaceholdersSupport(server.getPluginManager().isPluginEnabled("PlaceholderAPI"));
+    messageStore.reloadAll();
+    Configurate.reloadAll();
   }
 
   @Override
-  public void onEnable() {
+  public void onDisable() {
   }
 
   @Override
