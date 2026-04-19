@@ -9,6 +9,13 @@ public class MessageStore {
   private final Map<Locale, Map<String, String>> messages = new HashMap<>();
   private Locale defaultLocale = Locale.ENGLISH;
 
+  public MessageStore() {
+  }
+
+  public MessageStore(final Locale defaultLocale) {
+    this.defaultLocale = defaultLocale;
+  }
+
   public void reloadAll() {
     for (final IMessageSource<?> source : sources.values()) {
       source.load();
@@ -23,6 +30,14 @@ public class MessageStore {
     for (final Map.Entry<Locale, IMessageSource<?>> entry : sources.entrySet()) {
       loadSource(entry.getKey(), entry.getValue());
     }
+  }
+
+  public void clearAll() {
+    sources.clear();
+    for (final Map<String, String> localeMap : messages.values()) {
+      localeMap.clear();
+    }
+    messages.clear();
   }
 
   private Map<String, String> loadLocale(final Locale locale) {
@@ -112,9 +127,8 @@ public class MessageStore {
 
   @Override
   public int hashCode() {
-    int result = 31 * defaultLocale.hashCode() + messages.hashCode();
-    result = 31 * result + sources.hashCode();
-    return result;
+    final int result = 31 * defaultLocale.hashCode() + sources.hashCode();
+    return 31 * result + messages.hashCode();
   }
 
   @Override
