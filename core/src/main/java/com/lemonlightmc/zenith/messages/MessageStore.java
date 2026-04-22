@@ -1,12 +1,13 @@
 package com.lemonlightmc.zenith.messages;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
 
-public class MessageStore {
-  private final Map<Locale, IMessageSource<?>> sources = new HashMap<>();
-  private final Map<Locale, Map<String, String>> messages = new HashMap<>();
+public class MessageStore implements Iterable<MessageRepo<?>> {
+  private final Map<Locale, MessageRepo<?>> repos = new HashMap<>();
+  // private final Map<Locale, Map<String, String>> messages = new HashMap<>();
   private Locale defaultLocale = Locale.ENGLISH;
 
   public MessageStore() {
@@ -17,80 +18,39 @@ public class MessageStore {
   }
 
   public void reloadAll() {
-    for (final IMessageSource<?> source : sources.values()) {
-      source.load();
+    for (final MessageRepo<?> repo : repos.values()) {
+      if (repo.isEmpty()) {
+        repo.load();
+      }
     }
   }
 
   public void loadAll() {
-    for (final Map<String, String> localeMap : messages.values()) {
-      localeMap.clear();
-    }
-    messages.clear();
-    for (final Map.Entry<Locale, IMessageSource<?>> entry : sources.entrySet()) {
-      loadSource(entry.getKey(), entry.getValue());
+    for (final MessageRepo<?> repo : repos.values()) {
+      if (repo.isEmpty()) {
+        repo.load();
+      }
     }
   }
 
   public void clearAll() {
-    sources.clear();
-    for (final Map<String, String> localeMap : messages.values()) {
-      localeMap.clear();
-    }
-    messages.clear();
-  }
-
-  private Map<String, String> loadLocale(final Locale locale) {
-    final IMessageSource<?> source = sources.get(locale);
-    if (source == null) {
-      Logger.warn("No message source found for locale: " + locale);
-      return null;
-    }
-    final Map<String, String> localeMessage = source.load();
-    if (localeMessage == null || localeMessage.isEmpty()) {
-      Logger.warn("Failed to load messages for locale: " + locale);
-      return null;
-    }
-    messages.put(locale, localeMessage);
-    return localeMessage;
-  }
-
-  private Map<String, String> loadSource(final Locale locale, final IMessageSource<?> source) {
-    final Map<String, String> localeMessage = source.load();
-    if (localeMessage == null || localeMessage.isEmpty()) {
-      Logger.warn("Failed to load messages for locale: " + locale);
-      return null;
-    }
-    messages.put(locale, localeMessage);
-    return localeMessage;
+    repos.clear();
   }
 
   public String getMessage(final String key, final Locale locale) {
     if (key == null || key.length() == 0) {
       return null;
     }
-    final Map<String, String> localeMessages = getMessages(locale == null ? defaultLocale : locale);
-    return localeMessages == null ? null : localeMessages.get(key);
+    final MessageRepo<?> repo = repos.get(locale);
+    return repo == null ? null : repo.getMessage(key);
   }
 
   public String getMessage(final String key) {
     if (key == null || key.length() == 0) {
       return null;
     }
-    final Map<String, String> localeMessages = getMessages(defaultLocale);
-    return localeMessages == null ? null : localeMessages.get(key);
-  }
-
-  public Map<String, String> getMessages(final Locale locale) {
-    if (locale == null) {
-      return null;
-    }
-    final Map<String, String> localeMessages = messages.get(locale);
-    return localeMessages == null ? loadLocale(locale) : localeMessages;
-  }
-
-  public Map<Locale, Map<String, String>> getMessages() {
-    return messages;
+    final MessageRepo<?> repo = repos.get(defaultLocale);
+    return repo == null ? null : repo.getMessage(key);
   }
 
   public Locale getDefaultLocale() {
@@ -101,34 +61,37 @@ public class MessageStore {
     this.defaultLocale = locale;
   }
 
-  public void addSource(final IMessageSource<?> source) {
-    sources.put(source.getLocale(), source);
+  public void addRepo(final MessageRepo<?> repo) {
+    repos.put(repo.getLocale(), repo);
   }
 
-  public void removeSource(final IMessageSource<?> source) {
-    sources.remove(source.getLocale());
+  public void removeRepo(final MessageRepo<?> repo) {
+    repos.remove(repo.getLocale());
   }
 
-  public IMessageSource<?> getSource(final Locale locale) {
-    return sources.get(locale);
+  public MessageRepo<?> getRepo(final Locale locale) {
+    return repos.get(locale);
   }
 
-  public Map<Locale, IMessageSource<?>> getSources() {
-    return sources;
+  public Map<Locale, MessageRepo<?>> getRepos() {
+    return repos;
   }
 
-  public boolean hasSource(final IMessageSource<?> source) {
-    return sources.containsValue(source);
+  public boolean hasRepo(final MessageRepo<?> repo) {
+    return repos.containsValue(repo);
   }
 
-  public boolean hasSource(final Locale locale) {
-    return sources.containsKey(locale);
+  public boolean hasRepo(final Locale locale) {
+    return repos.containsKey(locale);
+  }
+
+  public Iterator<MessageRepo<?>> iterator() {
+    return repos.values().iterator();
   }
 
   @Override
   public int hashCode() {
-    final int result = 31 * defaultLocale.hashCode() + sources.hashCode();
-    return 31 * result + messages.hashCode();
+    return 31 * defaultLocale.hashCode() + repos.hashCode();
   }
 
   @Override
@@ -140,12 +103,11 @@ public class MessageStore {
       return false;
     }
     final MessageStore other = (MessageStore) obj;
-    return defaultLocale.equals(other.defaultLocale) && sources.equals(other.sources)
-        && messages.equals(other.messages);
+    return defaultLocale.equals(other.defaultLocale) && repos.equals(other.repos);
   }
 
   @Override
   public String toString() {
-    return "MessageStore [sources=" + sources + ", messages=" + messages + ", defaultLocale=" + defaultLocale + "]";
+    return "MessageStore [repos=" + repos + ", defaultLocale=" + defaultLocale + "]";
   }
 }

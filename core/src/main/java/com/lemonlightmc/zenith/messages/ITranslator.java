@@ -12,13 +12,7 @@ public interface ITranslator {
 
   public NamespacedKey name();
 
-  public Locale getLocale();
-
-  public Version getVersion();
-
-  public String getAuthor();
-
-  public String getDescription();
+  public Version version();
 
   public Locale providesLocale();
 
