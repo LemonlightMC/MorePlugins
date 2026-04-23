@@ -8,12 +8,14 @@ import java.net.ProtocolException;
 import java.net.URI;
 import java.net.URL;
 import java.nio.file.Path;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 import java.util.ResourceBundle;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 import com.lemonlightmc.zenith.interfaces.Cloneable;
@@ -22,8 +24,7 @@ import com.lemonlightmc.zenith.utils.ResourceUtils;
 import com.lemonlightmc.zenith.utils.StringUtils;
 import com.lemonlightmc.zenith.version.Version;
 
-public class MessageRepo<T extends MessageRepo<T>> implements Cloneable<T> {
-  protected final String id;
+public class MessageRepository<T extends MessageRepository<T>> implements Cloneable<T> {
   protected String name;
   protected final Locale locale;
   protected String description;
@@ -34,71 +35,71 @@ public class MessageRepo<T extends MessageRepo<T>> implements Cloneable<T> {
   protected Map<String, String> messages;
   protected long last_updated;
 
-  private static final Locale DEFAULT_LOCALE = Locale.ENGLISH;
+  public static final Locale DEFAULT_LOCALE = Locale.ENGLISH;
   private static final Version DEFAULT_VERSION = Version.FIRST_VERSION;
   private static final List<String> DEFAULT_CONTRIBUTORS = List.of();
   private static final String DEFAULT_DESC = "No description";
 
-  public MessageRepo(final String id, final String name, final Locale locale, final Version version,
+  public MessageRepository(final Locale locale, final String name, final Version version,
       final float progress, final String desc,
       final List<String> contributors) {
-    this.id = id;
-    if (id == null || id.isEmpty()) {
-      throw new IllegalArgumentException("MessageRepo id cannot be null or empty");
+    if (locale == null) {
+      throw new IllegalArgumentException("Locale cannot be null for Message Repository!");
     }
-    this.name = name == null ? id : name;
-    this.locale = locale == null ? DEFAULT_LOCALE : locale;
+    this.locale = locale;
+    this.name = name == null ? locale.toString() : name;
     this.version = version == null ? DEFAULT_VERSION : version;
     this.contributors = contributors == null || !contributors.isEmpty() ? DEFAULT_CONTRIBUTORS : contributors;
     this.description = desc == null || !desc.isEmpty() ? DEFAULT_DESC : desc;
     setProgress(progress);
   }
 
-  public MessageRepo(final String id, final String name, final String locale, final Version version,
+  public MessageRepository(final String locale, final String name, final Version version,
       final float progress, final String desc,
       final List<String> contributors) {
-    this(id, name, StringUtils.parseLocale(locale), version, progress, desc, contributors);
+    this(StringUtils.parseLocale(locale), name, version, progress, desc, contributors);
   }
 
-  public MessageRepo(final String id, final String name, final Locale locale, final Version version,
+  public MessageRepository(final Locale locale, final String name, final Version version,
       final float progress, final String desc) {
-    this(id, name, locale, version, progress, desc, DEFAULT_CONTRIBUTORS);
+    this(locale, name, version, progress, desc, DEFAULT_CONTRIBUTORS);
   }
 
-  public MessageRepo(final String id, final String name, final String locale, final Version version,
+  public MessageRepository(final String locale, final String name, final Version version,
       final float progress, final String desc) {
-    this(id, name, StringUtils.parseLocale(locale), version, progress, desc, DEFAULT_CONTRIBUTORS);
+    this(StringUtils.parseLocale(locale), name, version, progress, desc, DEFAULT_CONTRIBUTORS);
   }
 
-  public MessageRepo(final String id, final String name, final Locale locale, final float progress, final String desc) {
-    this(id, name, locale, DEFAULT_VERSION, progress, desc, DEFAULT_CONTRIBUTORS);
+  public MessageRepository(final Locale locale, final String name, final float progress,
+      final String desc) {
+    this(locale, name, DEFAULT_VERSION, progress, desc, DEFAULT_CONTRIBUTORS);
   }
 
-  public MessageRepo(final String id, final String name, final String locale, final float progress, final String desc) {
-    this(id, name, StringUtils.parseLocale(locale), DEFAULT_VERSION, progress, desc, DEFAULT_CONTRIBUTORS);
+  public MessageRepository(final String locale, final String name, final float progress,
+      final String desc) {
+    this(StringUtils.parseLocale(locale), name, DEFAULT_VERSION, progress, desc, DEFAULT_CONTRIBUTORS);
   }
 
-  public MessageRepo(final String id, final String name, final Locale locale, final float progress) {
-    this(id, name, locale, DEFAULT_VERSION, progress, DEFAULT_DESC, DEFAULT_CONTRIBUTORS);
+  public MessageRepository(final Locale locale, final String name, final float progress) {
+    this(locale, name, DEFAULT_VERSION, progress, DEFAULT_DESC, DEFAULT_CONTRIBUTORS);
   }
 
-  public MessageRepo(final String id, final String name, final String locale, final float progress) {
-    this(id, name, StringUtils.parseLocale(locale), DEFAULT_VERSION, progress, DEFAULT_DESC, DEFAULT_CONTRIBUTORS);
+  public MessageRepository(final String locale, final String name, final float progress) {
+    this(StringUtils.parseLocale(locale), name, DEFAULT_VERSION, progress, DEFAULT_DESC, DEFAULT_CONTRIBUTORS);
   }
 
-  public MessageRepo(final String id, final String name, final Locale locale) {
-    this(id, name, locale, DEFAULT_VERSION, 0f, DEFAULT_DESC, DEFAULT_CONTRIBUTORS);
+  public MessageRepository(final Locale locale, final String name) {
+    this(locale, name, DEFAULT_VERSION, 0f, DEFAULT_DESC, DEFAULT_CONTRIBUTORS);
   }
 
-  public MessageRepo(final String id, final String name, final String locale) {
-    this(id, name, StringUtils.parseLocale(locale), DEFAULT_VERSION, 0f, DEFAULT_DESC, DEFAULT_CONTRIBUTORS);
+  public MessageRepository(final String locale) {
+    this(StringUtils.parseLocale(locale), null, DEFAULT_VERSION, 0f, DEFAULT_DESC, DEFAULT_CONTRIBUTORS);
   }
 
-  public MessageRepo(final MessageRepo<?> repo) {
+  public MessageRepository(final MessageRepository<?> repo) {
     if (repo == null) {
-      throw new IllegalArgumentException("Message Repo cannot be null when cloning!");
+      throw new IllegalArgumentException("Message Repositorysitory cannot be null when cloning!");
     }
-    this.id = repo.id;
     this.name = repo.name;
     this.locale = repo.locale;
     this.version = repo.version;
@@ -108,21 +109,76 @@ public class MessageRepo<T extends MessageRepo<T>> implements Cloneable<T> {
     this.messages = repo.messages;
   }
 
-  public MessageRepo(final Properties props) {
-    this.id = props.getProperty("meta.id");
-    if (id == null || id.isEmpty()) {
-      throw new IllegalArgumentException("MessageRepo id cannot be null or empty");
-    }
-    this.locale = StringUtils.parseLocale(props.getProperty("meta.locale"));
-    load(props);
+  public static StaticMessageRepository from(final Locale locale, final Properties props) {
+    return new StaticMessageRepository(locale, props);
+  }
+
+  public static StaticMessageRepository from(final Properties props) {
+    return new StaticMessageRepository(null, props);
+  }
+
+  public static StaticMessageRepository from(final Locale locale, final ResourceBundle bundle) {
+    return new StaticMessageRepository(locale, bundle);
+  }
+
+  public static StaticMessageRepository from(final ResourceBundle bundle) {
+    return new StaticMessageRepository(null, bundle);
+  }
+
+  public static FileMessageRepository from(final Locale locale, final Path path) {
+    return new FileMessageRepository(locale, path);
+  }
+
+  public static FileMessageRepository from(final Path path) {
+    return new FileMessageRepository(null, path);
+  }
+
+  public static FileMessageRepository from(final Locale locale, final File file) {
+    return new FileMessageRepository(locale, file);
+  }
+
+  public static FileMessageRepository from(final File file) {
+    return new FileMessageRepository(null, file);
+  }
+
+  public static FunctionMessageRepository from(final Locale locale, final Function<String, String> function) {
+    return new FunctionMessageRepository(locale, function);
+  }
+
+  public static SupplierMessageRepository from(final Locale locale, final Supplier<Map<String, String>> supplier) {
+    return new SupplierMessageRepository(locale, supplier);
+  }
+
+  public static SupplierMessageRepository from(final Supplier<Map<String, String>> supplier) {
+    return new SupplierMessageRepository(null, supplier);
+  }
+
+  public static TranslatorMessageRepository from(final Locale locale, final ITranslator translator) {
+    return new TranslatorMessageRepository(locale, translator);
+  }
+
+  public static TranslatorMessageRepository from(final ITranslator translator) {
+    return new TranslatorMessageRepository(null, translator);
+  }
+
+  public static URLMessageRepository from(final Locale locale, final URL url) {
+    return new URLMessageRepository(locale, url);
+  }
+
+  public static URLMessageRepository from(final URL url) {
+    return new URLMessageRepository(null, url);
+  }
+
+  public static URLMessageRepository from(final Locale locale, final URI uri) {
+    return new URLMessageRepository(locale, uri);
+  }
+
+  public static URLMessageRepository from(final URI uri) {
+    return new URLMessageRepository(null, uri);
   }
 
   protected T getInstance() {
     return (T) this;
-  }
-
-  public String getId() {
-    return this.id;
   }
 
   public Locale getLocale() {
@@ -183,15 +239,6 @@ public class MessageRepo<T extends MessageRepo<T>> implements Cloneable<T> {
     return this.contributors;
   }
 
-  public T setMessages(final Map<String, String> messages) {
-    this.messages = messages;
-    return getInstance();
-  }
-
-  public Map<String, String> getMessages() {
-    return messages;
-  }
-
   public String getMessage(final String key) {
     if (key == null || key.length() == 0) {
       return null;
@@ -224,6 +271,10 @@ public class MessageRepo<T extends MessageRepo<T>> implements Cloneable<T> {
     return getInstance();
   }
 
+  public boolean hasChanged() {
+    return false;
+  }
+
   @Override
   public T clone() {
     return getInstance().clone();
@@ -231,8 +282,7 @@ public class MessageRepo<T extends MessageRepo<T>> implements Cloneable<T> {
 
   @Override
   public int hashCode() {
-    int result = 31 + id.hashCode();
-    result = 31 * result + locale.hashCode();
+    int result = 31 + locale.hashCode();
     result = 31 * result + ((name == null) ? 0 : name.hashCode());
     result = 31 * result + ((description == null) ? 0 : description.hashCode());
     result = 31 * result + Float.floatToIntBits(progress);
@@ -248,28 +298,25 @@ public class MessageRepo<T extends MessageRepo<T>> implements Cloneable<T> {
     if (obj == null || getClass() != obj.getClass()) {
       return false;
     }
-    final MessageRepo<?> other = (MessageRepo<?>) obj;
+    final MessageRepository<?> other = (MessageRepository<?>) obj;
     if (name == null && other.name != null || version == null && other.version != null
         || description == null && other.description != null || contributors == null && other.contributors != null) {
       return false;
     }
-    return id.equals(other.id)
-        && Float.floatToIntBits(progress) != Float.floatToIntBits(other.progress)
+    return Float.floatToIntBits(progress) != Float.floatToIntBits(other.progress)
+        && locale.equals(other.locale)
         && version.equals(other.version)
-        && name.equals(other.name) && locale.equals(other.locale)
-        && description.equals(other.description)
-        && contributors.equals(other.contributors);
+        && name.equals(other.name);
   }
 
   @Override
   public String toString() {
-    return "MessageRepo [id=" + id + ", name=" + name + ", locale=" + locale + ", description=" + description
+    return "MessageRepository [name=" + name + ", locale=" + locale + ", description=" + description
         + ", progress=" + progress + ", version=" + version + ", contributors=" + contributors + "]";
   }
 
   protected Properties createProperties() {
     final Properties props = new Properties();
-    props.setProperty("meta.id", id);
     props.setProperty("meta.name", name);
     props.setProperty("meta.locale", locale.toLanguageTag());
     props.setProperty("meta.version", version.toString());
@@ -280,7 +327,7 @@ public class MessageRepo<T extends MessageRepo<T>> implements Cloneable<T> {
   }
 
   protected void load(final Properties props) {
-    loadMeta(props.getProperty("meta.id"), props.getProperty("meta.name"), props.getProperty("meta.locale"),
+    loadMeta(props.getProperty("meta.name"), props.getProperty("meta.locale"),
         props.getProperty("meta.version"), props.getProperty("meta.description"), props.getProperty("meta.progress"),
         props.getProperty("meta.contributors"));
     if (messages == null) {
@@ -289,31 +336,16 @@ public class MessageRepo<T extends MessageRepo<T>> implements Cloneable<T> {
       messages.clear();
     }
     for (final String key : props.stringPropertyNames()) {
+      if (key.startsWith("meta.")) {
+        continue;
+      }
       messages.put(key, props.getProperty(key));
     }
   }
 
-  protected void load(final ResourceBundle bundle) {
-    loadMeta(bundle.getString("meta.id"), bundle.getString("meta.name"), bundle.getString("meta.locale"),
-        bundle.getString("meta.version"), bundle.getString("meta.description"), bundle.getString("meta.progress"),
-        bundle.getString("meta.contributors"));
-    if (messages == null) {
-      messages = new HashMap<>();
-    } else {
-      messages.clear();
-    }
-    for (final String key : bundle.keySet()) {
-      messages.put(key, ResourceUtils.getResourceBundleString(bundle, key, null));
-    }
-  }
-
-  protected void loadMeta(final String id, final String name, final String locale, final String version,
+  protected void loadMeta(final String name, final String locale, final String version,
       final String description, final String progress,
       final String contributors) {
-    if (id == null || id.isEmpty() || !this.id.equals(id)) {
-      throw new IllegalArgumentException(
-          "ID mismatch when loading messages: expected " + this.id + " but got " + id);
-    }
     final Locale parsedLocale = StringUtils.parseLocale(locale);
     if (parsedLocale == null || !this.locale.equals(parsedLocale)) {
       throw new IllegalArgumentException(
@@ -336,55 +368,96 @@ public class MessageRepo<T extends MessageRepo<T>> implements Cloneable<T> {
     }
   }
 
-  protected void loadMeta(final Map<String, String> messages) {
-    loadMeta(messages.get("meta.id"), messages.get("meta.name"), messages.get("meta.locale"),
-        messages.get("meta.version"),
-        messages.get("meta.description"), messages.get("meta.progress"), messages.get("meta.contributors"));
-  }
+  public static class StaticMessageRepository extends MessageRepository<StaticMessageRepository> {
 
-  public static class StaticMessageRepo extends MessageRepo<StaticMessageRepo> {
-
-    public StaticMessageRepo(final Locale locale, final Map<String, String> messages) {
-      super(null, null, locale);
+    public StaticMessageRepository(final Locale locale, final Map<String, String> messages) {
+      super(locale, null);
       this.messages = messages;
     }
 
-    public StaticMessageRepo(final StaticMessageRepo repo) {
+    public StaticMessageRepository(final Locale locale, final Properties props) {
+      super(locale == null ? props.getProperty("meta.locale") : locale.toString());
+      loadMeta(props.getProperty("meta.name"), props.getProperty("meta.locale"),
+          props.getProperty("meta.version"), props.getProperty("meta.description"), props.getProperty("meta.progress"),
+          props.getProperty("meta.contributors"));
+      if (messages == null) {
+        messages = new HashMap<>();
+      } else {
+        messages.clear();
+      }
+      for (final String key : props.stringPropertyNames()) {
+        messages.put(key, props.getProperty(key));
+      }
+    }
+
+    public StaticMessageRepository(final Locale locale, final ResourceBundle bundle) {
+      super(locale == null ? bundle.getString("meta.locale") : locale.toString());
+      loadMeta(bundle.getString("meta.name"), bundle.getString("meta.locale"),
+          bundle.getString("meta.version"), bundle.getString("meta.description"), bundle.getString("meta.progress"),
+          bundle.getString("meta.contributors"));
+      if (messages == null) {
+        messages = new HashMap<>();
+      } else {
+        messages.clear();
+      }
+      for (final String key : bundle.keySet()) {
+        if (key.startsWith("meta.")) {
+          continue;
+        }
+        messages.put(key, ResourceUtils.getResourceBundleString(bundle, key, null));
+      }
+    }
+
+    public StaticMessageRepository(final StaticMessageRepository repo) {
       super(repo);
     }
 
     @Override
-    protected StaticMessageRepo getInstance() {
+    protected StaticMessageRepository getInstance() {
       return this;
     }
   }
 
-  public static class FileMessageRepo extends MessageRepo<FileMessageRepo> {
+  public static class FileMessageRepository extends MessageRepository<FileMessageRepository> {
     public static final String[] resourceFolders = { "translations", "translation", "lang", "languages", "language",
         "messages" };
     private final Path path;
     private final File file;
     private boolean hasDefault;
 
-    public FileMessageRepo(final String file) {
+    public FileMessageRepository(final String file) {
       this(Path.of(file));
     }
 
-    public FileMessageRepo(final Path path) {
-      super(path.getFileName().toString(), path.getFileName().toString(), getLocale(path));
+    public FileMessageRepository(final Locale locale, final Path path) {
+      super(locale == null ? getLocale(path) : locale, path.getFileName().toString());
       this.file = path.toFile();
       this.path = path;
       this.hasDefault = ResourceUtils.hasResource(path.toString());
     }
 
-    public FileMessageRepo(final File file) {
-      super(file.getName(), file.getName(), getLocale(file));
+    public FileMessageRepository(final Path path) {
+      super(getLocale(path), path.getFileName().toString());
+      this.file = path.toFile();
+      this.path = path;
+      this.hasDefault = ResourceUtils.hasResource(path.toString());
+    }
+
+    public FileMessageRepository(final Locale locale, final File file) {
+      super(locale == null ? getLocale(file) : locale, file.getName());
       this.file = file;
       this.path = file.toPath();
       this.hasDefault = ResourceUtils.hasResource(path.toString());
     }
 
-    public FileMessageRepo(final FileMessageRepo repo) {
+    public FileMessageRepository(final File file) {
+      super(getLocale(file), file.getName());
+      this.file = file;
+      this.path = file.toPath();
+      this.hasDefault = ResourceUtils.hasResource(path.toString());
+    }
+
+    public FileMessageRepository(final FileMessageRepository repo) {
       super(repo);
       this.file = repo.file;
       this.path = repo.path;
@@ -392,7 +465,7 @@ public class MessageRepo<T extends MessageRepo<T>> implements Cloneable<T> {
     }
 
     @Override
-    protected FileMessageRepo getInstance() {
+    protected FileMessageRepository getInstance() {
       return this;
     }
 
@@ -412,6 +485,11 @@ public class MessageRepo<T extends MessageRepo<T>> implements Cloneable<T> {
       return path == null ? null : StringUtils.parseLocale(path.getFileName().toString().replace("lang_", ""));
     }
 
+    public boolean hasChanged() {
+      final BasicFileAttributes attr = FileUtils.stats(path).get();
+      return attr == null || attr.lastModifiedTime().toMillis() != last_updated;
+    }
+
     @Override
     public int hashCode() {
       final int result = 31 * super.hashCode() + path.hashCode();
@@ -426,11 +504,11 @@ public class MessageRepo<T extends MessageRepo<T>> implements Cloneable<T> {
       if (obj == null || !super.equals(obj) || getClass() != obj.getClass()) {
         return false;
       }
-      final FileMessageRepo other = (FileMessageRepo) obj;
+      final FileMessageRepository other = (FileMessageRepository) obj;
       return path.equals(other.path) && file.equals(other.file);
     }
 
-    public FileMessageRepo load() {
+    public FileMessageRepository load() {
       if (FileUtils.notExists(path)) {
         hasDefault = ResourceUtils.hasResource(path.toString());
         if (!hasDefault) {
@@ -445,6 +523,7 @@ public class MessageRepo<T extends MessageRepo<T>> implements Cloneable<T> {
       try (BufferedReader in = FileUtils.createReader(file)) {
         props.load(in);
         load(props);
+        FileUtils.stats(path).ifPresent(a -> last_updated = a.lastModifiedTime().toMillis());
       } catch (final Exception e) {
         Logger.warn("Failed to load messages from file: " + file);
         e.printStackTrace();
@@ -452,10 +531,11 @@ public class MessageRepo<T extends MessageRepo<T>> implements Cloneable<T> {
       return this;
     }
 
-    public FileMessageRepo save() {
+    public FileMessageRepository save() {
       FileUtils.mkdirs(file).throwIfFailed();
       try (BufferedWriter writer = FileUtils.createWriter(file)) {
         createProperties().store(writer, null);
+        last_updated = System.currentTimeMillis();
       } catch (final Exception e) {
         Logger.warn("Failed to save messages to file: " + file);
         e.printStackTrace();
@@ -463,9 +543,10 @@ public class MessageRepo<T extends MessageRepo<T>> implements Cloneable<T> {
       return this;
     }
 
-    public FileMessageRepo save(final ResourceBundle bundle) {
+    public FileMessageRepository save(final ResourceBundle bundle) {
       FileUtils.mkdirs(file).throwIfFailed();
       try (BufferedWriter writer = FileUtils.createWriter(file)) {
+        last_updated = System.currentTimeMillis();
       } catch (final Exception e) {
         Logger.warn("Failed to save messages to file: " + file);
         e.printStackTrace();
@@ -473,7 +554,7 @@ public class MessageRepo<T extends MessageRepo<T>> implements Cloneable<T> {
       return this;
     }
 
-    public FileMessageRepo createDefault() {
+    public FileMessageRepository createDefault() {
       final File resource = ResourceUtils.getResourceFile(path.toString());
       if (resource == null) {
         Logger.warn("No default message resource found for: " + file);
@@ -487,89 +568,41 @@ public class MessageRepo<T extends MessageRepo<T>> implements Cloneable<T> {
     }
   }
 
-  public static class ResourceBundleMessageRepo extends MessageRepo<ResourceBundleMessageRepo> {
-    private final String baseName;
-
-    public ResourceBundleMessageRepo(final String baseName, final Locale locale) {
-      super(baseName, baseName, locale);
-      this.baseName = baseName;
-      if (baseName == null || baseName.isEmpty()) {
-        throw new IllegalArgumentException("Base name cannot be null or empty for ResourceBundleMessageRepo!");
-      }
-    }
-
-    public ResourceBundleMessageRepo(final ResourceBundle bundle) {
-      super(bundle.getBaseBundleName(), bundle.getBaseBundleName(), bundle.getLocale());
-      this.baseName = bundle.getBaseBundleName();
-      if (baseName == null || baseName.isEmpty()) {
-        throw new IllegalArgumentException("Base name cannot be null or empty for ResourceBundleMessageRepo!");
-      }
-    }
-
-    public ResourceBundleMessageRepo(final ResourceBundleMessageRepo source) {
-      super(source);
-      this.baseName = source.baseName;
-    }
-
-    @Override
-    protected ResourceBundleMessageRepo getInstance() {
-      return this;
-    }
-
-    public String getBaseName() {
-      return baseName;
-    }
-
-    @Override
-    public int hashCode() {
-      return 31 * super.hashCode() + baseName.hashCode();
-    }
-
-    @Override
-    public boolean equals(final Object obj) {
-      if (this == obj) {
-        return true;
-      }
-      if (obj == null || !super.equals(obj) || getClass() != obj.getClass()) {
-        return false;
-      }
-      return baseName.equals(((ResourceBundleMessageRepo) obj).baseName);
-    }
-
-    public ResourceBundleMessageRepo load() {
-      try {
-        load(ResourceBundle.getBundle(baseName));
-      } catch (final Exception e) {
-        Logger.warn("Failed to load ResourceBundle: " + baseName);
-        e.printStackTrace();
-      }
-      return this;
-    }
-  }
-
-  public static class SupplierMessageRepo extends MessageRepo<SupplierMessageRepo> {
+  public static class SupplierMessageRepository extends MessageRepository<SupplierMessageRepository> {
     private final Supplier<Map<String, String>> supplier;
+    private final boolean isDynamic;
 
-    public SupplierMessageRepo(final Locale locale, final Supplier<Map<String, String>> supplier) {
-      super(null, null, locale);
+    public SupplierMessageRepository(final Locale locale, final Supplier<Map<String, String>> supplier,
+        final boolean isDynamic) {
+      super(locale, null);
       if (supplier == null) {
-        throw new IllegalArgumentException("Supplier cannot be null for SupplierMessageRepo!");
+        throw new IllegalArgumentException("Supplier cannot be null for SupplierMessageRepository!");
       }
       this.supplier = supplier;
+      this.isDynamic = isDynamic;
     }
 
-    public SupplierMessageRepo(final SupplierMessageRepo source) {
-      super(source);
-      this.supplier = source.supplier;
+    public SupplierMessageRepository(final Locale locale, final Supplier<Map<String, String>> supplier) {
+      this(locale, supplier, false);
+    }
+
+    public SupplierMessageRepository(final SupplierMessageRepository repo) {
+      super(repo);
+      this.supplier = repo.supplier;
+      this.isDynamic = repo.isDynamic;
     }
 
     @Override
-    protected SupplierMessageRepo getInstance() {
+    protected SupplierMessageRepository getInstance() {
       return this;
     }
 
     public Supplier<Map<String, String>> getSupplier() {
       return supplier;
+    }
+
+    public boolean hasChanged() {
+      return isDynamic;
     }
 
     @Override
@@ -585,33 +618,95 @@ public class MessageRepo<T extends MessageRepo<T>> implements Cloneable<T> {
       if (obj == null || !super.equals(obj) || getClass() != obj.getClass()) {
         return false;
       }
-      return supplier.equals(((SupplierMessageRepo) obj).supplier);
+      return supplier.equals(((SupplierMessageRepository) obj).supplier);
     }
 
-    public SupplierMessageRepo load() {
+    public SupplierMessageRepository load() {
       this.messages = supplier.get();
-      loadMeta(messages.get("meta.id"), messages.get("meta.name"), messages.get("meta.locale"),
+      loadMeta(messages.get("meta.name"), messages.get("meta.locale"),
           messages.get("meta.version"),
           messages.get("meta.description"), messages.get("meta.progress"), messages.get("meta.contributors"));
+      last_updated = System.currentTimeMillis();
       return this;
     }
   }
 
-  public static class TranslatorMessageRepo extends MessageRepo<TranslatorMessageRepo> {
-    private final ITranslator translator;
+  public static class FunctionMessageRepository extends MessageRepository<FunctionMessageRepository> {
+    private final Function<String, String> function;
 
-    public TranslatorMessageRepo(final ITranslator translator) {
-      super(translator.name().getKey(), translator.name().getKey(), translator.providesLocale());
-      this.translator = translator;
+    public FunctionMessageRepository(final Locale locale, final Function<String, String> function) {
+      super(locale, null);
+      this.function = function;
     }
 
-    public TranslatorMessageRepo(final TranslatorMessageRepo source) {
-      super(source);
-      this.translator = source.translator;
+    public FunctionMessageRepository(final FunctionMessageRepository repo) {
+      super(repo);
+      this.function = repo.function;
+    }
+
+    public String getMessage(final String key) {
+      if (key == null || key.isEmpty()) {
+        return null;
+      }
+      return function.apply(key);
+    }
+
+    public FunctionMessageRepository load() {
+      loadMeta(function.apply("meta.name"), locale.toString(),
+          function.apply("meta.version"),
+          function.apply("meta.description"), function.apply("meta.progress"), function.apply("meta.contributors"));
+      return this;
     }
 
     @Override
-    protected TranslatorMessageRepo getInstance() {
+    protected FunctionMessageRepository getInstance() {
+      return this;
+    }
+
+    @Override
+    public int hashCode() {
+      return 31 * super.hashCode() + function.hashCode();
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+      if (this == obj) {
+        return true;
+      }
+      if (obj == null || !super.equals(obj) || getClass() != obj.getClass()) {
+        return false;
+      }
+      return function.equals(((FunctionMessageRepository) obj).function);
+    }
+  }
+
+  public static class TranslatorMessageRepository extends MessageRepository<TranslatorMessageRepository> {
+    private final ITranslator translator;
+
+    public TranslatorMessageRepository(final Locale locale, final ITranslator translator) {
+      super(locale == null ? translator.providesLocale() : locale, translator.name().getKey());
+      this.translator = translator;
+    }
+
+    public TranslatorMessageRepository(final ITranslator translator) {
+      super(translator.providesLocale(), translator.name().getKey());
+      this.translator = translator;
+    }
+
+    public TranslatorMessageRepository(final TranslatorMessageRepository repo) {
+      super(repo);
+      this.translator = repo.translator;
+    }
+
+    public String getMessage(final String key) {
+      if (key == null || key.isEmpty()) {
+        return null;
+      }
+      return translator.translate(key, locale);
+    }
+
+    @Override
+    protected TranslatorMessageRepository getInstance() {
       return this;
     }
 
@@ -628,28 +723,27 @@ public class MessageRepo<T extends MessageRepo<T>> implements Cloneable<T> {
       if (obj == null || !super.equals(obj) || getClass() != obj.getClass()) {
         return false;
       }
-      return translator.equals(((TranslatorMessageRepo) obj).translator);
-    }
-
-    public TranslatorMessageRepo load() {
-      if (!this.locale.equals(translator.providesLocale())) {
-        throw new IllegalArgumentException(
-            "Locale mismatch when loading messages: expected " + this.locale + " but got "
-                + translator.providesLocale());
-      }
-      messages = new HashMap<>();
-      for (final String key : translator.providesTranslations()) {
-        messages.put(key, translator.translate(key, locale));
-      }
-      return this;
+      return translator.equals(((TranslatorMessageRepository) obj).translator);
     }
   }
 
-  public static class URLMessageRepo extends MessageRepo<URLMessageRepo> {
+  public static class URLMessageRepository extends MessageRepository<URLMessageRepository> {
     private final URL url;
 
-    public URLMessageRepo(final Locale locale, final String url) {
-      super(null, null, locale);
+    public URLMessageRepository(final Locale locale, final URI uri) {
+      super(locale, null);
+      if (uri == null) {
+        throw new IllegalArgumentException("Invalid URI: " + uri);
+      }
+      try {
+        this.url = uri.toURL();
+      } catch (final Exception e) {
+        throw new IllegalArgumentException("Invalid URL: " + uri, e);
+      }
+    }
+
+    public URLMessageRepository(final Locale locale, final String url) {
+      super(locale, null);
       if (url == null || url.isEmpty()) {
         throw new IllegalArgumentException("Invalid URL: " + url);
       }
@@ -660,18 +754,21 @@ public class MessageRepo<T extends MessageRepo<T>> implements Cloneable<T> {
       }
     }
 
-    public URLMessageRepo(final Locale locale, final URL url) {
-      super(null, null, locale);
+    public URLMessageRepository(final Locale locale, final URL url) {
+      super(locale, null);
+      if (url == null) {
+        throw new IllegalArgumentException("Invalid URL: " + url);
+      }
       this.url = url;
     }
 
-    public URLMessageRepo(final URLMessageRepo source) {
-      super(source);
-      this.url = source.url;
+    public URLMessageRepository(final URLMessageRepository repo) {
+      super(repo);
+      this.url = repo.url;
     }
 
     @Override
-    protected URLMessageRepo getInstance() {
+    protected URLMessageRepository getInstance() {
       return this;
     }
 
@@ -692,10 +789,10 @@ public class MessageRepo<T extends MessageRepo<T>> implements Cloneable<T> {
       if (obj == null || !super.equals(obj) || getClass() != obj.getClass()) {
         return false;
       }
-      return url.equals(((URLMessageRepo) obj).url);
+      return url.equals(((URLMessageRepository) obj).url);
     }
 
-    public URLMessageRepo load() {
+    public URLMessageRepository load() {
       HttpURLConnection conn = null;
       try {
         conn = (HttpURLConnection) url.openConnection();
@@ -714,6 +811,7 @@ public class MessageRepo<T extends MessageRepo<T>> implements Cloneable<T> {
         try (final BufferedReader reader = FileUtils.createReader(conn.getInputStream())) {
           props.load(reader);
           load(props);
+          last_updated = System.currentTimeMillis();
           return this;
         }
       } catch (final Exception e) {
@@ -728,7 +826,7 @@ public class MessageRepo<T extends MessageRepo<T>> implements Cloneable<T> {
       }
     }
 
-    public URLMessageRepo save(final Properties props) {
+    public URLMessageRepository save(final Properties props) {
       HttpURLConnection conn = null;
       try {
         conn = (HttpURLConnection) url.openConnection();

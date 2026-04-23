@@ -5,9 +5,8 @@ import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
 
-public class MessageStore implements Iterable<MessageRepo<?>> {
-  private final Map<Locale, MessageRepo<?>> repos = new HashMap<>();
-  // private final Map<Locale, Map<String, String>> messages = new HashMap<>();
+public class MessageStore implements Iterable<MessageRepository<?>> {
+  private final Map<Locale, MessageRepository<?>> repos = new HashMap<>();
   private Locale defaultLocale = Locale.ENGLISH;
 
   public MessageStore() {
@@ -18,7 +17,7 @@ public class MessageStore implements Iterable<MessageRepo<?>> {
   }
 
   public void reloadAll() {
-    for (final MessageRepo<?> repo : repos.values()) {
+    for (final MessageRepository<?> repo : repos.values()) {
       if (repo.isEmpty()) {
         repo.load();
       }
@@ -26,7 +25,7 @@ public class MessageStore implements Iterable<MessageRepo<?>> {
   }
 
   public void loadAll() {
-    for (final MessageRepo<?> repo : repos.values()) {
+    for (final MessageRepository<?> repo : repos.values()) {
       if (repo.isEmpty()) {
         repo.load();
       }
@@ -41,7 +40,7 @@ public class MessageStore implements Iterable<MessageRepo<?>> {
     if (key == null || key.length() == 0) {
       return null;
     }
-    final MessageRepo<?> repo = repos.get(locale);
+    final MessageRepository<?> repo = repos.get(locale);
     return repo == null ? null : repo.getMessage(key);
   }
 
@@ -49,7 +48,7 @@ public class MessageStore implements Iterable<MessageRepo<?>> {
     if (key == null || key.length() == 0) {
       return null;
     }
-    final MessageRepo<?> repo = repos.get(defaultLocale);
+    final MessageRepository<?> repo = repos.get(defaultLocale);
     return repo == null ? null : repo.getMessage(key);
   }
 
@@ -61,31 +60,23 @@ public class MessageStore implements Iterable<MessageRepo<?>> {
     this.defaultLocale = locale;
   }
 
-  public void addRepo(final MessageRepo<?> repo) {
-    repos.put(repo.getLocale(), repo);
+  public void removeRepo(final Locale locale) {
+    repos.remove(locale);
   }
 
-  public void removeRepo(final MessageRepo<?> repo) {
-    repos.remove(repo.getLocale());
-  }
-
-  public MessageRepo<?> getRepo(final Locale locale) {
+  public MessageRepository<?> getRepo(final Locale locale) {
     return repos.get(locale);
   }
 
-  public Map<Locale, MessageRepo<?>> getRepos() {
+  public Map<Locale, MessageRepository<?>> getRepos() {
     return repos;
-  }
-
-  public boolean hasRepo(final MessageRepo<?> repo) {
-    return repos.containsValue(repo);
   }
 
   public boolean hasRepo(final Locale locale) {
     return repos.containsKey(locale);
   }
 
-  public Iterator<MessageRepo<?>> iterator() {
+  public Iterator<MessageRepository<?>> iterator() {
     return repos.values().iterator();
   }
 

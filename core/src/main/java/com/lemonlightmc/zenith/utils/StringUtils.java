@@ -55,6 +55,9 @@ public class StringUtils {
   }
 
   public static Locale parseLocale(final String string) {
+    if (string == null || string.isEmpty()) {
+      return null;
+    }
     final String[] segments = string.split("_", 3); // language_country_variant
     final int length = segments.length;
     if (length == 1) {
