@@ -5,12 +5,15 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.CopyOption;
 import java.nio.file.Files;
+import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Predicate;
 
 import com.lemonlightmc.zenith.exceptions.FileException;
@@ -245,6 +248,40 @@ public class FileUtils {
       return Files.isWritable(file.toPath());
     } catch (final Exception e) {
       return false;
+    }
+  }
+
+  public static Optional<BasicFileAttributes> stats(final Path path) {
+    try {
+      return Optional.of(Files.readAttributes(path, BasicFileAttributes.class, new LinkOption[] {}));
+    } catch (Exception e) {
+      return Optional.empty();
+    }
+  }
+
+  public static Optional<BasicFileAttributes> stats(final Path path, LinkOption... options) {
+    try {
+      return Optional
+          .of(Files.readAttributes(path, BasicFileAttributes.class, options == null ? new LinkOption[] {} : options));
+    } catch (Exception e) {
+      return Optional.empty();
+    }
+  }
+
+  public static Optional<BasicFileAttributes> stats(final File file) {
+    try {
+      return Optional.of(Files.readAttributes(file.toPath(), BasicFileAttributes.class, new LinkOption[] {}));
+    } catch (Exception e) {
+      return Optional.empty();
+    }
+  }
+
+  public static Optional<BasicFileAttributes> stats(final File file, LinkOption... options) {
+    try {
+      return Optional.of(Files.readAttributes(file.toPath(), BasicFileAttributes.class,
+          options == null ? new LinkOption[] {} : options));
+    } catch (Exception e) {
+      return Optional.empty();
     }
   }
 
