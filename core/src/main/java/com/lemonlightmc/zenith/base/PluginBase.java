@@ -1,43 +1,37 @@
 package com.lemonlightmc.zenith.base;
 
 import java.io.File;
-import java.io.InputStream;
-import java.util.List;
+import java.nio.file.Path;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Server;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.PluginCommand;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.generator.BiomeProvider;
-import org.bukkit.generator.ChunkGenerator;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginLoader;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.ServicesManager;
 import org.bukkit.plugin.java.JavaPluginLoader;
 
+import com.lemonlightmc.zenith.base.events.*;
 import com.lemonlightmc.zenith.config.Configurate;
+import com.lemonlightmc.zenith.messages.MessageFormatter;
 import com.lemonlightmc.zenith.messages.MessageStore;
 import com.lemonlightmc.zenith.scheduler.Scheduler;
-import com.lemonlightmc.zenith.utils.ResourceUtils;
 import com.lemonlightmc.zenith.utils.StringUtils;
 import com.lemonlightmc.zenith.version.Version;
 
-public abstract class PluginBase implements IPluginBase {
+public abstract class PluginBase implements IPlugin {
 
-  private boolean isEnabled = false;
   private PluginLoader loader = null;
   private Server server = null;
   private Scheduler scheduler = null;
+  private ClassLoader classLoader = null;
+  private MessageStore messageStore = null;
 
   private File file = null;
-  private PluginInfo info = null;
   private final File dataFolder = null;
-  private ClassLoader classLoader = null;
+  private PluginInfo info = null;
   private boolean naggable = true;
-  private MessageStore messageStore = null;
+  private boolean isEnabled = false;
 
   private static PluginBase instance = null;
 
@@ -45,8 +39,6 @@ public abstract class PluginBase implements IPluginBase {
     super();
     classLoader = this.getClass().getClassLoader();
     this.server = Bukkit.getServer();
-    this.scheduler = new Scheduler();
-    messageStore = new MessageStore();
     PluginBase.instance = this;
   }
 
@@ -72,6 +64,83 @@ public abstract class PluginBase implements IPluginBase {
           "Plugin is not enabled - Plugin Instance can not be obtained!");
     }
     return (I) instance;
+  }
+
+  @Override
+  public void onLoad() {
+  }
+
+  @Override
+  public void onDisable() {
+  }
+
+  @Override
+  public void onEnable() {
+  }
+
+  @Override
+  public void onReload() {
+  }
+
+  @Override
+  public boolean isEnabled() {
+    return isEnabled;
+  }
+
+  public void setEnabled(final boolean enabled) {
+    if (isEnabled != enabled) {
+      isEnabled = enabled;
+
+      if (isEnabled) {
+        enable();
+      } else {
+        disable();
+      }
+    }
+  }
+
+  public void load() {
+    MessageFormatter.setPlaceholdersSupport(server.getPluginManager().isPluginEnabled("PlaceholderAPI"));
+    if (messageStore == null) {
+      messageStore = new MessageStore();
+    }
+    messageStore.loadAll();
+    if (scheduler == null) {
+      scheduler = new Scheduler();
+    }
+    if (Configurate.options().createDefaults()) {
+      Configurate.createDefaults();
+    }
+    onLoad();
+    getPluginManager().callEvent(new PluginLoadEvent(this));
+  }
+
+  public void enable() {
+    isEnabled = true;
+    if (Configurate.options().autoLoad()) {
+      Configurate.loadAll();
+    }
+    onEnable();
+    getPluginManager().callEvent(new PluginEnableEvent(this));
+  }
+
+  public void reload() {
+    MessageFormatter.setPlaceholdersSupport(server.getPluginManager().isPluginEnabled("PlaceholderAPI"));
+    messageStore.reloadAll();
+    if (Configurate.options().autoReload()) {
+      Configurate.reloadAll();
+    }
+    onReload();
+    getPluginManager().callEvent(new PluginReloadEvent(this));
+  }
+
+  public void disable() {
+    getPluginManager().callEvent(new PluginDisableEvent(this));
+    onDisable();
+    if (Configurate.options().autoSave()) {
+      Configurate.saveAll();
+    }
+    isEnabled = false;
   }
 
   @Override
@@ -104,42 +173,20 @@ public abstract class PluginBase implements IPluginBase {
     return info.getVersion();
   }
 
-  @Override
-  public PluginDescriptionFile getDescription() {
-    return info.descriptionFile;
-  }
-
   protected File getFile() {
     return file;
   }
 
   @Override
-  public File getDataFolder() {
-    return dataFolder;
+  public Path getDataFolder() {
+    return dataFolder.toPath();
   }
 
   public File getDataFile(final String... path) {
     if (path == null || path.length == 0) {
-      return this.getDataFolder();
+      return dataFolder;
     }
-    return new File(this.getDataFolder(), StringUtils.join(File.separator, path));
-  }
-
-  @Override
-  public boolean isEnabled() {
-    return isEnabled;
-  }
-
-  public void setEnabled(final boolean enabled) {
-    if (isEnabled != enabled) {
-      isEnabled = enabled;
-
-      if (isEnabled) {
-        onEnable();
-      } else {
-        onDisable();
-      }
-    }
+    return new File(dataFolder, StringUtils.join(File.separator, path));
   }
 
   @Override
@@ -181,86 +228,6 @@ public abstract class PluginBase implements IPluginBase {
     return messageStore;
   }
 
-  @Deprecated
-  @Override
-  public FileConfiguration getConfig() {
-    throw new UnsupportedOperationException(
-        "FileConfiguration is not supported in PluginBase. Use Configurate instead.");
-  }
-
-  @Override
-  public void reloadConfig() {
-    Configurate.reloadAll();
-  }
-
-  @Override
-  public void saveConfig() {
-    Configurate.saveAll();
-  }
-
-  @Override
-  public void loadConfig() {
-    Configurate.loadAll();
-  }
-
-  @Override
-  public void loadConfig(final File file) {
-    Configurate.load(file.getName());
-  }
-
-  @Override
-  public void saveDefaultConfig() {
-    Configurate.createDefault();
-  }
-
-  @Deprecated
-  @Override
-  public InputStream getResource(final String filename) {
-    return ResourceUtils.getResourceStream(filename);
-  }
-
-  @Deprecated
-  @Override
-  public void saveResource(final String path, final boolean replace) {
-    final File file = ResourceUtils.getResourceFile(path);
-    if (file == null) {
-      return;
-    }
-    ResourceUtils.saveResource(file, new File(dataFolder, path));
-  }
-
-  @Deprecated
-  public PluginCommand getCommand(final String name) {
-    final String alias = name.toLowerCase(java.util.Locale.ENGLISH);
-    PluginCommand command = getServer().getPluginCommand(alias);
-
-    if (command == null || command.getPlugin() != this) {
-      command = getServer()
-          .getPluginCommand(
-              info.getName().toLowerCase(java.util.Locale.ENGLISH) +
-                  ":" +
-                  alias);
-    }
-
-    if (command != null && command.getPlugin() == this) {
-      return command;
-    } else {
-      return null;
-    }
-  }
-
-  @Override
-  public void onLoad() {
-  }
-
-  @Override
-  public void onDisable() {
-  }
-
-  @Override
-  public void onEnable() {
-  }
-
   @Override
   public boolean isNaggable() {
     return naggable;
@@ -291,32 +258,5 @@ public abstract class PluginBase implements IPluginBase {
     }
     final PluginBase other = (PluginBase) obj;
     return info.equals(other.info) && file.equals(other.file);
-  }
-
-  @Override
-  @Deprecated
-  public List<String> onTabComplete(final CommandSender sender, final Command command, final String label,
-      final String[] args) {
-    throw new UnsupportedOperationException(
-        "onTabComplete is not supported in Main Plugin. Create Command with CommandAPI instead!");
-  }
-
-  @Override
-  @Deprecated
-  public boolean onCommand(final CommandSender sender, final Command command, final String label, final String[] args) {
-    throw new UnsupportedOperationException(
-        "onCommand is not supported in Main Plugin. Create Command with CommandAPI instead!");
-  }
-
-  @Deprecated
-  @Override
-  public ChunkGenerator getDefaultWorldGenerator(final String worldName, final String id) {
-    return null;
-  }
-
-  @Deprecated
-  @Override
-  public BiomeProvider getDefaultBiomeProvider(final String worldName, final String id) {
-    return null;
   }
 }
