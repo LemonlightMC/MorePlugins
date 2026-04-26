@@ -2,7 +2,7 @@ package com.lemonlightmc.zenith.wrapper;
 
 import org.bukkit.command.CommandSender;
 
-import com.lemonlightmc.zenith.base.MorePlugins;
+import com.lemonlightmc.zenith.base.ZenithPlugin;
 import com.lemonlightmc.zenith.interfaces.Builder;
 import com.lemonlightmc.zenith.scheduler.ScheduledTask;
 
@@ -27,7 +27,7 @@ public class ConfirmRequest {
     if (expiredTask != null) {
       return;
     }
-    expiredTask = MorePlugins.instance.getScheduler().runLaterAsync(() -> {
+    expiredTask = ZenithPlugin.getInstance().getScheduler().runLaterAsync(() -> {
       expire();
     }, ticksToExpire);
   }
@@ -41,7 +41,7 @@ public class ConfirmRequest {
 
   public void success() {
     stop();
-    MorePlugins.instance.getScheduler().run(() -> {
+    ZenithPlugin.getInstance().getScheduler().run(() -> {
       if (onSuccess != null) {
         onSuccess.run();
       }
@@ -53,7 +53,7 @@ public class ConfirmRequest {
       return;
     }
     onExpired.run();
-    MorePlugins.instance.getScheduler().runLater(() -> {
+    ZenithPlugin.getInstance().getScheduler().runLater(() -> {
       expiredTask = null;
     }, 1);
   }

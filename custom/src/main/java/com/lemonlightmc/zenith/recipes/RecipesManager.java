@@ -1,6 +1,6 @@
 package com.lemonlightmc.zenith.recipes;
 
-import com.lemonlightmc.zenith.base.MorePlugins;
+import com.lemonlightmc.zenith.base.ZenithPlugin;
 import com.lemonlightmc.zenith.recipes.types.*;
 
 import java.util.ArrayList;
@@ -34,8 +34,8 @@ public final class RecipesManager {
 
   public void init() {
     // listener = new PrepareCraftListener();
-    // MorePlugins.instance.getServer().getPluginManager().registerEvents(listener,
-    // MorePlugins.instance);
+    // Zenith.getInstance().getServer().getPluginManager().registerEvents(listener,
+    // Zenith.getInstance());
   }
 
   public void shutdown() {
@@ -52,8 +52,8 @@ public final class RecipesManager {
     }
     recipes.put(recipe.getKey(), recipe);
     addToItemCache(recipe);
-    if (MorePlugins.instance.getServer().getRecipe(recipe.getKey()) == null) {
-      MorePlugins.instance.getServer().addRecipe(recipe.toBukkit());
+    if (ZenithPlugin.getInstance().getServer().getRecipe(recipe.getKey()) == null) {
+      ZenithPlugin.getInstance().getServer().addRecipe(recipe.toBukkit());
     }
     if (listener == null) {
       init();
@@ -64,7 +64,7 @@ public final class RecipesManager {
     if (key == null) {
       return;
     }
-    MorePlugins.instance.getServer().removeRecipe(key);
+    ZenithPlugin.getInstance().getServer().removeRecipe(key);
     recipes.remove(key);
     removeFromCache(key);
   }
@@ -78,7 +78,7 @@ public final class RecipesManager {
 
   public void unregisterAll() {
     for (final NamespacedKey key : recipes.keySet()) {
-      MorePlugins.instance.getServer().removeRecipe(key);
+      ZenithPlugin.getInstance().getServer().removeRecipe(key);
     }
     recipes.clear();
     itemCache.clear();
@@ -134,14 +134,14 @@ public final class RecipesManager {
     if (key == null) {
       return null;
     }
-    return MorePlugins.instance.getServer().getRecipe(key);
+    return ZenithPlugin.getInstance().getServer().getRecipe(key);
   }
 
   public List<org.bukkit.inventory.Recipe> getBukkitRecipe(final ItemStack item) {
     if (item == null) {
       return null;
     }
-    return MorePlugins.instance.getServer().getRecipesFor(item);
+    return ZenithPlugin.getInstance().getServer().getRecipesFor(item);
   }
 
   public void grantRecipe(final Recipe recipe) {

@@ -2,13 +2,13 @@ package com.lemonlightmc.zenith.version;
 
 import org.bukkit.entity.Player;
 
-import com.lemonlightmc.zenith.base.MorePlugins;
+import com.lemonlightmc.zenith.base.ZenithPlugin;
 
 public interface GameInfo {
   public static boolean hasViaVersionSupport = false;
 
   static GameInfo SERVER = new GameInfo() {
-    private final Version version = MorePlugins.getInstance().getVersion();
+    private final Version version = ZenithPlugin.getInstance().getVersion();
 
     @Override
     public String getVersion() {
@@ -16,7 +16,7 @@ public interface GameInfo {
     }
   };
   static GameInfo VIA = new GameInfo() {
-    private final Version version = MorePlugins.getInstance().getVersion();
+    private final Version version = ZenithPlugin.getInstance().getVersion();
 
     @Override
     public String getVersion() {

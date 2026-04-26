@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Properties;
 import java.util.ResourceBundle;
 
-import com.lemonlightmc.zenith.base.MorePlugins;
+import com.lemonlightmc.zenith.base.ZenithPlugin;
 import com.lemonlightmc.zenith.messages.Logger;
 import com.lemonlightmc.zenith.utils.FileUtils.FileResult;
 
@@ -25,7 +25,7 @@ public class ResourceUtils {
       return null;
     }
     try {
-      return MorePlugins.instance.getClass().getClassLoader().getResource(path);
+      return ZenithPlugin.getInstance().getClass().getClassLoader().getResource(path);
     } catch (final Exception e) {
       return null;
     }
@@ -101,7 +101,7 @@ public class ResourceUtils {
       return Collections.emptyListIterator();
     }
     try {
-      return MorePlugins.instance.getClass().getClassLoader().getResources(path).asIterator();
+      return ZenithPlugin.getInstance().getClass().getClassLoader().getResources(path).asIterator();
     } catch (final Exception e) {
       return Collections.emptyListIterator();
     }
@@ -113,7 +113,7 @@ public class ResourceUtils {
 
   public static Properties loadPropertiesFromJar(final String resourcePath) {
     final Properties props = new Properties();
-    try (InputStream in = MorePlugins.instance.getClass().getResourceAsStream(resourcePath)) {
+    try (InputStream in = getResourceStream(resourcePath)) {
       if (in == null)
         return null;
       props.load(FileUtils.createReader(in));

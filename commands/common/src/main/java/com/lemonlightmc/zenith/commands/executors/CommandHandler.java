@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
-import com.lemonlightmc.zenith.base.MorePlugins;
+import com.lemonlightmc.zenith.base.ZenithPlugin;
 import com.lemonlightmc.zenith.commands.CommandSource;
 import com.lemonlightmc.zenith.commands.SimpleSubCommand;
 import com.lemonlightmc.zenith.commands.argumentsbase.Argument;
@@ -51,7 +51,7 @@ public class CommandHandler<S, C extends CommandSource<S>> {
           "Exception while executing command '" +
               cmd.getName() +
               "' in plugin " +
-              MorePlugins.getInstance().getFullName(),
+              ZenithPlugin.getInstance().getFullName(),
           ex);
     }
   }
@@ -99,7 +99,7 @@ public class CommandHandler<S, C extends CommandSource<S>> {
           .append(' ')
           .append(String.join(" ", args))
           .append("' in plugin ")
-          .append(MorePlugins.getInstance().getFullName());
+          .append(ZenithPlugin.getInstance().getFullName());
       throw new CommandException(message.toString(), ex);
     }
   }
@@ -182,12 +182,12 @@ public class CommandHandler<S, C extends CommandSource<S>> {
     if (sender == null) {
       return false;
     }
-    if (!MorePlugins.getInstance().isEnabled()) {
+    if (!ZenithPlugin.getInstance().isEnabled()) {
       Logger.warn(
           "Cannot execute command '" +
               cmd.getName() +
               "' in plugin " +
-              MorePlugins.getInstance().getDescription().getFullName() +
+              ZenithPlugin.getInstance().getDescription().getFullName() +
               " - plugin is disabled.");
       return false;
     }

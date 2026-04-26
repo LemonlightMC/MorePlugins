@@ -6,7 +6,7 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.EventExecutor;
 
-import com.lemonlightmc.zenith.base.MorePlugins;
+import com.lemonlightmc.zenith.base.ZenithPlugin;
 
 public class EventsAPI {
 
@@ -29,19 +29,19 @@ public class EventsAPI {
   }
 
   public static <T extends Event> T call(final T event) {
-    MorePlugins.getInstance().getPluginManager().callEvent(event);
+    ZenithPlugin.getInstance().getPluginManager().callEvent(event);
     return event;
   }
 
   public static <T extends Event> T callAsync(final T event) {
-    MorePlugins.getInstance().getScheduler()
-        .runAsync(() -> MorePlugins.getInstance().getPluginManager().callEvent(event));
+    ZenithPlugin.getInstance().getScheduler()
+        .runAsync(() -> ZenithPlugin.getInstance().getPluginManager().callEvent(event));
     return event;
 
   }
 
   public static <T extends Event> T callSync(final T event) {
-    MorePlugins.getInstance().getScheduler().run(() -> MorePlugins.getInstance().getPluginManager().callEvent(event));
+    ZenithPlugin.getInstance().getScheduler().run(() -> ZenithPlugin.getInstance().getPluginManager().callEvent(event));
     return event;
   }
 
@@ -66,7 +66,7 @@ public class EventsAPI {
 
   public static void register(final Listener listener) {
     if (listener != null) {
-      MorePlugins.getInstance().getPluginManager().registerEvents(listener, MorePlugins.instance);
+      ZenithPlugin.getInstance().getPluginManager().registerEvents(listener, ZenithPlugin.getInstance());
     }
   }
 
@@ -74,7 +74,7 @@ public class EventsAPI {
     if (listener == null || listener.isRegistered) {
       return;
     }
-    MorePlugins.getInstance().getPluginManager().registerEvents(listener, MorePlugins.instance);
+    ZenithPlugin.getInstance().getPluginManager().registerEvents(listener, ZenithPlugin.getInstance());
     listener.isRegistered = true;
     listener.onRegister();
   }
@@ -84,8 +84,8 @@ public class EventsAPI {
     if (listener == null || event == null || executor == null) {
       return;
     }
-    MorePlugins.getInstance().getPluginManager().registerEvent(event, listener,
-        priority == null ? EventPriority.NORMAL : priority, executor, MorePlugins.instance);
+    ZenithPlugin.getInstance().getPluginManager().registerEvent(event, listener,
+        priority == null ? EventPriority.NORMAL : priority, executor, ZenithPlugin.getInstance());
   }
 
   public static void register(final Class<? extends Event> event, final Listener listener, final EventPriority priority,
@@ -93,8 +93,8 @@ public class EventsAPI {
     if (listener == null || event == null || executor == null) {
       return;
     }
-    MorePlugins.getInstance().getPluginManager().registerEvent(event, listener,
-        priority == null ? EventPriority.NORMAL : priority, executor, MorePlugins.instance,
+    ZenithPlugin.getInstance().getPluginManager().registerEvent(event, listener,
+        priority == null ? EventPriority.NORMAL : priority, executor, ZenithPlugin.getInstance(),
         ignoreCancelled);
   }
 }

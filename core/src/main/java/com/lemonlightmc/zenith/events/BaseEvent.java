@@ -1,46 +1,22 @@
 package com.lemonlightmc.zenith.events;
 
 import org.bukkit.Bukkit;
-import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
-import org.bukkit.event.HandlerList;
 
-public class BaseEvent extends Event implements Cancellable {
+public abstract class BaseEvent extends Event {
 
-  private static final HandlerList HANDLERS = new HandlerList();
-  private boolean isCancelled;
-
-  public static HandlerList getHandlerList() {
-    return HANDLERS;
-  }
+  protected boolean isCancelled = false;
 
   public BaseEvent() {
     super(false);
-    this.isCancelled = false;
   }
 
   public BaseEvent(boolean isAsync) {
     super(isAsync);
-    this.isCancelled = false;
-  }
-
-  @Override
-  public boolean isCancelled() {
-    return this.isCancelled;
-  }
-
-  @Override
-  public void setCancelled(boolean isCancelled) {
-    this.isCancelled = isCancelled;
-  }
-
-  @Override
-  public HandlerList getHandlers() {
-    return HANDLERS;
   }
 
   public boolean call() {
     Bukkit.getPluginManager().callEvent(this);
-    return this.isCancelled;
+    return isCancelled;
   }
 }

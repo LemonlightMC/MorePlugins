@@ -9,7 +9,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
-import com.lemonlightmc.zenith.base.MorePlugins;
+import com.lemonlightmc.zenith.base.ZenithPlugin;
 import com.lemonlightmc.zenith.messages.MessageFormatter;
 import com.lemonlightmc.zenith.utils.StringUtils.Replaceable;
 
@@ -120,7 +120,7 @@ public class ActionbarAPI {
         count++;
       }
     }
-        .runTaskTimer(MorePlugins.instance, 0L, 20L);
+        .runTaskTimer(ZenithPlugin.getInstance(), 0L, 20L);
     PENDING_MESSAGES.put(p.getUniqueId(), messageTask);
   }
 }

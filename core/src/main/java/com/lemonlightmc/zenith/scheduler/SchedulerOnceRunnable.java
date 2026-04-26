@@ -5,7 +5,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 
-import com.lemonlightmc.zenith.base.MorePlugins;
+import com.lemonlightmc.zenith.base.ZenithPlugin;
 
 /**
  * Task that can be asked to run repeatedly, but once scheduled, will
@@ -47,7 +47,7 @@ public abstract class SchedulerOnceRunnable implements Runnable {
   }
 
   public Plugin getPlugin() {
-    return MorePlugins.instance;
+    return ZenithPlugin.getInstance();
   }
 
   public boolean isScheduled() {
@@ -55,7 +55,8 @@ public abstract class SchedulerOnceRunnable implements Runnable {
   }
 
   public void rerun(final long delay) {
-    final int newTaskId = Bukkit.getScheduler().scheduleSyncDelayedTask(MorePlugins.instance, this._logicProxy, delay);
+    final int newTaskId = Bukkit.getScheduler().scheduleSyncDelayedTask(ZenithPlugin.getInstance(), this._logicProxy,
+        delay);
     final int previousTaskId = this._scheduledId.getAndSet(newTaskId);
     if (previousTaskId >= 0) {
       Bukkit.getScheduler().cancelTask(previousTaskId);
@@ -64,7 +65,8 @@ public abstract class SchedulerOnceRunnable implements Runnable {
 
   public void runLater(final long delay) {
     if (this._scheduledId.compareAndSet(ScheduledTask.TASK_NOT_SCHEDULED, ScheduledTask.TASK_SCHEDULED_SOON)) {
-      final int taskId = Bukkit.getScheduler().scheduleSyncDelayedTask(MorePlugins.instance, this._logicProxy, delay);
+      final int taskId = Bukkit.getScheduler().scheduleSyncDelayedTask(ZenithPlugin.getInstance(), this._logicProxy,
+          delay);
       if (!this._scheduledId.compareAndSet(ScheduledTask.TASK_SCHEDULED_SOON, taskId)) {
         Bukkit.getScheduler().cancelTask(taskId);
       }

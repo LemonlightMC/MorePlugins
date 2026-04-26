@@ -20,7 +20,7 @@ import org.bukkit.entity.Player;
 
 import com.lemonlightmc.zenith.apis.IBossBarAPI.IBossBar;
 import com.lemonlightmc.zenith.apis.IBossBarAPI.IBossBarListener;
-import com.lemonlightmc.zenith.base.MorePlugins;
+import com.lemonlightmc.zenith.base.ZenithPlugin;
 import com.lemonlightmc.zenith.interfaces.Builder;
 import com.lemonlightmc.zenith.messages.MessageFormatter;
 
@@ -106,7 +106,7 @@ public class BossbarAPI {
     if (namespacedkey != null) {
       return namespacedkey;
     }
-    namespacedkey = new NamespacedKey(MorePlugins.instance, key);
+    namespacedkey = new NamespacedKey(ZenithPlugin.getInstance(), key);
     keys.put(key, namespacedkey);
     return namespacedkey;
   }

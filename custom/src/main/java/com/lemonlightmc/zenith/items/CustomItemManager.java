@@ -7,7 +7,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 
-import com.lemonlightmc.zenith.base.MorePlugins;
+import com.lemonlightmc.zenith.base.ZenithPlugin;
 import com.lemonlightmc.zenith.recipes.RecipesManager;
 
 public class CustomItemManager implements Listener {
@@ -38,7 +38,7 @@ public class CustomItemManager implements Listener {
 
     if (!hasRegisteredListener) {
       listener = new CustomItemListener();
-      Bukkit.getServer().getPluginManager().registerEvents(listener, MorePlugins.instance);
+      Bukkit.getServer().getPluginManager().registerEvents(listener, ZenithPlugin.getInstance());
       hasRegisteredListener = true;
     }
   }

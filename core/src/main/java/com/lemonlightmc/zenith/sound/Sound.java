@@ -6,7 +6,7 @@ import org.bukkit.SoundCategory;
 import org.bukkit.plugin.Plugin;
 
 import com.lemonlightmc.zenith.apis.SoundAPI;
-import com.lemonlightmc.zenith.base.MorePlugins;
+import com.lemonlightmc.zenith.base.ZenithPlugin;
 
 public class Sound extends Playable {
   protected NamespacedKey key;
@@ -75,7 +75,7 @@ public class Sound extends Playable {
   }
 
   public static Sound from(final String name) {
-    return new Sound(NamespacedKey.fromString(name, MorePlugins.getInstance()));
+    return new Sound(NamespacedKey.fromString(name, ZenithPlugin.getInstance()));
   }
 
   public static Sound from(final String name, final Plugin plugin) {

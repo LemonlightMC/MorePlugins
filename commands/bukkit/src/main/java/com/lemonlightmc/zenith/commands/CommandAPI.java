@@ -24,7 +24,7 @@ import org.bukkit.entity.minecart.CommandMinecart;
 import org.bukkit.permissions.Permissible;
 import org.bukkit.plugin.SimplePluginManager;
 
-import com.lemonlightmc.zenith.base.MorePlugins;
+import com.lemonlightmc.zenith.base.ZenithPlugin;
 import com.lemonlightmc.zenith.commands.exceptions.CommandException;
 import com.lemonlightmc.zenith.commands.exceptions.InvalidCommandNameException;
 import com.lemonlightmc.zenith.commands.exceptions.MissingCommandExecutorException;
@@ -96,7 +96,7 @@ public class CommandAPI {
   }
 
   public static String setNamespace() {
-    namespace = MorePlugins.getInstance().getKey();
+    namespace = ZenithPlugin.getInstance().getKey();
     return namespace;
   }
 
@@ -113,7 +113,7 @@ public class CommandAPI {
     }
     key = key.startsWith("/") ? key.substring(1) : key;
     return new SimpleCommand(
-        new NamespacedKey(MorePlugins.getInstance().getKey(), key));
+        new NamespacedKey(ZenithPlugin.getInstance().getKey(), key));
   }
 
   public static SimpleCommand command(final NamespacedKey key) {

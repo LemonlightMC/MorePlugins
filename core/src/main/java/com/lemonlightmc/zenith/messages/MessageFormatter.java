@@ -9,7 +9,7 @@ import java.util.Locale;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import com.lemonlightmc.zenith.base.MorePlugins;
+import com.lemonlightmc.zenith.base.ZenithPlugin;
 import com.lemonlightmc.zenith.utils.StringUtils.Replaceable;
 
 public class MessageFormatter {
@@ -83,7 +83,7 @@ public class MessageFormatter {
       return null;
     }
     if (msg.startsWith("messages.")) {
-      msg = MorePlugins.instance.getMessageStore().getMessage(msg.substring(9), locale);
+      msg = ZenithPlugin.getInstance().getMessageStore().getMessage(msg.substring(9), locale);
     }
     return msg == null || msg.length() == 0 ? null : msg;
   }

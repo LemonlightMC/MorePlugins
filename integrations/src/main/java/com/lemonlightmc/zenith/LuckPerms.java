@@ -11,7 +11,8 @@ import java.util.function.Function;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import com.lemonlightmc.zenith.base.MorePlugins;
+import com.lemonlightmc.zenith.base.ZenithPlugin;
+
 import net.luckperms.api.LuckPermsProvider;
 import net.luckperms.api.cacheddata.CachedMetaData;
 import net.luckperms.api.cacheddata.CachedPermissionData;
@@ -51,7 +52,7 @@ public class LuckPerms {
   }
 
   public static boolean isEnabled() {
-    return MorePlugins.getInstance().getPluginManager().isPluginEnabled("LuckPerms");
+    return ZenithPlugin.getInstance().getPluginManager().isPluginEnabled("LuckPerms");
   }
 
   // Permissions

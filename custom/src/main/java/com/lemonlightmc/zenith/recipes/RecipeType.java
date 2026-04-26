@@ -2,7 +2,7 @@ package com.lemonlightmc.zenith.recipes;
 
 import org.bukkit.NamespacedKey;
 
-import com.lemonlightmc.zenith.base.MorePlugins;
+import com.lemonlightmc.zenith.base.ZenithPlugin;
 import com.lemonlightmc.zenith.messages.Logger;
 import com.lemonlightmc.zenith.recipes.types.*;
 
@@ -115,7 +115,7 @@ public enum RecipeType {
   }
 
   public NamespacedKey getNamespacedKey(final String key) {
-    return new NamespacedKey(MorePlugins.instance, name().toLowerCase() + "_" + key);
+    return new NamespacedKey(ZenithPlugin.getInstance(), name().toLowerCase() + "_" + key);
   }
 
   public boolean supportsCategory() {

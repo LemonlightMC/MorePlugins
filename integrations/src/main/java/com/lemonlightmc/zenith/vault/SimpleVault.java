@@ -8,7 +8,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.RegisteredServiceProvider;
 
-import com.lemonlightmc.zenith.base.MorePlugins;
+import com.lemonlightmc.zenith.base.ZenithPlugin;
 import com.lemonlightmc.zenith.messages.Logger;
 
 import net.milkbowl.vault2.economy.Economy;
@@ -44,7 +44,7 @@ public class SimpleVault {
       return false;
     }
     this.economy = rsp.getProvider();
-    name = MorePlugins.instance.getName();
+    name = ZenithPlugin.getInstance().getName();
     return true;
   }
 

@@ -4,7 +4,7 @@ import java.util.function.Supplier;
 
 import org.bukkit.Bukkit;
 
-import com.lemonlightmc.zenith.base.MorePlugins;
+import com.lemonlightmc.zenith.base.ZenithPlugin;
 import com.lemonlightmc.zenith.utils.StringUtils.Replaceable;
 
 public class Logger {
@@ -151,13 +151,13 @@ public class Logger {
     severe("*-----------------------------------------------------*");
     severe(
         "An error has occurred in " +
-            MorePlugins.instance.getDescription().getName() +
+            ZenithPlugin.getInstance().getName() +
             ".");
     severe("Description: " + description);
     severe("Contact the plugin author if you cannot fix this issue.");
     severe("*-----------------------------------------------------*");
-    if (disable && Bukkit.getPluginManager().isPluginEnabled(MorePlugins.instance)) {
-      Bukkit.getPluginManager().disablePlugin(MorePlugins.instance);
+    if (disable && Bukkit.getPluginManager().isPluginEnabled(ZenithPlugin.getInstance())) {
+      Bukkit.getPluginManager().disablePlugin(ZenithPlugin.getInstance());
     }
   }
 }

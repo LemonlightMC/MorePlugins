@@ -1,6 +1,6 @@
 package com.lemonlightmc.zenith.commands.executors;
 
-import com.lemonlightmc.zenith.base.MorePlugins;
+import com.lemonlightmc.zenith.base.ZenithPlugin;
 import com.lemonlightmc.zenith.commands.CommandAPI;
 import com.lemonlightmc.zenith.commands.SimpleCommand;
 import com.lemonlightmc.zenith.scheduler.GlobalScheduler;
@@ -76,7 +76,7 @@ public class InternalExecutor extends Command {
 
   @Override
   public String toString() {
-    return cmd.getName().toString() + "(" + MorePlugins.getInstance().getDescription().getFullName() + ")";
+    return cmd.getName().toString() + "(" + ZenithPlugin.getInstance().getDescription().getFullName() + ")";
   }
 
   @Override
