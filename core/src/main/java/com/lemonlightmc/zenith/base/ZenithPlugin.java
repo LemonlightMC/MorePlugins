@@ -31,7 +31,7 @@ public abstract class ZenithPlugin extends org.bukkit.plugin.java.JavaPlugin {
   private PluginInfo info = null;
   private MessageStore messageStore = null;
 
-  private static ZenithPlugin instance = null;
+  protected static ZenithPlugin instance = null;
 
   public ZenithPlugin() {
     super();
@@ -114,26 +114,31 @@ public abstract class ZenithPlugin extends org.bukkit.plugin.java.JavaPlugin {
   }
 
   @Override
+  @Deprecated
   public void reloadConfig() {
     Configurate.reloadAll();
   }
 
   @Override
+  @Deprecated
   public void saveConfig() {
     Configurate.saveAll();
   }
 
+  @Deprecated
   public void loadConfig() {
     Configurate.loadAll();
   }
 
+  @Deprecated
   public void loadConfig(final File file) {
     Configurate.load(file.getName());
   }
 
   @Override
+  @Deprecated
   public void saveDefaultConfig() {
-    Configurate.createDefault();
+    Configurate.createDefaults();
   }
 
   @Deprecated
@@ -174,20 +179,33 @@ public abstract class ZenithPlugin extends org.bukkit.plugin.java.JavaPlugin {
 
   @Override
   public void onLoad() {
+    MessageFormatter.setPlaceholdersSupport(server.getPluginManager().isPluginEnabled("PlaceholderAPI"));
+    messageStore.loadAll();
+    if (Configurate.options().createDefaults()) {
+      Configurate.createDefaults();
+    }
   }
 
   @Override
   public void onEnable() {
+    if (Configurate.options().autoLoad()) {
+      Configurate.loadAll();
+    }
   }
 
   public void onReload() {
     MessageFormatter.setPlaceholdersSupport(server.getPluginManager().isPluginEnabled("PlaceholderAPI"));
     messageStore.reloadAll();
-    Configurate.reloadAll();
+    if (Configurate.options().autoReload()) {
+      Configurate.reloadAll();
+    }
   }
 
   @Override
   public void onDisable() {
+    if (Configurate.options().autoSave()) {
+      Configurate.saveAll();
+    }
   }
 
   @Override

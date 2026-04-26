@@ -6,16 +6,16 @@ import java.nio.file.Path;
 import java.util.Map;
 
 import com.lemonlightmc.zenith.config.handlers.ConfigHandlerType;
-import com.lemonlightmc.zenith.config.handlers.FileHandlerOptions;
+import com.lemonlightmc.zenith.config.handlers.ConfigOptions;
 import com.lemonlightmc.zenith.config.schema.SchemaPair;
 import com.lemonlightmc.zenith.exceptions.ConfigHandlingException;
 import com.lemonlightmc.zenith.utils.FileUtils;
 import com.lemonlightmc.zenith.utils.ResourceUtils;
 
 public abstract class FileHandler {
-  private FileHandlerOptions options;
+  private ConfigOptions options;
 
-  public FileHandler(final FileHandlerOptions options) {
+  public FileHandler(final ConfigOptions options) {
     this.options = options;
   }
 
@@ -23,9 +23,9 @@ public abstract class FileHandler {
 
   public abstract Map<String, Object> loadFromString(final String raw);
 
-  public FileHandlerOptions options() {
+  public ConfigOptions options() {
     if (options == null) {
-      options = new FileHandlerOptions();
+      options = new ConfigOptions();
     }
     return options;
   }

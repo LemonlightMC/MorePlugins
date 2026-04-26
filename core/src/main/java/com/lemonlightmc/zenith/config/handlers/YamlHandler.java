@@ -19,7 +19,7 @@ public class YamlHandler extends FileHandler {
 
   private final Yaml yaml;
 
-  public YamlHandler(final FileHandlerOptions options) {
+  public YamlHandler(final ConfigOptions options) {
     super(options);
     final LoaderOptions loaderOptions = new LoaderOptions();
     loaderOptions.setMaxAliasesForCollections(256);
@@ -38,7 +38,7 @@ public class YamlHandler extends FileHandler {
     yaml = new Yaml(constructor, representer, dumperOptions, loaderOptions);
   }
 
-  public static YamlHandler from(final FileHandlerOptions options) {
+  public static YamlHandler from(final ConfigOptions options) {
     return new YamlHandler(options);
   }
 

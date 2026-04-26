@@ -9,12 +9,13 @@ public enum ConfigHandlerType {
   YAML(YamlHandler::new, new String[] { "yaml", "yml" }),
   JSON(null, new String[] { "json" }),
   TOML(null, new String[] { "toml", "tml" }),
+  PROPERTIES(null, new String[] { "properties" }),
   CONF(null, new String[] { "conf" });
 
   private final String[] fileExt;
-  private final Function<FileHandlerOptions, ? extends FileHandler> factory;
+  private final Function<ConfigOptions, ? extends FileHandler> factory;
 
-  private ConfigHandlerType(final Function<FileHandlerOptions, ? extends FileHandler> factory, final String[] ext) {
+  private ConfigHandlerType(final Function<ConfigOptions, ? extends FileHandler> factory, final String[] ext) {
     this.factory = factory;
     this.fileExt = ext;
   }
@@ -39,7 +40,7 @@ public enum ConfigHandlerType {
     return factory.apply(null);
   }
 
-  public FileHandler create(final FileHandlerOptions options) {
+  public FileHandler create(final ConfigOptions options) {
     return factory.apply(options);
   }
 
@@ -47,7 +48,7 @@ public enum ConfigHandlerType {
     return create(path, null);
   }
 
-  public static FileHandler create(final File path, final FileHandlerOptions options) {
+  public static FileHandler create(final File path, final ConfigOptions options) {
     ConfigHandlerType type = detect(path);
     return type == null ? null : type.create(options);
   }

@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.lemonlightmc.zenith.config.handlers.ConfigHandlerType;
-import com.lemonlightmc.zenith.config.handlers.FileHandlerOptions;
+import com.lemonlightmc.zenith.config.handlers.ConfigOptions;
 import com.lemonlightmc.zenith.config.handlers.YamlHandler;
 import com.lemonlightmc.zenith.config.schema.BuildSchema;
 import com.lemonlightmc.zenith.exceptions.ConfigHandlingException;
@@ -20,9 +20,14 @@ public class Configurate {
   private final File folder;
   private static Map<String, ConfigData> configs = new ConcurrentHashMap<>();
   private static EnumMap<ConfigHandlerType, FileHandler> handlers;
+  private static final ConfigOptions options = new ConfigOptions();
 
   public Configurate(final File folder) {
     this.folder = folder;
+  }
+
+  public static ConfigOptions options() {
+    return options;
   }
 
   public File getConfigFolder() {
@@ -33,7 +38,7 @@ public class Configurate {
     return ResourceUtils.getResourcesFiles(folder.getPath());
   }
 
-  public static void createDefault() {
+  public static void createDefaults() {
     try {
       for (final ConfigData data : configs.values()) {
         getHandler(data).createIfNotExists(data.filePath);
@@ -54,7 +59,7 @@ public class Configurate {
     return name == null || name.isEmpty() ? false : configs.containsKey(name);
   }
 
-  public static ConfigData yaml(final String name, final BuildSchema schema, final FileHandlerOptions options) {
+  public static ConfigData yaml(final String name, final BuildSchema schema, final ConfigOptions options) {
     if (name == null || name.isEmpty()) {
       throw new IllegalArgumentException("Config name cannot be null or empty");
     }
@@ -65,7 +70,7 @@ public class Configurate {
     return yaml(path, schema, null);
   }
 
-  public static ConfigData yaml(final Path path, final BuildSchema schema, final FileHandlerOptions options) {
+  public static ConfigData yaml(final Path path, final BuildSchema schema, final ConfigOptions options) {
     if (path == null) {
       throw new IllegalArgumentException("Config path cannot be null");
     }
