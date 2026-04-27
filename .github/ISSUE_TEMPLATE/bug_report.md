@@ -3,7 +3,7 @@ name: Bug report
 about: Create a report to help us improve
 title: ''
 labels: ''
-assignees: ''
+assignees: Bruderjulian
 
 ---
 
@@ -24,9 +24,9 @@ A clear and concise description of what you expected to happen.
 If applicable, add screenshots to help explain your problem.
 
 ** Info:**
- - OS: [e.g. iOS]
- - Version [e.g. 22]
- - MC Version [e.g. 1.21.8]
+ - Java Version [e.g. 22]
+ - Server MC Version [e.g. 1.21.8]
+ - Framework Version [e.g. 1.0]
 
 **Additional context**
 Add any other context about the problem here.
