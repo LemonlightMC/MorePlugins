@@ -21,12 +21,8 @@ public class Ref<T> {
     return value;
   }
 
-  public void set(T newValue) {
+  public void set(final T newValue) {
     this.value = newValue;
-  }
-
-  public void clear() {
-    value = null;
   }
 
   public Optional<T> asOptional() {
@@ -47,10 +43,14 @@ public class Ref<T> {
       return false;
     }
     Ref<?> other = (Ref<?>) obj;
-    if (value == null && other.value != null) {
+    if (value == null) {
+      if (other.value != null) {
+        return false;
+      }
+    } else if (!value.equals(other.value)) {
       return false;
     }
-    return value.equals(other.value);
+    return true;
   }
 
   @Override

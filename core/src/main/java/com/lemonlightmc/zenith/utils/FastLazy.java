@@ -3,7 +3,9 @@ package com.lemonlightmc.zenith.utils;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-public class FastLazy<T> implements Supplier<T> {
+import org.jspecify.annotations.Nullable;
+
+public class FastLazy<@Nullable T> implements Supplier<T> {
 
   private Supplier<T> supplier;
   private T value;
@@ -15,7 +17,7 @@ public class FastLazy<T> implements Supplier<T> {
     this.supplier = supplier;
   }
 
-  public static <E> Lazy<E> from(final Supplier<E> supplier) {
+  public static <@Nullable E> Lazy<E> from(final Supplier<E> supplier) {
     return new Lazy<E>(supplier);
   }
 
@@ -51,7 +53,7 @@ public class FastLazy<T> implements Supplier<T> {
   }
 
   @Override
-  public boolean equals(final Object obj) {
+  public boolean equals(Object obj) {
     if (this == obj) {
       return true;
     }
@@ -59,10 +61,21 @@ public class FastLazy<T> implements Supplier<T> {
       return false;
     }
     final FastLazy<?> other = (FastLazy<?>) obj;
-    if (value == null && other.value != null || supplier == null && other.supplier != null) {
+    if (supplier == null) {
+      if (other.supplier != null) {
+        return false;
+      }
+    } else if (!supplier.equals(other.supplier)) {
       return false;
     }
-    return value.equals(other.value) && supplier.equals(other.supplier);
+    if (value == null) {
+      if (other.value != null) {
+        return false;
+      }
+    } else if (!value.equals(other.value)) {
+      return false;
+    }
+    return true;
   }
 
   @Override

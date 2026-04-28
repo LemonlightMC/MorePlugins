@@ -90,7 +90,7 @@ public class ReflectionHelper {
     if (clazz == null) {
       return null;
     }
-    if (args != null && args.length != 0) {
+    if (args != null && args.length > 0) {
       final Class<?>[] argClses = new Class[args.length];
       Arrays.setAll(argClses, i -> args[i].getClass());
       return getConstructor(clazz, argClses);

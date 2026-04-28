@@ -1,6 +1,5 @@
 Todo:
 
-- CommandMap
 - Commands
 - Animator
 - Color

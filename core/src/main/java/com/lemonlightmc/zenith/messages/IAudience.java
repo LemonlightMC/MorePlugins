@@ -11,12 +11,14 @@ public interface IAudience<V> extends Iterable<V>, Comparable<IAudience<V>>, Clo
 
   public IAudience<V> addViewers(V viewer);
 
+  @SuppressWarnings("unchecked")
   public IAudience<V> addViewers(V... viewer);
 
   public IAudience<V> addViewers(Collection<V> viewer);
 
   public IAudience<V> removeViewers(V viewer);
 
+  @SuppressWarnings("unchecked")
   public IAudience<V> removeViewers(V... viewer);
 
   public IAudience<V> removeViewers(Collection<V> viewer);

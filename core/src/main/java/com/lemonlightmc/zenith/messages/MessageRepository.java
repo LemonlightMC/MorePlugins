@@ -24,7 +24,7 @@ import com.lemonlightmc.zenith.utils.ResourceUtils;
 import com.lemonlightmc.zenith.utils.StringUtils;
 import com.lemonlightmc.zenith.version.Version;
 
-public class MessageRepository<T extends MessageRepository<T>> implements Cloneable<T> {
+public abstract class MessageRepository<T extends MessageRepository<T>> implements Cloneable<T> {
   protected String name;
   protected final Locale locale;
   protected String description;
@@ -177,6 +177,7 @@ public class MessageRepository<T extends MessageRepository<T>> implements Clonea
     return new URLMessageRepository(null, uri);
   }
 
+  @SuppressWarnings("unchecked")
   protected T getInstance() {
     return (T) this;
   }

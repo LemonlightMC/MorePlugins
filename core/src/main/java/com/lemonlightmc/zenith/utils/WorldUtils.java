@@ -59,8 +59,9 @@ public class WorldUtils {
     return Bukkit.getWorlds().get(0);
   }
 
-  public static WorldCreator createWorldCreator(String worldName, World.Environment env, WorldType type,
-      boolean generateStructures) {
+  public static WorldCreator createWorldCreator(final String worldName, final World.Environment env,
+      final WorldType type,
+      final boolean generateStructures) {
     if (worldName == null || worldName.isEmpty()) {
       throw new IllegalArgumentException("World name cannot be null or empty");
     }
@@ -69,58 +70,55 @@ public class WorldUtils {
         .type(type == null ? WorldType.NORMAL : type);
   }
 
-  public static WorldCreator createWorldCreator(String worldName, World.Environment env, WorldType type) {
+  public static WorldCreator createWorldCreator(final String worldName, final World.Environment env,
+      final WorldType type) {
     return createWorldCreator(worldName, env, type, true);
   }
 
-  public static World createWorld(String worldName) {
+  @SuppressWarnings("deprecation")
+  public static World createWorld(final String worldName) {
     return createWorldCreator(worldName, Environment.NORMAL, WorldType.NORMAL, false).keepSpawnInMemory(false)
         .createWorld();
   }
 
-  public static World createFlatWorld(String worldName) {
+  @SuppressWarnings("deprecation")
+  public static World createFlatWorld(final String worldName) {
     return createWorldCreator(worldName, Environment.NORMAL, WorldType.FLAT, false).keepSpawnInMemory(false)
         .createWorld();
   }
 
-  public static World createVoidWorld(String worldName) {
-    World world = createWorldCreator(worldName, Environment.NORMAL, WorldType.FLAT, false).keepSpawnInMemory(false)
+  public static World createVoidWorld(final String worldName) {
+    @SuppressWarnings("deprecation")
+    final World world = createWorldCreator(worldName, Environment.NORMAL, WorldType.FLAT, false)
+        .keepSpawnInMemory(false)
         .generator(new VoidGenerator())
         .createWorld();
     if (world == null) {
       throw new IllegalStateException("Failed to create world: " + worldName);
     }
-
-    world.setGameRule(GameRule.DO_INSOMNIA, false);
     world.setGameRule(GameRule.COMMAND_BLOCK_OUTPUT, false);
-    world.setGameRule(GameRule.DISABLE_RAIDS, true);
-    world.setGameRule(GameRule.MOB_GRIEFING, false);
-    world.setGameRule(GameRule.GLOBAL_SOUND_EVENTS, false);
-    world.setGameRule(GameRule.DO_MOB_SPAWNING, false);
-    world.setGameRule(GameRule.DO_WARDEN_SPAWNING, false);
-    world.setGameRule(GameRule.DO_PATROL_SPAWNING, false);
-    world.setGameRule(GameRule.REDUCED_DEBUG_INFO, true);
-    world.setGameRule(GameRule.DO_TRADER_SPAWNING, false);
+    world.setGameRule(GameRule.ADVANCE_TIME, true);
+    world.setGameRule(GameRule.ADVANCE_WEATHER, true);
     world.setTime(0L);
     world.setSpawnLocation(0, 121, 0);
     return world;
   }
 
-  public static void deleteWorld(JavaPlugin plugin, World world) {
+  public static void deleteWorld(final JavaPlugin plugin, final World world) {
     plugin.getServer().unloadWorld(world, false);
     deleteWorldFolder(world);
   }
 
-  private static void deleteWorldFolder(World world) {
+  private static void deleteWorldFolder(final World world) {
     if (world == null) {
       return;
     }
     try {
-      File worldFolder = new File(world.getWorldFolder().getPath());
+      final File worldFolder = new File(world.getWorldFolder().getPath());
       if (worldFolder.exists()) {
         Files.deleteIfExists(worldFolder.toPath());
       }
-    } catch (Exception ex) {
+    } catch (final Exception ex) {
       ex.printStackTrace();
     }
   }
@@ -255,47 +253,47 @@ public class WorldUtils {
     }
 
     @Override
-    public List<BlockPopulator> getDefaultPopulators(World world) {
+    public List<BlockPopulator> getDefaultPopulators(final World world) {
       return List.of();
     }
 
     @Override
-    public void generateNoise(WorldInfo worldInfo, Random random, int chunkX, int chunkZ,
-        ChunkData chunkData) {
+    public void generateNoise(final WorldInfo worldInfo, final Random random, final int chunkX, final int chunkZ,
+        final ChunkData chunkData) {
       // No need to generate noise, we want an empty world
     }
 
     @Override
-    public void generateSurface(WorldInfo worldInfo, Random random, int chunkX, int chunkZ,
-        ChunkData chunkData) {
+    public void generateSurface(final WorldInfo worldInfo, final Random random, final int chunkX, final int chunkZ,
+        final ChunkData chunkData) {
       // No need to generate surface, we want an empty world
     }
 
     @Override
-    public void generateBedrock(WorldInfo worldInfo, Random random, int chunkX, int chunkZ,
-        ChunkData chunkData) {
+    public void generateBedrock(final WorldInfo worldInfo, final Random random, final int chunkX, final int chunkZ,
+        final ChunkData chunkData) {
       // No need to generate bedrock, we want an empty world
     }
 
     @Override
-    public void generateCaves(WorldInfo worldInfo, Random random, int chunkX, int chunkZ,
-        ChunkData chunkData) {
+    public void generateCaves(final WorldInfo worldInfo, final Random random, final int chunkX, final int chunkZ,
+        final ChunkData chunkData) {
       // No need to generate caves, we want an empty world
     }
 
     @Override
 
-    public BiomeProvider getDefaultBiomeProvider(WorldInfo worldInfo) {
+    public BiomeProvider getDefaultBiomeProvider(final WorldInfo worldInfo) {
       return new VoidBiomeProvider();
     }
 
     @Override
-    public boolean canSpawn(World world, int x, int z) {
+    public boolean canSpawn(final World world, final int x, final int z) {
       return true;
     }
 
     @Override
-    public Location getFixedSpawnLocation(World world, Random random) {
+    public Location getFixedSpawnLocation(final World world, final Random random) {
       return new Location(world, 0, 0, 0);
     }
   }
@@ -306,12 +304,12 @@ public class WorldUtils {
     }
 
     @Override
-    public Biome getBiome(WorldInfo worldInfo, int x, int y, int z) {
+    public Biome getBiome(final WorldInfo worldInfo, final int x, final int y, final int z) {
       return Biome.THE_VOID;
     }
 
     @Override
-    public List<Biome> getBiomes(WorldInfo worldInfo) {
+    public List<Biome> getBiomes(final WorldInfo worldInfo) {
       return List.of(Biome.THE_VOID);
     }
   }

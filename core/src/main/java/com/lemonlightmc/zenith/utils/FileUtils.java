@@ -3,12 +3,7 @@ package com.lemonlightmc.zenith.utils;
 import java.io.*;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.CopyOption;
-import java.nio.file.Files;
-import java.nio.file.LinkOption;
-import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
-import java.nio.file.StandardOpenOption;
+import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.security.MessageDigest;
 import java.util.ArrayList;
@@ -57,19 +52,31 @@ public class FileUtils {
     }
 
     public <E extends RuntimeException> FileResult throwIfFailed(final E exception) {
-      if (failed) {
-        throw exception;
+      if (!failed) {
+        return this;
       }
-      return this;
+      if (exception == null) {
+        throw new FileException();
+      }
+      throw exception;
     }
 
     public <E extends RuntimeException> FileResult throwIfFailed(final Class<E> exceptionType) {
       if (!failed) {
         return this;
       }
+
+      if (exceptionType == null) {
+        throw new FileException(message);
+      }
       final E ex;
       try {
         ex = exceptionType.getConstructor(String.class).newInstance(message);
+        if (ex == null) {
+          throw new FileException(message);
+        }
+      } catch (final FileException e) {
+        throw e;
       } catch (final Exception e) {
         throw new FileException(message);
       }
@@ -81,9 +88,17 @@ public class FileUtils {
       if (!failed) {
         return this;
       }
+      if (exceptionType == null) {
+        throw new FileException(message);
+      }
       final E ex;
       try {
         ex = exceptionType.getConstructor(String.class).newInstance(message2 + " " + message);
+        if (ex == null) {
+          throw new FileException(message);
+        }
+      } catch (final FileException e) {
+        throw e;
       } catch (final Exception e) {
         throw new FileException(message);
       }

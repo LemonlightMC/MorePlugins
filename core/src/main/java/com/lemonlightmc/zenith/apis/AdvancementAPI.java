@@ -14,33 +14,7 @@ import com.lemonlightmc.zenith.exceptions.OutdatedVersionError;
 import com.lemonlightmc.zenith.messages.MessageFormatter;
 import com.lemonlightmc.zenith.version.MCVersion;
 
-import me.clip.placeholderapi.libs.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
-import me.clip.placeholderapi.libs.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
-
-/**
- * Utilities for creating and displaying advancement-style toasts (advancement
- * pop-ups) to players.
- *
- * <p>
- * This class constructs temporary advancement entries and grants/revokes
- * them to create the client-side toast animation. It selects an appropriate
- * advancement JSON format depending on the detected Minecraft version
- * (legacy NBT format, component format, or modern components with arrays).
- * </p>
- */
 public class AdvancementAPI {
-  /**
-   * Show a popup (advancement toast) to a collection of players.
-   *
-   * @param players       the players to show the toast to
-   * @param icon          the icon material name (minecraft id) used for the toast
-   * @param message       the message (already formatted as json component text)
-   * @param style         the toast frame style (TASK, GOAL, CHALLENGE)
-   * @param modelData     optional model data used for custom models (type varies)
-   * @param modelDataType optional explicit model data type
-   *                      ("string","float","integer")
-   * @param glowing       whether the icon should appear to glow (enchant visual)
-   */
   @SuppressWarnings("deprecation")
   void showToast(Collection<? extends Player> players, String icon, String message, ToastType style, Object modelData,
       String modelDataType, boolean glowing) {
@@ -243,9 +217,6 @@ public class AdvancementAPI {
       String modelDataType, boolean glowing) {
 
     message = MessageFormatter.format(message, true, false);
-    String json = GsonComponentSerializer.gson()
-        .serialize(LegacyComponentSerializer.legacyAmpersand().deserialize(message));
-    json = json.replace("|", "\n");
 
     UUID randomUUID = UUID.randomUUID();
     NamespacedKey advancementKey = new NamespacedKey(ZenithPlugin.getInstance(), "anelib_" + randomUUID);
@@ -255,20 +226,20 @@ public class AdvancementAPI {
       if (modelData == null) {
         modelData = 0;
       }
-      return legacyType(icon, json, style, modelData, glowing, advancementKey);
+      return legacyType(icon, message, style, modelData, glowing, advancementKey);
     } else if (MCVersion.isBetween(MCVersion.v1_20_5, MCVersion.v1_21_3)) {
       // 1.20.5 - 1.21.3: Components format with integer CustomModelData
       if (modelData == null) {
         modelData = 0;
       }
-      return middleType(icon, json, style, modelData, glowing, advancementKey);
+      return middleType(icon, message, style, modelData, glowing, advancementKey);
     } else if (MCVersion.isNewerThan(MCVersion.v1_21_3)) {
       // 1.21.4+: Components format with floats/strings arrays
       if (modelData == null) {
         modelData = "anemys";
         modelDataType = "string";
       }
-      return modernType(icon, json, style, modelData, modelDataType, glowing, advancementKey);
+      return modernType(icon, message, style, modelData, modelDataType, glowing, advancementKey);
     } else {
       throw new OutdatedVersionError("Advancements are not supported on " + MCVersion.getCurrent());
     }

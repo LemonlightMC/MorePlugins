@@ -3,9 +3,11 @@ package com.lemonlightmc.zenith.utils;
 import java.util.Optional;
 import java.util.function.Supplier;
 
+import org.jspecify.annotations.Nullable;
+
 import com.lemonlightmc.zenith.time.PolyTimeUnit;
 
-public class Lazy<T> implements Supplier<T> {
+public class Lazy<@Nullable T> implements Supplier<T> {
 
   private Supplier<T> supplier;
   private volatile T value;
@@ -28,7 +30,7 @@ public class Lazy<T> implements Supplier<T> {
     this(supplier, -1l, null);
   }
 
-  public static <E> Lazy<E> from(final Supplier<E> supplier) {
+  public static <@Nullable E> Lazy<E> from(final Supplier<E> supplier) {
     return new Lazy<E>(supplier);
   }
 
@@ -82,11 +84,21 @@ public class Lazy<T> implements Supplier<T> {
       return false;
     }
     final Lazy<?> other = (Lazy<?>) obj;
-    if (value == null && other.value != null || supplier == null && other.supplier != null) {
+    if (supplier == null) {
+      if (other.supplier != null) {
+        return false;
+      }
+    } else if (!supplier.equals(other.supplier)) {
       return false;
     }
-    return duration == other.duration && expiryTime == other.expiryTime && value.equals(other.value)
-        && supplier.equals(other.supplier);
+    if (value == null) {
+      if (other.value != null) {
+        return false;
+      }
+    } else if (!value.equals(other.value)) {
+      return false;
+    }
+    return duration == other.duration && expiryTime == other.expiryTime;
   }
 
   @Override

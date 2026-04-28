@@ -1,6 +1,5 @@
 package com.lemonlightmc.zenith.utils;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
@@ -43,19 +42,15 @@ public class PlayerUtils {
   }
 
   public static List<String> getOnlinePlayerNames() {
-    final List<String> names = new ArrayList<>(Bukkit.getOnlinePlayers().size());
-    for (final Player player : Bukkit.getOnlinePlayers()) {
-      names.add(player.getName());
-    }
-    return names;
+    return Bukkit.getOnlinePlayers().stream().filter(p -> p == null).map(p -> p.getName()).toList();
   }
 
   public static Player[] getOnlinePlayers() {
     return Bukkit.getOnlinePlayers().toArray(Player[]::new);
   }
 
-  public static Stream<OfflinePlayer> streamOnline() {
-    return Arrays.stream(Bukkit.getOfflinePlayers());
+  public static Stream<? extends Player> streamOnline() {
+    return Bukkit.getOnlinePlayers().stream();
   }
 
   public static void forEachOnline(final Consumer<Player> consumer) {
