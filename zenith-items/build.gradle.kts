@@ -3,7 +3,7 @@ dependencies {
     compileOnly("org.spigotmc:spigot-api:26.1.2-R0.1-SNAPSHOT")
     //compileOnly("com.github.Traqueur-dev:RecipesAPI:2.0.2")
     //compileOnly("com.github.MilkBowl:VaultAPI:1.7")
-    implementation(project(":core"))
+    implementation(project(":zenith-core"))
 }
 
-extensions.extraProperties["moduleName"] = "Items"
+extensions.extraProperties["moduleName"] = "zenith-items"

@@ -6,7 +6,7 @@ dependencies {
     compileOnly("net.milkbowl.vault:VaultUnlockedAPI:2.15")
     compileOnly("net.luckperms:api:5.5")
     compileOnly("com.github.NEZNAMY:TAB-API:5.5.0")
-    implementation(project(":core"))
+    implementation(project(":zenith-core"))
 }
 
-extensions.extraProperties["moduleName"] = "Integrations"
+extensions.extraProperties["moduleName"] = "zenith-integrations"

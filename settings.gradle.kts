@@ -12,14 +12,14 @@ plugins {
 }
 
 rootProject.name = "Zenith"
-include(":core")
-include(":commands")
-include(":commands:common")
-include(":commands:bukkit")
-include(":custom")
-include(":integrations")
-include(":items")
-include(":database")
+include(":zenith-core")
+include(":zenith-commands")
+include(":zenith-commands:common")
+include(":zenith-commands:bukkit")
+include(":zenith-custom")
+include(":zenith-integrations")
+include(":zenith-items")
+include(":zenith-database")
 println(rootProject)
 
 dependencyResolutionManagement {

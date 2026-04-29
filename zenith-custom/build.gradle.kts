@@ -4,7 +4,7 @@ dependencies {
     compileOnly("dev.lone:api-itemsadder:4.0.10")
     //compileOnly("com.github.Traqueur-dev:RecipesAPI:2.0.2")
     //compileOnly("dev.jorel:commandapi-bukkit-shade:10.1.2")
-    implementation(project(":core"))
+    implementation(project(":zenith-core"))
 }
 
-extensions.extraProperties["moduleName"] = "CustomStuff"
+extensions.extraProperties["moduleName"] = "zenith-custom"

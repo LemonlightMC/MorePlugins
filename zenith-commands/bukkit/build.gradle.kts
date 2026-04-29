@@ -1,8 +1,8 @@
 dependencies {
     compileOnly("org.spigotmc:spigot-api:26.1.2-R0.1-SNAPSHOT")
     //compileOnly("dev.jorel:commandapi-bukkit-shade:10.1.2")
-    implementation(project(":core"))
-    implementation(project(":commands:common"))
+    implementation(project(":zenith-core"))
+    implementation(project(":zenith-commands:common"))
 }
 
-extensions.extraProperties["moduleName"] = "commandapi-bukkit"
+extensions.extraProperties["moduleName"] = "zenith-commands-bukkit"

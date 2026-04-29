@@ -10,4 +10,4 @@ dependencies {
     compileOnly("net.milkbowl.vault:VaultUnlockedAPI:2.15")
 }
 
-extensions.extraProperties["moduleName"] = "Core"
+extensions.extraProperties["moduleName"] = "zenith-core"

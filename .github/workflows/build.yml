@@ -38,12 +38,12 @@ jobs:
           name: Artifact
           overwrite: true
           path: |
-            zenith-core/build/libs/Zenith-*.jar
-            zenith-commands/build/libs/Zenith-*.jar
-            zenith-database/build/libs/Zenith-*.jar
-            zenith-integrations/build/libs/Zenith-*.jar
-            zenith-items/build/libs/Zenith-*.jar
-            zenith-custom/build/libs/Zenith-*.jar
+            zenith-core/build/libs/zenith-*.jar
+            zenith-commands/build/libs/zenith-*.jar
+            zenith-database/build/libs/zenith-*.jar
+            zenith-integrations/build/libs/zenith-*.jar
+            zenith-items/build/libs/zenith-*.jar
+            zenith-custom/build/libs/zenith-*.jar
       - name: Keep job alive on failure for debugging
         if: failure()
         run: |
