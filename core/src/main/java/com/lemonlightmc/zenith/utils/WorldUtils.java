@@ -87,8 +87,8 @@ public class WorldUtils {
         .createWorld();
   }
 
+  @SuppressWarnings("deprecation")
   public static World createVoidWorld(final String worldName) {
-    @SuppressWarnings("deprecation")
     final World world = createWorldCreator(worldName, Environment.NORMAL, WorldType.FLAT, false)
         .keepSpawnInMemory(false)
         .generator(new VoidGenerator())
