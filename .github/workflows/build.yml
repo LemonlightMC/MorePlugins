@@ -40,3 +40,9 @@ jobs:
           name: Artifact
           overwrite: true
           path: jar/build/libs/Zenith-*+${{ github.run_number }}.jar
+      - name: Keep job alive on failure for debugging
+        if: failure()
+        run: |
+          echo "Job failed. Keeping VM alive for 30 minutes for debugging..."
+          echo "SSH connection info is available in the Setup runner step above"
+          sleep 1800
