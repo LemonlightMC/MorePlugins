@@ -1,9 +1,12 @@
 name: Build
 on:
   push:
+  pull_request:
+    types: [opened, synchronize, reopened]
     branches:
       - master
       - main
+
 jobs:
   build:
     name: Build
@@ -30,19 +33,22 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Needed to get PR information, if any
       - name: Rename JAR with Build Number
-        run: |
-          original_jar=$(find ./build/libs -type f -name "*.jar")
-          new_name=$(echo "$original_jar" | sed "s/Zenith-\(.*\)\.jar/Zenith-\1+${{ github.run_number }}.jar/")
-          mv "$original_jar" "$new_name"
+        run: ./build.sh
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v7 # https://github.com/actions/upload-artifact/releases
         with:
           name: Artifact
           overwrite: true
-          path: ./build/libs/Zenith-*+${{ github.run_number }}.jar
+          path: |
+            zenith-core/build/libs/Zenith-*.jar
+            zenith-commands/build/libs/Zenith-*.jar
+            zenith-database/build/libs/Zenith-*.jar
+            zenith-integrations/build/libs/Zenith-*.jar
+            zenith-items/build/libs/Zenith-*.jar
+            zenith-custom/build/libs/Zenith-*.jar
       - name: Keep job alive on failure for debugging
         if: failure()
         run: |
           echo "Job failed. Keeping VM alive for 30 minutes for debugging..."
           echo "SSH connection info is available in the Setup runner step above"
-          sleep 1800
+          sleep 300
