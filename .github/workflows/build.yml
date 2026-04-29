@@ -31,7 +31,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Needed to get PR information, if any
       - name: Rename JAR with Build Number
         run: |
-          original_jar=$(find jar/build/libs -type f -name "Zenith-*.jar")
+          original_jar=$(find ./build/libs -type f -name "*.jar")
           new_name=$(echo "$original_jar" | sed "s/Zenith-\(.*\)\.jar/Zenith-\1+${{ github.run_number }}.jar/")
           mv "$original_jar" "$new_name"
       - name: Upload a Build Artifact
@@ -39,7 +39,7 @@ jobs:
         with:
           name: Artifact
           overwrite: true
-          path: jar/build/libs/Zenith-*+${{ github.run_number }}.jar
+          path: ./build/libs/Zenith-*+${{ github.run_number }}.jar
       - name: Keep job alive on failure for debugging
         if: failure()
         run: |
