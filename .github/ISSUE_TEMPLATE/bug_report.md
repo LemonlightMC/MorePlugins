@@ -1,32 +1,91 @@
----
-name: Bug report
-about: Create a report to help us improve
-title: ''
-labels: ''
+name: 🐜 Bug report
+description: Found something that doesn't work as expected? Raise it here!
+labels: ["bug"]
 assignees: Bruderjulian
+body:
 
----
-
-**Describe the bug**
-A clear and concise description of what the bug is.
-
-**To Reproduce**
-Steps to reproduce the behavior:
-1. Do this '....'
-2. Do that '....'
-3. Run '....'
-4. See error
-
-**Expected behavior**
-A clear and concise description of what you expected to happen.
-
-**Screenshots**
-If applicable, add screenshots to help explain your problem.
-
-** Info:**
- - Java Version [e.g. 22]
- - Server MC Version [e.g. 1.21.8]
- - Framework Version [e.g. 1.0]
-
-**Additional context**
-Add any other context about the problem here.
+- type: markdown
+  attributes:
+  value: "Thanks for taking the time to raise a bug! Try to be as detailed as possible to get the best support for your issue as possible."
+- type: input
+  id: zenith-version
+  attributes:
+  label: Zenith version
+  description: What version of the Zenith are you using?
+  placeholder: "11.0.0"
+  validations:
+  required: true
+- type: dropdown
+  id: java-version
+  attributes:
+  label: Java version
+  description: What version of Java are you using? _(If a version isn't specified, just select the next version that works)_
+  multiple: false
+  options: - "26" - "25" - "24" - "23" - "22" - "21" - "20" - "19" - "18" - "17" - "16" - "15" - "14" - "13" - "12" - "11" - "10" - "9" - "8"
+  validations:
+  required: true
+- type: dropdown
+  id: minecraft-version
+  attributes:
+  label: Minecraft version
+  description: What version of Minecraft are you using? _(If using a minor version that isn't specified, such as 1.18.1, just select the latest version below it such as 1.18)_
+  multiple: false
+  options: - "26.1" - "1.21.11" - "1.21.10" - "1.21.9" - "1.21.8" - "1.21.7" - "1.21.6" - "1.21.5" - "1.21.4" - "1.21.3" - "1.21.2" - "1.21.1" - "1.21" - "1.20.6" - "1.20.5" - "1.20.4" - "1.20.3" - "1.20.2" - "1.20.1" - "1.20" - "1.19.4" - "1.19.3" - "1.19.2" - "1.19.1" - "1.19" - "1.18.2" - "1.18" - "1.17" - "1.16.5" - "1.16" - "1.15" - "1.14" - "1.13"
+  validations:
+  required: true
+- type: dropdown
+  id: shading
+  attributes:
+  label: Are you shading the Zenith?
+  description: Are you shading the Zenith into a plugin? (If you don't know, set this to "No")
+  multiple: false
+  options: - "Yes" - "No"
+  validations:
+  required: true
+- type: textarea
+  id: what-i-did
+  attributes:
+  label: What I did
+  description: What did you do to encounter this bug? Please be as detailed as possible!
+  placeholder: |
+  - I added this code in my onEnable() method:
+    `java
+// Code snippet here`
+  - I joined the game
+  - I ran the command `/mycommand something` and did this and that...
+    validations:
+    required: true
+- type: textarea
+  id: what-happened
+  attributes:
+  label: What actually happened
+  description: What happened when you did the steps above?
+  placeholder: Describe what happened when you performed the steps above.
+  validations:
+  required: true
+- type: textarea
+  id: what-should-happen
+  attributes:
+  label: What should have happened
+  description: What should have happened when you did the steps above?
+  placeholder: Describe what you would expect to happen when you perform the steps above.
+  validations:
+  required: true
+- type: textarea
+  id: logs
+  attributes:
+  label: Server logs and Zenith config
+  description: |
+  If you think it will be helpful, please include any server logs.
+  If you are using the Zenith plugin version, please include the Zenith's `config.yml` file from `plugins/Zenith/config.yml`.
+  placeholder: Logs and configs (if you think it'll help!)
+  validations:
+  required: false
+- type: textarea
+  id: other
+  attributes:
+  label: Additional Context
+  description: Is there anything else that you think will be relevant in helping to debug this issue?
+  placeholder: It only works on my machine.
+  validations:
+  required: false
